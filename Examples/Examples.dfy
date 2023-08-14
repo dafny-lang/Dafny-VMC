@@ -13,21 +13,21 @@ module RandomExamples {
   method Main() {
     var r := new Random();
 
-    for i := 0 to 9 {
+    for i := 0 to 10 {
       var b := r.Coin();
       print b, "\n";
     }
 
     print "\n";
 
-    for i := 0 to 9 {
+    for i := 0 to 10 {
       var u := r.Uniform(9);
       print u, "\n";
     }
 
     print "\n";
 
-    for i := 0 to 9 {
+    for i := 0 to 10 {
       var u := r.UniformInterval(3, 6);
       print u, "\n";
     }
