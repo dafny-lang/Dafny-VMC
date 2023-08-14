@@ -6,6 +6,7 @@
 package DafnyLibraries;
 
 import java.security.SecureRandom;
+import java.math.BigInteger;
 
 public class Random extends _ExternBase_Random {
   private SecureRandom s;
@@ -14,16 +15,8 @@ public class Random extends _ExternBase_Random {
     this.s = new SecureRandom();
   }
 
+  @Override
   public boolean Coin() {
     return s.nextBoolean();
   }
-
-  public int Uniform(int n) {
-    return s.nextInt(n);
-  }
-
-  public int UniformInterval(int a, int b) {
-    return s.nextInt(a, b);
-  }
-
 }

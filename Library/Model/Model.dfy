@@ -14,11 +14,12 @@ module Model {
   function Uniform(n: nat): Hurd<nat> 
     requires n > 0
   {
-    Unif.ProbUnif(n)
+    Unif.ProbUniform(n)
   }
 
-  function UniformInterval(a: int, b: int): Hurd<int>
+  function UniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b
+    ensures forall s :: f(s).0 == a + Uniform(b - a)(s).0
   {
     Unif.ProbUniformInterval(a, b)
   }
