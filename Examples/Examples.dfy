@@ -5,7 +5,7 @@
 
 // RUN: %verify "%s"
 
-include "./Library/Random.dfy"
+include "../Library/Random.dfy"
 
 module RandomExamples {
   import opened DafnyLibraries
