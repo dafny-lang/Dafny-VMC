@@ -7,7 +7,7 @@ To use `Random` in your code, you must:
 1. `include` and `import` the `Random` module as you would any other library module
 2. incorporate the corresponding language-specific implementation file (that is, currently, `Random.java`) when building or running your program
 
-For example, to run the `Examples.dfy` file in the `Examples` directory with the (unverified) `Random` module, run the following.
+For example, to run the `Examples.dfy` file in the `Examples` directory with the `Random` module, run the following.
 
 ```bash
 # Java

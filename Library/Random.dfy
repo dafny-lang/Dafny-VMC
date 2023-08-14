@@ -13,6 +13,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     method {:extern} Coin() returns (b: bool)
       ensures Model.Coin(old(s)) == (b, s)
 
+    // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
       requires n > 0
       ensures Model.Uniform(n)(old(s)) == (u, s)
