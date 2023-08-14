@@ -1,3 +1,8 @@
+/*******************************************************************************
+*  Copyright by the contributors to the Dafny Project
+*  SPDX-License-Identifier: MIT
+*******************************************************************************/
+
 include "Helper.dfy"
 include "Monad.dfy"
 include "Independence.dfy"

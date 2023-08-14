@@ -1,3 +1,8 @@
+/*******************************************************************************
+*  Copyright by the contributors to the Dafny Project
+*  SPDX-License-Identifier: MIT
+*******************************************************************************/
+
 include "Uniform.dfy"
 include "Monad.dfy"
 include "RandomNumberGenerator.dfy"
