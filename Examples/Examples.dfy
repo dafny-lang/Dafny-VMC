@@ -3,7 +3,9 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-include "../Library/Random.dfy"
+// RUN: %verify "%s"
+
+include "./Library/Random.dfy"
 
 module RandomExamples {
   import opened DafnyLibraries

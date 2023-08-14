@@ -1,3 +1,10 @@
+/*******************************************************************************
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
+
+// RUN: %verify "%s"
+
 include "Model/RandomNumberGenerator.dfy"
 include "Model/Model.dfy"
 
