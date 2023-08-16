@@ -19,7 +19,7 @@ module Model {
   }
 
   function Uniform(n: nat): Hurd<nat> 
-    requires n > 0
+    requires 0 < n 
   {
     Unif.ProbUniform(n)
   }

@@ -7,16 +7,14 @@
 
 include "Model/RandomNumberGenerator.dfy"
 include "Model/Model.dfy"
+include "RandomTrait.dfy"
 
 module {:extern "DafnyLibraries"} DafnyLibraries {
+  import opened RandomTrait
   import opened RandomNumberGenerator
   import Model
 
-  type Probability = x: real | 0.0 <= x <= 1.0
-
-  class {:extern} Random {
-    ghost var s: RNG
-
+  class {:extern} Random extends RandomTrait {
     constructor {:extern} ()
     
     method {:extern} Coin() returns (b: bool)
@@ -24,7 +22,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
 
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
-      requires n > 0
+      requires 0 < n
       ensures Model.Uniform(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
@@ -53,20 +51,21 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       u := a + v;
     }
 
-    method Bernoulli(p: Probability) returns (c: bool) 
-      //ensures Model.Bernoulli(p)(old(s)) == (c, s) 
-      decreases *
+    // Based on functional version; unverified
+    method Bernoulli(p: real) returns (c: bool) 
+      decreases *            
+      requires 0.0 <= p <= 1.0
+      ensures Model.Bernoulli(p)(old(s)) == (c, s) 
     {
+      assume {:axiom} false;
       var p := p as real;
       while true 
         decreases *
       {
         var b := Coin();
-        //assert b  == Head(old(s));
         if b {
           if p <= 0.5 {
-            c := false;
-            return;
+            return false;
           } else {
             calc {
               1.0 >= (p as real) >= 0.5;
@@ -81,8 +80,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
           if p <= 0.5 {
             p := 2.0 * (p as real);
           } else {
-            c := true;
-            return;
+            return true;
           }
         }
       }
