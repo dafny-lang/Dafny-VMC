@@ -12,6 +12,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened RandomNumberGenerator
   import Model
 
+  type Probability = x: real | 0.0 <= x <= 1.0
+
   class {:extern} Random {
     ghost var s: RNG
 
@@ -49,6 +51,41 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     {
       var v := Uniform(b - a);
       u := a + v;
+    }
+
+    method Bernoulli(p: Probability) returns (c: bool) 
+      //ensures Model.Bernoulli(p)(old(s)) == (c, s) 
+      decreases *
+    {
+      var p := p as real;
+      while true 
+        decreases *
+      {
+        var b := Coin();
+        //assert b  == Head(old(s));
+        if b {
+          if p <= 0.5 {
+            c := false;
+            return;
+          } else {
+            calc {
+              1.0 >= (p as real) >= 0.5;
+            ==>
+              2.0 >= 2.0 * (p as real) >= 1.0;
+            ==>
+              1.0 >= 2.0 * (p as real) - 1.0 >= 0.0;
+            }
+            p := 2.0 * (p as real) - 1.0;
+          }
+        } else {
+          if p <= 0.5 {
+            p := 2.0 * (p as real);
+          } else {
+            c := true;
+            return;
+          }
+        }
+      }
     }
   }
 }
