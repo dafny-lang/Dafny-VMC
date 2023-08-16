@@ -5,10 +5,12 @@
 
 include "Monad.dfy"
 include "RandomNumberGenerator.dfy"
+include "Independence.dfy"
 
 module Bernoulli {
   import opened Monad
   import opened RandomNumberGenerator
+  import opened Independence
 
   /************
    Definitions  
@@ -27,16 +29,19 @@ module Bernoulli {
           else
             ProbBernoulli(2.0 * p - 1.0)
         else
-        if p <= 0.5 then
-          ProbBernoulli(2.0 * p)
-        else
-          Return(true);
+          if p <= 0.5 then
+            ProbBernoulli(2.0 * p)
+          else
+            Return(true);
     Bind(Deconstruct, f)
   }  
 
   /*******
    Lemmas  
   *******/
+
+  lemma {:axiom} ProbBernoulliIsIndepFn(p: Probability)
+    ensures IsIndepFn(ProbBernoulli(p))
 
   lemma {:axiom} BernoulliCorrectness(p: Probability)
     ensures 
