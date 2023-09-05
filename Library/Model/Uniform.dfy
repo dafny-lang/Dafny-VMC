@@ -63,6 +63,35 @@ module Uniform {
     (if Head(s') then 2*m + 1 else 2*m, Tail(s'))
   == */
 
+  method ProbUnifImper(n: nat, s: RNG) returns (t: (nat, RNG)) 
+    decreases *
+    ensures t == ProbUnif(n)(s)
+  {
+    var m := 0;
+
+    if n == 0 {
+      t := (m, s);
+      return;
+    } else {
+      var (b, s) := Deconstruct(s);
+      m := if b then 2*m + 1 else 2*m;
+      var n := n / 2;
+    }
+
+    while true
+      decreases *
+      invariant m >= 0 && (n == 0 ==> t == ProbUnif(n)(s))
+    {
+      if n == 0 {
+        t := (m, s);
+        return;
+      } else {
+        var (b, s) := Deconstruct(s);
+        m := if b then 2*m + 1 else 2*m;
+        var n := n / 2;
+      }
+    }
+  }
 
 
   // Definition 49
@@ -73,7 +102,7 @@ module Uniform {
     ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
   }
 
-  method ProbUniformImperative(n: nat, s: RNG) returns (t: (nat, RNG))
+/*   method ProbUniformImperative(n: nat, s: RNG) returns (t: (nat, RNG))
     requires n > 0
     ensures t == ProbUniform(n)(s)
     decreases *
@@ -81,6 +110,27 @@ module Uniform {
     ProbUnifTerminates(n);
     t := ProbUntilImperative(ProbUnif(n-1), (x: nat) => x < n, s);
   }
+ */
+
+
+  method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
+    requires n > 0
+    ensures t == ProbUniform(n)(s)
+    decreases *   
+  {    
+    while true 
+      decreases *  
+    {
+      var x := ProbUnifImper(n-1, s);
+
+      if x.0 < n {
+        return (x.0, x.1);
+      } 
+    }
+  } 
+
+/* 
+
 
   method ProbUniformImperativeAlternative(n: nat, s: RNG) returns (t: (nat, RNG))
     requires n > 0
@@ -89,15 +139,21 @@ module Uniform {
   {
     ProbUnifTerminates(n);
 
+
     while true
       decreases *
     {
-      var (m, s) := ProbUnif(n-1)(s);
+      if n == 1 {
+        var (m, s) := (0, s);
+      } else {
+        var (m', s') := ProbUnif((n - 1) / 2)(s);
+        var (m, s) := (if Head(s') then 2*m' + 1 else 2*m', Tail(s'));
+      }
       if m < n {
         return (m, s);
       }
     }
-  }
+  } */
 
   function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b

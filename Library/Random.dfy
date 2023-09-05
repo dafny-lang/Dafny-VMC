@@ -10,12 +10,14 @@ include "Model/Model.dfy"
 include "Model/Monad.dfy"
 include "RandomTrait.dfy"
 include "Model/Bernoulli.dfy"
+include "Model/Uniform.dfy"
 
 module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened RandomTrait
   import opened RandomNumberGenerator
   import opened Monad
   import opened Bernoulli
+  import opened Unif = Uniform
   import Model
 
   class {:extern} Random extends RandomTrait {
@@ -54,6 +56,51 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         }
       } */
     }
+
+    method Unif2(n: nat) returns (m: nat) 
+      decreases *
+      ensures Unif.ProbUnif(n)(old(s)) == (m, s)
+    {
+      m := 0;
+
+      if n == 0 {
+        return m;
+      } else {
+        var b := Coin();
+        m := if b then 2*m + 1 else 2*m;
+        var n := n / 2;
+      }
+
+      while true
+        decreases *
+        invariant m >= 0 && (n == 0 ==> Unif.ProbUnif(n)(old(s)) == (m, s))
+      {
+        if n == 0 {
+          return m;
+        } else {
+          var b := Coin();
+          m := if b then 2*m + 1 else 2*m;
+          var n := n / 2;
+        }
+      }
+    }
+
+    method Uniform2(n: nat) returns (m: nat)
+      requires n > 0
+      ensures Model.Uniform(n)(old(s)) == (m, s)
+      decreases *
+    {
+      while true 
+        decreases *  
+      {
+        var m := Unif2(n-1);
+
+        if m < n {
+          return m;
+        } 
+      }
+    }
+
     
     method UniformInterval(a: int, b: int) returns (u: int)
       requires a < b
@@ -92,7 +139,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
 
       while true 
         decreases *
-        invariant (b && p <= 0.5) || (!b && p > 0.5) ==> ProbBernoulliCurried(p, old(s)) == (c, s)
+        invariant (b && p <= 0.5) || (!b && p > 0.5) ==> Model.Bernoulli(p)(old(s)) == (c, s)
       {
         label L:
         b := Coin();
