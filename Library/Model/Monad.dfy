@@ -22,6 +22,13 @@ module Monad {
     (n: nat) => s(n+1)
   }
 
+  function IterateTail(s: RNG, n: nat): RNG {
+    if n == 0 then
+      s
+    else
+      IterateTail(Tail(s), n - 1)
+  }
+
   // Equation (2.37)
   function Head(s: RNG): bool {
     s(0)
