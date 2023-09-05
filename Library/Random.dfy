@@ -26,7 +26,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     method {:extern} Coin() returns (b: bool)
       ensures Model.Coin(old(s)) == (b, s)
 
-    // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
+/*     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (m: nat)
       requires n > 0
       ensures Model.Uniform(n)(old(s)) == (m, s)
@@ -46,7 +46,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
             m := m - n;
           }
         }
-      }
+      } */
 /*       while true
         decreases *
       {
@@ -54,10 +54,10 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         if m < n {
           return (m, s);
         }
-      } */
-    }
+      } 
+    }*/
 
-    method Unif2(n: nat) returns (m: nat) 
+ /*    method Unif2(n: nat) returns (m: nat) 
       decreases *
       ensures Unif.ProbUnif(n)(old(s)) == (m, s)
     {
@@ -83,28 +83,34 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
           var n := n / 2;
         }
       }
-    }
+    } */
 
-    method Uniform2(n: nat) returns (m: nat)
+    method Uniform(n: nat) returns (m: nat)
       requires n > 0
       ensures Model.Uniform(n)(old(s)) == (m, s)
       decreases *
     {
+      m := 0;
+      var n := n - 1;
+
       while true 
         decreases *  
+        invariant m >= 0 && (n == 0 && m < n ==> Model.Uniform(n)(old(s)) == (m, s))
       {
-        var m := Unif2(n-1);
-
-        if m < n {
+        if n != 0 {
+          var b := Coin();
+          m := if b then 2*m + 1 else 2*m;
+          var n := n / 2;
+        } else if m < n {
           return m;
-        } 
+        }
       }
     }
 
-    
     method UniformInterval(a: int, b: int) returns (u: int)
       requires a < b
       ensures Model.UniformInterval(a, b)(old(s)) == (u, s)
+      decreases *
     {
       var v := Uniform(b - a);
       u := a + v;
