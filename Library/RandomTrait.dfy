@@ -20,10 +20,10 @@ module RandomTrait {
       ensures Model.Coin(old(s)) == (b, s)
   //  ensures forall b :: mu(iset s | Model.Coin(s).0 == b) == 0.5
 
-    method Uniform(n: nat) returns (m: nat)
+    method Uniform(n: nat) returns (u: nat)
       modifies this
-      requires n > 0
-      ensures Model.Uniform(n)(old(s)) == (m, s)
+      requires 0 < n
+      ensures Model.Uniform(n)(old(s)) == (u, s)
       decreases *
   //  ensures forall i | 0 <= i < n :: mu(iset s | Model.Uniform(n)(s).0 == i) == 1.0 / (n as real)
 

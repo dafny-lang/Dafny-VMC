@@ -36,32 +36,6 @@ module Uniform {
       Bind(ProbUnif(n / 2), f)
   }
 
-/*   method ProbUnifImperative(n: nat, s: RNG): (t: (nat, RNG)) 
-    ensures t == ProbUnif(n)(s)
-  {
-    var m := 0;
-    var u := 0;
-    while true {
-      m := if Head(s) then 2*m + 1 else 2*m;
-      s := Tail(s);
-      u := 2 * u;
-    }
-  } */
-
-/*   Bind(ProbUnif(n / 2), f)(s)
-  ==
-    var (m, s') := ProbUnif(n / 2)(s);
-    f(m)(s')
-  ==
-    Bind(Deconstruct, (b: bool) => Return(if b then 2*m + 1 else 2*m))(s')
-  ==
-    (b, s'') := Deconstruct(s');
-    Return(if b then 2 * m + 1 else 2 * m)(s'')
-  ==
-    (if b then 2*m + 1 else 2 *m, s'')
-  ==
-    (if Head(s') then 2*m + 1 else 2*m, Tail(s'))
-  == */
 
   method ProbUnifImper(n: nat, s: RNG) returns (t: (nat, RNG)) 
     decreases *
@@ -93,7 +67,6 @@ module Uniform {
     }
   }
 
-
   // Definition 49
   function ProbUniform(n: nat): (f: Hurd<nat>)
     requires n > 0
@@ -101,17 +74,6 @@ module Uniform {
     ProbUnifTerminates(n);
     ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
   }
-
-/*   method ProbUniformImperative(n: nat, s: RNG) returns (t: (nat, RNG))
-    requires n > 0
-    ensures t == ProbUniform(n)(s)
-    decreases *
-  {
-    ProbUnifTerminates(n);
-    t := ProbUntilImperative(ProbUnif(n-1), (x: nat) => x < n, s);
-  }
- */
-
 
   method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
     requires n > 0
@@ -128,32 +90,6 @@ module Uniform {
       } 
     }
   } 
-
-/* 
-
-
-  method ProbUniformImperativeAlternative(n: nat, s: RNG) returns (t: (nat, RNG))
-    requires n > 0
-    ensures t == ProbUniform(n)(s)
-    decreases *
-  {
-    ProbUnifTerminates(n);
-
-
-    while true
-      decreases *
-    {
-      if n == 1 {
-        var (m, s) := (0, s);
-      } else {
-        var (m', s') := ProbUnif((n - 1) / 2)(s);
-        var (m, s) := (if Head(s') then 2*m' + 1 else 2*m', Tail(s'));
-      }
-      if m < n {
-        return (m, s);
-      }
-    }
-  } */
 
   function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b
