@@ -36,6 +36,37 @@ module Uniform {
       Bind(ProbUnif(n / 2), f)
   }
 
+
+  method ProbUnifImper(n: nat, s: RNG) returns (t: (nat, RNG)) 
+    decreases *
+    ensures t == ProbUnif(n)(s)
+  {
+    var m := 0;
+
+    if n == 0 {
+      t := (m, s);
+      return;
+    } else {
+      var (b, s) := Deconstruct(s);
+      m := if b then 2*m + 1 else 2*m;
+      var n := n / 2;
+    }
+
+    while true
+      decreases *
+      invariant m >= 0 && (n == 0 ==> t == ProbUnif(n)(s))
+    {
+      if n == 0 {
+        t := (m, s);
+        return;
+      } else {
+        var (b, s) := Deconstruct(s);
+        m := if b then 2*m + 1 else 2*m;
+        var n := n / 2;
+      }
+    }
+  }
+
   // Definition 49
   function ProbUniform(n: nat): (f: Hurd<nat>)
     requires n > 0
@@ -44,9 +75,24 @@ module Uniform {
     ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
   }
 
+  method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
+    requires n > 0
+    ensures t == ProbUniform(n)(s)
+    decreases *   
+  {    
+    while true 
+      decreases *  
+    {
+      var x := ProbUnifImper(n-1, s);
+
+      if x.0 < n {
+        return (x.0, x.1);
+      } 
+    }
+  } 
+
   function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b
-    ensures forall s :: f(s).0 == a + ProbUniform(b - a)(s).0
   {
     (s: RNG) =>
       var (x, s') := ProbUniform(b - a)(s);

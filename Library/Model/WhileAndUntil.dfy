@@ -48,6 +48,35 @@ module WhileAndUntil {
       Return(a)
   }
 
+  method ProbWhileImperative<A>(c: A -> bool, b: A -> Hurd<A>, a: A, s: RNG) returns (t: (A, RNG)) 
+    requires ProbWhileTerminates(b, c)
+    ensures ProbWhile(c, b, a)(s) == t
+    decreases *
+  {
+    while c(a) 
+      decreases *
+    {
+      var (a, s) := b(a)(s);
+    }
+    return (a, s);
+  }
+
+  method ProbWhileImperativeAlternative<A>(c: A -> bool, b: A -> Hurd<A>, a: A, s: RNG) returns (t: (A, RNG)) 
+    requires ProbWhileTerminates(b, c)
+    ensures ProbWhile(c, b, a)(s) == t
+    decreases *
+  {
+    while true
+      decreases *
+    {
+      if !c(a) {
+        return (a, s);
+      } else {
+        var (a, s) := b(a)(s);
+      }
+    }
+  }
+
   ghost predicate ProbUntilTerminates<A(!new)>(b: Hurd<A>, c: A -> bool) {
     var c' := (a: A) => !c(a);
     var b' := (a: A) => b;
@@ -57,10 +86,24 @@ module WhileAndUntil {
   // Definition 44
   function ProbUntil<A>(b: Hurd<A>, c: A -> bool): (f: Hurd<A>)
     requires ProbUntilTerminates(b, c)
+    ensures 
+      var c' := (a: A) => !c(a);
+      var b' := (a: A) => b;
+      forall s :: f(s) == ProbWhile(c', b', b(s).0)(b(s).1)
   {
     var c' := (a: A) => !c(a);
     var b' := (a: A) => b;
     Bind(b, (a: A) => ProbWhile(c', b', a))
+  }
+
+  method ProbUntilImperative<A>(b: Hurd<A>, c: A -> bool, s: RNG) returns (t: (A, RNG))
+    requires ProbUntilTerminates(b, c)
+    ensures t == ProbUntil(b, c)(s)
+    decreases *
+  {
+    var c' := (a: A) => !c(a);
+    var b' := (a: A) => b;
+    t := ProbWhileImperative(c', b', b(s).0, b(s).1);
   }
 
   function Helper<A(!new)>(b: A -> Hurd<A>, c: A -> bool, a: A): (RNG -> bool) {

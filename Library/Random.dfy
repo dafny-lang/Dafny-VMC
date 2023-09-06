@@ -7,23 +7,32 @@
 
 include "Model/RandomNumberGenerator.dfy"
 include "Model/Model.dfy"
+include "Model/Monad.dfy"
 include "RandomTrait.dfy"
+include "Model/Bernoulli.dfy"
+include "Model/Uniform.dfy"
 
 module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened RandomTrait
   import opened RandomNumberGenerator
+  import opened Monad
+  import opened Bernoulli
+  import opened Unif = Uniform
   import Model
 
   class {:extern} Random extends RandomTrait {
     constructor {:extern} ()
     
     method {:extern} Coin() returns (b: bool)
+      modifies this
       ensures Model.Coin(old(s)) == (b, s)
 
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
+      modifies this
       requires 0 < n
       ensures Model.Uniform(n)(old(s)) == (u, s)
+      decreases *
     {
       assume {:axiom} false;
       var v := 1;
@@ -44,41 +53,56 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     }
     
     method UniformInterval(a: int, b: int) returns (u: int)
+      modifies this
       requires a < b
       ensures Model.UniformInterval(a, b)(old(s)) == (u, s)
+      decreases *
     {
       var v := Uniform(b - a);
+      assert Model.Uniform(b-a)(old(s)) == (v, s);
+      assert Model.UniformInterval(a, b)(old(s)) == (a + v, s);
       u := a + v;
     }
 
-    // Based on functional version; unverified
-    method Bernoulli(p: real) returns (c: bool) 
-      decreases *            
+    method Bernoulli(p: real) returns (c: bool)
+      modifies this 
+      decreases *
       requires 0.0 <= p <= 1.0
-      ensures Model.Bernoulli(p)(old(s)) == (c, s) 
+      ensures Model.Bernoulli(p)(old(s)) == (c, s)
     {
-      assume {:axiom} false;
-      var p := p as real;
-      while true 
+      c := true;
+      var end := false;
+      var q: Probability := p as real;
+
+      var b := Coin();
+      if b {
+        if q <= 0.5 {
+          return false;
+        } else {
+          q := 2.0 * (q as real) - 1.0;
+        }
+      } else {
+        if q <= 0.5 {
+          q := 2.0 * (q as real); 
+        } else {
+          return true;
+        }
+      }
+
+      while !end 
+        invariant (!end && Model.Bernoulli(p)(old(s)) == Model.Bernoulli(q)(s)) || (end && Model.Bernoulli(p)(old(s)) == (c, s))
         decreases *
       {
-        var b := Coin();
+        b := Coin();
         if b {
-          if p <= 0.5 {
+          if q <= 0.5 {
             return false;
           } else {
-            calc {
-              1.0 >= (p as real) >= 0.5;
-            ==>
-              2.0 >= 2.0 * (p as real) >= 1.0;
-            ==>
-              1.0 >= 2.0 * (p as real) - 1.0 >= 0.0;
-            }
-            p := 2.0 * (p as real) - 1.0;
+            q := 2.0 * (q as real) - 1.0;
           }
         } else {
-          if p <= 0.5 {
-            p := 2.0 * (p as real);
+          if q <= 0.5 {
+            q := 2.0 * (q as real);
           } else {
             return true;
           }
