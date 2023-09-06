@@ -16,22 +16,26 @@ module RandomTrait {
     ghost var s: RNG
 
     method Coin() returns (b: bool)
+      modifies this
       ensures Model.Coin(old(s)) == (b, s)
   //  ensures forall b :: mu(iset s | Model.Coin(s).0 == b) == 0.5
 
     method Uniform(n: nat) returns (m: nat)
+      modifies this
       requires n > 0
       ensures Model.Uniform(n)(old(s)) == (m, s)
       decreases *
   //  ensures forall i | 0 <= i < n :: mu(iset s | Model.Uniform(n)(s).0 == i) == 1.0 / (n as real)
 
     method UniformInterval(a: int, b: int) returns (u: int)
+      modifies this
       requires a < b
       ensures Model.UniformInterval(a, b)(old(s)) == (u, s)
       decreases *
   //  ensures forall i | a <= i < b :: mu(iset s | Model.UniformInterval(a, b)(s).0 == i) == 1.0 / ((b - a) as real)
 
     method Bernoulli(p: real) returns (c: bool) 
+      modifies this
       decreases *            
       requires 0.0 <= p <= 1.0
       ensures Model.Bernoulli(p)(old(s)) == (c, s) 

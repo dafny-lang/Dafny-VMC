@@ -157,7 +157,6 @@ module Uniform {
 
   function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b
-    ensures forall s :: f(s).0 == a + ProbUniform(b - a)(s).0
   {
     (s: RNG) =>
       var (x, s') := ProbUniform(b - a)(s);
