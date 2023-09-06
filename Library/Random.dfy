@@ -130,65 +130,39 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     {
       c := true;
       var end := false;
-      var s' := s;
-      var p'': Probability := p as real;
-      var p' := p as real;
+      var q: Probability := p as real;
+
       var b := Coin();
       if b {
-        if p'' <= 0.5 {
-          c := false;
-          end := true;
+        if q <= 0.5 {
+          return false;
         } else {
-          p'' := 2.0 * (p'' as real) - 1.0;
-          calc {
-            1.0 >= (p'' as real) >= 0.5;
-          ==>
-            2.0 >= 2.0 * (p'' as real) >= 1.0;
-          ==>
-            1.0 >= 2.0 * (p'' as real) - 1.0 >= 0.0;
-          }
+          q := 2.0 * (q as real) - 1.0;
         }
       } else {
-        if p'' <= 0.5 {
-          p'' := 2.0 * (p'' as real); 
+        if q <= 0.5 {
+          q := 2.0 * (q as real); 
         } else {
-          c := true;
-          end := true;
+          return true;
         }
       }
 
-      while true 
-        invariant (!end && Model.Bernoulli(p)(old(s)) == Model.Bernoulli(p'')(s)) || (end && Model.Bernoulli(p)(old(s)) == (c, s))
+      while !end 
+        invariant (!end && Model.Bernoulli(p)(old(s)) == Model.Bernoulli(q)(s)) || (end && Model.Bernoulli(p)(old(s)) == (c, s))
         decreases *
       {
-        if end {
-          break;
-        } else {
-          s' := s;
-          p' := p'';
-          b := Coin();
-          assert (b, s) == Deconstruct(s');
-          if b {
-            if p'' <= 0.5 {
-              c := false;
-              end := true;
-            } else {
-              calc {
-                1.0 >= (p'' as real) >= 0.5;
-              ==>
-                2.0 >= 2.0 * (p'' as real) >= 1.0;
-              ==>
-                1.0 >= 2.0 * (p'' as real) - 1.0 >= 0.0;
-              }
-              p'' := 2.0 * (p'' as real) - 1.0;
-            }
+        b := Coin();
+        if b {
+          if q <= 0.5 {
+            return false;
           } else {
-            if p'' <= 0.5 {
-              p'' := 2.0 * (p'' as real);
-            } else {
-              c := true;
-              end := true;
-            }
+            q := 2.0 * (q as real) - 1.0;
+          }
+        } else {
+          if q <= 0.5 {
+            q := 2.0 * (q as real);
+          } else {
+            return true;
           }
         }
       }
