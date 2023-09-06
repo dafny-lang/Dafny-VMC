@@ -122,26 +122,22 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       m := a + v;
     }
 
-    method {:timeLimit 20} Bernoulli(p: real) returns (c: bool)
+    method Bernoulli(p: real) returns (c: bool)
       modifies this 
       decreases *
       requires 0.0 <= p <= 1.0
-      ensures ProbBernoulliCurried(p, old(s)) == (c, s) 
+      ensures Model.Bernoulli(p)(old(s)) == (c, s)
     {
       c := true;
       var end := false;
       var s' := s;
       var p'': Probability := p as real;
       var p' := p as real;
-      assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
       var b := Coin();
-      assert (b, s) == Deconstruct(s');
       if b {
         if p'' <= 0.5 {
           c := false;
           end := true;
-          assert (end && ProbBernoulliCurried(p, old(s)) == (c, s));
-          assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
         } else {
           p'' := 2.0 * (p'' as real) - 1.0;
           calc {
@@ -151,36 +147,23 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
           ==>
             1.0 >= 2.0 * (p'' as real) - 1.0 >= 0.0;
           }
-          assert ProbBernoulliCurried(p', s') == ProbBernoulliCurried(p'', s);
-          assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p', s');
-          assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
-          assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s));  
-          assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
         }
       } else {
         if p'' <= 0.5 {
-          p'' := 2.0 * (p'' as real);
-          assert ProbBernoulliCurried(p', s') == ProbBernoulliCurried(p'', s);
-          assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p', s');
-          assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
-          assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s));    
+          p'' := 2.0 * (p'' as real); 
         } else {
           c := true;
           end := true;
-          assert (end && ProbBernoulliCurried(p, old(s)) == (c, s));
         }
       }
 
       while true 
-        invariant (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s))
+        invariant (!end && Model.Bernoulli(p)(old(s)) == Model.Bernoulli(p'')(s)) || (end && Model.Bernoulli(p)(old(s)) == (c, s))
         decreases *
       {
         if end {
-          assert end && ProbBernoulliCurried(p, old(s)) == (c, s);
-          assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
           break;
         } else {
-          assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
           s' := s;
           p' := p'';
           b := Coin();
@@ -189,10 +172,6 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
             if p'' <= 0.5 {
               c := false;
               end := true;
-              assert ProbBernoulliCurried(p', s') == (c, s);
-              assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p', s');
-              assert end && ProbBernoulliCurried(p, old(s)) == (c, s);
-              assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
             } else {
               calc {
                 1.0 >= (p'' as real) >= 0.5;
@@ -202,34 +181,17 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
                 1.0 >= 2.0 * (p'' as real) - 1.0 >= 0.0;
               }
               p'' := 2.0 * (p'' as real) - 1.0;
-              assert ProbBernoulliCurried(p', s') == ProbBernoulliCurried(p'', s);
-              assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p', s');
-              assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
-              assert !end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
-              assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
             }
           } else {
             if p'' <= 0.5 {
               p'' := 2.0 * (p'' as real);
-              assert ProbBernoulliCurried(p', s') == ProbBernoulliCurried(p'', s);
-              assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p', s');
-              assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
-              assert !end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s);
-              assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
             } else {
               c := true;
               end := true;
-              assert ProbBernoulliCurried(p', s') == (c, s);
-              assert ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p', s');
-              assert end && ProbBernoulliCurried(p, old(s)) == (c, s);
-              assert (!end && ProbBernoulliCurried(p, old(s)) == ProbBernoulliCurried(p'', s)) || (end && ProbBernoulliCurried(p, old(s)) == (c, s));
             }
           }
         }
       }
-
-      assert (end && ProbBernoulliCurried(p, old(s)) == (c, s));
-
     }
   }
 }
