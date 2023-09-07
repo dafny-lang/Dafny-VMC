@@ -70,8 +70,6 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       requires 0.0 <= p <= 1.0
       ensures Model.Bernoulli(p)(old(s)) == (c, s)
     {
-      c := true;
-      var end := false;
       var q: Probability := p as real;
 
       var b := Coin();
@@ -89,8 +87,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         }
       }
 
-      while !end 
-        invariant (!end && Model.Bernoulli(p)(old(s)) == Model.Bernoulli(q)(s)) || (end && Model.Bernoulli(p)(old(s)) == (c, s))
+      while true
+        invariant Model.Bernoulli(p)(old(s)) == Model.Bernoulli(q)(s)
         decreases *
       {
         b := Coin();
