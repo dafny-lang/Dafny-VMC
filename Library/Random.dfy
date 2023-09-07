@@ -8,17 +8,46 @@
 include "Model/RandomNumberGenerator.dfy"
 include "Model/Model.dfy"
 include "Model/Monad.dfy"
-include "RandomTrait.dfy"
 include "Model/Bernoulli.dfy"
 include "Model/Uniform.dfy"
 
 module {:extern "DafnyLibraries"} DafnyLibraries {
-  import opened RandomTrait
   import opened RandomNumberGenerator
   import opened Monad
   import opened Bernoulli
   import opened Unif = Uniform
   import Model
+
+  // Only here because of #2500. Should really be imported from separate file.
+  trait RandomTrait {
+    ghost var s: RNG
+
+    method Coin() returns (b: bool)
+      modifies this
+      ensures Model.Coin(old(s)) == (b, s)
+  //  ensures forall b :: mu(iset s | Model.Coin(s).0 == b) == 0.5
+
+    method Uniform(n: nat) returns (u: nat)
+      modifies this
+      requires 0 < n
+      ensures Model.Uniform(n)(old(s)) == (u, s)
+      decreases *
+  //  ensures forall i | 0 <= i < n :: mu(iset s | Model.Uniform(n)(s).0 == i) == 1.0 / (n as real)
+
+    method UniformInterval(a: int, b: int) returns (u: int)
+      modifies this
+      requires a < b
+      ensures Model.UniformInterval(a, b)(old(s)) == (u, s)
+      decreases *
+  //  ensures forall i | a <= i < b :: mu(iset s | Model.UniformInterval(a, b)(s).0 == i) == 1.0 / ((b - a) as real)
+
+    method Bernoulli(p: real) returns (c: bool) 
+      modifies this
+      decreases *            
+      requires 0.0 <= p <= 1.0
+      ensures Model.Bernoulli(p)(old(s)) == (c, s) 
+  //  ensures mu(iset s | Model.Bernoulli(p)(s).0) == p
+  }
 
   class {:extern} Random extends RandomTrait {
     constructor {:extern} ()
