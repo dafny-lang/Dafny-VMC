@@ -14,24 +14,24 @@ module Model {
   import opened Unif = Uniform
   import opened Bern = Bernoulli
 
-  function Coin(s: RNG): (bool, RNG) {
+  function CoinModel(s: RNG): (bool, RNG) {
     Monad.Deconstruct(s)
   }
 
-  function Uniform(n: nat): Hurd<nat> 
+  function UniformModel(n: nat): Hurd<nat> 
     requires 0 < n 
   {
     Unif.ProbUniform(n)
   }
 
-  function UniformInterval(a: int, b: int): (f: Hurd<int>)
+  function UniformIntervalModel(a: int, b: int): (f: Hurd<int>)
     requires a < b
-    ensures forall s :: f(s).0 == a + Uniform(b - a)(s).0
+    ensures forall s :: f(s).0 == a + UniformModel(b - a)(s).0
   {
     Unif.ProbUniformInterval(a, b)
   }
 
-  function Bernoulli(p: Probability): Hurd<bool> {
+  function BernoulliModel(p: Probability): Hurd<bool> {
     Bern.ProbBernoulli(p)
   }
 
