@@ -5,7 +5,7 @@
 
 // RUN: %verify "%s"
 
-include "../Library/Random.dfy"
+include "../Library/DRandom.dfy"
 
 module RandomExamples {
   import opened DafnyLibraries
@@ -13,7 +13,7 @@ module RandomExamples {
   method Main() 
     decreases *
   {
-    var r := new Random();
+    var r := new DRandom();
 
     for i := 0 to 20 {
       var b := r.Coin();
