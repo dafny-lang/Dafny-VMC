@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "Helper.dfy"
 include "Monad.dfy"
@@ -37,7 +37,7 @@ module Uniform {
   }
 
 
-  method ProbUnifImper(n: nat, s: RNG) returns (t: (nat, RNG)) 
+  method ProbUnifImper(n: nat, s: RNG) returns (t: (nat, RNG))
     decreases *
     ensures t == ProbUnif(n)(s)
   {
@@ -78,18 +78,19 @@ module Uniform {
   method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
     requires n > 0
     ensures t == ProbUniform(n)(s)
-    decreases *   
-  {    
-    while true 
-      decreases *  
+    decreases *
+  {
+    var (u, s) := ProbUnif(n-1)(s);
+    while true
+      decreases *
     {
-      var x := ProbUnifImper(n-1, s);
-
-      if x.0 < n {
-        return (x.0, x.1);
-      } 
+      if u < n {
+        return (u, s);
+      } else {
+        var (u, s) := ProbUnif(n-1)(s);
+      }
     }
-  } 
+  }
 
   function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b
@@ -483,7 +484,7 @@ module Uniform {
       }
     }
   }
-  
+
   lemma {:axiom} ProbUnifTerminates(n: nat)
     requires n > 0
     ensures
@@ -544,14 +545,14 @@ module Uniform {
         }
         assert B: forall s :: Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e' by {
           forall s ensures Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e' {
-              assert Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e';
+            assert Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e';
           }
         }
         assert C: forall s :: f(s) in e <==> ProbUnif(n)(s).1 in e by {
           forall s ensures f(s) in e <==> ProbUnif(n)(s).1 in e {
             assert f(s) == ProbUnif(n)(s).1;
           }
-        } 
+        }
         calc {
           mu(PreImage(f, e));
         == { assert PreImage(f, e) == (iset s | f(s) in e); }
@@ -653,7 +654,7 @@ module Uniform {
             (2*a + 1) / 2;
           == { LemmaAboutNatDivision(2*a + 1, 2); }
             ((2*a + 1) as real / 2 as real).Floor;
-          == 
+          ==
             (1 as real).Floor;
           ==
             1;
