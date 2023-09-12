@@ -75,21 +75,22 @@ module Uniform {
     ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
   }
 
-  method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
+  method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG)) 
     requires n > 0
-    ensures t == ProbUniform(n)(s)
-    decreases *   
-  {    
-    while true 
-      decreases *  
+    ensures t == ProbUniform(n )(s)
+    decreases *
+  {
+    var (u, s) := ProbUnif(n-1)(s);
+    while true
+      decreases *
     {
-      var x := ProbUnifImper(n-1, s);
-
-      if x.0 < n {
-        return (x.0, x.1);
-      } 
+      if u < n {
+        return (u, s);
+      } else {
+        var (u, s) := ProbUnif(n-1)(s);
+      }
     }
-  } 
+  }
 
   function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
     requires a < b

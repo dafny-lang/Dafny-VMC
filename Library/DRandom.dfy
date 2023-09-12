@@ -15,7 +15,6 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened RandomNumberGenerator
   import opened Monad
   import opened Bernoulli
-  import opened Unif = Uniform
   import opened Model
 
   // Only here because of #2500. Should really be imported from separate file.
@@ -25,28 +24,24 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     method Coin() returns (b: bool)
       modifies this
       ensures CoinModel(old(s)) == (b, s)
-  //  ensures forall b :: mu(iset s | Model.Coin(s).0 == b) == 0.5
 
     method Uniform(n: nat) returns (u: nat)
       modifies this
       requires 0 < n
       ensures UniformModel(n)(old(s)) == (u, s)
       decreases *
-  //  ensures forall i | 0 <= i < n :: mu(iset s | Model.Uniform(n)(s).0 == i) == 1.0 / (n as real)
 
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
       requires a < b
       ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
       decreases *
-  //  ensures forall i | a <= i < b :: mu(iset s | Model.UniformInterval(a, b)(s).0 == i) == 1.0 / ((b - a) as real)
 
     method Bernoulli(p: real) returns (c: bool) 
       modifies this
       decreases *            
       requires 0.0 <= p <= 1.0
       ensures BernoulliModel(p)(old(s)) == (c, s) 
-  //  ensures mu(iset s | Model.Bernoulli(p)(s).0) == p
   }
 
   class {:extern} DRandom extends DRandomTrait {
@@ -56,12 +51,42 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       ensures CoinModel(old(s)) == (b, s)
 
+    // Will likely used for own verified Uniform method
+    method Unif(n: nat) returns (u: nat) 
+      modifies this
+      decreases *
+      ensures UnifModel(n)(old(s)) == (u, s)
+    {
+      var m := 0;
+
+      if n == 0 {
+        return m;
+      } else {
+        var b := Coin();
+        m := if b then 2*m + 1 else 2*m;
+        var n := n / 2;
+      }
+
+      while true
+        decreases *
+        invariant m >= 0 && (n == 0 ==> UnifModel(n)(old(s)) == (u, s) )
+      {
+        if n == 0 {
+          return m;
+        } else {
+          var b := Coin();
+          m := if b then 2*m + 1 else 2*m;
+          var n := n / 2;
+        }
+      }
+    }      
+
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
       modifies this
-      requires 0 < n
-      ensures UniformModel(n)(old(s)) == (u, s)
+      requires n > 0
       decreases *
+      ensures UniformModel(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
       var v := 1;
@@ -84,8 +109,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
       requires a < b
-      ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
       decreases *
+      ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
     {
       var v := Uniform(b - a);
       assert UniformModel(b-a)(old(s)) == (v, s);
