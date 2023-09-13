@@ -100,7 +100,7 @@ module Monad {
   lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RNG) 
     ensures Composition(Composition(f, g), h)(a)(s) == Composition(f, Composition(g, h))(a)(s)
   {
-    BindAssociativity(f(a), g, h, s);
+    BindIsAssociative(f(a), g, h, s);
   }
 
   lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: RNG)
