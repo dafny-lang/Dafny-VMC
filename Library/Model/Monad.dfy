@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "RandomNumberGenerator.dfy"
 include "MeasureTheory.dfy"
@@ -97,7 +97,7 @@ module Monad {
     }
   }
 
-  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RNG) 
+  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RNG)
     ensures Composition(Composition(f, g), h)(a)(s) == Composition(f, Composition(g, h))(a)(s)
   {
     BindIsAssociative(f(a), g, h, s);
@@ -115,7 +115,7 @@ module Monad {
       Join(Map(Return, f))(s);
     }
   }
-  
+
   lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: RNG)
     ensures Join(Map(Join, fff))(s) == Join(Join(fff))(s)
   {
