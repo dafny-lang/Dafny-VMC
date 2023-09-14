@@ -18,10 +18,6 @@ module Model {
     Monad.Deconstruct(s)
   }
 
-  function UnifModel(n: nat): Hurd<nat> {
-    Unif.ProbUnif(n)
-  }
-
   function UniformModel(n: nat): Hurd<nat> 
     requires 0 < n 
   {

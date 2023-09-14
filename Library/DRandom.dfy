@@ -49,37 +49,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     
     method {:extern} Coin() returns (b: bool)
       modifies this
-      ensures CoinModel(old(s)) == (b, s)
-
-    // Will likely used for own verified Uniform method
-    method Unif(n: nat) returns (u: nat) 
-      modifies this
-      decreases *
-      ensures UnifModel(n)(old(s)) == (u, s)
-    {
-      var m := 0;
-
-      if n == 0 {
-        return m;
-      } else {
-        var b := Coin();
-        m := if b then 2*m + 1 else 2*m;
-        var n := n / 2;
-      }
-
-      while true
-        decreases *
-        invariant m >= 0 && (n == 0 ==> UnifModel(n)(old(s)) == (u, s) )
-      {
-        if n == 0 {
-          return m;
-        } else {
-          var b := Coin();
-          m := if b then 2*m + 1 else 2*m;
-          var n := n / 2;
-        }
-      }
-    }      
+      ensures CoinModel(old(s)) == (b, s)   
 
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
