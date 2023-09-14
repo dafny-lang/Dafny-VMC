@@ -36,37 +36,6 @@ module Uniform {
       Bind(ProbUnif(n / 2), f)
   }
 
-
-  method ProbUnifImper(n: nat, s: RNG) returns (t: (nat, RNG))
-    decreases *
-    ensures t == ProbUnif(n)(s)
-  {
-    var m := 0;
-
-    if n == 0 {
-      t := (m, s);
-      return;
-    } else {
-      var (b, s) := Deconstruct(s);
-      m := if b then 2*m + 1 else 2*m;
-      var n := n / 2;
-    }
-
-    while true
-      decreases *
-      invariant m >= 0 && (n == 0 ==> t == ProbUnif(n)(s))
-    {
-      if n == 0 {
-        t := (m, s);
-        return;
-      } else {
-        var (b, s) := Deconstruct(s);
-        m := if b then 2*m + 1 else 2*m;
-        var n := n / 2;
-      }
-    }
-  }
-
   // Definition 49
   function ProbUniform(n: nat): (f: Hurd<nat>)
     requires n > 0
