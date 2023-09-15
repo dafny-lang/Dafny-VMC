@@ -21,7 +21,7 @@ module Geometric {
   ************/
 
   // Equation (4.17)
-  function ProbGeometricIter(): (f: ((bool, int)) -> Hurd<(bool, int)> )
+  function ProbGeometricIter(): (f: ((bool, int)) -> Hurd<(bool, int)>)
     ensures forall t: (bool, int), s :: f(t)(s) == ((Head(s), t.1 + 1), Tail(s))
   {
     var g := (t: (bool, int)) => 
