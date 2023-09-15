@@ -33,15 +33,30 @@ module Uniform {
                  var g := (b: bool) =>
                             Return(if b then 2*m + 1 else 2*m);
                  Bind(Deconstruct, g);
-      Bind(ProbUnif(n / 2), f)
+      Bind(ProbUnif(n/2), f)
   }
 
   // Definition 49
-  function ProbUniform(n: nat): (f: Hurd<nat>)
+  function ProbUniform(n: nat): Hurd<nat>
     requires n > 0
   {
     ProbUnifTerminates(n);
     ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
+  }
+
+  // Definition 50
+  function ProbUniformCut(t: nat, n: nat): Hurd<nat>
+    requires n > 0
+  {
+    if t == 0 then 
+      Return(0)
+    else 
+      var f := (m: nat) =>
+        if n <= m then 
+          ProbUniformCut(t-1, n)
+        else 
+          Return(m);
+      Bind(ProbUnif(n-1), f)
   }
 
   method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))

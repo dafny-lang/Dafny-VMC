@@ -37,6 +37,13 @@ module RandomExamples {
     print "\n";
 
     for i := 0 to 20 {
+      var u := r.Geometric();
+      print u, "\n";
+    }
+
+    print "\n";
+
+    for i := 0 to 20 {
       var u := r.Bernoulli(0.2);
       print u, "\n";
     }
