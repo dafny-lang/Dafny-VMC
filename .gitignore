@@ -1,2 +1,4 @@
+*.jar
+
 # MacOS metadata
 .DS_Store
