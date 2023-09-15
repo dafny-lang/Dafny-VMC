@@ -7,19 +7,23 @@ include "Monad.dfy"
 include "RandomNumberGenerator.dfy"
 include "WhileAndUntil.dfy"
 include "Independence.dfy"
+include "Helper.dfy"
 
 module Geometric {
   import opened Monad
   import opened RandomNumberGenerator
   import opened WhileAndUntil
   import opened Independence
+  import opened Helper
 
   /************
    Definitions  
   ************/
 
   // Equation (4.17)
-  function ProbGeometricIter(): ((bool, int)) -> Hurd<(bool, int)> {
+  function ProbGeometricIter(): (f: ((bool, int)) -> Hurd<(bool, int)> )
+    ensures forall t: (bool, int), s :: f(t)(s) == ((Head(s), t.1 + 1), Tail(s))
+  {
     var g := (t: (bool, int)) => 
       var f := (b': bool) => Return((b', t.1 + 1));
       Bind(Deconstruct, f);
@@ -49,7 +53,11 @@ module Geometric {
     ensures IsIndepFn(ProbGeometric())
   
   // Equation (4.20)
-  lemma {:axiom} ProbGeometricCorrectness()
+  lemma {:axiom} ProbGeometricCorrectness(n: nat)
+    ensures
+      var e := iset s | ProbGeometric()(s).0 == n;
+      && e in event_space
+      && mu(e) == RealPower(1.0 / 2.0, n + 1)
 
 }
 

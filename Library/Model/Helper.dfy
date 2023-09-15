@@ -15,6 +15,15 @@ module Helper {
       x
   }
 
+  function RealPower(b: real, n: nat): (p: real)
+    ensures b > 0.0 ==> p > 0.0
+  {
+    match n
+    case 0 => 1.0
+    case 1 => b
+    case _ => b * RealPower(b, n - 1)
+  }
+
   function Power(b: nat, n: nat): (p: nat)
     ensures b > 0 ==> p > 0
   {
