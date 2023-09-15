@@ -27,15 +27,22 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
 
     method Uniform(n: nat) returns (u: nat)
       modifies this
+      decreases *
       requires 0 < n
       ensures UniformModel(n)(old(s)) == (u, s)
-      decreases *
 
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
+      decreases *
       requires a < b
       ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
+
+    method Geometric() returns (c: nat)
+      modifies this
       decreases *
+      ensures !old(s)(c)
+      ensures forall i | 0 <= i < c :: old(s)(i)
+      ensures s == IterateTail(old(s), c + 1)
 
     method Bernoulli(p: real) returns (c: bool) 
       modifies this
@@ -54,8 +61,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
       modifies this
-      requires n > 0
       decreases *
+      requires n > 0
       ensures UniformModel(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
@@ -78,8 +85,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
-      requires a < b
       decreases *
+      requires a < b
       ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
     {
       var v := Uniform(b - a);
@@ -89,8 +96,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     }
 
     method Geometric() returns (c: nat)
-      decreases *
       modifies this
+      decreases *
       ensures !old(s)(c)
       ensures forall i | 0 <= i < c :: old(s)(i)
       ensures s == IterateTail(old(s), c + 1)
