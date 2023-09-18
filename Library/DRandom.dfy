@@ -26,11 +26,6 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures CoinModel(old(s)) == (b, s)
 
     // 0 <= u < n
-    method UniformPowerOfTwo(n: nat) returns (u: nat)
-      modifies this
-      ensures UniformPowerOfTwoModel(n)(old(s)) == (u, s)
-
-    // 0 <= u < n
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -65,9 +60,9 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       ensures CoinModel(old(s)) == (b, s)
 
-    method UniformPowerOfTwo(n: nat) returns (u: nat)
+    method Unif(n: nat) returns (u: nat)
       modifies this
-      ensures UniformPowerOfTwoModel(n)(old(s)) == (u, s)
+      ensures UnifModel(n)(old(s)) == (u, s)
     {
       var k := 1;
       u := 0;
@@ -81,7 +76,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       while k <= n
         decreases 2*n - k
         invariant k >= 1
-        invariant UniformPowerOfTwoModelAlternative(n)(old(s)) == UniformPowerOfTwoModelAlternative(n, k, u)(s)
+        invariant UnifAlternativeModel(n)(old(s)) == UnifAlternativeModel(n, k, u)(s)
       {
         var b := Coin();
         k := 2*k;
@@ -96,13 +91,13 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures UniformModel(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
-      u := UniformPowerOfTwo(n-1);
+      u := Unif(n-1);
       while u >= n
         decreases *
-        invariant UniformModel(n)(old(s)) == UniformPowerOfTwoModel(n-1)(old(s))
-        invariant (u, s) == UniformPowerOfTwoModel(n-1)(old(s))
+        invariant UniformModel(n)(old(s)) == UnifModel(n-1)(old(s))
+        invariant (u, s) == UnifModel(n-1)(old(s))
       {
-        u := UniformPowerOfTwo(n-1);
+        u := Unif(n-1);
       }
     }
 

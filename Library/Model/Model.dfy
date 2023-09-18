@@ -18,18 +18,18 @@ module Model {
     Monad.Deconstruct(s)
   }
 
-  function UniformPowerOfTwoModelAlternative(n: nat, k: nat := 1, u: nat := 0): Hurd<nat>
+  function UnifAlternativeModel(n: nat, k: nat := 1, u: nat := 0): Hurd<nat>
     requires k >= 1
   {
     (s: RNG) => Unif.ProbUnifAlternative(n, s, k, u)
   }
 
-  function UniformPowerOfTwoModel(n: nat): (f: Hurd<nat>)
-    ensures forall s :: f(s) == UniformPowerOfTwoModelAlternative(n)(s)
+  function UnifModel(n: nat): (f: Hurd<nat>)
+    ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
   {
     var f := Unif.ProbUnif(n);
-    assert forall s :: f(s) == UniformPowerOfTwoModelAlternative(n)(s) by {
-      forall s ensures f(s) == UniformPowerOfTwoModelAlternative(n)(s) {
+    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
+      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
         ProbUnifCorrespondence(n, s);
       }
     }
