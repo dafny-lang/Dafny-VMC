@@ -87,10 +87,8 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         k := 2*k;
         u := if b then 2*u + 1 else 2*u;
       }
-      assert UniformPowerOfTwoModelAlternative(n)(old(s)) == (u, s);
     }
 
-    // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -106,22 +104,6 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       {
         u := UniformPowerOfTwo(n-1);
       }
-/*      
-      var v := 1;
-      u := 0;
-      while true {
-        v := 2 * v;
-        var b := Coin();
-        u := 2 * u + if b then 1 else 0;
-        if v >= n {
-          if u < n {
-            return;
-          } else {
-            v := v - n;
-            u := u - n;
-          }
-        }
-      } */
     }
     
     method UniformInterval(a: int, b: int) returns (u: int)
