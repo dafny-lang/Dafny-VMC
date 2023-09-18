@@ -17,8 +17,7 @@ module RandomExamples {
     var r := new DRandom();
 
     var t := 0;
-    for i := 0 to n 
-    {
+    for i := 0 to n {
       var b := r.Coin();
       if b {
         t := t + 1;
@@ -29,9 +28,7 @@ module RandomExamples {
     var a := 0;
     var b := 0;
     var c := 0;
-    for i := 0 to n 
-      invariant a + b + c == i
-    {
+    for i := 0 to n {
       var k := r.Uniform(3);
       if k == 0 {
         a := a + 1;
@@ -46,9 +43,7 @@ module RandomExamples {
     a := 0;
     b := 0;
     c := 0;
-    for i := 0 to n 
-      invariant a + b + c == i
-    {
+    for i := 0 to n {
       var k := r.UniformInterval(7,10);
       if k == 7 {
         a := a + 1;
@@ -62,8 +57,7 @@ module RandomExamples {
 
     a := 0;
     b := 0;
-    for i := 0 to n 
-    {
+    for i := 0 to n {
       var k := r.Geometric();
       if k == 5 {
         a := a + 1;
@@ -74,8 +68,7 @@ module RandomExamples {
     print "Estimated parameters for Geometric(0.5): " , (a as real) / (n as real), " (should be around 0.015625) and " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
 
     t := 0;
-    for i := 0 to n 
-    {
+    for i := 0 to n {
       var b := r.Bernoulli(0.2);
       if b {
         t := t + 1;
