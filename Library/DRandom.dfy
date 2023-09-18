@@ -16,6 +16,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened Monad
   import opened Bernoulli
   import opened Model
+  import opened Helper
 
   // Only here because of #2500. Should really be imported from separate file.
   trait DRandomTrait {
@@ -56,7 +57,19 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     
     method {:extern} Coin() returns (b: bool)
       modifies this
-      ensures CoinModel(old(s)) == (b, s)   
+      ensures CoinModel(old(s)) == (b, s)
+    
+    method UniformPowerOfTwo(exponent: nat) returns (u: nat)
+      modifies this
+      ensures UniformModel(Power(2, exponent))(old(s)) == (u, s)
+    {
+      assume {:axiom} false;
+      u := 0;
+      for i := 0 to exponent {
+        var b := Coin();
+        u := 2 * u + if b then 1 else 0;
+      }
+    }
 
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
