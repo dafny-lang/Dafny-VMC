@@ -98,6 +98,23 @@ module RandomExamples {
         case _ =>
       }
     }
-    print "Estimated probabilities for DiscreteLaplace(7/5): ", count0 as real / n as real, " (should be around 0.3426949) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.1677634)";
+    print "Estimated probabilities for DiscreteLaplace(7/5): ", count0 as real / n as real, " (should be around 0.3426949) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.1677634)\n";
+
+    count0 := 0;
+    count1 := 0;
+    countneg1 := 0;
+    for i := 0 to n {
+      var u := r.DiscreteGaussian(1.4);
+      match u {
+        case -1 => countneg1 := countneg1 + 1;
+        case 0 => count0 := count0 + 1;
+        case 1 => count1 := count1 + 1;
+        case _ =>
+      }
+    }
+    // Reference values computed with Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+0%2C+%CF%83+-%3E+1.4%7D%5D
+    // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+1%2C+%CF%83+-%3E+1.4%7D%5D
+    print "Estimated probabilities for DiscreteGaussian(1.4): ", count0 as real / n as real, " (should be around 0.284959) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.220797)\n";
   }
 }
