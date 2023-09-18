@@ -51,19 +51,19 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures forall i | 0 <= i < c :: old(s)(i)
       ensures s == IterateTail(old(s), c + 1)
 
-    method Bernoulli(p: real) returns (c: bool) 
+    method Bernoulli(p: real) returns (c: bool)
       modifies this
-      decreases *            
+      decreases *
       requires 0.0 <= p <= 1.0
-      ensures BernoulliModel(p)(old(s)) == (c, s) 
+      ensures BernoulliModel(p)(old(s)) == (c, s)
   }
 
   class {:extern} DRandom extends DRandomTrait {
     constructor {:extern} ()
-    
+
     method {:extern} Coin() returns (b: bool)
       modifies this
-      ensures CoinModel(old(s)) == (b, s)   
+      ensures CoinModel(old(s)) == (b, s)
 
     method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this
@@ -105,7 +105,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         u := UniformPowerOfTwo(n-1);
       }
     }
-    
+
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
       decreases *
@@ -129,7 +129,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       var b := Coin();
       assert old(s)(c) == b;
       assert s == IterateTail(old(s), c + 1);
-      while b 
+      while b
         decreases *
         invariant s == IterateTail(old(s), c + 1)
         invariant b == IterateTail(old(s), c)(0)
@@ -156,10 +156,10 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         assert s == IterateTail(old(s), c + 1);
         assert b == IterateTail(old(s), c)(0);
       }
-    } 
+    }
 
     method Bernoulli(p: real) returns (c: bool)
-      modifies this 
+      modifies this
       decreases *
       requires 0.0 <= p <= 1.0
       ensures BernoulliModel(p)(old(s)) == (c, s)
@@ -175,7 +175,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         }
       } else {
         if q <= 0.5 {
-          q := 2.0 * (q as real); 
+          q := 2.0 * (q as real);
         } else {
           return true;
         }

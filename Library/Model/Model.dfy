@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "Uniform.dfy"
 include "Monad.dfy"
@@ -18,7 +18,7 @@ module Model {
     Monad.Deconstruct(s)
   }
 
-  function UniformPowerOfTwoModelAlternative(n: nat, k: nat := 1, u: nat := 0): Hurd<nat> 
+  function UniformPowerOfTwoModelAlternative(n: nat, k: nat := 1, u: nat := 0): Hurd<nat>
     requires k >= 1
   {
     (s: RNG) => Unif.ProbUnifAlternative(n, s, k, u)
@@ -36,8 +36,8 @@ module Model {
     f
   }
 
-  function UniformModel(n: nat): Hurd<nat> 
-    requires 0 < n 
+  function UniformModel(n: nat): Hurd<nat>
+    requires 0 < n
   {
     Unif.ProbUniform(n)
   }

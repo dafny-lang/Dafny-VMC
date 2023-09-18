@@ -40,9 +40,9 @@ module Uniform {
     ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
   {
     var f := (m: nat) =>
-      var g := (b: bool) =>
-                Return(if b then 2*m + 1 else 2*m);
-      Bind(Deconstruct, g);
+        var g := (b: bool) =>
+                   Return(if b then 2*m + 1 else 2*m);
+        Bind(Deconstruct, g);
     if n == 0 {
     } else if n == 1 {
       assert n / 2 == 0;
@@ -58,7 +58,7 @@ module Uniform {
         ProbUnifAlternative(1, s, 1, 0);
         ProbUnifAlternative(n, s);
       }
-    } else { 
+    } else {
       assume {:axiom} false;
     }
   }
@@ -85,18 +85,18 @@ module Uniform {
   function ProbUniformCut(t: nat, n: nat): Hurd<nat>
     requires n > 0
   {
-    if t == 0 then 
+    if t == 0 then
       Return(0)
-    else 
+    else
       var f := (m: nat) =>
-        if n <= m then 
-          ProbUniformCut(t-1, n)
-        else 
-          Return(m);
+                 if n <= m then
+                   ProbUniformCut(t-1, n)
+                 else
+                   Return(m);
       Bind(ProbUnif(n-1), f)
   }
 
-  function ProbUniformAlternative(n: nat, s: RNG): (t: (nat, RNG)) 
+  function ProbUniformAlternative(n: nat, s: RNG): (t: (nat, RNG))
     requires n > 0
   {
     assume {:axiom} false; // Assume termination

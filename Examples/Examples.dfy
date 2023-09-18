@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 // RUN: %verify "%s"
 
@@ -10,7 +10,7 @@ include "../Library/DRandom.dfy"
 module RandomExamples {
   import opened DafnyLibraries
 
-  method Main() 
+  method Main()
     decreases *
   {
     var n := 100000;
