@@ -84,6 +84,6 @@ module RandomExamples {
         t := t + 1;
       }
     }
-    print "Estimated parameter for BernoulliExpNeg(ln(0.1)): ", (t as real) / (n as real), " (should be around 0.1)\n";
+    print "Estimated parameter for BernoulliExpNeg(-ln(0.1)): ", (t as real) / (n as real), " (should be around 0.1)\n";
   }
 }
