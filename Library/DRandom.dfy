@@ -81,15 +81,14 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       while k <= n
         decreases 2*n - k
         invariant k >= 1
-        invariant UniformPowerOfTwoModel(n)(old(s)) == UniformPowerOfTwoModel(n, k, u)(s)
+        invariant UniformPowerOfTwoModelAlternative(n)(old(s)) == UniformPowerOfTwoModelAlternative(n, k, u)(s)
       {
         var b := Coin();
         k := 2*k;
         u := if b then 2*u + 1 else 2*u;
       }
+      assert UniformPowerOfTwoModelAlternative(n)(old(s)) == (u, s);
     }
-
-
 
     // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
     method Uniform(n: nat) returns (u: nat)
@@ -98,15 +97,16 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       requires n > 0
       ensures UniformModel(n)(old(s)) == (u, s)
     {
-/*       u := UniformPowerOfTwo(n-1);
+      assume {:axiom} false;
+      u := UniformPowerOfTwo(n-1);
       while u >= n
         decreases *
         invariant UniformModel(n)(old(s)) == UniformPowerOfTwoModel(n-1)(old(s))
         invariant (u, s) == UniformPowerOfTwoModel(n-1)(old(s))
       {
         u := UniformPowerOfTwo(n-1);
-      } */
-      assume {:axiom} false;
+      }
+/*      
       var v := 1;
       u := 0;
       while true {
@@ -121,7 +121,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
             u := u - n;
           }
         }
-      }
+      } */
     }
     
     method UniformInterval(a: int, b: int) returns (u: int)
