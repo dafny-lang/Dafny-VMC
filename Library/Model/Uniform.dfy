@@ -25,7 +25,10 @@ module Uniform {
   ************/
 
   // Definition 48
-  function ProbUnif(n: nat): (h: Hurd<nat>) {
+  function ProbUnif(n: nat): (h: Hurd<nat>) 
+    ensures 
+    forall s :: h(s).1 == IterateTail(s, n / 2)
+  {
     if n == 0 then
       Return(0)
     else
@@ -39,9 +42,52 @@ module Uniform {
   lemma ProbUnifCorrespondence(n: nat, s: RNG)
     ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
   {
+    var f := (m: nat) =>
+      var g := (b: bool) =>
+                Return(if b then 2*m + 1 else 2*m);
+      Bind(Deconstruct, g);
     if n == 0 {
-    } else {
+    } else if n == 1 {
+      assert n / 2 == 0;
+      assert (0, s) == ProbUnif(n/2)(s);
+      calc {
+        ProbUnif(n)(s);
+        Bind(ProbUnif(n/2), f)(s);
+        f(0)(s);
+        Bind(Deconstruct, (b: bool) => Return(if b then 1 else 0))(s);
+        Return(if Head(s) then 1 else 0)(Tail(s));
+        (if Head(s) then 1 else 0, Tail(s));
+        ProbUnifAlternative(1, Tail(s), 2, if Head(s) then 1 else 0);
+        ProbUnifAlternative(1, s, 1, 0);
+        ProbUnifAlternative(n, s);
+      }
+    } else { 
+      
       assume {:axiom} false;
+/*       var (m, s') := ProbUnif(n/2)(s);
+      ProbUnifCorrespondence(n/2, s);
+      assert ProbUnifAlternative(n/2, s) == ProbUnif(n/2)(s);
+      calc {
+        ProbUnif(n)(s);
+        Bind(ProbUnif(n/2), f)(s);
+        f(m)(s');
+        Bind(Deconstruct, (b: bool) => Return(if b then 2*m + 1 else 2*m))(s');
+        Return(if Head(s') then 2*m + 1 else 2*m)(s');
+        (if Head(s') then 2*m + 1 else 2*m, s')
+
+        if k/2 > n/2 then (u, s)
+        if k > n then (u, s) else ProbUnifAlternative(n, Tail(s), 2*k, if Head(s) then 2*u + 1 else 2*u);
+        ProbUnifAlternative(n, s, k, u);
+        ProbUnifAlternative(n, s);
+      }
+
+      if n % 2 == 0 {
+        var k :| 2*k == n;
+        assert n/2 == k;
+      } else {
+        var k | 2*k + 1 == n;
+        assert n/2 == k;
+      } */
     }
   }
 
