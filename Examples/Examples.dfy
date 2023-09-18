@@ -13,52 +13,77 @@ module RandomExamples {
   method Main() 
     decreases *
   {
+    var n := 100000;
     var r := new DRandom();
 
-    print "Coin(): \n";
-    for i := 0 to 20 {
+    var t := 0;
+    for i := 0 to n {
       var b := r.Coin();
-      print b, "\n";
+      if b {
+        t := t + 1;
+      }
     }
-  
-    print "\n";
+    print "Estimated parameter for Coin(): ", (t as real) / (n as real), " (should be around 0.5)\n";
 
-    print "UniformPowerOfTwo(3): \n";
-    for i := 0 to 20 {
-      var u := r.UniformPowerOfTwo(3);
-      print u, "\n";
+    var a := 0;
+    var b := 0;
+    var c := 0;
+    for i := 0 to n {
+      var k := r.Uniform(3);
+      if k == 0 {
+        a := a + 1;
+      } else if k == 1 {
+        b := b + 1;
+      } else {
+        c := c + 1;
+      }
+    }
+    print "Estimated parameters for Uniform(3): ", (a as real) / (n as real), "; " , (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
+
+    a := 0;
+    b := 0;
+    c := 0;
+    for i := 0 to n {
+      var k := r.UniformInterval(7,10);
+      if k == 7 {
+        a := a + 1;
+      } else if k == 8 {
+        b := b + 1;
+      } else {
+        c := c + 1;
+      }
+    }
+    print "Estimated parameters for UniformInterval(7,10): ", (a as real) / (n as real), "; ", (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
+
+    a := 0;
+    b := 0;
+    for i := 0 to n {
+      var k := r.Geometric();
+      if k == 5 {
+        a := a + 1;
+      } else if k == 10  {
+        b := b + 1;
+      }
+    }
+    print "Estimated parameters for Geometric(0.5): " , (a as real) / (n as real), " (should be around 0.015625) and " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
+
+    t := 0;
+    for i := 0 to n {
+      var b := r.Bernoulli(0.2);
+      if b {
+        t := t + 1;
+      }
     }
 
-    print "\n";
+    print "Estimated parameter for Bernoulli(0.2): ", (t as real) / (n as real), " (should be around 0.2)\n";
 
-    print "Uniform(10): \n";
-    for i := 0 to 20 {
-      var u := r.Uniform(10);
-      print u, "\n";
+    t := 0;
+    for i := 0 to n {
+      var u := r.BernoulliExpNeg(2.30258509299); // about -ln(0.1)
+      if u {
+        t := t + 1;
+      }
     }
-
-    print "\n";
-
-    print "UniformInterval(3,6): \n";
-    for i := 0 to 20 {
-      var u := r.UniformInterval(3, 6);
-      print u, "\n";
-    }
-
-    print "\n";
-
-    print "Geometric(): \n";
-    for i := 0 to 20 {
-      var u := r.Geometric();
-      print u, "\n";
-    }
-
-    print "\n";
-
-    print "Bernoulli(): \n";
-    for i := 0 to 20 {
-      var u := r.Bernoulli(0.2);
-      print u, "\n";
-    }
+    print "Estimated parameter for BernoulliExpNeg(-ln(0.1)): ", (t as real) / (n as real), " (should be around 0.1)\n";
   }
 }
