@@ -18,6 +18,12 @@ module Model {
     Monad.Deconstruct(s)
   }
 
+  function UniformPowerOfTwoModel(n: nat, k: nat := 1, u: nat := 0): Hurd<nat> 
+    requires k >= 1
+  {
+    (s: RNG) => Unif.ProbUnifAlternative(n, s, k, u)
+  }
+
   function UniformModel(n: nat): Hurd<nat> 
     requires 0 < n 
   {

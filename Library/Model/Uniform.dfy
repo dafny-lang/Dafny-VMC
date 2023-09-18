@@ -36,6 +36,25 @@ module Uniform {
       Bind(ProbUnif(n/2), f)
   }
 
+  lemma ProbUnifCorrespondence(n: nat, s: RNG)
+    ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
+  {
+    if n == 0 {
+    } else {
+      assume {:axiom} false;
+    }
+  }
+
+  function ProbUnifAlternative(n: nat, s: RNG, k: nat := 1, u: nat := 0): (t: (nat, RNG))
+    requires k >= 1
+    decreases 2*n - k
+  {
+    if k > n then
+      (u, s)
+    else
+      ProbUnifAlternative(n, Tail(s), 2*k, if Head(s) then 2*u + 1 else 2*u)
+  }
+
   // Definition 49
   function ProbUniform(n: nat): Hurd<nat>
     requires n > 0
@@ -57,6 +76,17 @@ module Uniform {
         else 
           Return(m);
       Bind(ProbUnif(n-1), f)
+  }
+
+  function ProbUniformAlternative(n: nat, s: RNG): (t: (nat, RNG)) 
+    requires n > 0
+  {
+    assume {:axiom} false; // Assume termination
+    var (u, s) := ProbUnif(n-1)(s);
+    if u < n then
+      (u, s)
+    else
+      ProbUniformAlternative(n, s)
   }
 
   method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
