@@ -52,13 +52,13 @@ module RandomExamples {
       var k := r.UniformInterval(7,10);
       if k == 7 {
         a := a + 1;
-      } else if 8 == 4 {
+      } else if k == 8 {
         b := b + 1;
       } else {
         c := c + 1;
       }
     }
-    print "Estimated parameters for UniformInterval(7,10): ", (a as real) / (n as real), (b as real) / (n as real), (c as real) / (n as real), " (each should be around 0.33)\n";
+    print "Estimated parameters for UniformInterval(7,10): ", (a as real) / (n as real), "; ", (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
 
     a := 0;
     b := 0;
@@ -71,7 +71,7 @@ module RandomExamples {
         b := b + 1;
       }
     }
-    print "Estimated parameters for Geometric(0.5): ", "5: " , (a as real) / (n as real), " (should be around 0.015625) and " , "10: " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
+    print "Estimated parameters for Geometric(0.5): " , (a as real) / (n as real), " (should be around 0.015625) and " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
 
     t := 0;
     for i := 0 to n 
