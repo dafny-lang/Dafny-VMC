@@ -41,7 +41,7 @@ module RandomExamples {
         c := c + 1;
       }
     }
-    print "Estimated parameters for Uniform(3): ", (a as real) / (n as real), (b as real) / (n as real), (c as real) / (n as real), " (each should be around 0.33)\n";
+    print "Estimated parameters for Uniform(3): ", (a as real) / (n as real), "; " , (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
 
     a := 0;
     b := 0;
@@ -71,7 +71,7 @@ module RandomExamples {
         b := b + 1;
       }
     }
-    print "Estimated parameters for Geometric(0.5): ", "5: " , (a as real) / (n as real), " (should be around 0.015625) and " , "10: " , (b as real) / (n as real), " (should be around 0.0009765625) \n";
+    print "Estimated parameters for Geometric(0.5): ", "5: " , (a as real) / (n as real), " (should be around 0.015625) and " , "10: " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
 
     t := 0;
     for i := 0 to n 
