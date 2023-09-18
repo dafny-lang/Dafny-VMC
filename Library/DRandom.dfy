@@ -197,17 +197,14 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         c := k % 2 == 1;
       } else {
         var k := 1;
-        var b := true;
-        while k <= gamma.Floor && b
-        {
-          b := BernoulliExpNeg(1.0);
+        while k <= gamma.Floor {
+          var b := BernoulliExpNeg(1.0);
+          if !b {
+            return false;
+          }
           k := k + 1;
         }
-        if b {
-          c := BernoulliExpNeg(gamma - gamma.Floor as real);
-        } else {
-          c := false;
-        }
+        c:= BernoulliExpNeg(gamma - gamma.Floor as real);
       }
     }
   }
