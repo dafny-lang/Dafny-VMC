@@ -98,6 +98,9 @@ module RandomExamples {
         case _ =>
       }
     }
+    // Reference values computed with Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=ReplaceAll%5B%28E%5E%5B1%2Ft%5D+-+1%29+%2F+%28E%5E%5B1%2Ft%5D+%2B+1%29+*+E%5E%28-Abs%5Bx%5D%2Ft%29%2C+%7Bt+-%3E+7%2F5%2C+x+-%3E+0%7D%5D
+    // https://www.wolframalpha.com/input?i=ReplaceAll%5B%28E%5E%5B1%2Ft%5D+-+1%29+%2F+%28E%5E%5B1%2Ft%5D+%2B+1%29+*+E%5E%28-Abs%5Bx%5D%2Ft%29%2C+%7Bt+-%3E+7%2F5%2C+x+-%3E+1%7D%5D
     print "Estimated probabilities for DiscreteLaplace(7/5): ", count0 as real / n as real, " (should be around 0.3426949) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.1677634)\n";
 
     count0 := 0;
