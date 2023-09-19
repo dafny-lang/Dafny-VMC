@@ -17,41 +17,38 @@ module Geometric {
   import opened Helper
 
   /************
-   Definitions  
+   Definitions
   ************/
 
   // Equation (4.17)
-  function ProbGeometricIter(): (f: ((bool, int)) -> Hurd<(bool, int)>)
-    ensures forall t: (bool, int), s :: f(t)(s) == ((Head(s), t.1 + 1), Tail(s))
+  function ProbGeometricIter(t: (bool, int)): (f: Hurd<(bool, int)>)
+    ensures forall s :: f(s) == ((Head(s), t.1 + 1), Tail(s))
   {
-    var g := (t: (bool, int)) => 
-      var f := (b': bool) => Return((b', t.1 + 1));
-      Bind(Deconstruct, f);
-    g
-  }  
+    Bind(Deconstruct, (b': bool) => Return((b', t.1 + 1)))
+  }
 
   // Equation (4.18)
   function ProbGeometric(): Hurd<int> {
     var fst := (t: (bool, int)) => t.0;
     var f := (t: (bool, int)) => Return(t.1 - 1);
     ProbWhileGeometricTerminates();
-    var g := ProbWhile(fst, ProbGeometricIter(), (true, 0));
+    var g := ProbWhile(fst, ProbGeometricIter, (true, 0));
     Bind(g, f)
   }
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   lemma {:axiom} ProbWhileGeometricTerminates()
-    ensures 
+    ensures
       var fst := (t: (bool, int)) => t.0;
-      ProbWhileTerminates(ProbGeometricIter(), fst)
+      ProbWhileTerminates(ProbGeometricIter, fst)
 
   // Equation (4.19)
   lemma {:axiom} ProbGeometricIsIndepFn()
     ensures IsIndepFn(ProbGeometric())
-  
+
   // Equation (4.20)
   lemma {:axiom} ProbGeometricCorrectness(n: nat)
     ensures
