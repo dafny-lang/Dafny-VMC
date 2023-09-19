@@ -9,7 +9,7 @@ module RandomNumberGenerator {
   import opened MeasureTheory
 
   /************
-   Definitions  
+   Definitions
   ************/
 
   predicate {:axiom} IsRNG(s: nat -> bool)
@@ -23,9 +23,9 @@ module RandomNumberGenerator {
   ghost const mu: iset<RNG> -> real
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   lemma {:axiom} RNGHasMeasure()
-    ensures IsMeasure(event_space, sample_space, mu) 
+    ensures IsProbability(event_space, sample_space, mu)
 }
