@@ -18,3 +18,14 @@ $ dafny run Examples.dfy --target:cs --input ../Library/DRandom.cs
 
 (If you aren't using `dafny run` to run your program,
 then you should instead integrate the appropriate language-specific implementation file in your build system.)
+
+# Testing
+
+To run the statistical tests in `Library/Tests.dfy`, run one of the following:
+
+```bash
+# Java
+$ dafny test --target:java Library/DRandom.java Library/Tests.dfy
+# C#
+$ dafny test --target:cs Library/DRandom.cs Library/Tests.dfy
+```
