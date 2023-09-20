@@ -23,7 +23,7 @@
         t := t + 1;
       }
     }
-    testWhetherEmpiricalIsWithin3SigmaOfTrueMean(n, t as real, 0.5, 0.5 * (1.0 - 0.5), "p(true)");
+    testBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
   }
 
   method {:test} TestUniform()
@@ -91,7 +91,7 @@
     }
     testBernoulliIsWithin3SigmaOfTrueMean(n, a as real, 0.015625, "p(5)");
     testBernoulliIsWithin3SigmaOfTrueMean(n, b as real, 0.00048828125, "p(10)");
-    testWhetherEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
+    testEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
   }
 
   method {:test} TestBernoulli()
@@ -155,7 +155,7 @@
     testBernoulliIsWithin3SigmaOfTrueMean(n, counts[2] as real, 0.0821272, "p(2)");
     testBernoulliIsWithin3SigmaOfTrueMean(n, counts[-2] as real, 0.0821272, "p(-2)");
     var variance := 3.7575005; // variance of DiscreteLaplace(7/5) is (2*exp(5/7))/(exp(5/7)-1)^2
-    testWhetherEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, variance, "mean");
+    testEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, variance, "mean");
   }
 
   method {:test} TestDiscreteGaussian()
@@ -187,7 +187,7 @@
     testBernoulliIsWithin3SigmaOfTrueMean(n, counts[2] as real, 0.102713, "p(2)");
     testBernoulliIsWithin3SigmaOfTrueMean(n, counts[-2] as real, 0.102713, "p(-2)");
     var varianceBound := 1.4 * 1.4; // variance of DiscreteGaussian(1.4) is < 1.4^2
-    testWhetherEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
+    testEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
   }
 
   method testBernoulliIsWithin3SigmaOfTrueMean(
@@ -198,10 +198,10 @@
   )
     requires n > 0
   {
-    testWhetherEmpiricalIsWithin3SigmaOfTrueMean(n, empiricalSum, successProb, successProb * (1.0 - successProb), description);
+    testEmpiricalIsWithin3SigmaOfTrueMean(n, empiricalSum, successProb, successProb * (1.0 - successProb), description);
   }
 
-  method testWhetherEmpiricalIsWithin3SigmaOfTrueMean(
+  method testEmpiricalIsWithin3SigmaOfTrueMean(
     n: nat,
     empiricalSum: real,
     trueMean: real,
