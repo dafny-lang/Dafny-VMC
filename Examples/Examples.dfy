@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 // RUN: %verify "%s"
 
@@ -10,7 +10,7 @@ include "../Library/DRandom.dfy"
 module RandomExamples {
   import opened DafnyLibraries
 
-  method Main() 
+  method Main()
     decreases *
   {
     var n := 100000;
@@ -29,16 +29,16 @@ module RandomExamples {
     var b := 0;
     var c := 0;
     for i := 0 to n {
-      var k := r.Uniform(3);
+      var k := r.Uniform(10);
       if k == 0 {
         a := a + 1;
-      } else if k == 1 {
+      } else if k == 5 {
         b := b + 1;
-      } else {
+      } else if k == 9 {
         c := c + 1;
       }
     }
-    print "Estimated probabilities for Uniform(3): ", (a as real) / (n as real), "; " , (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
+    print "Estimated probabilities for Uniform(10): ", (a as real) / (n as real), "; " , (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.1)\n";
 
     a := 0;
     b := 0;

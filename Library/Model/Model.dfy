@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "Uniform.dfy"
 include "Monad.dfy"
@@ -18,8 +18,26 @@ module Model {
     Monad.Deconstruct(s)
   }
 
-  function UniformModel(n: nat): Hurd<nat> 
-    requires 0 < n 
+  function UnifAlternativeModel(n: nat, k: nat := 1, u: nat := 0): Hurd<nat>
+    requires k >= 1
+  {
+    (s: RNG) => Unif.ProbUnifAlternative(n, s, k, u)
+  }
+
+  function UnifModel(n: nat): (f: Hurd<nat>)
+    ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
+  {
+    var f := Unif.ProbUnif(n);
+    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
+      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
+        ProbUnifCorrespondence(n, s);
+      }
+    }
+    f
+  }
+
+  function UniformModel(n: nat): Hurd<nat>
+    requires 0 < n
   {
     Unif.ProbUniform(n)
   }

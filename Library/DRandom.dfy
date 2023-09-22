@@ -25,6 +25,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       ensures CoinModel(old(s)) == (b, s)
 
+    // 0 <= u < n
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -32,6 +33,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures u < n
       ensures UniformModel(n)(old(s)) == (u, s)
 
+    // a <= u < b
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
       decreases *
@@ -46,21 +48,40 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures forall i | 0 <= i < c :: old(s)(i)
       ensures s == IterateTail(old(s), c + 1)
 
-    method Bernoulli(p: real) returns (c: bool) 
+    method Bernoulli(p: real) returns (c: bool)
       modifies this
-      decreases *            
+      decreases *
       requires 0.0 <= p <= 1.0
-      ensures BernoulliModel(p)(old(s)) == (c, s) 
+      ensures BernoulliModel(p)(old(s)) == (c, s)
   }
 
   class {:extern} DRandom extends DRandomTrait {
     constructor {:extern} ()
-    
+
     method {:extern} Coin() returns (b: bool)
       modifies this
-      ensures CoinModel(old(s)) == (b, s)   
+      ensures CoinModel(old(s)) == (b, s)
 
-    // Based on https://arxiv.org/pdf/1304.1916.pdf; unverified.
+    // Uniform on {0, ..., k - 1} where k is the smallest power of 2 that is greater than n
+    method Unif(n: nat) returns (u: nat)
+      modifies this
+      ensures UnifModel(n)(old(s)) == (u, s)
+    {
+      var k := 1;
+      u := 0;
+
+      while k <= n
+        decreases 2*n - k
+        invariant k >= 1
+        invariant UnifAlternativeModel(n)(old(s)) == UnifAlternativeModel(n, k, u)(s)
+      {
+        var b := Coin();
+        k := 2*k;
+        u := if b then 2*u + 1 else 2*u;
+      }
+    }
+
+    // Uniform on {0, ..., n - 1}
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -69,23 +90,16 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures UniformModel(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
-      var v := 1;
-      u := 0;
-      while true {
-        v := 2 * v;
-        var b := Coin();
-        u := 2 * u + if b then 1 else 0;
-        if v >= n {
-          if u < n {
-            return;
-          } else {
-            v := v - n;
-            u := u - n;
-          }
-        }
+      u := Unif(n-1);
+      while u >= n
+        decreases *
+        invariant UniformModel(n)(old(s)) == UnifModel(n-1)(old(s))
+        invariant (u, s) == UnifModel(n-1)(old(s))
+      {
+        u := Unif(n-1);
       }
     }
-    
+
     method UniformInterval(a: int, b: int) returns (u: int)
       modifies this
       decreases *
@@ -110,7 +124,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       var b := Coin();
       assert old(s)(c) == b;
       assert s == IterateTail(old(s), c + 1);
-      while b 
+      while b
         decreases *
         invariant s == IterateTail(old(s), c + 1)
         invariant b == IterateTail(old(s), c)(0)
@@ -137,10 +151,10 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         assert s == IterateTail(old(s), c + 1);
         assert b == IterateTail(old(s), c)(0);
       }
-    } 
+    }
 
     method Bernoulli(p: real) returns (c: bool)
-      modifies this 
+      modifies this
       decreases *
       requires 0.0 <= p <= 1.0
       ensures BernoulliModel(p)(old(s)) == (c, s)
@@ -156,7 +170,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         }
       } else {
         if q <= 0.5 {
-          q := 2.0 * (q as real); 
+          q := 2.0 * (q as real);
         } else {
           return true;
         }

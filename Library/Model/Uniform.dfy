@@ -36,6 +36,43 @@ module Uniform {
       Bind(ProbUnif(n/2), f)
   }
 
+  lemma ProbUnifCorrespondence(n: nat, s: RNG)
+    ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
+  {
+    var f := (m: nat) =>
+        var g := (b: bool) =>
+                   Return(if b then 2*m + 1 else 2*m);
+        Bind(Deconstruct, g);
+    if n == 0 {
+    } else if n == 1 {
+      assert n / 2 == 0;
+      assert (0, s) == ProbUnif(n/2)(s);
+      calc {
+        ProbUnif(n)(s);
+        Bind(ProbUnif(n/2), f)(s);
+        f(0)(s);
+        Bind(Deconstruct, (b: bool) => Return(if b then 1 else 0))(s);
+        Return(if Head(s) then 1 else 0)(Tail(s));
+        (if Head(s) then 1 else 0, Tail(s));
+        ProbUnifAlternative(1, Tail(s), 2, if Head(s) then 1 else 0);
+        ProbUnifAlternative(1, s, 1, 0);
+        ProbUnifAlternative(n, s);
+      }
+    } else {
+      assume {:axiom} false;
+    }
+  }
+
+  function ProbUnifAlternative(n: nat, s: RNG, k: nat := 1, u: nat := 0): (t: (nat, RNG))
+    requires k >= 1
+    decreases 2*n - k
+  {
+    if k > n then
+      (u, s)
+    else
+      ProbUnifAlternative(n, Tail(s), 2*k, if Head(s) then 2*u + 1 else 2*u)
+  }
+
   // Definition 49
   function ProbUniform(n: nat): Hurd<nat>
     requires n > 0
@@ -48,15 +85,26 @@ module Uniform {
   function ProbUniformCut(t: nat, n: nat): Hurd<nat>
     requires n > 0
   {
-    if t == 0 then 
+    if t == 0 then
       Return(0)
-    else 
+    else
       var f := (m: nat) =>
-        if n <= m then 
-          ProbUniformCut(t-1, n)
-        else 
-          Return(m);
+                 if n <= m then
+                   ProbUniformCut(t-1, n)
+                 else
+                   Return(m);
       Bind(ProbUnif(n-1), f)
+  }
+
+  function ProbUniformAlternative(n: nat, s: RNG): (t: (nat, RNG))
+    requires n > 0
+  {
+    assume {:axiom} false; // Assume termination
+    var (u, s) := ProbUnif(n-1)(s);
+    if u < n then
+      (u, s)
+    else
+      ProbUniformAlternative(n, s)
   }
 
   method ProbUniformImper(n: nat, s: RNG) returns (t: (nat, RNG))
