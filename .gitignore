@@ -1,4 +1,10 @@
+.vscode/
+
+# Dafny generated files:
 *.jar
+*.dll
+*.runtimeconfig.json
+Library/Tests.cs
 
 # MacOS metadata
 .DS_Store

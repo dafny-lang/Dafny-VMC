@@ -30,6 +30,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       decreases *
       requires 0 < n
+      ensures u < n
       ensures UniformModel(n)(old(s)) == (u, s)
 
     // a <= u < b
@@ -37,6 +38,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       decreases *
       requires a < b
+      ensures a <= u < b
       ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
 
     method Geometric() returns (c: nat)
@@ -84,7 +86,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       decreases *
       requires n > 0
-      ensures 0 <= u < n
+      ensures u < n
       ensures UniformModel(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
@@ -221,6 +223,61 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
           k := k + 1;
         }
         c:= BernoulliExpNeg(gamma - gamma.Floor as real);
+      }
+    }
+
+    // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
+    method DiscreteLaplace(s: nat, t: nat) returns (z: int)
+      modifies this
+      requires s >= 1
+      requires t >= 1
+      decreases *
+    {
+      var b := true;
+      var y := 0;
+      while b && y == 0
+        decreases *
+      {
+        var u := Uniform(t);
+        var d := BernoulliExpNeg(u as real / t as real);
+        if !d {
+          continue;
+        }
+        var v := 0;
+        var a := true;
+        while a
+          decreases *
+        {
+          a := BernoulliExpNeg(1.0);
+          if a {
+            v := v + 1;
+          }
+        }
+        var x := u + t * v;
+        y := x / s;
+        b := Bernoulli(0.5);
+      }
+      z := if b then -y else y;
+    }
+
+    // Based on Algorithm 3 in https://arxiv.org/pdf/2004.00010.pdf; unverified
+    // Note that we take sigma as a parameter, not sigma^2, to avoid square roots.
+    method DiscreteGaussian(sigma: real) returns (y: int)
+      modifies this
+      requires sigma > 0.0
+      decreases *
+    {
+      var t := sigma.Floor + 1;
+      while true
+        decreases *
+      {
+        y := DiscreteLaplace(1, t);
+        var y_abs := if y < 0 then -y else y;
+        var numerator_term := y_abs as real - sigma * sigma / t as real;
+        var c := BernoulliExpNeg(numerator_term * numerator_term / 2.0 / sigma / sigma);
+        if c {
+          return;
+        }
       }
     }
   }
