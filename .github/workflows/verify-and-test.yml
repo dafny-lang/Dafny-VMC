@@ -6,6 +6,5 @@ jobs:
   all:
       steps:
         - name: Run the verification script
-          run:
-	    echo 'Hello, World!'
+          run: echo "Hello, World!"
 	
