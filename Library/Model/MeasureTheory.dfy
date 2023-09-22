@@ -15,9 +15,12 @@ module MeasureTheory {
     && (forall f: nat -> iset<T> | (forall n :: f(n) in event_space) :: (CountableUnion(f) in event_space))
   }
 
-  ghost function CountableUnion<T>(f: nat -> iset<T>, i: nat := 0): iset<T> {
-    assume {:axiom} false;
-    f(i) + CountableUnion(f, i+1)
+  greatest predicate IsInCountableUnion<T>[nat](f: nat -> iset<T>, x: T, i: nat := 0) {
+    x in f(i) || IsInCountableUnion(f, x, i+1)
+  }
+
+  ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
+    iset x | IsInCountableUnion(f, x, i)
   }
 
   ghost function CountableSum(f: nat -> real, i: nat := 0): real {
@@ -93,16 +96,17 @@ module MeasureTheory {
         assert CountableUnion(f, 2) == iset{} by {
           LemmaCountableUnionOfEmptySetsIsEmpty(f, 2);
         }
-        calc {
-          CountableUnion(f)
-          ==
-          f(0) + CountableUnion(f, 1)
-          ==
-          f(0) + f(1) + CountableUnion(f, 2)
-          ==
-          e1 + e2 + CountableUnion(f, 2)
-          ==
-          e1 + e2;
+        forall x ensures x in CountableUnion(f) <==> x in e1 + e2 {
+          calc {
+            x in CountableUnion(f);
+            IsInCountableUnion(f, x);
+            x in f(0) || IsInCountableUnion(f, x, 1);
+            x in f(0) || x in f(1) || IsInCountableUnion(f, x, 2);
+            { assert CountableUnion(f, 2) == iset{}; assert forall x :: !IsInCountableUnion(f, x, 2); }
+            x in f(0) || x in f(1);
+            x in e1 || x in e2;
+            x in e1 + e2;
+          }
         }
       }
       assert CountableSum((n: nat) => mu(f(n))) == mu(e1) + mu(e2) by {
@@ -128,9 +132,42 @@ module MeasureTheory {
     }
   }
 
-  lemma {:axiom} LemmaCountableUnionOfEmptySetsIsEmpty<T>(f: nat -> iset<T>, i: nat := 0)
+  lemma LemmaCountableUnionOfEmptySetsIsEmptyHelper2<T(!new)>(k: nat, f: nat -> iset<T>, x: T, i: nat := 0)
+    requires forall n | n >= i :: f(n) == iset{}
+    ensures !IsInCountableUnion#[k](f, x, i)
+    decreases k
+  {
+    if k == 0 {
+    } else {
+      assert !IsInCountableUnion#[k](f, x, i) <==> x !in f(i) && !IsInCountableUnion#[k-1](f, x, i+1);
+      assert x !in f(i) by {
+        assert f(i) == iset{};
+      } 
+      assert !IsInCountableUnion#[k-1](f, x, i+1) by {
+        LemmaCountableUnionOfEmptySetsIsEmptyHelper2(k-1, f, x, i+1);
+      }
+    }
+  }
+
+  lemma LemmaCountableUnionOfEmptySetsIsEmptyHelper<T(!new)>(f: nat -> iset<T>, x: T, i: nat := 0)
+    requires forall n | n >= i :: f(n) == iset{}
+    ensures !IsInCountableUnion(f, x, i)
+  {
+    forall k | 0 <= k {
+      LemmaCountableUnionOfEmptySetsIsEmptyHelper2(k, f, x, i);
+    }
+  }
+
+  lemma LemmaCountableUnionOfEmptySetsIsEmpty<T(!new)>(f: nat -> iset<T>, i: nat := 0)
     requires forall n | n >= i :: f(n) == iset{}
     ensures CountableUnion(f, i) == iset{}
+  {
+    forall x ensures x !in CountableUnion(f, i) {
+      if x in CountableUnion(f, i) {
+        LemmaCountableUnionOfEmptySetsIsEmptyHelper(f, x, i);
+      }
+    }
+  }
 
   lemma {:axiom} LemmaCountableSumOfZeroesIsZero(f: nat -> real, i: nat := 0)
     requires forall n | n >= i :: f(n) == 0.0
