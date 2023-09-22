@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "DRandom.dfy"
+ include "../src/DRandom.dfy"
 
  module Tests {
   import opened DafnyLibraries
