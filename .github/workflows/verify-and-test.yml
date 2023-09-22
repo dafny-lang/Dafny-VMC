@@ -11,4 +11,4 @@ jobs:
       - run: unzip dafny-4.2.0-x64-ubuntu-20.04.zip
       - run: export DAFNY=dafny/dafny
       - run: pwd
-      - run: ls ../
+      - run: ls
