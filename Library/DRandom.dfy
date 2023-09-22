@@ -60,18 +60,13 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       ensures CoinModel(old(s)) == (b, s)
 
+    // Uniform on {0, ..., k - 1} where k is the smallest power of 2 that is greater than n
     method Unif(n: nat) returns (u: nat)
       modifies this
       ensures UnifModel(n)(old(s)) == (u, s)
     {
       var k := 1;
       u := 0;
-
-      if k <= n {
-        var b := Coin();
-        k := 2*k;
-        u := if b then 2*u + 1 else 2*u;
-      }
 
       while k <= n
         decreases 2*n - k
@@ -84,10 +79,12 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       }
     }
 
+    // Uniform on {0, ..., n - 1}
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
       requires n > 0
+      ensures 0 <= u < n
       ensures UniformModel(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
@@ -105,6 +102,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       modifies this
       decreases *
       requires a < b
+      ensures a <= u < b
       ensures UniformIntervalModel(a, b)(old(s)) == (u, s)
     {
       var v := Uniform(b - a);
