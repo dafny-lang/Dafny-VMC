@@ -4,6 +4,6 @@ on:
   pull_request:
 jobs:
   all:
-	runs-on: ubuntu-latest
-      	steps:
-          - run: echo 'Hello, World!'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Hello, World!'
