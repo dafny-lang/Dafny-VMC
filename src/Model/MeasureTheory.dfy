@@ -128,6 +128,31 @@ module MeasureTheory {
     }
   }
 
+  lemma BinaryUnion<T>(event_space: iset<iset<T>>, sample_space: iset<T>, e1: iset<T>, e2: iset<T>)
+    requires IsSigmaAlgebra(event_space, sample_space)
+    requires e1 in event_space
+    requires e2 in event_space
+    ensures e1 + e2 in event_space
+  {
+    var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
+    assert CountableUnion(f) == e1 + e2 by {
+      assert CountableUnion(f, 2) == iset{} by {
+        LemmaCountableUnionOfEmptySetsIsEmpty(f, 2);
+      }
+      calc {
+        CountableUnion(f)
+        ==
+        f(0) + CountableUnion(f, 1)
+        ==
+        f(0) + f(1) + CountableUnion(f, 2)
+        ==
+        e1 + e2 + CountableUnion(f, 2)
+        ==
+        e1 + e2;
+      }
+    }
+  }
+
   lemma {:axiom} LemmaCountableUnionOfEmptySetsIsEmpty<T>(f: nat -> iset<T>, i: nat := 0)
     requires forall n | n >= i :: f(n) == iset{}
     ensures CountableUnion(f, i) == iset{}
