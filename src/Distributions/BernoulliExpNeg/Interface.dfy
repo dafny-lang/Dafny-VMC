@@ -3,11 +3,13 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-trait IBernoulliExpNeg {
+module IBernoulliExpNeg {
+  trait {:termination false} IBernoulliExpNeg {
 
-  method BernoulliExpNeg(gamma: real) returns (c: bool)
-    modifies this
-    decreases *
-    requires gamma >= 0.0
+    method BernoulliExpNeg(gamma: real) returns (c: bool)
+      modifies this
+      decreases *
+      requires gamma >= 0.0
 
+}
 }

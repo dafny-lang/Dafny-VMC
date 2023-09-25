@@ -36,6 +36,14 @@ module UniformModel {
     ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
   }
 
+  function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
+    requires a < b
+  {
+    (s: RNG) =>
+      var (x, s') := ProbUniform(b - a)(s);
+      (a + x, s')
+  }
+
   lemma {:axiom} ProbUnifTerminates(n: nat)
     requires n > 0
     ensures

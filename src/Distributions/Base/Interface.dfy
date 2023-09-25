@@ -6,13 +6,16 @@
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "Model.dfy"
 
-import opened RandomNumberGenerator
+module Base {
+  import opened RandomNumberGenerator
+  import opened BaseModel
 
-trait Base {
-  ghost var s: RNG
+  trait {:termination false} Base {
+    ghost var s: RNG
 
-  method {:extern} Coin() returns (b: bool)
-    modifies this
-    ensures BaseModel.CoinModel(old(s)) == (b, s)
+    method {:extern} Coin() returns (b: bool)
+      modifies this
+      ensures CoinModel(old(s)) == (b, s)
 
+  }
 }

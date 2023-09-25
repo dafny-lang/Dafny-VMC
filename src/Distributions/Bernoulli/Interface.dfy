@@ -6,14 +6,17 @@
 include "../Base/Interface.dfy"
 include "Model.dfy"
 
-import opened BernoulliModel
+module IBernoulli {
+  import opened BernoulliModel
+  import opened Base
 
-trait IBernoulli extends Base {
+  trait {:termination false} IBernoulli extends Base {
 
-  method Bernoulli(p: real) returns (c: bool)
-    modifies this
-    decreases *
-    requires 0.0 <= p <= 1.0
-    ensures BernoulliModel.ProbBernoulli(p)(old(s)) == (c, s)
+    method Bernoulli(p: real) returns (c: bool)
+      modifies this
+      decreases *
+      requires 0.0 <= p <= 1.0
+      ensures BernoulliModel.ProbBernoulli(p)(old(s)) == (c, s)
 
+  }
 }

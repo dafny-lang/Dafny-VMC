@@ -5,7 +5,7 @@
 
  include "../src/DRandom.dfy"
 
- module Tests {
+module Tests {
   import opened DafnyLibraries
 
   function Abs(x: real): real {
@@ -14,7 +14,7 @@
 
   method {:test} TestCoin() {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var t := 0;
     for i := 0 to n {
@@ -30,7 +30,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var a := 0;
     var b := 0;
@@ -52,7 +52,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var a := 0;
     var b := 0;
@@ -74,7 +74,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var a := 0;
     var b := 0;
@@ -98,7 +98,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var t := 0;
     for i := 0 to n {
@@ -114,7 +114,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var t := 0;
     for i := 0 to n {
@@ -130,7 +130,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var counts := map[-2 := 0, -1 := 0, 0 := 0, 1 := 0, 2 := 0];
     var sum := 0;
@@ -162,7 +162,7 @@
     decreases *
   {
     var n := 1000000;
-    var r := new DRandom();
+    var r := new DRandomFoundational();
 
     var counts := map[-2 := 0, -1 := 0, 0 := 0, 1 := 0, 2 := 0];
     var sum := 0;
@@ -221,5 +221,4 @@
     }
     expect diff * diff < threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 0.27%.";
   }
-
- }
+}

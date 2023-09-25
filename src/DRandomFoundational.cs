@@ -3,15 +3,16 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-include "Interface.dfy"
+using System;
 
-trait UniformExtern extends IUniform {
+public partial class DRandomFoundational : DRandomTrait {
+  private Random r;
 
-  method {:extern} Uniform(n: nat) returns (u: nat)
-    modifies this
-    decreases *
-    requires n > 0
-    ensures u < n
-    ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
+  public DRandomFoundational() {
+    this.r = new Random();
+  }
 
+  public bool Coin() {
+    return this.r.Next(2) == 0;
+  }
 }
