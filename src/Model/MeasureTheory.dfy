@@ -15,8 +15,8 @@ module MeasureTheory {
     && (forall f: nat -> iset<T> | (forall n :: f(n) in event_space) :: (CountableUnion(f) in event_space))
   }
 
-  ghost function CountableUnion<T>(f: nat -> iset<T>, i: nat := 0): iset<T> {
-    iset n: nat | n >= i, x <- f(n) :: x
+  ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
+    iset x | (exists n | n >= i :: x in f(n)) :: x
   }
 
   ghost function CountableSum(f: nat -> real, i: nat := 0): real {
@@ -112,7 +112,7 @@ module MeasureTheory {
     }
   }
 
-  lemma BinaryUnion<T>(event_space: iset<iset<T>>, sample_space: iset<T>, e1: iset<T>, e2: iset<T>)
+  lemma BinaryUnion<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, e1: iset<T>, e2: iset<T>)
     requires IsSigmaAlgebra(event_space, sample_space)
     requires e1 in event_space
     requires e2 in event_space
@@ -120,18 +120,10 @@ module MeasureTheory {
   {
     var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
     assert CountableUnion(f) == e1 + e2 by {
-      assert CountableUnion(f, 2) == iset{} by {
-        LemmaCountableUnionOfEmptySetsIsEmpty(f, 2);
-      }
       calc {
-        CountableUnion(f)
-        ==
-        f(0) + CountableUnion(f, 1)
-        ==
-        f(0) + f(1) + CountableUnion(f, 2)
-        ==
-        e1 + e2 + CountableUnion(f, 2)
-        ==
+        CountableUnion(f);
+        iset x | (exists n | n >= 0 :: x in f(n)) :: x;
+        (iset x | x in f(0) :: x) + (iset x | x in f(1) :: x) + (iset x | (exists n | n >= 2 :: x in f(n)) :: x);
         e1 + e2;
       }
     }
