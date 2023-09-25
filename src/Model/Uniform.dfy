@@ -21,7 +21,7 @@ module Uniform {
   import opened MeasureTheory
 
   /************
-   Definitions  
+   Definitions
   ************/
 
   // Definition 48
@@ -161,7 +161,7 @@ module Uniform {
   }
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   ghost function UniformFullCorrectnessHelper(n: nat, i: nat): iset<RNG>
@@ -527,8 +527,20 @@ module Uniform {
       && ProbUntilTerminates(b, c)
 
   // Equation (4.7)
-  lemma {:axiom} ProbUnifIsIndepFn(n: nat)
+  lemma ProbUnifIsIndepFn(n: nat)
     ensures IsIndepFn(ProbUnif(n))
+  {
+    if n == 0 {
+      assert IsIndepFn(Return(0)) by {
+        ReturnIsIndepFn(0);
+      }
+      assert ProbUnif(n) == Return(0);
+      assert IsIndepFn(ProbUnif(n)) == IsIndepFn(Return(0));
+      assert IsIndepFn(ProbUnif(n));
+    } else {
+      assume false;
+    }
+  }
 
   // See PROB_UNIFORM_TERMINATES
   lemma {:axiom} ProbUnifForAllStar(n: nat)
