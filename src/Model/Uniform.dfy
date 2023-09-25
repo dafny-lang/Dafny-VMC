@@ -532,6 +532,7 @@ module Uniform {
 
   // Equation (4.10)
   lemma {:axiom} ProbUniformIsIndepFn(n: nat)
+    requires n > 0
     ensures IsIndepFn(ProbUniform(n))
 
   // See PROB_UNIFORM_TERMINATES
