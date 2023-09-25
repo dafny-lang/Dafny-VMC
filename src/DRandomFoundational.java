@@ -8,10 +8,10 @@ package DafnyLibraries;
 import java.security.SecureRandom;
 import java.math.BigInteger;
 
-public class DRandom extends _ExternBase_DRandom {
+public class DRandomFoundational extends _ExternBase_DRandom {
   private SecureRandom s;
 
-  public DRandom() {
+  public DRandomFoundational() {
     this.s = new SecureRandom();
   }
 

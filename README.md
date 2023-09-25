@@ -25,7 +25,7 @@ To run the statistical tests in `tests/Tests.dfy`, run one of the following:
 
 ```bash
 # Java
-$ dafny test --target:java src/DRandom.java tests/Tests.dfy
+$ dafny test --target:java src/DRandomFoundational.java tests/Tests.dfy
 # C#
-$ dafny test --target:cs src/DRandom.cs tests/Tests.dfy
+$ dafny test --target:cs src/DRandomFoundational.cs tests/Tests.dfy
 ```

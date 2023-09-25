@@ -3,7 +3,7 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-include "MeasureTheory.dfy"
+include "../Math/MeasureTheory.dfy"
 
 module RandomNumberGenerator {
   import opened MeasureTheory

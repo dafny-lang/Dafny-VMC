@@ -3,20 +3,12 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-include "Monad.dfy"
-include "RandomNumberGenerator.dfy"
-include "Independence.dfy"
+include "../../Math/MeasureTheory.dfy"
+include "../../ProbabilisticProgramming/Monad.dfy"
 
-module Bernoulli {
+module BernoulliModel {
+  import opened MeasureTheory
   import opened Monad
-  import opened RandomNumberGenerator
-  import opened Independence
-
-  /************
-   Definitions  
-  ************/
-
-  type Probability = x: real | 0.0 <= x <= 1.0
 
   // Equation (4.23)
   function ProbBernoulli(p: Probability): Hurd<bool> {
@@ -34,21 +26,5 @@ module Bernoulli {
           else
             Return(true);
     Bind(Deconstruct, f)
-  }  
-
-  /*******
-   Lemmas  
-  *******/
-
-  lemma {:axiom} ProbBernoulliIsIndepFn(p: Probability)
-    ensures IsIndepFn(ProbBernoulli(p))
-
-  lemma {:axiom} BernoulliCorrectness(p: Probability)
-    ensures 
-      var e := iset s | ProbBernoulli(p)(s).0;
-      && e in event_space
-      && mu(e) == p
-  
-
+  }
 }
-
