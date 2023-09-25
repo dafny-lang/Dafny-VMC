@@ -77,7 +77,7 @@ module Bernoulli {
     IndepFnIsCompositional(f, g);
   }
 
-  lemma {:vcs_split_on_every_assert} {:timeLimit 20} BernoulliRationalCorrectness(m: nat, n: nat)
+  lemma BernoulliRationalCorrectness(m: nat, n: nat)
     requires n != 0
     requires m <= n
     ensures
