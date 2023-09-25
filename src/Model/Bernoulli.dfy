@@ -8,6 +8,7 @@ include "RandomNumberGenerator.dfy"
 include "Independence.dfy"
 include "Uniform.dfy"
 include "MeasureTheory.dfy"
+include "Helper.dfy"
 
 module Bernoulli {
   import opened Monad
@@ -15,6 +16,7 @@ module Bernoulli {
   import opened Independence
   import opened Uniform
   import opened MeasureTheory
+  import opened Helper
 
   /************
    Definitions  
@@ -75,7 +77,7 @@ module Bernoulli {
     IndepFnIsCompositional(f, g);
   }
 
-  lemma {:vcs_split_on_every_assert} BernoulliRationalCorrectness(m: nat, n: nat)
+  lemma {:vcs_split_on_every_assert} {:timeLimit 20} BernoulliRationalCorrectness(m: nat, n: nat)
     requires n != 0
     requires m <= n
     ensures
@@ -86,9 +88,19 @@ module Bernoulli {
     var e := iset s | ProbBernoulliRational(m, n)(s).0;
 
     if m == 0 {
-      assert e == iset{};
-      RNGHasMeasure();
-      assert mu(e) == 0.0 by {
+      assert e == iset{} by {
+        forall s ensures !ProbBernoulliRational(m, n)(s).0 {
+          calc {
+            ProbBernoulliRational(m, n)(s).0;
+            ProbUniform(n)(s).0 < 0;
+            false;
+          }
+        }
+      }
+
+      assert e in event_space && mu(e) == 0.0 by {
+        RNGHasMeasure();
+        assert IsSigmaAlgebra(event_space, sample_space);
         assert IsPositive(event_space, mu);
       }
     } else {
@@ -111,31 +123,43 @@ module Bernoulli {
         e1 + e2;
       }
       
-      assert e1 in event_space && mu(e1) == 1.0 / (n as real) by {
+      assert A1: e1 in event_space && mu(e1) == 1.0 / (n as real) by {
         UniformFullCorrectness(n, m-1);
       }
 
-      assert e2 in event_space && mu(e2) == (m - 1) as real / n as real by {
+      assert A2: e2 in event_space && mu(e2) == (m-1) as real / n as real by {
         BernoulliRationalCorrectness(m-1, n);
       }
 
-      assume {:axiom} false;
-
-      assert e in event_space by {
-        RNGHasMeasure();
-        BinaryUnion(event_space, sample_space, e1, e2);
+      assert A3: (1.0 / n as real) + ((m-1) as real / n as real) == (1.0 + (m-1) as real) / n as real by {
+        var x := 1.0;
+        var y := (m-1) as real;
+        var z := n as real;
+        AdditionOfFractions(x, y, z);
+        assert (x / z) + (y / z) == (x + y) / z;
       }
-
+      
       calc {
         mu(e);
+        { assert e == e1 + e2; }
         mu(e1 + e2);
-        { assert e1 * e2 == iset{}; }
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; RNGHasMeasure(); LemmaPosCountAddImpliesAdd(event_space, sample_space, mu); assert IsAdditive(event_space, mu); }
         mu(e1) + mu(e2);
-        (1.0 / (n as real)) + ((m-1) as real / n as real);
-        (1.0 + ((m-1) as real)) / n as real;
+        { reveal A1; reveal A2; }
+        (1.0 / n as real) + ((m-1) as real / n as real);
+        { reveal A3; }
+        (1.0 + (m-1) as real) / n as real;
+        (1.0 + (m as real) - (1 as real)) / n as real;
         (1.0 + (m as real) - 1.0) / n as real;
         m as real / n as real;
-      } 
+      }
+    
+      assert e in event_space by {
+        RNGHasMeasure();
+        reveal A1;
+        reveal A2;
+        BinaryUnion(event_space, sample_space, e1, e2);
+      }
     }
   }
 
