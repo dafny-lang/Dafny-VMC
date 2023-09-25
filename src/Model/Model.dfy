@@ -49,6 +49,13 @@ module Model {
     Unif.ProbUniformInterval(a, b)
   }
 
+  function BernoulliRationalModel(m: nat, n: nat): Hurd<bool> 
+    requires n != 0
+    requires m <= n
+  {
+    Bern.ProbBernoulliRational(m, n)
+  } 
+
   function BernoulliModel(p: Probability): Hurd<bool> {
     Bern.ProbBernoulli(p)
   }

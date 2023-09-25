@@ -48,6 +48,13 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
       ensures forall i | 0 <= i < c :: old(s)(i)
       ensures s == IterateTail(old(s), c + 1)
 
+    method BernoulliRational(m: nat, n: nat) returns (c: bool)
+      modifies this
+      decreases *
+      requires n != 0
+      requires m <= n
+      ensures BernoulliRationalModel(m, n)(old(s)) == (c, s)
+
     method Bernoulli(p: real) returns (c: bool)
       modifies this
       decreases *
@@ -151,6 +158,17 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
         assert s == IterateTail(old(s), c + 1);
         assert b == IterateTail(old(s), c)(0);
       }
+    }
+
+    method BernoulliRational(m: nat, n: nat) returns (c: bool)
+      modifies this
+      decreases *
+      requires n != 0
+      requires m <= n
+      ensures BernoulliRationalModel(m, n)(old(s)) == (c, s)
+    {
+      var k := Uniform(n);
+      c := k < m;
     }
 
     method Bernoulli(p: real) returns (c: bool)
