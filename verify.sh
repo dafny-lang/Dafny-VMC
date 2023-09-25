@@ -10,7 +10,7 @@ echo Verification of the proofs
 for file in `find ./src -type f -name '*.dfy'`
 do
     echo Verifying $file
-    #$DAFNY verify $file
+    $DAFNY verify $file
 done
 
 echo Running tests

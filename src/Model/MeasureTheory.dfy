@@ -16,8 +16,7 @@ module MeasureTheory {
   }
 
   ghost function CountableUnion<T>(f: nat -> iset<T>, i: nat := 0): iset<T> {
-    assume {:axiom} false;
-    f(i) + CountableUnion(f, i+1)
+    iset n: nat | n >= i, x <- f(n) :: x
   }
 
   ghost function CountableSum(f: nat -> real, i: nat := 0): real {
@@ -89,22 +88,7 @@ module MeasureTheory {
   {
     forall e1, e2 | e1 in event_space && e2 in event_space && e1 * e2 == iset{} ensures mu(e1) + mu(e2) == mu(e1 + e2) {
       var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
-      assert CountableUnion(f) == e1 + e2 by {
-        assert CountableUnion(f, 2) == iset{} by {
-          LemmaCountableUnionOfEmptySetsIsEmpty(f, 2);
-        }
-        calc {
-          CountableUnion(f)
-          ==
-          f(0) + CountableUnion(f, 1)
-          ==
-          f(0) + f(1) + CountableUnion(f, 2)
-          ==
-          e1 + e2 + CountableUnion(f, 2)
-          ==
-          e1 + e2;
-        }
-      }
+      assert CountableUnion(f) == e1 + e2;
       assert CountableSum((n: nat) => mu(f(n))) == mu(e1) + mu(e2) by {
         assert CountableSum((n: nat) => mu(f(n)), 2) == 0.0 by {
           LemmaCountableSumOfZeroesIsZero((n: nat) => mu(f(n)), 2);
@@ -152,10 +136,6 @@ module MeasureTheory {
       }
     }
   }
-
-  lemma {:axiom} LemmaCountableUnionOfEmptySetsIsEmpty<T>(f: nat -> iset<T>, i: nat := 0)
-    requires forall n | n >= i :: f(n) == iset{}
-    ensures CountableUnion(f, i) == iset{}
 
   lemma {:axiom} LemmaCountableSumOfZeroesIsZero(f: nat -> real, i: nat := 0)
     requires forall n | n >= i :: f(n) == 0.0
