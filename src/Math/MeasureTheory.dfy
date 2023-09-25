@@ -8,6 +8,8 @@ module MeasureTheory {
    Definitions
   ************/
 
+  type Probability = x: real | 0.0 <= x <= 1.0
+
   ghost predicate IsSigmaAlgebra<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>) {
     && (forall e | e in event_space :: e <= sample_space)
     && (iset{}) in event_space

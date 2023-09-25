@@ -4,14 +4,14 @@
  *******************************************************************************/
 
 include "RandomNumberGenerator.dfy"
-include "MeasureTheory.dfy"
+include "../Math/MeasureTheory.dfy"
 
 module Monad {
   import opened RandomNumberGenerator
   import opened MeasureTheory
 
   /************
-   Definitions  
+   Definitions
   ************/
 
   type Hurd<A> = RNG -> (A, RNG)
@@ -22,7 +22,7 @@ module Monad {
     (n: nat) => s(n+1)
   }
 
-  function IterateTail(s: RNG, n: nat): (t: RNG) 
+  function IterateTail(s: RNG, n: nat): (t: RNG)
     ensures t(0) == s(n)
   {
     if n == 0 then
@@ -82,7 +82,7 @@ module Monad {
   }
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: RNG)

@@ -3,15 +3,16 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "Helper.dfy"
-include "Monad.dfy"
-include "Independence.dfy"
-include "RandomNumberGenerator.dfy"
-include "Quantifier.dfy"
-include "WhileAndUntil.dfy"
-include "MeasureTheory.dfy"
+include "../../Math/Helper.dfy"
+include "../../Math/MeasureTheory.dfy"
+include "../../ProbabilisticProgramming/Monad.dfy"
+include "../../ProbabilisticProgramming/Independence.dfy"
+include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
+include "../../ProbabilisticProgramming/Quantifier.dfy"
+include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
+include "Model.dfy"
 
-module Uniform {
+module UniformCorrectness {
   import opened Helper
   import opened Monad
   import opened Independence
@@ -19,67 +20,30 @@ module Uniform {
   import opened Quantifier
   import opened WhileAndUntil
   import opened MeasureTheory
+  import opened UniformModel
+
+  function UnifModel(n: nat): (f: Hurd<nat>)
+    ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
+  {
+    var f := ProbUnif(n);
+    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
+      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
+        ProbUnifCorrespondence(n, s);
+      }
+    }
+    f
+  }
+
+  function UniformIntervalModel(a: int, b: int): (f: Hurd<int>)
+    requires a < b
+    ensures forall s :: f(s).0 == a + ProbUniform(b - a)(s).0
+  {
+    ProbUniformInterval(a, b)
+  }
 
   /************
-   Definitions  
+   Definitions
   ************/
-
-  // Definition 48
-  function ProbUnif(n: nat): (h: Hurd<nat>) {
-    if n == 0 then
-      Return(0)
-    else
-      var f := (m: nat) =>
-                 var g := (b: bool) =>
-                            Return(if b then 2*m + 1 else 2*m);
-                 Bind(Deconstruct, g);
-      Bind(ProbUnif(n/2), f)
-  }
-
-  lemma ProbUnifCorrespondence(n: nat, s: RNG)
-    ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
-  {
-    var f := (m: nat) =>
-        var g := (b: bool) =>
-                   Return(if b then 2*m + 1 else 2*m);
-        Bind(Deconstruct, g);
-    if n == 0 {
-    } else if n == 1 {
-      assert n / 2 == 0;
-      assert (0, s) == ProbUnif(n/2)(s);
-      calc {
-        ProbUnif(n)(s);
-        Bind(ProbUnif(n/2), f)(s);
-        f(0)(s);
-        Bind(Deconstruct, (b: bool) => Return(if b then 1 else 0))(s);
-        Return(if Head(s) then 1 else 0)(Tail(s));
-        (if Head(s) then 1 else 0, Tail(s));
-        ProbUnifAlternative(1, Tail(s), 2, if Head(s) then 1 else 0);
-        ProbUnifAlternative(1, s, 1, 0);
-        ProbUnifAlternative(n, s);
-      }
-    } else {
-      assume {:axiom} false;
-    }
-  }
-
-  function ProbUnifAlternative(n: nat, s: RNG, k: nat := 1, u: nat := 0): (t: (nat, RNG))
-    requires k >= 1
-    decreases 2*n - k
-  {
-    if k > n then
-      (u, s)
-    else
-      ProbUnifAlternative(n, Tail(s), 2*k, if Head(s) then 2*u + 1 else 2*u)
-  }
-
-  // Definition 49
-  function ProbUniform(n: nat): Hurd<nat>
-    requires n > 0
-  {
-    ProbUnifTerminates(n);
-    ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
-  }
 
   // Definition 50
   function ProbUniformCut(t: nat, n: nat): Hurd<nat>
@@ -161,7 +125,7 @@ module Uniform {
   }
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   ghost function UniformFullCorrectnessHelper(n: nat, i: nat): iset<RNG>

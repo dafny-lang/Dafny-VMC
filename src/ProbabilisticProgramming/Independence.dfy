@@ -5,7 +5,7 @@
 
 include "RandomNumberGenerator.dfy"
 include "Monad.dfy"
-include "MeasureTheory.dfy"
+include "../Math/MeasureTheory.dfy"
 
 module Independence {
   import opened Monad
@@ -13,7 +13,7 @@ module Independence {
   import opened MeasureTheory
 
   /************
-   Definitions  
+   Definitions
   ************/
 
   // Definition 33
@@ -34,7 +34,7 @@ module Independence {
     ensures IsMeasurable(event_space, event_space, s => f(s).1)
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   // Equation (3.17)
