@@ -69,6 +69,37 @@ module RandomExamples {
 
     t := 0;
     for i := 0 to n {
+      var b := r.BernoulliRational(1, 5);
+      if b {
+        t := t + 1;
+      }
+    }
+
+    print "Estimated parameter for BernoulliRational(1, 5): ", (t as real) / (n as real), " (should be around 0.2)\n";
+
+    t := 0;
+    for i := 0 to n {
+      var b := r.BernoulliRational(0, 5);
+      if b {
+        t := t + 1;
+      }
+    }
+
+    print "Estimated parameter for BernoulliRational(0, 5): ", (t as real) / (n as real), " (should be around 0.0)\n";
+
+    t := 0;
+    for i := 0 to n {
+      var b := r.BernoulliRational(5, 5);
+      if b {
+        t := t + 1;
+      }
+    }
+
+    print "Estimated parameter for BernoulliRational(5, 5): ", (t as real) / (n as real), " (should be around 1.0\n";
+
+
+    t := 0;
+    for i := 0 to n {
       var b := r.Bernoulli(0.2);
       if b {
         t := t + 1;
