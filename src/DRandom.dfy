@@ -22,11 +22,11 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened DiscreteGaussianImplementation
   import opened DiscreteLaplaceImplementation
 
-  class {:extern} DRandomFoundational extends Base, Unif, Bernoulli, Geometric, UniformFoundational, BernoulliExpNeg, DiscreteGaussian, DiscreteLaplace {
+  class DRandomFoundational extends Base, Unif, Bernoulli, Geometric, UniformFoundational, BernoulliExpNeg, DiscreteGaussian, DiscreteLaplace {
     constructor {:extern} ()
   }
 
-  class {:extern} DRandomExternUniform extends Base, Unif, Bernoulli, Geometric, UniformExtern, BernoulliExpNeg, DiscreteGaussian, DiscreteLaplace {
+  class DRandomExternUniform extends Base, Unif, Bernoulli, Geometric, UniformExtern, BernoulliExpNeg, DiscreteGaussian, DiscreteLaplace {
     constructor {:extern} ()
   }
 }
