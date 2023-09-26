@@ -25,15 +25,3 @@ echo "Running docs/ExamplesFoundational.dfy"
 $DAFNY run docs/ExamplesFoundational.dfy --target:$LANG --input interop/$LANG/DRandomCoin.$LANG --input interop/$LANG/DRandomUniform.$LANG
 echo "docs/ExamplesExternUniform.dfy"
 $DAFNY run docs/ExamplesExternUniform.dfy --target:$LANG --input interop/$LANG/DRandomCoin.$LANG --input interop/$LANG/DRandomUniform.$LANG
-
-# echo Running Java tests...
-# echo "Running tests/TestsFoundational.dfy:"
-# $DAFNY test --target:java interop/java/DRandomCoin.java interop/java/DRandomUniform.java tests/TestsFoundational.dfy
-# echo "Running tests/TestsExternUniform.dfy:"
-# $DAFNY test --target:java interop/java/DRandomCoin.java interop/java/DRandomUniform.java tests/TestsExternUniform.dfy
-
-# echo Running Java documentation...
-# echo "Running docs/ExamplesFoundational.dfy"
-# $DAFNY run docs/ExamplesFoundational.dfy --target:java --input interop/java/DRandomCoin.java --input interop/java/DRandomUniform.java
-# echo "Running tests/TestsExternUniform.dfy:"
-# $DAFNY run docs/ExamplesExternUniform.dfy --target:java --input interop/java/DRandomCoin.java --input interop/java/DRandomUniform.java
