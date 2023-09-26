@@ -26,7 +26,7 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends TBase, TUnif, TBernoulli, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+/*   class DRandomExternUniform extends TBase, TUnif, TBernoulli, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
     constructor {:extern} ()
-  }
+  } */
 }
