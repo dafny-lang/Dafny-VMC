@@ -18,4 +18,5 @@ $DAFNY test --target:cs src/DRandom.cs tests/TestsFoundational.dfy
 $DAFNY test --target:cs src/DRandom.cs tests/TestsExternUniform.dfy
 
 echo Running documentation
-$DAFNY run docs/Examples.dfy --target:cs --input src/DRandom.cs
+$DAFNY run docs/ExamplesFoundational.dfy --target:cs --input src/DRandom.cs
+$DAFNY run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandom.cs

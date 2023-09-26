@@ -7,11 +7,12 @@ To use `DRandom` in your code, you must:
 1. `include` and `import` the `DRandom` module as you would any other library module
 2. incorporate the corresponding language-specific implementation file when building or running your program
 
-For example, to run the `Examples.dfy` file in the `docs` directory, run one of the following.
+For example, to run the examples in the `docs` directory, run one of the following.
 
 ```bash
 # C#
-$ dafny run docs/Examples.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/DRandom.cs
 ```
 
 (If you aren't using `dafny run` to run your program,
