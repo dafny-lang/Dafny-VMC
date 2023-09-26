@@ -10,6 +10,7 @@
   import UniformInterface
   import GeometricInterface
   import BernoulliInterface
+  import BernoulliRationalInterface
   import BernoulliExpNegInterface
   import DiscreteLaplaceInterface
   import DiscreteGaussianInterface
