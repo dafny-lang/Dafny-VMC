@@ -14,8 +14,8 @@ do
 done
 
 echo Running tests
-$DAFNY test --target:java src/DRandom.java tests/Tests.dfy
-$DAFNY test --target:cs src/DRandom.cs tests/Tests.dfy
+$DAFNY test --target:java src/DRandomFoundational.java tests/Tests.dfy
+$DAFNY test --target:cs src/DRandomFoundational.cs tests/Tests.dfy
 
 echo Running documentation
 $DAFNY run docs/Examples.dfy --target:java --input src/DRandom.java
