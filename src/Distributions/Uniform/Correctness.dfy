@@ -219,4 +219,8 @@ module UniformCorrectness {
     }
   }
 
+  // Equation (4.10)
+  lemma {:axiom} ProbUniformIsIndepFn(n: nat)
+    requires n > 0
+    ensures IsIndepFn(ProbUniform(n))
 }

@@ -36,6 +36,27 @@ module TestsFoundational {
     Tests.TestGeometric(1_000_000, r);
   }
 
+  method {:test} TestBernoulliRational()
+    decreases *
+  {
+    var r := new DRandomFoundational();
+    Tests.TestBernoulliRational(1_000_000, r);
+  }
+
+  method {:test} TestBernoulliRational2()
+    decreases *
+  {
+    var r := new DRandomFoundational();
+    Tests.TestBernoulliRational2(1_000_000, r);
+  }  
+
+  method {:test} TestBernoulliRational3()
+    decreases *
+  {
+    var r := new DRandomFoundational();
+    Tests.TestBernoulliRational3(1_000_000, r);
+  }  
+
   method {:test} TestBernoulli()
     decreases *
   {

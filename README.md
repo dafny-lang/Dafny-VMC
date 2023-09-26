@@ -11,8 +11,11 @@ For example, to run the examples in the `docs` directory, run one of the followi
 
 ```bash
 # C#
-$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandom.cs
-$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/DRandomCoin.cs --input src/DRandomUniform.cs
+$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandomCoin.cs --input src/DRandomUniform.cs
+# Java
+$ dafny run docs/ExamplesFoundational.dfy --target:java --input src/DRandomCoin.java --input src/DRandomUniform.java
+$ dafny run docs/ExamplesExternUniform.dfy --target:java --input src/DRandomCoin.java --input src/DRandomUniform.java
 ```
 
 (If you aren't using `dafny run` to run your program,
@@ -24,6 +27,10 @@ To run the statistical tests, run one of the following:
 
 ```bash
 # C#
-$ dafny test --target:cs src/DRandom.cs tests/TestsExternUniform.dfy
-$ dafny test --target:cs src/DRandom.cs tests/TestsFoundational.dfy
+$ dafny test --target:cs src/DRandomCoin.cs src/DRandomUniform.cs tests/TestsFoundational.dfy
+$ dafny test --target:cs src/DRandomCoin.cs src/DRandomUniform.cs tests/TestsExternUniform.dfy
+# Java#
+$ dafny test --target:java src/DRandomCoin.java src/DRandomUniform.java tests/TestsFoundational.dfy
+$ dafny test --target:java src/DRandomCoin.java src/DRandomUniform.java tests/TestsExternUniform.dfy
+
 ```
