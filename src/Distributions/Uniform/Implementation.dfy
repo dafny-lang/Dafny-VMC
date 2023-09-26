@@ -54,12 +54,18 @@ module UniformImplementation {
     }
   }
 
+  method {:extern "DRandomUniform", "Uniform"} ExternUniform(n: nat) returns (u: nat)
+
   trait {:termination false} TUniformExtern extends IUniform {
-    method {:extern} Uniform(n: nat) returns (u: nat)
+    method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
       requires n > 0
       ensures u < n
       ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
+    {
+      u := ExternUniform(n);
+      assume {:axiom} false;
+    }
   }
 }
