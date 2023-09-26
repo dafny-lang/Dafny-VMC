@@ -14,7 +14,7 @@ module RandomExamples {
     decreases *
   {
     var n := 100000;
-    var r := new DRandomExternUniform();
+    var r: DRandomExternUniform := new DRandomExternUniform();
 
     var t := 0;
     for i := 0 to n {

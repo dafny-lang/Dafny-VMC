@@ -11,8 +11,11 @@ For example, to run the examples in the `docs` directory, run one of the followi
 
 ```bash
 # C#
-$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandom.cs
-$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/ExamplesExternUniform.dfy --target:cs src/DRandom.cs 
+$ dafny run docs/ExamplesFoundational.dfy --target:cs src/DRandom.cs
+# Java
+$ dafny run docs/ExamplesExternUniform.dfy --target:java src/DRandom.java
+$ dafny run docs/ExamplesFoundational.dfy --target:java src/DRandom.java
 ```
 
 (If you aren't using `dafny run` to run your program,
@@ -20,10 +23,13 @@ then you should instead integrate the appropriate language-specific implementati
 
 # Testing
 
-To run the statistical tests, run one of the following:
+To run the statistical tests in the `tests` directory, run one of the following:
 
 ```bash
 # C#
-$ dafny test --target:cs src/DRandom.cs tests/TestsExternUniform.dfy
-$ dafny test --target:cs src/DRandom.cs tests/TestsFoundational.dfy
+$ dafny test tests/TestsExternUniform.dfy --target:cs src/DRandom.cs 
+$ dafny test tests/TestsFoundational.dfy --target:cs src/DRandom.cs 
+# Java
+$ dafny test tests/TestsExternUniform.dfy --target:java src/DRandom.java
+$ dafny test tests/TestsFoundational.dfy --target:java src/DRandom.java
 ```

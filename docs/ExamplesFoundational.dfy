@@ -14,7 +14,7 @@ module RandomExamples {
     decreases *
   {
     var n := 100000;
-    var r := new DRandomFoundational();
+    var r: DRandomFoundational := new DRandomFoundational();
 
     var t := 0;
     for i := 0 to n {
