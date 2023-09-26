@@ -12,5 +12,5 @@ echo Verifying the proofs...
 for file in `find ./src -type f -name '*.dfy'`
 do
     echo Verifying $file...
-    $DAFNY verify $file
+    time $DAFNY verify $file
 done
