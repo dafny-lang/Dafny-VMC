@@ -11,9 +11,9 @@ For example, to run the `Examples.dfy` file in the `docs` directory, run one of 
 
 ```bash
 # Java
-$ dafny run docs/Examples.dfy --target:java --input src/DRandom.java
+$ dafny run docs/Examples.dfy --target:java --input src/DRandomFoundational.java
 # C#
-$ dafny run docs/Examples.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/Examples.dfy --target:cs --input src/DRandomFoundational.cs
 ```
 
 (If you aren't using `dafny run` to run your program,

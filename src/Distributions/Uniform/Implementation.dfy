@@ -8,11 +8,11 @@ include "../../ProbabilisticProgramming/Monad.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module Uniform {
+module UniformImplementation {
   import opened MeasureTheory
   import opened Monad
   import opened UniformModel
-  import opened IUniform
+  import opened UniformInterface
 
   trait {:termination false} UniformFoundational extends IUniform {
     method Uniform(n: nat) returns (u: nat)

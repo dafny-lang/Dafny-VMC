@@ -14,13 +14,13 @@ include "Distributions/Geometric/Implementation.dfy"
 include "Distributions/Uniform/Implementation.dfy"
 
 module {:extern "DafnyLibraries"} DafnyLibraries {
-  import opened Base
-  import opened Bernoulli
-  import opened Geometric
-  import opened Uniform
-  import opened BernoulliExpNeg
-  import opened DiscreteGaussian
-  import opened DiscreteLaplace
+  import opened BaseInterface
+  import opened BernoulliImplementation
+  import opened GeometricImplementation
+  import opened UniformImplementation
+  import opened BernoulliExpNegImplementation
+  import opened DiscreteGaussianImplementation
+  import opened DiscreteLaplaceImplementation
 
   class {:extern} DRandomFoundational extends Base, Unif, Bernoulli, Geometric, UniformFoundational, BernoulliExpNeg, DiscreteGaussian, DiscreteLaplace {
     constructor {:extern} ()

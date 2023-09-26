@@ -5,8 +5,8 @@
 
 include "Interface.dfy"
 
-module DiscreteLaplace {
-  import opened IDiscreteLaplace
+module DiscreteLaplaceImplementation {
+  import opened DiscreteLaplaceInterface
 
   trait {:termination false} DiscreteLaplace extends IDiscreteLaplace {
 

@@ -6,8 +6,8 @@
 include "../Base/Interface.dfy"
 include "Model.dfy"
 
-module IUniform {
-  import opened Base
+module UniformInterface {
+  import opened BaseInterface
   import opened UniformModel
 
   trait {:termination false} IUniform extends Base, IUnif {

@@ -6,8 +6,8 @@
 include "../../ProbabilisticProgramming/Monad.dfy"
 include "../Base/Interface.dfy"
 
-module IGeometric {
-  import opened Base
+module GeometricInterface {
+  import opened BaseInterface
   import opened Monad
 
   trait {:termination false} IGeometric extends Base {

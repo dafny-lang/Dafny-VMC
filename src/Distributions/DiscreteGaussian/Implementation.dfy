@@ -5,10 +5,10 @@
 
 include "Interface.dfy"
 
-module DiscreteGaussian {
-  import opened IDiscreteGaussian
-  import opened IDiscreteLaplace
-  import opened IBernoulliExpNeg
+module DiscreteGaussianImplementation {
+  import opened DiscreteGaussianInterface
+  import opened DiscreteLaplaceInterface
+  import opened BernoulliExpNegInterface
 
   trait {:termination false} DiscreteGaussian extends IDiscreteGaussian {
 

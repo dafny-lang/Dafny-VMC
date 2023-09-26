@@ -7,10 +7,10 @@ include "../../Math/MeasureTheory.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module Bernoulli {
+module BernoulliImplementation {
   import opened MeasureTheory
   import opened BernoulliModel
-  import opened IBernoulli
+  import opened BernoulliInterface
 
   trait {:termination false} Bernoulli extends IBernoulli {
 

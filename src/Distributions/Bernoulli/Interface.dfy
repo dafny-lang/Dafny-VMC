@@ -6,9 +6,9 @@
 include "../Base/Interface.dfy"
 include "Model.dfy"
 
-module IBernoulli {
+module BernoulliInterface {
   import opened BernoulliModel
-  import opened Base
+  import opened BaseInterface
 
   trait {:termination false} IBernoulli extends Base {
 

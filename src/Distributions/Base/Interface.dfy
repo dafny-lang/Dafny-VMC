@@ -6,7 +6,7 @@
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "Model.dfy"
 
-module Base {
+module BaseInterface {
   import opened RandomNumberGenerator
   import opened BaseModel
 
