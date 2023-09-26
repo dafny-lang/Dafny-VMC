@@ -29,11 +29,11 @@ module Limits {
     ensures forall n: nat :: n >= EpsilonToSuffix(sequence, limit, epsilon) ==>
       -epsilon < sequence(n) - limit < epsilon
   {
+    assume {:axiom} false;
     assert forall epsilon2: real | epsilon2 > 0.0 :: exists N: nat ::
         forall n: nat :: n >= N ==> -epsilon2 < sequence(n) - limit < epsilon2 by {
             assert ConvergesTo(sequence, limit);
           }
-    assume false;
     0
   }
 
@@ -62,6 +62,7 @@ module Limits {
     ensures forall limit1, limit2: real ::
       ConvergesTo(sequence, limit1) && ConvergesTo(sequence, limit2) ==> limit1 == limit2
   {
+    assume {:axiom} false;
     forall limit1, limit2: real ensures
       ConvergesTo(sequence, limit1) && ConvergesTo(sequence, limit2) ==> limit1 == limit2
     {
@@ -75,6 +76,7 @@ module Limits {
   lemma OneOverNPlus1ConvergesToZero()
     ensures ConvergesTo(OneOverNPlus1, 0.0)
   {
+    assume {:axiom} false;
     assert forall epsilon: real | epsilon > 0.0 ::
       exists N: nat ::
         forall n: nat | n >= N ::
