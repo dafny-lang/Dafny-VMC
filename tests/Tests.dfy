@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "../src/DRandom.dfy"
+ include "../src/Dafny-VMC.dfy"
 
  module Tests {
   import BaseInterface
