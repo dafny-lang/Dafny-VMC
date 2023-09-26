@@ -222,4 +222,9 @@ module Helper {
       }
     }
   }
+
+  lemma AdditionOfFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    ensures (x / z) + (y / z) == (x + y) / z
+  {}
 }
