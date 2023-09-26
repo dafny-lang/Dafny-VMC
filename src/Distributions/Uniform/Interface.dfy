@@ -10,9 +10,9 @@ include "Model.dfy"
 module UniformInterface {
   import opened BaseInterface
   import opened UniformModel
-  import opened UnifInterface
+  import opened UniformPowerOfTwoInterface
 
-  trait {:termination false} IUniform extends TBase, IUnif {
+  trait {:termination false} IUniform extends TBase, IUniformPowerOfTwo {
 
     method Uniform(n: nat) returns (u: nat)
       modifies this

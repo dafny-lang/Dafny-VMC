@@ -12,7 +12,7 @@ include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 include "Model.dfy"
 
-module UnifCorrectness {
+module UniformPowerOfTwoCorrectness {
   import opened Helper
   import opened Monad
   import opened Independence
@@ -20,7 +20,7 @@ module UnifCorrectness {
   import opened Quantifier
   import opened WhileAndUntil
   import opened MeasureTheory
-  import opened UnifModel
+  import opened UniformPowerOfTwoModel
 
   /************
    Definitions
@@ -84,18 +84,18 @@ module UnifCorrectness {
    Lemmas
   *******/
 
-  ghost predicate UniformPowerOfTwoCorrectnessHelper(n: nat, k: nat, m: nat)
+  ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires (n == 0 && k == 0) || (k != 0 && Power(2, k - 1) <= n < Power(2, k))
   {
     mu(iset s | ProbUnif(n)(s).0 == m) == if m < Power(2, k) then 1.0 / (Power(2, k) as real) else 0.0
   }
 
   // Equation (4.8)
-  lemma {:vcs_split_on_every_assert} UniformPowerOfTwoCorrectness(n: nat, k: nat)
+  lemma {:vcs_split_on_every_assert} UnifCorrectness(n: nat, k: nat)
     requires (n == 0 && k == 0) || (k != 0 && Power(2, k - 1) <= n < Power(2, k))
-    ensures forall m: nat :: UniformPowerOfTwoCorrectnessHelper(n, k, m)
+    ensures forall m: nat :: UnifIsCorrect(n, k, m)
   {
-    forall m: nat ensures UniformPowerOfTwoCorrectnessHelper(n, k, m) {
+    forall m: nat ensures UnifIsCorrect(n, k, m) {
       if (n == 0 && k == 0) {
         assert Power(2, k) == 1;
         if m == 0 {
@@ -119,7 +119,7 @@ module UnifCorrectness {
           if m % 2 == 0 {
             calc {
               mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCorrectnessCaseSplit(n, m); }
+            == { ProbUnifCaseSplit(n, m); }
               mu(iset s | 2*ProbUnif(n / 2)(s).0 == m) / 2.0;
             == { assert (iset s | 2*ProbUnif(n / 2)(s).0 == m) == (iset s {:trigger 0 == m} | 0 == m); }
               mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
@@ -157,7 +157,7 @@ module UnifCorrectness {
             assert m % 2 == 1;
             calc {
               mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCorrectnessCaseSplit(n, m); }
+            == { ProbUnifCaseSplit(n, m); }
               mu(iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
             == { assert (iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) == (iset s {:trigger 1 == m} | 1 == m); }
               mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
@@ -199,7 +199,7 @@ module UnifCorrectness {
             assert m == 2 * u;
             calc {
               mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCorrectnessCaseSplit(n, m); }
+            == { ProbUnifCaseSplit(n, m); }
               mu(iset s | 2 * ProbUnif(n / 2)(s).0 == m) / 2.0;
             == { assert (iset s | 2 * ProbUnif(n / 2)(s).0 == m) == (iset s | ProbUnif(n / 2)(s).0 == u); }
               mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
@@ -207,8 +207,8 @@ module UnifCorrectness {
             if m < Power(2, k) {
               assert mu(iset s | ProbUnif(n / 2)(s).0 == u) == 1.0 / (Power(2, k - 1) as real) by {
                 assert u < Power(2, k - 1);
-                UniformPowerOfTwoCorrectness(n / 2, k - 1);
-                assert UniformPowerOfTwoCorrectnessHelper(n / 2, k - 1, u);
+                UnifCorrectness(n / 2, k - 1);
+                assert UnifIsCorrect(n / 2, k - 1, u);
               }
               calc {
                 mu(iset s | ProbUnif(n)(s).0 == m);
@@ -225,15 +225,15 @@ module UnifCorrectness {
               }
             } else {
               assert u >= Power(2, k - 1);
-              UniformPowerOfTwoCorrectness(n / 2, k - 1);
-              assert UniformPowerOfTwoCorrectnessHelper(n / 2, k - 1, u);
+              UnifCorrectness(n / 2, k - 1);
+              assert UnifIsCorrect(n / 2, k - 1, u);
               assert mu(iset s | ProbUnif(n)(s).0 == m) == 0.0;
             }
           } else {
             assert m == 2 * u + 1;
             calc {
               mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCorrectnessCaseSplit(n, m); }
+            == { ProbUnifCaseSplit(n, m); }
               mu(iset s | 2 * ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
             == { assert (iset s | 2 * ProbUnif(n / 2)(s).0 + 1 == m) == (iset s | ProbUnif(n / 2)(s).0 == u); }
               mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
@@ -241,8 +241,8 @@ module UnifCorrectness {
             if m < Power(2, k) {
               assert mu(iset s | ProbUnif(n / 2)(s).0 == u) == 1.0 / (Power(2, k - 1) as real) by {
                 assert u < Power(2, k - 1);
-                UniformPowerOfTwoCorrectness(n / 2, k - 1);
-                assert UniformPowerOfTwoCorrectnessHelper(n / 2, k - 1, u);
+                UnifCorrectness(n / 2, k - 1);
+                assert UnifIsCorrect(n / 2, k - 1, u);
               }
               calc {
                 mu(iset s | ProbUnif(n)(s).0 == m);
@@ -259,8 +259,8 @@ module UnifCorrectness {
               }
             } else {
               assert u >= Power(2, k - 1);
-              UniformPowerOfTwoCorrectness(n / 2, k - 1);
-              assert UniformPowerOfTwoCorrectnessHelper(n / 2, k - 1, u);
+              UnifCorrectness(n / 2, k - 1);
+              assert UnifIsCorrect(n / 2, k - 1, u);
               assert mu(iset s | ProbUnif(n)(s).0 == m) == 0.0;
             }
           }
@@ -450,7 +450,7 @@ module UnifCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifCorrectnessOddCaseIff(n: nat, s: RNG, m: nat)
+  lemma {:vcs_split_on_every_assert} ProbUnifOddCaseIff(n: nat, s: RNG, m: nat)
     requires m % 2 == 1
     requires n > 0
     ensures
@@ -476,7 +476,7 @@ module UnifCorrectness {
     }
   }
 
-  lemma ProbUnifCorrectnessEvenCaseSetEquality(n: nat, m: nat)
+  lemma ProbUnifEvenCaseSetEquality(n: nat, m: nat)
     requires m % 2 == 0
     requires n > 0
     ensures
@@ -491,7 +491,7 @@ module UnifCorrectness {
     }
   }
 
-  lemma ProbUnifCorrectnessOddCaseSetEquality(n: nat, m: nat)
+  lemma ProbUnifOddCaseSetEquality(n: nat, m: nat)
     requires m % 2 == 1
     requires n > 0
     ensures
@@ -502,11 +502,11 @@ module UnifCorrectness {
     var b_of := (s: RNG) => Deconstruct(ProbUnif(n / 2)(s).1).0;
     var a_of := (s: RNG) => ProbUnif(n / 2)(s).0;
     forall s ensures ProbUnif(n)(s).0 == m <==> (b_of(s) && 2*a_of(s) + 1 == m) {
-      ProbUnifCorrectnessOddCaseIff(n, s, m);
+      ProbUnifOddCaseIff(n, s, m);
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifCorrectnessEvenCase(n: nat, m: nat)
+  lemma {:vcs_split_on_every_assert} ProbUnifEvenCase(n: nat, m: nat)
     requires m % 2 == 0
     requires n > 0
     ensures mu(iset s | ProbUnif(n)(s).0 == m) == mu(iset s | 2*ProbUnif(n / 2)(s).0 == m) / 2.0
@@ -584,7 +584,7 @@ module UnifCorrectness {
 
     calc {
       mu(iset s | ProbUnif(n)(s).0 == m);
-    == { ProbUnifCorrectnessEvenCaseSetEquality(n, m); }
+    == { ProbUnifEvenCaseSetEquality(n, m); }
       mu(iset s | !b_of(s) && 2*a_of(s) == m);
     == { assert (iset s | !b_of(s) && 2*a_of(s) == m) == (iset s | !b_of(s)) * (iset s | 2*a_of(s) == m) by { reveal Inter; } }
       mu((iset s | !b_of(s)) * (iset s | 2*a_of(s) == m));
@@ -603,7 +603,7 @@ module UnifCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifCorrectnessOddCase(n: nat, m: nat)
+  lemma {:vcs_split_on_every_assert} ProbUnifOddCase(n: nat, m: nat)
     requires m % 2 == 1
     requires n > 0
     ensures mu(iset s | ProbUnif(n)(s).0 == m) == mu(iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) / 2.0
@@ -673,7 +673,7 @@ module UnifCorrectness {
 
     calc {
       mu(iset s | ProbUnif(n)(s).0 == m);
-    == { ProbUnifCorrectnessOddCaseSetEquality(n, m); }
+    == { ProbUnifOddCaseSetEquality(n, m); }
       mu(iset s | b_of(s) && 2*a_of(s) + 1 == m);
     == { assert (iset s | b_of(s) && 2*a_of(s) + 1 == m) == (iset s | b_of(s)) * (iset s | 2*a_of(s) + 1 == m); }
       mu((iset s | b_of(s)) * (iset s | 2*a_of(s) + 1 == m));
@@ -692,14 +692,14 @@ module UnifCorrectness {
     }
   }
 
-  lemma ProbUnifCorrectnessCaseSplit(n: nat, m: nat)
+  lemma ProbUnifCaseSplit(n: nat, m: nat)
     requires n > 0
     ensures mu(iset s | ProbUnif(n)(s).0 == m) == if m % 2 == 0 then mu(iset s | 2*ProbUnif(n / 2)(s).0 == m) / 2.0 else mu(iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) / 2.0
   {
     if m % 2 == 0 {
-      ProbUnifCorrectnessEvenCase(n, m);
+      ProbUnifEvenCase(n, m);
     } else {
-      ProbUnifCorrectnessOddCase(n, m);
+      ProbUnifOddCase(n, m);
     }
   }
 

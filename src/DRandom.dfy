@@ -22,11 +22,11 @@ module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened DiscreteGaussianImplementation
   import opened DiscreteLaplaceImplementation
 
-  class DRandomFoundational extends TBase, TUnif, TBernoulli, TGeometric, TUniformFoundational, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+  class DRandomFoundational extends TBase, TUniformPowerOfTwo, TBernoulli, TGeometric, TUniformFoundational, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends TBase, TUnif, TBernoulli, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+  class DRandomExternUniform extends TBase, TUniformPowerOfTwo, TBernoulli, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
     constructor {:extern} ()
   }
 }

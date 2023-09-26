@@ -13,8 +13,8 @@ include "Model.dfy"
 module UniformImplementation {
   import opened MeasureTheory
   import opened Monad
-  import opened UnifInterface
-  import opened UnifModel
+  import opened UniformPowerOfTwoInterface
+  import opened UniformPowerOfTwoModel
   import opened UniformModel
   import opened UniformInterface
 
@@ -27,13 +27,13 @@ module UniformImplementation {
       ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
-      u := Unif(n-1);
+      u := UniformPowerOfTwo(n-1);
       while u >= n
         decreases *
-        invariant UniformModel.ProbUniform(n)(old(s)) == UnifModel.ProbUnif(n-1)(old(s))
-        invariant (u, s) == UnifModel.ProbUnif(n-1)(old(s))
+        invariant UniformModel.ProbUniform(n)(old(s)) == UniformPowerOfTwoModel.ProbUnif(n-1)(old(s))
+        invariant (u, s) == UniformPowerOfTwoModel.ProbUnif(n-1)(old(s))
       {
-        u := Unif(n-1);
+        u := UniformPowerOfTwo(n-1);
       }
     }
   }

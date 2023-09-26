@@ -16,7 +16,7 @@ module UniformModel {
   import opened Monad
   import opened Independence
   import opened WhileAndUntil
-  import opened UnifModel
+  import opened UniformPowerOfTwoModel
 
   // Definition 49
   function ProbUniform(n: nat): Hurd<nat>

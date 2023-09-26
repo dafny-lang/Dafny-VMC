@@ -6,15 +6,15 @@
 include "../Base/Interface.dfy"
 include "Model.dfy"
 
-module UnifInterface {
+module UniformPowerOfTwoInterface {
   import opened BaseInterface
-  import opened UnifModel
+  import opened UniformPowerOfTwoModel
 
-  trait {:termination false} IUnif extends TBase {
+  trait {:termination false} IUniformPowerOfTwo extends TBase {
 
-    method Unif(n: nat) returns (u: nat)
+    method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this
-      ensures UnifModel.ProbUnif(n)(old(s)) == (u, s)
+      ensures UniformPowerOfTwoModel.ProbUnif(n)(old(s)) == (u, s)
 
   }
 }

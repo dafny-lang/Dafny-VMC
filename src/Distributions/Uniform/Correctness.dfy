@@ -21,8 +21,8 @@ module UniformCorrectness {
   import opened Quantifier
   import opened WhileAndUntil
   import opened MeasureTheory
-  import opened UnifModel
-  import opened UnifCorrectness
+  import opened UniformPowerOfTwoModel
+  import opened UniformPowerOfTwoCorrectness
   import opened UniformModel
 
   /************
@@ -170,8 +170,8 @@ module UniformCorrectness {
                 Power(2, k);
               }
             }
-            UniformPowerOfTwoCorrectness(n - 1, k);
-            assert UniformPowerOfTwoCorrectnessHelper(n - 1, k, i);
+            UnifCorrectness(n - 1, k);
+            assert UnifIsCorrect(n - 1, k, i);
           }
           assert 1.0 / (n as real) == 1.0 / (Power(2, k) as real) by {
             assert n == Power(2, k) by {

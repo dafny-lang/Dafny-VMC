@@ -9,7 +9,7 @@ include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 
-module UnifModel {
+module UniformPowerOfTwoModel {
   import opened RandomNumberGenerator
   import opened Quantifier
   import opened Monad
@@ -53,7 +53,7 @@ module UnifModel {
     (s: RNG) => ProbUnifAlternative(n, s, k, u)
   }
 
-  function UnifModel(n: nat): (f: Hurd<nat>)
+  function UniformPowerOfTwoModel(n: nat): (f: Hurd<nat>)
     ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
   {
     var f := ProbUnif(n);

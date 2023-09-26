@@ -8,16 +8,16 @@ include "../../ProbabilisticProgramming/Monad.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module UnifImplementation {
+module UniformPowerOfTwoImplementation {
   import opened MeasureTheory
   import opened Monad
-  import opened UnifModel
-  import opened UnifInterface
+  import opened UniformPowerOfTwoModel
+  import opened UniformPowerOfTwoInterface
 
-  trait {:termination false} TUnif extends IUnif {
-    method Unif(n: nat) returns (u: nat)
+  trait {:termination false} TUniformPowerOfTwo extends IUniformPowerOfTwo {
+    method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this
-      ensures UnifModel.UnifModel(n)(old(s)) == (u, s)
+      ensures UniformPowerOfTwoModel.UniformPowerOfTwoModel(n)(old(s)) == (u, s)
     {
       var k := 1;
       u := 0;
