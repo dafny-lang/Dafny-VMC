@@ -22,7 +22,7 @@ namespace DafnyLibraries {
   public partial class DRandomExternUniform {
     private Random r;
 
-    public DRandomFoundational() {
+    public DRandomExternUniform() {
       this.r = new Random();
     }
 

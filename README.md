@@ -19,9 +19,10 @@ then you should instead integrate the appropriate language-specific implementati
 
 # Testing
 
-To run the statistical tests in `tests/Tests.dfy`, run one of the following:
+To run the statistical tests, run one of the following:
 
 ```bash
 # C#
-$ dafny test --target:cs src/DRandom.cs tests/Tests.dfy
+$ dafny test --target:cs src/DRandom.cs tests/TestsExternUniform.dfy
+$ dafny test --target:cs src/DRandom.cs tests/TestsFoundational.dfy
 ```
