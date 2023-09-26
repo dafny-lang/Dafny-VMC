@@ -10,7 +10,7 @@ module BaseInterface {
   import opened RandomNumberGenerator
   import opened BaseModel
 
-  trait {:termination false} Base {
+  trait {:termination false} TBase {
     ghost var s: RNG
 
     method {:extern} Coin() returns (b: bool)

@@ -10,7 +10,7 @@ module GeometricImplementation {
   import opened Monad
   import opened GeometricInterface
 
-  trait {:termination false} Geometric extends IGeometric {
+  trait {:termination false} TGeometric extends IGeometric {
 
     method Geometric() returns (c: nat)
       modifies this

@@ -12,7 +12,7 @@ module BernoulliImplementation {
   import opened BernoulliModel
   import opened BernoulliInterface
 
-  trait {:termination false} Bernoulli extends IBernoulli {
+  trait {:termination false} TBernoulli extends IBernoulli {
 
     method Bernoulli(p: real) returns (c: bool)
       modifies this

@@ -10,7 +10,7 @@ module DiscreteGaussianImplementation {
   import opened DiscreteLaplaceInterface
   import opened BernoulliExpNegInterface
 
-  trait {:termination false} DiscreteGaussian extends IDiscreteGaussian {
+  trait {:termination false} TDiscreteGaussian extends IDiscreteGaussian {
 
     // Based on Algorithm 3 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     // Note that we take sigma as a parameter, not sigma^2, to avoid square roots.

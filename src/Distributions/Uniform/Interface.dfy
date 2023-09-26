@@ -10,7 +10,7 @@ module UniformInterface {
   import opened BaseInterface
   import opened UniformModel
 
-  trait {:termination false} IUniform extends Base, IUnif {
+  trait {:termination false} IUniform extends TBase, IUnif {
 
     method Uniform(n: nat) returns (u: nat)
       modifies this
@@ -34,7 +34,7 @@ module UniformInterface {
 
   }
 
-  trait {:termination false} IUnif extends Base {
+  trait {:termination false} IUnif extends TBase {
 
     method Unif(n: nat) returns (u: nat)
       modifies this

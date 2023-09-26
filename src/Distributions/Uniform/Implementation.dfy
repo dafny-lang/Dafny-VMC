@@ -14,7 +14,7 @@ module UniformImplementation {
   import opened UniformModel
   import opened UniformInterface
 
-  trait {:termination false} UniformFoundational extends IUniform {
+  trait {:termination false} TUniformFoundational extends IUniform {
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -34,7 +34,7 @@ module UniformImplementation {
     }
   }
 
-  trait {:termination false} Unif extends IUnif {
+  trait {:termination false} TUnif extends IUnif {
     method Unif(n: nat) returns (u: nat)
       modifies this
       ensures UniformModel.UnifModel(n)(old(s)) == (u, s)
@@ -54,7 +54,7 @@ module UniformImplementation {
     }
   }
 
-  trait {:termination false} UniformExtern extends IUniform {
+  trait {:termination false} TUniformExtern extends IUniform {
     method {:extern} Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *

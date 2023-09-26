@@ -10,7 +10,7 @@ module BernoulliInterface {
   import opened BernoulliModel
   import opened BaseInterface
 
-  trait {:termination false} IBernoulli extends Base {
+  trait {:termination false} IBernoulli extends TBase {
 
     method Bernoulli(p: real) returns (c: bool)
       modifies this
