@@ -10,15 +10,15 @@ fi
 
 echo Running C\# tests...
 echo "Running tests/TestsFoundational.dfy:"
-time $DAFNY test --target:cs src/DRandom.cs tests/TestsFoundational.dfy
+time $DAFNY test --target:cs src/DRandomCoin.cs src/DRandomUniform.cs tests/TestsFoundational.dfy
 echo "Running tests/TestsExternUniform.dfy:"
-time $DAFNY test --target:cs src/DRandom.cs tests/TestsExternUniform.dfy
+time $DAFNY test --target:cs src/DRandomCoin.cs src/DRandomUniform.cs tests/TestsExternUniform.dfy
 
 echo Running C\# documentation...
 echo "Running docs/ExamplesFoundational.dfy"
-$DAFNY run docs/ExamplesFoundational.dfy --target:cs --input src/DRandom.cs
+$DAFNY run docs/ExamplesFoundational.dfy --target:cs --input src/DRandomCoin.cs --input src/DRandomUniform.cs
 echo "docs/ExamplesExternUniform.dfy"
-$DAFNY run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandom.cs
+$DAFNY run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandomCoin.cs --input src/DRandomUniform.cs
 
 echo Running Java tests...
 echo "Running tests/TestsFoundational.dfy:"
