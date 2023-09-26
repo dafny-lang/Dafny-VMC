@@ -8,6 +8,7 @@ include "Model.dfy"
 
 module BernoulliRationalImplementation {
   import BernoulliRationalModel
+  import opened BernoulliRationalInterface
 
   trait {:termination false} TBernoulliRational extends IBernoulliRational {
 

@@ -7,6 +7,7 @@
 
 include "Distributions/Base/Interface.dfy"
 include "Distributions/Bernoulli/Implementation.dfy"
+include "Distributions/BernoulliRational/Implementation.dfy"
 include "Distributions/BernoulliExpNeg/Implementation.dfy"
 include "Distributions/DiscreteGaussian/Implementation.dfy"
 include "Distributions/DiscreteLaplace/Implementation.dfy"
@@ -16,6 +17,7 @@ include "Distributions/Uniform/Implementation.dfy"
 module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened BaseInterface
   import opened BernoulliImplementation
+  import opened BernoulliRationalImplementation
   import opened GeometricImplementation
   import opened UniformImplementation
   import opened BernoulliExpNegImplementation

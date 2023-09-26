@@ -6,8 +6,10 @@
 include "../../Math/MeasureTheory.dfy"
 include "../../Math/Helper.dfy"
 include "../Uniform/Model.dfy"
+include "../Uniform/Correctness.dfy"
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/Independence.dfy"
+include "../../ProbabilisticProgramming/Monad.dfy"
 include "Model.dfy"
 
 import opened MeasureTheory
@@ -16,6 +18,8 @@ import opened Independence
 import opened BernoulliRationalModel
 import opened RandomNumberGenerator
 import opened UniformModel
+import opened UniformCorrectness
+import opened Monad
 
 lemma ProbBernoulliRationalIsIndepFn(m: nat, n: nat)
   requires n != 0
@@ -87,6 +91,7 @@ lemma {:timeLimit 20} {:vcs_split_on_every_assert} BernoulliRationalCorrectness(
 
     assert A1: e1 in event_space && mu(e1) == 1.0 / (n as real) by {
       UniformFullCorrectness(n, m-1);
+      assert e1 == UniformFullCorrectnessHelper(n, m-1);
     }
 
     assert A2: e2 in event_space && mu(e2) == (m-1) as real / n as real by {
