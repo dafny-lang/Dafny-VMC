@@ -5,10 +5,10 @@
 
 // RUN: %verify "%s"
 
-include "../src/DRandom.dfy"
+include "../src/Dafny-VMC.dfy"
 
 module RandomExamples {
-  import opened DafnyLibraries
+  import opened DafnyVMC
 
   method Main()
     decreases *
