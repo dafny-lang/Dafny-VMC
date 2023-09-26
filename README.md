@@ -10,10 +10,8 @@ To use `DRandom` in your code, you must:
 For example, to run the `Examples.dfy` file in the `docs` directory, run one of the following.
 
 ```bash
-# Java
-$ dafny run docs/Examples.dfy --target:java --input src/DRandomFoundational.java
 # C#
-$ dafny run docs/Examples.dfy --target:cs --input src/DRandomFoundational.cs
+$ dafny run docs/Examples.dfy --target:cs --input src/DRandom.cs
 ```
 
 (If you aren't using `dafny run` to run your program,
@@ -24,8 +22,6 @@ then you should instead integrate the appropriate language-specific implementati
 To run the statistical tests in `tests/Tests.dfy`, run one of the following:
 
 ```bash
-# Java
-$ dafny test --target:java src/DRandomFoundational.java tests/Tests.dfy
 # C#
-$ dafny test --target:cs src/DRandomFoundational.cs tests/Tests.dfy
+$ dafny test --target:cs src/DRandom.cs tests/Tests.dfy
 ```
