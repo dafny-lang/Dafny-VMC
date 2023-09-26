@@ -8,13 +8,13 @@ include "../../ProbabilisticProgramming/Monad.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module Uniform {
+module UniformImplementation {
   import opened MeasureTheory
   import opened Monad
   import opened UniformModel
-  import opened IUniform
+  import opened UniformInterface
 
-  trait {:termination false} UniformFoundational extends IUniform {
+  trait {:termination false} TUniformFoundational extends IUniform {
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -34,7 +34,7 @@ module Uniform {
     }
   }
 
-  trait {:termination false} Unif extends IUnif {
+  trait {:termination false} TUnif extends IUnif {
     method Unif(n: nat) returns (u: nat)
       modifies this
       ensures UniformModel.UnifModel(n)(old(s)) == (u, s)
@@ -54,7 +54,7 @@ module Uniform {
     }
   }
 
-  trait {:termination false} UniformExtern extends IUniform {
+  trait {:termination false} TUniformExtern extends IUniform {
     method {:extern} Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *

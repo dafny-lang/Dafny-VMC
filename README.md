@@ -7,13 +7,12 @@ To use `DRandom` in your code, you must:
 1. `include` and `import` the `DRandom` module as you would any other library module
 2. incorporate the corresponding language-specific implementation file when building or running your program
 
-For example, to run the `Examples.dfy` file in the `docs` directory, run one of the following.
+For example, to run the examples in the `docs` directory, run one of the following.
 
 ```bash
-# Java
-$ dafny run docs/Examples.dfy --target:java --input src/DRandom.java
 # C#
-$ dafny run docs/Examples.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandom.cs
+$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/DRandom.cs
 ```
 
 (If you aren't using `dafny run` to run your program,
@@ -21,11 +20,10 @@ then you should instead integrate the appropriate language-specific implementati
 
 # Testing
 
-To run the statistical tests in `tests/Tests.dfy`, run one of the following:
+To run the statistical tests, run one of the following:
 
 ```bash
-# Java
-$ dafny test --target:java src/DRandomFoundational.java tests/Tests.dfy
 # C#
-$ dafny test --target:cs src/DRandomFoundational.cs tests/Tests.dfy
+$ dafny test --target:cs src/DRandom.cs tests/TestsExternUniform.dfy
+$ dafny test --target:cs src/DRandom.cs tests/TestsFoundational.dfy
 ```

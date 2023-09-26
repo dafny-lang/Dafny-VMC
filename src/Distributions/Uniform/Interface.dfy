@@ -6,11 +6,11 @@
 include "../Base/Interface.dfy"
 include "Model.dfy"
 
-module IUniform {
-  import opened Base
+module UniformInterface {
+  import opened BaseInterface
   import opened UniformModel
 
-  trait {:termination false} IUniform extends Base, IUnif {
+  trait {:termination false} IUniform extends TBase, IUnif {
 
     method Uniform(n: nat) returns (u: nat)
       modifies this
@@ -19,22 +19,22 @@ module IUniform {
       ensures u < n
       ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
 
-      method UniformInterval(a: int, b: int) returns (u: int)
-        modifies this
-        decreases *
-        requires a < b
-        ensures a <= u < b
-        ensures UniformModel.ProbUniformInterval(a, b)(old(s)) == (u, s)
-      {
-        var v := Uniform(b - a);
-        assert UniformModel.ProbUniform(b-a)(old(s)) == (v, s);
-        assert UniformModel.ProbUniformInterval(a, b)(old(s)) == (a + v, s);
-        u := a + v;
-      }
+    method UniformInterval(a: int, b: int) returns (u: int)
+      modifies this
+      decreases *
+      requires a < b
+      ensures a <= u < b
+      ensures UniformModel.ProbUniformInterval(a, b)(old(s)) == (u, s)
+    {
+      var v := Uniform(b - a);
+      assert UniformModel.ProbUniform(b-a)(old(s)) == (v, s);
+      assert UniformModel.ProbUniformInterval(a, b)(old(s)) == (a + v, s);
+      u := a + v;
+    }
 
   }
 
-  trait {:termination false} IUnif extends Base {
+  trait {:termination false} IUnif extends TBase {
 
     method Unif(n: nat) returns (u: nat)
       modifies this

@@ -5,10 +5,10 @@
 
 include "Interface.dfy"
 
-module DiscreteLaplace {
-  import opened IDiscreteLaplace
+module DiscreteLaplaceImplementation {
+  import opened DiscreteLaplaceInterface
 
-  trait {:termination false} DiscreteLaplace extends IDiscreteLaplace {
+  trait {:termination false} TDiscreteLaplace extends IDiscreteLaplace {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method DiscreteLaplace(s: nat, t: nat) returns (z: int)

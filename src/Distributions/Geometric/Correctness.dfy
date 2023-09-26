@@ -9,7 +9,6 @@ include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 include "Model.dfy"
-include "Correctness.dfy"
 
 import opened WhileAndUntil
 import opened Independence

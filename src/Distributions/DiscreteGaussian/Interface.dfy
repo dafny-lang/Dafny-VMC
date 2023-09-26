@@ -6,9 +6,9 @@
 include "../BernoulliExpNeg/Interface.dfy"
 include "../DiscreteLaplace/Interface.dfy"
 
-module IDiscreteGaussian {
-  import opened IBernoulliExpNeg
-  import opened IDiscreteLaplace
+module DiscreteGaussianInterface {
+  import opened BernoulliExpNegInterface
+  import opened DiscreteLaplaceInterface
 
   trait {:termination false} IDiscreteGaussian extends IDiscreteLaplace, IBernoulliExpNeg {
     method DiscreteGaussian(sigma: real) returns (y: int)

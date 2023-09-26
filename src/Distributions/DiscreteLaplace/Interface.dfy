@@ -7,10 +7,10 @@ include "../Bernoulli/Interface.dfy"
 include "../Uniform/Interface.dfy"
 include "../BernoulliExpNeg/Interface.dfy"
 
-module IDiscreteLaplace {
-  import opened IBernoulli
-  import opened IUniform
-  import opened IBernoulliExpNeg
+module DiscreteLaplaceInterface {
+  import opened BernoulliInterface
+  import opened UniformInterface
+  import opened BernoulliExpNegInterface
 
   trait {:termination false} IDiscreteLaplace extends IBernoulli, IUniform, IBernoulliExpNeg {
 

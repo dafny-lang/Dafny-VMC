@@ -6,11 +6,11 @@
 include "../Bernoulli/Interface.dfy"
 include "Interface.dfy"
 
-module BernoulliExpNeg {
-  import opened IBernoulli
-  import opened IBernoulliExpNeg
+module BernoulliExpNegImplementation {
+  import opened BernoulliInterface
+  import opened BernoulliExpNegInterface
 
-  trait {:termination false} BernoulliExpNeg extends IBernoulli, IBernoulliExpNeg {
+  trait {:termination false} TBernoulliExpNeg extends IBernoulliExpNeg {
 
     // Based on Algorithm 1 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method BernoulliExpNeg(gamma: real) returns (c: bool)
