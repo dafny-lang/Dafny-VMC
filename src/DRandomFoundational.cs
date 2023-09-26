@@ -6,7 +6,7 @@
 using System;
 
 namespace DafnyLibraries {
-  public partial class DRandomFoundational : BaseInterface.Base, UniformImplementation.Unif, BernoulliImplementation.Bernoulli, GeometricImplementation.Geometric, UniformImplementation.UniformFoundational, BernoulliExpNegImplementation.BernoulliExpNeg, DiscreteGaussianImplementation.DiscreteGaussian, DiscreteLaplaceImplementation.DiscreteLaplace {
+  public partial class DRandomFoundational : BaseInterface.TBase, UniformImplementation.TUnif, BernoulliImplementation.TBernoulli, GeometricImplementation.TGeometric, UniformImplementation.TUniformFoundational, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
     private Random r;
 
     public DRandomFoundational() {
