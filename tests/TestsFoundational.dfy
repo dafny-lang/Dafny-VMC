@@ -3,11 +3,11 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "../src/DRandom.dfy"
+ include "../src/Dafny-VMC.dfy"
  include "Tests.dfy"
 
 module TestsFoundational {
-  import opened DafnyLibraries
+  import opened DafnyVMC
   import Tests
 
   method {:test} TestCoin() {
