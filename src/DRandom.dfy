@@ -11,12 +11,14 @@ include "Distributions/BernoulliExpNeg/Implementation.dfy"
 include "Distributions/DiscreteGaussian/Implementation.dfy"
 include "Distributions/DiscreteLaplace/Implementation.dfy"
 include "Distributions/Geometric/Implementation.dfy"
+include "Distributions/UniformPowerOfTwo/Implementation.dfy"
 include "Distributions/Uniform/Implementation.dfy"
 
 module {:extern "DafnyLibraries"} DafnyLibraries {
   import opened BaseInterface
   import opened BernoulliImplementation
   import opened GeometricImplementation
+  import opened UniformPowerOfTwoImplementation
   import opened UniformImplementation
   import opened BernoulliExpNegImplementation
   import opened DiscreteGaussianImplementation
