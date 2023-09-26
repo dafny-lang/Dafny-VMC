@@ -1,7 +1,10 @@
-name: 'Verify proofs and test samplers'
+name: 'Run tests'
 on:
   workflow_dispatch:
   pull_request:
+  push:
+    branches:
+      - 'main'
 jobs:
   all:
     runs-on: ubuntu-latest
@@ -9,4 +12,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: wget https://github.com/dafny-lang/dafny/releases/download/v4.2.0/dafny-4.2.0-x64-ubuntu-20.04.zip
       - run: unzip dafny-4.2.0-x64-ubuntu-20.04.zip
-      - run: DAFNY=dafny/dafny bash verify.sh
+      - run: DAFNY=dafny/dafny bash test.sh
