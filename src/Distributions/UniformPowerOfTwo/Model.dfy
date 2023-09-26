@@ -53,7 +53,7 @@ module UniformPowerOfTwoModel {
     (s: RNG) => ProbUnifAlternative(n, s, k, u)
   }
 
-  function UniformPowerOfTwoModel(n: nat): (f: Hurd<nat>)
+  function UnifModel(n: nat): (f: Hurd<nat>)
     ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
   {
     var f := ProbUnif(n);

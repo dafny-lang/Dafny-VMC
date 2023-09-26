@@ -17,7 +17,7 @@ module UniformPowerOfTwoImplementation {
   trait {:termination false} TUniformPowerOfTwo extends IUniformPowerOfTwo {
     method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this
-      ensures UniformPowerOfTwoModel.UniformPowerOfTwoModel(n)(old(s)) == (u, s)
+      ensures UniformPowerOfTwoModel.UnifModel(n)(old(s)) == (u, s)
     {
       var k := 1;
       u := 0;
