@@ -3,8 +3,12 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
+include "../Bernoulli/Interface.dfy"
+
 module BernoulliExpNegInterface {
-  trait {:termination false} IBernoulliExpNeg {
+  import opened BernoulliInterface
+  
+  trait {:termination false} IBernoulliExpNeg extends IBernoulli {
 
     method BernoulliExpNeg(gamma: real) returns (c: bool)
       modifies this
