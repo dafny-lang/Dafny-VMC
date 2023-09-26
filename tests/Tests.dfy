@@ -133,6 +133,8 @@
 
   method {:test} TestBernoulliRational(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
     decreases *
+    requires n > 0
+    modifies r
   {
     var t := 0;
     for i := 0 to n {
@@ -146,6 +148,7 @@
 
   method {:test} TestBernoulliRational2(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
     decreases *
+    modifies r
   {
     var t := 0;
     for i := 0 to n {
@@ -160,6 +163,7 @@
 
   method {:test} TestBernoulliRational3(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
     decreases *
+    modifies r
   {
     var t := 0;
     for i := 0 to n {
