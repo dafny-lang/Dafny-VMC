@@ -130,6 +130,47 @@
     testEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
   }
 
+  method {:test} TestBernoulliRational(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+    decreases *
+  {
+    var t := 0;
+    for i := 0 to n {
+      var b := r.BernoulliRational(1, 5);
+      if b {
+        t := t + 1;
+      }
+    }
+    testBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
+  }
+
+  method {:test} TestBernoulliRational2(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+    decreases *
+  {
+    var t := 0;
+    for i := 0 to n {
+      var b := r.BernoulliRational(0, 5);
+      if b {
+        t := t + 1;
+      }
+    }
+
+    expect t == 0;
+  }  
+
+  method {:test} TestBernoulliRational3(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+    decreases *
+  {
+    var t := 0;
+    for i := 0 to n {
+      var b := r.BernoulliRational(5, 5);
+      if b {
+        t := t + 1;
+      }
+    }
+
+    expect t == n;
+  } 
+
   method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     requires n > 0
