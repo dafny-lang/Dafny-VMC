@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -z ${DAFNY+x} ]
 then
   echo "Set the DAFNY variable"
