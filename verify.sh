@@ -18,5 +18,5 @@ $DAFNY test --target:java src/DRandomFoundational.java tests/Tests.dfy
 $DAFNY test --target:cs src/DRandomFoundational.cs tests/Tests.dfy
 
 echo Running documentation
-$DAFNY run docs/Examples.dfy --target:java --input src/DRandom.java
-$DAFNY run docs/Examples.dfy --target:cs --input src/DRandom.cs
+$DAFNY run docs/Examples.dfy --target:java --input src/DRandomFoundational.java
+$DAFNY run docs/Examples.dfy --target:cs --input src/DRandomFoundational.cs
