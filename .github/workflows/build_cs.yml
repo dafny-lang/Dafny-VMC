@@ -1,4 +1,4 @@
-name: 'Run C# tests'
+name: 'Build C#'
 on:
   workflow_dispatch:
   pull_request:
