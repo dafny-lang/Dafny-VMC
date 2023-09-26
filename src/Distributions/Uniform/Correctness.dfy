@@ -22,25 +22,6 @@ module UniformCorrectness {
   import opened MeasureTheory
   import opened UniformModel
 
-  function UnifModel(n: nat): (f: Hurd<nat>)
-    ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
-  {
-    var f := ProbUnif(n);
-    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
-      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
-        ProbUnifCorrespondence(n, s);
-      }
-    }
-    f
-  }
-
-  function UniformIntervalModel(a: int, b: int): (f: Hurd<int>)
-    requires a < b
-    ensures forall s :: f(s).0 == a + ProbUniform(b - a)(s).0
-  {
-    ProbUniformInterval(a, b)
-  }
-
   /************
    Definitions
   ************/
@@ -86,14 +67,6 @@ module UniformCorrectness {
         var (u, s) := ProbUnif(n-1)(s);
       }
     }
-  }
-
-  function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
-    requires a < b
-  {
-    (s: RNG) =>
-      var (x, s') := ProbUniform(b - a)(s);
-      (a + x, s')
   }
 
   function ProbUnifExistence(n: nat, s: RNG, j: nat): (i: nat)
@@ -650,7 +623,7 @@ module UniformCorrectness {
             (2*a + 1) / 2;
           == { LemmaAboutNatDivision(2*a + 1, 2); }
             ((2*a + 1) as real / 2 as real).Floor;
-          ==
+          == { assert (2*a + 1) as real / 2 as real == 1 as real; }
             (1 as real).Floor;
           ==
             1;

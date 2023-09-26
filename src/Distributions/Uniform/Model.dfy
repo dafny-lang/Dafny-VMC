@@ -81,6 +81,13 @@ module UniformModel {
     f
   }
 
+  function UniformIntervalModel(a: int, b: int): (f: Hurd<int>)
+    requires a < b
+    ensures forall s :: f(s).0 == a + ProbUniform(b - a)(s).0
+  {
+    ProbUniformInterval(a, b)
+  }
+
   lemma ProbUnifCorrespondence(n: nat, s: RNG)
     ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
   {
