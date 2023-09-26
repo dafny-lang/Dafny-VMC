@@ -19,18 +19,18 @@ module IUniform {
       ensures u < n
       ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
 
-      method UniformInterval(a: int, b: int) returns (u: int)
-        modifies this
-        decreases *
-        requires a < b
-        ensures a <= u < b
-        ensures UniformModel.ProbUniformInterval(a, b)(old(s)) == (u, s)
-      {
-        var v := Uniform(b - a);
-        assert UniformModel.ProbUniform(b-a)(old(s)) == (v, s);
-        assert UniformModel.ProbUniformInterval(a, b)(old(s)) == (a + v, s);
-        u := a + v;
-      }
+    method UniformInterval(a: int, b: int) returns (u: int)
+      modifies this
+      decreases *
+      requires a < b
+      ensures a <= u < b
+      ensures UniformModel.ProbUniformInterval(a, b)(old(s)) == (u, s)
+    {
+      var v := Uniform(b - a);
+      assert UniformModel.ProbUniform(b-a)(old(s)) == (v, s);
+      assert UniformModel.ProbUniformInterval(a, b)(old(s)) == (a + v, s);
+      u := a + v;
+    }
 
   }
 
