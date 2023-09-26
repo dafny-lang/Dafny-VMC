@@ -15,7 +15,7 @@ include "Distributions/Geometric/Implementation.dfy"
 include "Distributions/UniformPowerOfTwo/Implementation.dfy"
 include "Distributions/Uniform/Implementation.dfy"
 
-module {:extern "DafnyLibraries"} DafnyLibraries {
+module {:extern "DafnyVMC"} DafnyVMC {
   import opened BaseInterface
   import opened BernoulliImplementation
   import opened BernoulliRationalImplementation
