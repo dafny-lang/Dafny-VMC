@@ -12,3 +12,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
       - run: DAFNY=dafny/dafny TARGET_LANG=cs bash scripts/build.sh
+      - run: build/cs/run.sh

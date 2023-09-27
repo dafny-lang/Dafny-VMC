@@ -12,3 +12,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
       - run: DAFNY=dafny/dafny TARGET_LANG=java bash scripts/build.sh
+      - run: build/java/run.sh
