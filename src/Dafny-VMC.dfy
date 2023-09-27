@@ -12,6 +12,7 @@ include "Distributions/BernoulliExpNeg/Implementation.dfy"
 include "Distributions/DiscreteGaussian/Implementation.dfy"
 include "Distributions/DiscreteLaplace/Implementation.dfy"
 include "Distributions/Geometric/Implementation.dfy"
+include "Distributions/UniformPowerOfTwo/Implementation.dfy"
 include "Distributions/Uniform/Implementation.dfy"
 
 module DafnyVMC {
@@ -19,16 +20,17 @@ module DafnyVMC {
   import opened BernoulliImplementation
   import opened BernoulliRationalImplementation
   import opened GeometricImplementation
+  import opened UniformPowerOfTwoImplementation
   import opened UniformImplementation
   import opened BernoulliExpNegImplementation
   import opened DiscreteGaussianImplementation
   import opened DiscreteLaplaceImplementation
 
-  class DRandomFoundational extends TBase, TUnif, TBernoulli, TBernoulliRational, TGeometric, TUniformFoundational, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+  class DRandomFoundational extends TBase, TUniformPowerOfTwo, TBernoulli, TBernoulliRational, TGeometric, TUniformFoundational, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends TBase, TUnif, TBernoulli, TBernoulliRational, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+  class DRandomExternUniform extends TBase, TUniformPowerOfTwo, TBernoulli, TBernoulliRational, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
     constructor {:extern} ()
   }
 }
