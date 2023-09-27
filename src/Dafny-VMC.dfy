@@ -14,7 +14,7 @@ include "Distributions/DiscreteLaplace/Implementation.dfy"
 include "Distributions/Geometric/Implementation.dfy"
 include "Distributions/Uniform/Implementation.dfy"
 
-module {:extern "DafnyVMC"} DafnyVMC {
+module DafnyVMC {
   import opened BaseInterface
   import opened BernoulliImplementation
   import opened BernoulliRationalImplementation
