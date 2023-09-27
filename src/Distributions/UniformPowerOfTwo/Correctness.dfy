@@ -27,6 +27,7 @@ module UniformPowerOfTwoCorrectness {
   ************/
 
   // Definition 50
+  // An approximately uniform sampler: may have too much mass on 0.
   function ProbUniformCut(t: nat, n: nat): Hurd<nat>
     requires n > 0
   {
@@ -280,31 +281,27 @@ module UniformPowerOfTwoCorrectness {
       var p := (s: RNG) => ProbUnif(n-1)(s).0 < n;
       ForAllStar(p)
 
-  lemma {:vcs_split_on_every_assert} ProbUnifIsMeasurePreserving(n: nat)
-    ensures
-      var f := (s: RNG) => ProbUnif(n)(s).1;
-      IsMeasurePreserving(event_space, mu, event_space, mu, f)
+  function ProbUnif1(n: nat): RNG -> RNG {
+    (s: RNG) => ProbUnif(n)(s).1
+  }
+
+  lemma ProbUnifIsMeasurePreserving(n: nat)
+    ensures IsMeasurePreserving(event_space, mu, event_space, mu, ProbUnif1(n))
   {
-    var f := (s: RNG) => ProbUnif(n)(s).1;
+    var f := ProbUnif1(n);
     assert IsMeasurable(event_space, event_space, f) by {
       ProbUnifIsIndepFn(n);
       assert IsIndepFn(ProbUnif(n));
     }
-    var g := (s: RNG) => ProbUnif(n / 2)(s).1;
+    var g := ProbUnif1(n / 2);
     if n == 0 {
       forall e | e in event_space ensures mu(PreImage(f, e)) == mu(e) {
-        calc {
-          mu(PreImage(f, e));
-        == { assert PreImage(f, e) == (iset s | f(s) in e); }
-          mu(iset s | f(s) in e);
-        == { assert (iset s | f(s) in e) == (iset s | ProbUnif(n)(s).1 in e); }
-          mu(iset s | ProbUnif(n)(s).1 in e);
-        == { assert (iset s | ProbUnif(n)(s).1 in e) == (iset s | s in e); }
-          mu(iset s | s in e);
-        == { assert (iset s | s in e) == e; }
-          mu(e);
+        forall s: RNG ensures f(s) == s {
+          assert f(s) == s;
         }
+        PreImageIdentity(f, e);
       }
+      assert IsMeasurePreserving(event_space, mu, event_space, mu, f);
     } else {
       forall e | e in event_space ensures mu(PreImage(f, e)) == mu(e) {
         var e' := (iset s | Tail(s) in e);
@@ -313,43 +310,39 @@ module UniformPowerOfTwoCorrectness {
           TailIsMeasurePreserving();
           assert IsMeasurable(event_space, event_space, Tail);
         }
-        assert A: forall s :: ProbUnif(n)(s).1 in e <==> Tail(ProbUnif(n / 2)(s).1) in e by {
-          forall s ensures ProbUnif(n)(s).1 in e <==> Tail(ProbUnif(n / 2)(s).1) in e {
-            ProbUnifTailDecompose(n, s);
+        assert PreImage(f, e) == PreImage(g, e') by {
+          assert forall s :: f(s) in e <==> g(s) in e' by {
+            forall s ensures f(s) in e <==> g(s) in e' {
+              calc {
+                f(s) in e;
+                <==> { assert f(s) == ProbUnif(n)(s).1; }
+                ProbUnif(n)(s).1 in e;
+                <==> { ProbUnifTailDecompose(n, s); }
+                Tail(ProbUnif(n / 2)(s).1) in e;
+                <==>
+                ProbUnif(n / 2)(s).1 in e';
+                <==> { assert ProbUnif(n / 2)(s).1 == g(s); }
+                g(s) in e';
+              }
+            }
           }
+          PreImagesEqual(f, e, g, e');
         }
-        assert B: forall s :: Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e' by {
-          forall s ensures Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e' {
-            assert Tail(ProbUnif(n / 2)(s).1) in e <==> ProbUnif(n / 2)(s).1 in e';
+        assert mu(PreImage(f, e)) == mu(e) by {
+          calc {
+            mu(PreImage(f, e));
+          ==
+            mu(PreImage(g, e'));
+          == { ProbUnifIsMeasurePreserving(n / 2); assert IsMeasurePreserving(event_space, mu, event_space, mu, g); assert e' in event_space; }
+            mu(e');
+          == { assert e' == PreImage(Tail, e); }
+            mu(PreImage(Tail, e));
+          == { TailIsMeasurePreserving(); }
+            mu(e);
           }
-        }
-        assert C: forall s :: f(s) in e <==> ProbUnif(n)(s).1 in e by {
-          forall s ensures f(s) in e <==> ProbUnif(n)(s).1 in e {
-            assert f(s) == ProbUnif(n)(s).1;
-          }
-        }
-        calc {
-          mu(PreImage(f, e));
-        == { assert PreImage(f, e) == (iset s | f(s) in e); }
-          mu(iset s | f(s) in e);
-        == { assert (iset s | f(s) in e) == (iset s | ProbUnif(n)(s).1 in e) by { reveal C; } }
-          mu(iset s | ProbUnif(n)(s).1 in e);
-        == { assert (iset s | ProbUnif(n)(s).1 in e) == (iset s | Tail(ProbUnif(n / 2)(s).1) in e) by { reveal A; } }
-          mu(iset s | Tail(ProbUnif(n / 2)(s).1) in e);
-        == { assert (iset s | Tail(ProbUnif(n / 2)(s).1) in e) == (iset s | ProbUnif(n / 2)(s).1 in e') by { reveal B; } }
-          mu(iset s | ProbUnif(n / 2)(s).1 in e');
-        == { assert (iset s | ProbUnif(n / 2)(s).1 in e') == (iset s | g(s) in e'); }
-          mu(iset s | g(s) in e');
-        == { assert (iset s | g(s) in e') == PreImage(g, e'); }
-          mu(PreImage(g, e'));
-        == { ProbUnifIsMeasurePreserving(n / 2); assert IsMeasurePreserving(event_space, mu, event_space, mu, g); assert e' in event_space; }
-          mu(e');
-        == { assert e' == PreImage(Tail, e); }
-          mu(PreImage(Tail, e));
-        == { TailIsMeasurePreserving(); }
-          mu(e);
         }
       }
+      assert IsMeasurePreserving(event_space, mu, event_space, mu, f);
     }
   }
 
@@ -357,18 +350,14 @@ module UniformPowerOfTwoCorrectness {
     requires n != 0
     ensures ProbUnif(n)(s).1 == Tail(ProbUnif(n / 2)(s).1)
   {
-    var f := (m: nat) =>
-        var g := (b: bool) =>
-                   Return(if b then 2*m + 1 else 2*m);
-        Bind(Deconstruct, g);
     var (a, s') := ProbUnif(n / 2)(s);
     var (b, s'') := Deconstruct(s');
     calc {
       ProbUnif(n)(s).1;
     ==
-      Bind(ProbUnif(n / 2), f)(s).1;
+      Bind(ProbUnif(n / 2), UnifStep)(s).1;
     ==
-      f(a)(s').1;
+      UnifStep(a)(s').1;
     ==
       Bind(Deconstruct, (b: bool) => Return(if b then 2*a + 1 else 2*a))(s').1;
     ==
@@ -391,18 +380,14 @@ module UniformPowerOfTwoCorrectness {
       <==>
       (b && 2*a + 1 == m) || (!b && 2*a == m)
   {
-    var f := (m: nat) =>
-        var g := (b: bool) =>
-                   Return(if b then 2*m + 1 else 2*m);
-        Bind(Deconstruct, g);
     var (a, s') := ProbUnif(n / 2)(s);
     var (b, s'') := Deconstruct(s');
     calc {
       ProbUnif(n)(s).0;
     ==
-      Bind(ProbUnif(n / 2), f)(s).0;
+      Bind(ProbUnif(n / 2), UnifStep)(s).0;
     ==
-      f(a)(s').0;
+      UnifStep(a)(s').0;
     ==
       Bind(Deconstruct, b => Return(if b then 2*a + 1 else 2*a))(s').0;
     ==
@@ -412,7 +397,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifCorrectnessEvenCaseIff(n: nat, s: RNG, m: nat)
+  lemma ProbUnifCorrectnessEvenCaseIff(n: nat, s: RNG, m: nat)
     requires m % 2 == 0
     requires n > 0
     ensures
@@ -420,22 +405,13 @@ module UniformPowerOfTwoCorrectness {
       var b := Deconstruct(ProbUnif(n / 2)(s).1).0;
       ProbUnif(n)(s).0 == m <==> (!b && 2*a == m)
   {
-    var a := ProbUnif(n / 2)(s).0;
+    var a: nat := ProbUnif(n / 2)(s).0;
     var b := Deconstruct(ProbUnif(n / 2)(s).1).0;
     if ProbUnif(n)(s).0 == m {
       if (b && 2*a + 1 == m) {
-        assert A: (2*a + 1) / 2 == 1 by {
-          calc {
-            (2*a + 1) / 2;
-          == { LemmaAboutNatDivision(2*a + 1, 2); }
-            ((2*a + 1) as real / 2 as real).Floor;
-          == { assert (2*a + 1) as real / 2 as real == 1 as real; }
-            (1 as real).Floor;
-          ==
-            1;
-          }
+        assert m % 2 == 1 by {
+          DivModAddMultiple(2, 1, a);
         }
-        assert m % 2 == 1 by { assert m == 2*a + 1; reveal A; assert m / 2 == 1 by { DivisionSubstituteAlternative(2, m, 2*a + 1); } }
         assert m % 2 == 0;
         assert false;
       }
@@ -450,7 +426,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifOddCaseIff(n: nat, s: RNG, m: nat)
+  lemma ProbUnifOddCaseIff(n: nat, s: RNG, m: nat)
     requires m % 2 == 1
     requires n > 0
     ensures
@@ -603,7 +579,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifOddCase(n: nat, m: nat)
+  lemma ProbUnifOddCase(n: nat, m: nat)
     requires m % 2 == 1
     requires n > 0
     ensures mu(iset s | ProbUnif(n)(s).0 == m) == mu(iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) / 2.0
