@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
-      - run: DAFNY=dafny/dafny LANG=java bash scripts/build.sh
+      - run: DAFNY=dafny/dafny TARGET_LANG=java bash scripts/build.sh

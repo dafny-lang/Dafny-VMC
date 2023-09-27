@@ -8,10 +8,10 @@ then
   exit 1
 fi
 
-if [ -z ${LANG+x} ]
+if [ -z ${TARGET_LANG+x} ]
 then
-  echo "Set the LANG variable"
+  echo "Set the TARGET_LANG variable"
   exit 1
 fi
 
-$DAFNY build --target:$LANG interop/$LANG/DRandomCoin.$LANG interop/$LANG/DRandomUniform.$LANG src/Dafny-VMC.dfy -o build/$LANG/Dafny-VMC
+$DAFNY build --target:$TARGET_LANG interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG src/Dafny-VMC.dfy -o build/$TARGET_LANG/Dafny-VMC
