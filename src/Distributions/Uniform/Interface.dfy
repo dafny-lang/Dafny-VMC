@@ -4,13 +4,15 @@
 *******************************************************************************/
 
 include "../Base/Interface.dfy"
+include "../UniformPowerOfTwo/Interface.dfy"
 include "Model.dfy"
 
 module UniformInterface {
   import opened BaseInterface
   import opened UniformModel
+  import opened UniformPowerOfTwoInterface
 
-  trait {:termination false} IUniform extends TBase, IUnif {
+  trait {:termination false} IUniform extends TBase, IUniformPowerOfTwo {
 
     method Uniform(n: nat) returns (u: nat)
       modifies this
@@ -31,14 +33,6 @@ module UniformInterface {
       assert UniformModel.ProbUniformInterval(a, b)(old(s)) == (a + v, s);
       u := a + v;
     }
-
-  }
-
-  trait {:termination false} IUnif extends TBase {
-
-    method Unif(n: nat) returns (u: nat)
-      modifies this
-      ensures UniformModel.ProbUnif(n)(old(s)) == (u, s)
 
   }
 }
