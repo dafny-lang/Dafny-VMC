@@ -8,16 +8,26 @@ include "../../ProbabilisticProgramming/Monad.dfy"
 include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
+include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "Model.dfy"
 
 import opened WhileAndUntil
 import opened Independence
 import opened RandomNumberGenerator
+import opened Quantifier
 
-lemma {:axiom} ProbWhileGeometricTerminates()
+lemma ProbWhileGeometricTerminates()
   ensures
     var fst := (t: (bool, int)) => t.0;
     ProbWhileTerminates(ProbGeometricIter, fst)
+{
+  var fst := (t: (bool, int)) => t.0;
+  assert forall t :: IsIndepFn(ProbGeometricIter(t));
+  assert forall t :: ExistsStar(WhileAndUntil.Helper(ProbGeometricIter, fst, t)) by {
+    assume {:axiom} false;
+  }
+  EnsureProbWhileTerminates(ProbGeometricIter, fst);
+}
 
 // Equation (4.19)
 lemma {:axiom} ProbGeometricIsIndepFn()
