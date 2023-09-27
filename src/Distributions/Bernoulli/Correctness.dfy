@@ -8,16 +8,11 @@ include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/Independence.dfy"
 include "Model.dfy"
 
-import opened MeasureTheory
-import opened Independence
-import opened BernoulliModel
-import opened RandomNumberGenerator
+lemma {:axiom} ProbBernoulliIsIndepFn(p: MeasureTheory.Probability)
+  ensures Independence.IsIndepFn(BernoulliModel.ProbBernoulli(p))
 
-lemma {:axiom} ProbBernoulliIsIndepFn(p: Probability)
-  ensures IsIndepFn(ProbBernoulli(p))
-
-lemma {:axiom} BernoulliCorrectness(p: Probability)
+lemma {:axiom} BernoulliCorrectness(p: MeasureTheory.Probability)
   ensures
-    var e := iset s | ProbBernoulli(p)(s).0;
-    && e in event_space
-    && mu(e) == p
+    var e := iset s | BernoulliModel.ProbBernoulli(p)(s).0;
+    && e in RandomNumberGenerator.event_space
+    && RandomNumberGenerator.mu(e) == p

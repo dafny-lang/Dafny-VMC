@@ -7,17 +7,17 @@ include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "Model.dfy"
 
 module BaseInterface {
-  import opened RandomNumberGenerator
-  import opened BaseModel
+  import RandomNumberGenerator
+  import BaseModel
 
   method {:extern "DRandomCoin", "Coin"} ExternCoin() returns (b: bool)
 
   trait {:termination false} TBase {
-    ghost var s: RNG
+    ghost var s: RandomNumberGenerator.RNG
 
     method Coin() returns (b: bool)
       modifies this
-      ensures CoinModel(old(s)) == (b, s)
+      ensures BaseModel.CoinModel(old(s)) == (b, s)
     {
       b := ExternCoin();
       assume {:axiom} false;

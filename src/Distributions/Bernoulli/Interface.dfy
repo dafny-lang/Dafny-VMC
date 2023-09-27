@@ -7,10 +7,10 @@ include "../Base/Interface.dfy"
 include "Model.dfy"
 
 module BernoulliInterface {
-  import opened BernoulliModel
-  import opened BaseInterface
+  import BernoulliModel
+  import BaseInterface
 
-  trait {:termination false} IBernoulli extends TBase {
+  trait {:termination false} IBernoulli extends BaseInterface.TBase {
 
     method Bernoulli(p: real) returns (c: bool)
       modifies this
