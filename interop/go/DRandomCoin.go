@@ -1,16 +1,16 @@
-package BaseInterfacexxx
+package BaseInterface
 
 import (
 	"math/rand"
 )
 
-var r = rand.New(rand.NewSource(99))
+var r = rand.New()
 
-type FOO struct {}
+type DRandomCoin_ struct {}
 
-var DRandomCoin = FOO{}
+var DRandomCoin = DRandomCoin_{}
 
-func (d FOO) Coin() bool {
+func (d DRandomCoin_) Coin() bool {
   return rand.Intn(2) == 1
 }
 

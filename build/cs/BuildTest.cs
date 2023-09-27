@@ -1,3 +1,3 @@
 using DafnyVMC;
 
-Console.WriteLine("Hello, World!");
+DRandomExternUniform d = new DRandomExternUniform();
