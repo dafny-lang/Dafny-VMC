@@ -191,4 +191,19 @@ module WhileAndUntil {
     EnsureProbUntilTerminates(b, c);
     assume {:axiom} ForAllStar(Helper3(b, c));
   }
+
+  // Theorem 43
+  lemma {:axiom} ReductionForProbWhileLoops(phi: A -> bool, b: A -> Hurd<A>, c: A -> bool)
+    requires forall a :: IsIndepFn(b(a))
+    requires ProbWhileTerminates(b, c)
+    requires ForallStar((s: RNG) => (forall n :: !c(ProbWhileCut(c, b, n, a)(s).0) ==> phi(ProbWhileCut(c, b, n, a)(s).0)))
+    ensures ForAllStar((s: RNG) => phi(ProbWhileCut(c, b, n, a)(s).0))
+
+  // Equation (3.34)
+  lemma {:axiom} ReductionForProbWhileLoopsSpecialCase(c: A -> bool, b: A -> Hurd<A>, a': A)
+    requires forall a: IsIndepFn(b(a))
+    requires ProbWhileTerminates(b, c)
+    ensures ForAllStar((s: RNG) => !c(ProbWhile(c, b, a)(s).0))
+
+
 }

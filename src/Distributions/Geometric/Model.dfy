@@ -13,16 +13,30 @@ import opened WhileAndUntil
 import opened Independence
 
 // Equation (4.18)
-function ProbGeometric(): Hurd<int> {
-  var fst := (t: (bool, int)) => t.0;
-  var f := (t: (bool, int)) => Return(t.1 - 1);
+function ProbGeometric(): (h: Hurd<nat>)
+  ensures forall s :: h(s) == ProbGeometricAlternative(s)
+{
+  var fst := (t: (bool, nat)) => t.0;
+  var f := (t: (bool, nat)) requires t.1 > 0 => Return(t.1 - 1);
   ProbWhileGeometricTerminates();
   var g := ProbWhile(fst, ProbGeometricIter, (true, 0));
   Bind(g, f)
 }
 
+function ProbGeometricAlternative(s: RNG, c: nat := 0): (t: (nat, RNG)) 
+  ensures !s(t.0)
+{
+  assume {:axiom} false; // Assume termination
+  var (b, s) := Deconstruct(s);
+
+  if b then
+    ProbGeometricAlternative(s, c+1)
+  else
+    (c, s)
+}
+
 // Equation (4.17)
-function ProbGeometricIter(t: (bool, int)): (f: Hurd<(bool, int)>)
+function ProbGeometricIter(t: (bool, int)): (f: Hurd<(bool, nat)>)
   ensures forall s :: f(s) == ((Head(s), t.1 + 1), Tail(s))
   ensures IsIndepFn(f)
 {

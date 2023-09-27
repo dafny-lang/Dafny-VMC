@@ -18,10 +18,10 @@ import opened Quantifier
 
 lemma ProbWhileGeometricTerminates()
   ensures
-    var fst := (t: (bool, int)) => t.0;
+    var fst := (t: (bool, nat)) => t.0;
     ProbWhileTerminates(ProbGeometricIter, fst)
 {
-  var fst := (t: (bool, int)) => t.0;
+  var fst := (t: (bool, nat)) => t.0;
   assert forall t :: IsIndepFn(ProbGeometricIter(t));
   assert forall t :: ExistsStar(WhileAndUntil.Helper(ProbGeometricIter, fst, t)) by {
     assume {:axiom} false;
@@ -38,4 +38,4 @@ lemma {:axiom} ProbGeometricCorrectness(n: nat)
   ensures
     var e := iset s | ProbGeometric()(s).0 == n;
     && e in event_space
-    && mu(e) == Helper.RealPower(1.0 / 2.0, n + 1)
+    && mu(e) == Helper.RealPower(0.5, n + 1)
