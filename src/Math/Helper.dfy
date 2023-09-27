@@ -132,7 +132,8 @@ module Helper {
   }
 
   lemma MultiplicationSubstitute(x: real, a: real, b: real)
-    ensures a == b ==> (a * x == b * x)
+    requires a == b
+    ensures a * x == b * x
   {}
 
   lemma DivisionByTwo(x: real)

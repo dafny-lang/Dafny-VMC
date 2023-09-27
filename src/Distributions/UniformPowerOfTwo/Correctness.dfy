@@ -482,7 +482,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} ProbUnifEvenCase(n: nat, m: nat)
+  lemma ProbUnifEvenCase(n: nat, m: nat)
     requires m % 2 == 0
     requires n > 0
     ensures mu(iset s | ProbUnif(n)(s).0 == m) == mu(iset s | 2*ProbUnif(n / 2)(s).0 == m) / 2.0
@@ -491,9 +491,9 @@ module UniformPowerOfTwoCorrectness {
     var b_of := (s: RNG) => Deconstruct(ProbUnif(n / 2)(s).1).0;
     var A: iset<nat> := (iset x | 2*x == m);
     var E: iset<RNG> := (iset s | Deconstruct(s).0 == false);
-    var f := (s: RNG) => ProbUnif(n / 2)(s).1;
+    var f := ProbUnif1(n / 2);
 
-    var e1 := (iset s | ProbUnif(n / 2)(s).1 in E);
+    var e1 := (iset s | ProbUnif1(n / 2)(s) in E);
     var e2 := (iset s | ProbUnif(n / 2)(s).0 in A);
 
     assert Eq1: (iset s | !b_of(s)) == e1 by {
@@ -511,24 +511,28 @@ module UniformPowerOfTwoCorrectness {
       }
     }
 
-    assert Eq4: e1 == PreImage(f, E) by {
+    assert Eq4: e1 == PreImage(ProbUnif1(n / 2), E) by {
       forall s ensures ProbUnif(n / 2)(s).1 in E <==> f(s) in E {
       }
     }
 
-    assert E in event_space && mu(E) == 0.5 by {
+    assert EMeasure: E in event_space && mu(E) == 0.5 by {
       assert E == (iset s | Head(s) == false);
       HeadIsMeasurable(false);
     }
 
     assert Indep: mu(e1 * e2) == mu(e1) * mu(e2) by {
+      assert e1 == (iset s | ProbUnif(n / 2)(s).1 in E) by {
+        forall s ensures s in e1 <==> ProbUnif(n / 2)(s).1 in E {
+        }
+      }
       assert AreIndepEvents(event_space, mu, e1, e2) by {
         assert IsIndepFunction(ProbUnif(n / 2)) by {
           assert IsIndepFn(ProbUnif(n / 2)) by {
             ProbUnifIsIndepFn(n / 2);
           }
         }
-        assert E in event_space;
+        assert E in event_space by { reveal EMeasure; }
         assert IsIndepFunctionCondition(ProbUnif(n / 2), A, E);
       }
       AreIndepEventsConjunctElimination(e1, e2);
@@ -537,23 +541,22 @@ module UniformPowerOfTwoCorrectness {
     assert Prob: 0.5 == mu(e1) by {
       calc {
         0.5;
-      ==
+      == { reveal EMeasure; }
         mu(E);
-      == { ProbUnifIsMeasurePreserving(n / 2); }
-        mu(PreImage(f, E));
+      == { reveal EMeasure; ProbUnifIsMeasurePreserving(n / 2); }
+        mu(PreImage(ProbUnif1(n / 2), E));
       == { reveal Eq4; }
         mu(e1);
       }
     }
 
-    var p := (s: RNG) => s in (iset s | !b_of(s) && 2*a_of(s) == m) <==> s in (iset s | !b_of(s)) && s in (iset s | 2*a_of(s) == m);
-
-    assert Inter: forall s :: p(s) by {
+    assert Inter: (iset s | !b_of(s) && 2*a_of(s) == m) == (iset s | !b_of(s)) * (iset s | 2*a_of(s) == m) by {
       forall s ensures !b_of(s) && 2*a_of(s) == m <==> !b_of(s) && 2*a_of(s) == m {
       }
     }
 
     assert MulSub: mu(e1) * mu(e2) == 0.5 * mu(e2) by {
+      reveal EMeasure;
       assert mu(e1) == 0.5 by { reveal Prob; }
       assert mu(e1) == 0.5 ==> mu(e1) * mu(e2) == 0.5 * mu(e2);
     }
@@ -562,7 +565,7 @@ module UniformPowerOfTwoCorrectness {
       mu(iset s | ProbUnif(n)(s).0 == m);
     == { ProbUnifEvenCaseSetEquality(n, m); }
       mu(iset s | !b_of(s) && 2*a_of(s) == m);
-    == { assert (iset s | !b_of(s) && 2*a_of(s) == m) == (iset s | !b_of(s)) * (iset s | 2*a_of(s) == m) by { reveal Inter; } }
+    == {  reveal Inter; }
       mu((iset s | !b_of(s)) * (iset s | 2*a_of(s) == m));
     == { reveal Eq1; reveal Eq2; }
       mu(e1 * e2);
