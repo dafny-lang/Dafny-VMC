@@ -1,21 +1,21 @@
 # VMC: a Library for Verified Monte Carlo Algorithms
 
-The `DRandom` module introduces utils for probabilistic reasoning in Dafny. At the moment, the API is intentionally limited in scope, and only supports compilation to Java. For the future, we plan to extend both the functionality and the range of supported languages.
+The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At the moment, the API is intentionally limited in scope, and only supports compilation to Java. For the future, we plan to extend both the functionality and the range of supported languages.
 
-To use `DRandom` in your code, you must:
+To use `DafnyVMC` in your code, you must:
 
-1. `include` and `import` the `DRandom` module as you would any other library module
+1. `include` and `import` the `DafnyVMC` module as you would any other library module
 2. incorporate the corresponding language-specific implementation file when building or running your program
 
 For example, to run the examples in the `docs` directory, run one of the following.
 
 ```bash
 # C#
-$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/DRandomCoin.cs --input src/DRandomUniform.cs
-$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/DRandomCoin.cs --input src/DRandomUniform.cs
+$ dafny run docs/ExamplesFoundational.dfy --target:cs --input interop/cs/DRandomCoin.cs --input interop/cs/DRandomUniform.cs
+$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input interop/cs/DRandomCoin.cs --input interop/cs/DRandomUniform.cs
 # Java
-$ dafny run docs/ExamplesFoundational.dfy --target:java --input src/DRandomCoin.java --input src/DRandomUniform.java
-$ dafny run docs/ExamplesExternUniform.dfy --target:java --input src/DRandomCoin.java --input src/DRandomUniform.java
+$ dafny run docs/ExamplesFoundational.dfy --target:java --input interop/java/DRandomCoin.java --input interop/java/DRandomUniform.java
+$ dafny run docs/ExamplesExternUniform.dfy --target:java --input interop/java/DRandomCoin.java --input interop/java/DRandomUniform.java
 ```
 
 (If you aren't using `dafny run` to run your program,
@@ -27,10 +27,10 @@ To run the statistical tests, run one of the following:
 
 ```bash
 # C#
-$ dafny test --target:cs src/DRandomCoin.cs src/DRandomUniform.cs tests/TestsFoundational.dfy
-$ dafny test --target:cs src/DRandomCoin.cs src/DRandomUniform.cs tests/TestsExternUniform.dfy
+$ dafny test --target:cs interop/cs/DRandomCoin.cs interop/cs/DRandomUniform.cs tests/TestsFoundational.dfy
+$ dafny test --target:cs interop/cs/DRandomCoin.cs interop/cs/DRandomUniform.cs tests/TestsExternUniform.dfy
 # Java#
-$ dafny test --target:java src/DRandomCoin.java src/DRandomUniform.java tests/TestsFoundational.dfy
-$ dafny test --target:java src/DRandomCoin.java src/DRandomUniform.java tests/TestsExternUniform.dfy
+$ dafny test --target:java interop/cs/DRandomCoin.java interop/cs/DRandomUniform.java tests/TestsFoundational.dfy
+$ dafny test --target:java interop/cs/DRandomCoin.java interop/cs/DRandomUniform.java tests/TestsExternUniform.dfy
 
 ```
