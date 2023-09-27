@@ -7,10 +7,10 @@ include "../Uniform/Interface.dfy"
 include "Model.dfy"
 
 module BernoulliRationalInterface {
-  import opened UniformInterface
+  import UniformInterface
   import BernoulliRationalModel
   
-  trait {:termination false} IBernoulliRational extends IUniform {
+  trait {:termination false} IBernoulliRational extends UniformInterface.IUniform {
 
     method BernoulliRational(m: nat, n: nat) returns (c: bool)
       modifies this
