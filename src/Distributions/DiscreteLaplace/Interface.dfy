@@ -8,11 +8,11 @@ include "../Uniform/Interface.dfy"
 include "../BernoulliExpNeg/Interface.dfy"
 
 module DiscreteLaplaceInterface {
-  import opened BernoulliInterface
-  import opened UniformInterface
-  import opened BernoulliExpNegInterface
+  import BernoulliInterface
+  import UniformInterface
+  import BernoulliExpNegInterface
 
-  trait {:termination false} IDiscreteLaplace extends IBernoulli, IUniform, IBernoulliExpNeg {
+  trait {:termination false} IDiscreteLaplace extends BernoulliInterface.IBernoulli, UniformInterface.IUniform, BernoulliExpNegInterface.IBernoulliExpNeg {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method DiscreteLaplace(s: nat, t: nat) returns (z: int)
