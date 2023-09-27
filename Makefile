@@ -1,3 +1,3 @@
 all:
 install:
-        cp -R src/* ../install/lib/
+	cp -R src/* ../install/lib/
