@@ -18,7 +18,7 @@ module MeasureTheory {
   }
 
   ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
-    iset x | (exists n | n >= i :: x in f(n)) :: x
+    iset n: nat | n >= i, x <- f(n) :: x
   }
 
   ghost function CountableSum(f: nat -> real, i: nat := 0): real {
@@ -118,6 +118,10 @@ module MeasureTheory {
     requires forall n | n >= i :: f(n) == 0.0
     ensures CountableSum(f, i) == 0.0
 
+  lemma CountableUnionSplit<T(!new)>(f: nat -> iset<T>, i: nat)
+    ensures CountableUnion(f, i) == f(i) + CountableUnion(f, i + 1)
+  {}
+
   lemma BinaryUnion<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, e1: iset<T>, e2: iset<T>)
     requires IsSigmaAlgebra(event_space, sample_space)
     requires e1 in event_space
@@ -128,8 +132,9 @@ module MeasureTheory {
     assert CountableUnion(f) == e1 + e2 by {
       calc {
         CountableUnion(f);
-        iset x | (exists n | n >= 0 :: x in f(n)) :: x;
-        (iset x | x in f(0) :: x) + (iset x | x in f(1) :: x) + (iset x | (exists n | n >= 2 :: x in f(n)) :: x);
+        == { CountableUnionSplit(f, 0); }
+        e1 + CountableUnion(f, 1);
+        == { CountableUnionSplit(f, 1); }
         e1 + e2;
       }
     }
