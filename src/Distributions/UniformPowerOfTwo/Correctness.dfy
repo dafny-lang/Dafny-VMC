@@ -92,20 +92,13 @@ module UniformPowerOfTwoCorrectness {
   }
 
   // Equation (4.8)
-  lemma {:vcs_split_on_every_assert} UnifCorrectness(n: nat, k: nat)
+  lemma UnifCorrectness(n: nat, k: nat)
     requires (n == 0 && k == 0) || (k != 0 && Power(2, k - 1) <= n < Power(2, k))
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
   {
     forall m: nat ensures UnifIsCorrect(n, k, m) {
       if (n == 0 && k == 0) {
-        assert Power(2, k) == 1;
-        if m == 0 {
-          assert (iset s | ProbUnif(n)(s).0 == m) == (iset s {:trigger true} | true);
-          RNGHasMeasure();
-        } else {
-          assert (iset s | ProbUnif(n)(s).0 == m) == iset{};
-          RNGHasMeasure();
-        }
+        UnifCorrectnessCaseNZeroKZero(m);
       } else {
         assert (k != 0 && Power(2, k - 1) <= n < Power(2, k));
         assert n > 0;
@@ -118,155 +111,213 @@ module UniformPowerOfTwoCorrectness {
           assert n == 1;
           assert n / 2 == 0;
           if m % 2 == 0 {
-            calc {
-              mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCaseSplit(n, m); }
-              mu(iset s | 2*ProbUnif(n / 2)(s).0 == m) / 2.0;
-            == { assert (iset s | 2*ProbUnif(n / 2)(s).0 == m) == (iset s {:trigger 0 == m} | 0 == m); }
-              mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
-            }
-            if m < Power(2, k) {
-              assert m == 0;
-              calc {
-                mu(iset s | ProbUnif(n)(s).0 == m);
-              ==
-                mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
-              == { assert (iset s: RNG {:trigger 0 == m} | 0 == m) == (iset s {:trigger true} | true); }
-                mu(iset s {:trigger true} | true) / 2.0;
-              == { RNGHasMeasure(); }
-                1.0 / 2.0;
-              == { assert 2.0 == 2 as real; DivisionSubstitute(1.0, 2.0, 2 as real); }
-                1.0 / (2 as real);
-              == { assert k == 1; assert Power(2, k) == 2; assert Power(2, k) as real == 2 as real; DivisionSubstitute(1.0, 2 as real, Power(2, k) as real); }
-                1.0 / (Power(2, k) as real);
-              }
-            } else {
-              assert m != 0;
-              calc {
-                mu(iset s | ProbUnif(n)(s).0 == m);
-              ==
-                mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
-              == { assert (iset s: RNG {:trigger 0 == m} | 0 == m) == iset{}; }
-                mu(iset {}) / 2.0;
-              == { RNGHasMeasure(); }
-                0.0 / 2.0;
-              ==
-                0.0;
-              }
-            }
+            UnifCorrectnessCaseKOneMEven(n, m);
           } else {
             assert m % 2 == 1;
-            calc {
-              mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCaseSplit(n, m); }
-              mu(iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
-            == { assert (iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) == (iset s {:trigger 1 == m} | 1 == m); }
-              mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
-            }
-            if m < Power(2, k) {
-              assert m == 1;
-              calc {
-                mu(iset s | ProbUnif(n)(s).0 == m);
-              ==
-                mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
-              == { assert (iset s: RNG {:trigger 1 == m} | 1 == m) == (iset s {:trigger true} | true); }
-                mu(iset s {:trigger true} | true) / 2.0;
-              == { RNGHasMeasure(); DivisionSubstituteAlternativeReal(2.0, mu(iset s {:trigger true} | true), 1.0); }
-                1.0 / 2.0;
-              == { assert k == 1; assert 2.0 == 2 as real == Power(2, k) as real; DivisionSubstitute(1.0, 2.0, Power(2, k) as real); }
-                1.0 / (Power(2, k) as real);
-              }
-            } else {
-              assert m != 1;
-              calc {
-                mu(iset s: RNG | ProbUnif(n)(s).0 == m);
-              ==
-                mu(iset s: RNG {:trigger 1 == m} | 1 == m) / 2.0;
-              == { assert (iset s: RNG {:trigger 1 == m} | 1 == m) == iset{}; }
-                mu(iset {}) / 2.0;
-              == { RNGHasMeasure(); }
-                0.0 / 2.0;
-              ==
-                0.0;
-              }
-            }
+            UnifCorrectnessCaseKOneMOdd(n, m);
           }
         } else {
           assert Power(2, k - 1) / 2 <= n / 2 < Power(2, k) / 2;
           assert Power(2, k - 2) <= n / 2 < Power(2, k - 1);
-
           var u := m / 2;
           if m % 2 == 0 {
-            assert m == 2 * u;
-            calc {
-              mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCaseSplit(n, m); }
-              mu(iset s | 2 * ProbUnif(n / 2)(s).0 == m) / 2.0;
-            == { assert (iset s | 2 * ProbUnif(n / 2)(s).0 == m) == (iset s | ProbUnif(n / 2)(s).0 == u); }
-              mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
-            }
-            if m < Power(2, k) {
-              assert mu(iset s | ProbUnif(n / 2)(s).0 == u) == 1.0 / (Power(2, k - 1) as real) by {
-                assert u < Power(2, k - 1);
-                UnifCorrectness(n / 2, k - 1);
-                assert UnifIsCorrect(n / 2, k - 1, u);
-              }
-              calc {
-                mu(iset s | ProbUnif(n)(s).0 == m);
-              ==
-                mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
-              ==
-                (1.0 / Power(2, k - 1) as real) / 2.0;
-              ==
-                1.0 / (Power(2, k - 1) as real * 2.0);
-              ==
-                1.0 / (Power(2, k - 1) * 2) as real;
-              ==
-                1.0 / (Power(2, k) as real);
-              }
-            } else {
-              assert u >= Power(2, k - 1);
-              UnifCorrectness(n / 2, k - 1);
-              assert UnifIsCorrect(n / 2, k - 1, u);
-              assert mu(iset s | ProbUnif(n)(s).0 == m) == 0.0;
-            }
+            UnifCorrectnessCaseKGreaterOneMEven(n, k, m);
           } else {
-            assert m == 2 * u + 1;
-            calc {
-              mu(iset s | ProbUnif(n)(s).0 == m);
-            == { ProbUnifCaseSplit(n, m); }
-              mu(iset s | 2 * ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
-            == { assert (iset s | 2 * ProbUnif(n / 2)(s).0 + 1 == m) == (iset s | ProbUnif(n / 2)(s).0 == u); }
-              mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
-            }
-            if m < Power(2, k) {
-              assert mu(iset s | ProbUnif(n / 2)(s).0 == u) == 1.0 / (Power(2, k - 1) as real) by {
-                assert u < Power(2, k - 1);
-                UnifCorrectness(n / 2, k - 1);
-                assert UnifIsCorrect(n / 2, k - 1, u);
-              }
-              calc {
-                mu(iset s | ProbUnif(n)(s).0 == m);
-              ==
-                mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
-              ==
-                (1.0 / Power(2, k - 1) as real) / 2.0;
-              ==
-                1.0 / (Power(2, k - 1) as real * 2.0);
-              ==
-                1.0 / (Power(2, k - 1) * 2) as real;
-              ==
-                1.0 / (Power(2, k) as real);
-              }
-            } else {
-              assert u >= Power(2, k - 1);
-              UnifCorrectness(n / 2, k - 1);
-              assert UnifIsCorrect(n / 2, k - 1, u);
-              assert mu(iset s | ProbUnif(n)(s).0 == m) == 0.0;
-            }
+            UnifCorrectnessCaseKGreaterOneMOdd(n, k, m);
           }
         }
       }
+    }
+  }
+
+  lemma UnifCorrectnessCaseNZeroKZero(m: nat)
+    ensures UnifIsCorrect(0, 0, m)
+  {
+    assert Power(2, 0) == 1;
+    if m == 0 {
+      assert (iset s | ProbUnif(0)(s).0 == m) == (iset s {:trigger true} | true);
+      RNGHasMeasure();
+    } else {
+      assert (iset s | ProbUnif(0)(s).0 == m) == iset{};
+      RNGHasMeasure();
+    }
+  }
+
+  lemma UnifCorrectnessCaseKOneMEven(n: nat, m: nat)
+    requires 1 <= n < 2
+    requires m % 2 == 0
+    ensures UnifIsCorrect(n, 1, m)
+  {
+    calc {
+      mu(iset s | ProbUnif(n)(s).0 == m);
+    == { ProbUnifCaseSplit(n, m); }
+      mu(iset s | 2*ProbUnif(n / 2)(s).0 == m) / 2.0;
+    == { assert (iset s | 2*ProbUnif(n / 2)(s).0 == m) == (iset s {:trigger 0 == m} | 0 == m); }
+      mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
+    }
+    if m < Power(2, 1) {
+      assert m == 0;
+      calc {
+        mu(iset s | ProbUnif(n)(s).0 == m);
+      ==
+        mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
+      == { assert (iset s: RNG {:trigger 0 == m} | 0 == m) == (iset s {:trigger true} | true); }
+        mu(iset s {:trigger true} | true) / 2.0;
+      == { RNGHasMeasure(); }
+        1.0 / 2.0;
+      ==
+        1.0 / (2 as real);
+      == { assert Power(2, 1) == 2; }
+        1.0 / (Power(2, 1) as real);
+      }
+    } else {
+      assert m != 0;
+      calc {
+        mu(iset s | ProbUnif(n)(s).0 == m);
+      ==
+        mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
+      == { assert (iset s: RNG {:trigger 0 == m} | 0 == m) == iset{}; }
+        mu(iset {}) / 2.0;
+      == { RNGHasMeasure(); }
+        0.0 / 2.0;
+      ==
+        0.0;
+      }
+    }
+  }
+
+  lemma UnifCorrectnessCaseKOneMOdd(n: nat, m: nat)
+    requires 1 <= n < 2
+    requires m % 2 == 1
+    ensures UnifIsCorrect(n, 1, m)
+  {
+    calc {
+        mu(iset s | ProbUnif(n)(s).0 == m);
+      == { ProbUnifCaseSplit(n, m); }
+        mu(iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
+      == { assert (iset s | 2*ProbUnif(n / 2)(s).0 + 1 == m) == (iset s {:trigger 1 == m} | 1 == m); }
+        mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
+      }
+      if m < Power(2, 1) {
+        assert m == 1;
+        calc {
+          mu(iset s | ProbUnif(n)(s).0 == m);
+        ==
+          mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
+        == { assert (iset s: RNG {:trigger 1 == m} | 1 == m) == (iset s {:trigger true} | true); }
+          mu(iset s {:trigger true} | true) / 2.0;
+        == { RNGHasMeasure(); DivisionSubstituteAlternativeReal(2.0, mu(iset s {:trigger true} | true), 1.0); }
+          1.0 / 2.0;
+        ==
+          1.0 / (Power(2, 1) as real);
+        }
+      } else {
+        assert m != 1;
+        calc {
+          mu(iset s: RNG | ProbUnif(n)(s).0 == m);
+        ==
+          mu(iset s: RNG {:trigger 1 == m} | 1 == m) / 2.0;
+        == { assert (iset s: RNG {:trigger 1 == m} | 1 == m) == iset{}; }
+          mu(iset {}) / 2.0;
+        == { RNGHasMeasure(); }
+          0.0 / 2.0;
+        ==
+          0.0;
+        }
+    }
+  }
+
+  lemma UnifCorrectnessCaseKGreaterOneMEven(n: nat, k: nat, m: nat)
+    requires k >= 2
+    requires Power(2, k - 1) <= n < Power(2, k)
+    requires m % 2 == 0
+    ensures UnifIsCorrect(n, k, m)
+  {
+    var u := m / 2;
+    assert m == 2 * u;
+    calc {
+      mu(iset s | ProbUnif(n)(s).0 == m);
+    == { ProbUnifCaseSplit(n, m); }
+      mu(iset s | 2 * ProbUnif(n / 2)(s).0 == m) / 2.0;
+    == { assert (iset s | 2 * ProbUnif(n / 2)(s).0 == m) == (iset s | ProbUnif(n / 2)(s).0 == u); }
+      mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
+    }
+    if m < Power(2, k) {
+      assert mu(iset s | ProbUnif(n / 2)(s).0 == u) == 1.0 / (Power(2, k - 1) as real) by {
+        assert u < Power(2, k - 1);
+        UnifCorrectness(n / 2, k - 1);
+        assert UnifIsCorrect(n / 2, k - 1, u);
+      }
+      calc {
+        mu(iset s | ProbUnif(n)(s).0 == m);
+      ==
+        mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
+      ==
+        (1.0 / Power(2, k - 1) as real) / 2.0;
+      == { PowerOfTwoLemma(k - 1); }
+        1.0 / (Power(2, k) as real);
+      }
+      assert UnifIsCorrect(n / 2, k - 1, u);
+    } else {
+      assert u >= Power(2, k - 1);
+      UnifCorrectness(n / 2, k - 1);
+      assert UnifIsCorrect(n / 2, k - 1, u);
+      assert mu(iset s | ProbUnif(n)(s).0 == m) == 0.0;
+      assert UnifIsCorrect(n / 2, k - 1, u);
+    }
+  }
+
+  lemma UnifCorrectnessCaseKGreaterOneMOdd(n: nat, k: nat, m: nat)
+    requires k >= 2
+    requires Power(2, k - 1) <= n < Power(2, k)
+    requires m % 2 == 1
+    ensures UnifIsCorrect(n, k, m)
+  {
+    var u := m / 2;
+    assert m == 2 * u + 1;
+    calc {
+      mu(iset s | ProbUnif(n)(s).0 == m);
+    == { ProbUnifCaseSplit(n, m); }
+      mu(iset s | 2 * ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
+    == { assert (iset s | 2 * ProbUnif(n / 2)(s).0 + 1 == m) == (iset s | ProbUnif(n / 2)(s).0 == u); }
+      mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
+    }
+    if m < Power(2, k) {
+      assert mu(iset s | ProbUnif(n / 2)(s).0 == u) == 1.0 / (Power(2, k - 1) as real) by {
+        assert u < Power(2, k - 1);
+        UnifCorrectness(n / 2, k - 1);
+        assert UnifIsCorrect(n / 2, k - 1, u);
+      }
+      calc {
+        mu(iset s | ProbUnif(n)(s).0 == m);
+      ==
+        mu(iset s | ProbUnif(n / 2)(s).0 == u) / 2.0;
+      ==
+        (1.0 / Power(2, k - 1) as real) / 2.0;
+      == { PowerOfTwoLemma(k - 1); }
+        1.0 / (Power(2, k) as real);
+      }
+      assert UnifIsCorrect(n, k, m);
+    } else {
+      assert u >= Power(2, k - 1);
+      UnifCorrectness(n / 2, k - 1);
+      assert UnifIsCorrect(n / 2, k - 1, u);
+      assert mu(iset s | ProbUnif(n)(s).0 == m) == 0.0;
+      assert UnifIsCorrect(n, k, m);
+    }
+  }
+
+  lemma PowerOfTwoLemma(k: nat)
+    ensures (1.0 / Power(2, k) as real) / 2.0 == 1.0 / (Power(2, k + 1) as real)
+  {
+    calc {
+      (1.0 / Power(2, k) as real) / 2.0;
+      == { DivDivToDivMul(1.0, Power(2, k) as real, 2.0); }
+        1.0 / (Power(2, k) as real * 2.0);
+      == { NatMulNatToReal(Power(2, k), 2); }
+        1.0 / (Power(2, k) * 2) as real;
+      ==
+        1.0 / (Power(2, k + 1) as real);
     }
   }
 

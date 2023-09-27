@@ -136,6 +136,13 @@ module Helper {
     ensures a * x == b * x
   {}
 
+  lemma InverseSubstitute(x: real, y: real)
+    requires x != 0.0
+    requires y != 0.0
+    requires x == y
+    ensures 1.0 / x == 1.0 / y
+  {}
+
   lemma DivisionByTwo(x: real)
     ensures 0.5 * x == x / 2.0
   {}
@@ -273,5 +280,15 @@ module Helper {
   lemma AdditionOfFractions(x: real, y: real, z: real)
     requires z != 0.0
     ensures (x / z) + (y / z) == (x + y) / z
+  {}
+
+  lemma DivDivToDivMul(x: real, y: real, z: real)
+    requires y != 0.0
+    requires z != 0.0
+    ensures (x / y) / z == x / (y * z)
+  {}
+
+  lemma NatMulNatToReal(x: nat, y: nat)
+    ensures (x * y) as real == (x as real) * (y as real)
   {}
 }
