@@ -1,4 +1,4 @@
-name: 'Build C#'
+name: 'Audit'
 on:
   workflow_dispatch:
   pull_request:
