@@ -81,15 +81,19 @@ module UniformPowerOfTwoCorrectness {
     i
   }
 
-  /*******
-   Lemmas
-  *******/
-
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
   {
     RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
+
+  function ProbUnif1(n: nat): RandomNumberGenerator.RNG -> RandomNumberGenerator.RNG {
+    (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n)(s).1
+  }
+
+  /*******
+   Lemmas
+  *******/
 
   // Equation (4.8)
   lemma UnifCorrectness(n: nat, k: nat)
@@ -331,10 +335,6 @@ module UniformPowerOfTwoCorrectness {
     ensures
       var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
       Quantifier.ForAllStar(p)
-
-  function ProbUnif1(n: nat): RandomNumberGenerator.RNG -> RandomNumberGenerator.RNG {
-    (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n)(s).1
-  }
 
   lemma ProbUnifIsMeasurePreserving(n: nat)
     ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, ProbUnif1(n))
@@ -732,6 +732,5 @@ module UniformPowerOfTwoCorrectness {
       ProbUnifOddCase(n, m);
     }
   }
-
 
 }

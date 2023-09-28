@@ -14,6 +14,10 @@ module BernoulliCorrectness {
   import Independence
   import BernoulliModel
   
+  /*******
+   Lemmas
+  *******/
+
   lemma {:axiom} ProbBernoulliIsIndepFn(p: MeasureTheory.Probability)
     ensures Independence.IsIndepFn(BernoulliModel.ProbBernoulli(p))
 
