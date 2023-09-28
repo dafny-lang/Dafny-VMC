@@ -13,4 +13,5 @@ jobs:
       - run: bash scripts/prep.sh
       - run: cp audit.log audit_.log
       - run: DAFNY=dafny/dafny bash scripts/audit.sh
+      - run: cat audit.log
       - run: diff audit.log audit_.log
