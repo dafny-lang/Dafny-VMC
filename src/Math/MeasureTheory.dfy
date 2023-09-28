@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 module MeasureTheory {
   /************
@@ -21,7 +21,7 @@ module MeasureTheory {
     iset n: nat | n >= i, x <- f(n) :: x
   }
 
-  ghost function CountableSum(f: nat -> real, i: nat := 0): real {
+  function CountableSum(f: nat -> real, i: nat := 0): real {
     assume {:axiom} false;
     f(i) + CountableSum(f, i+1)
   }
@@ -71,7 +71,7 @@ module MeasureTheory {
   }
 
   // Definition 13
-  ghost predicate AreIndepEvents<T>(event_space: iset<iset<T>>, mu: iset<T> -> real, e1: iset<T>, e2: iset<T>) {
+  predicate AreIndepEvents<T>(event_space: iset<iset<T>>, mu: iset<T> -> real, e1: iset<T>, e2: iset<T>) {
     && (e1 in event_space)
     && (e2 in event_space)
     && (mu(e1 * e2) == mu(e1) * mu(e2))
@@ -107,13 +107,13 @@ module MeasureTheory {
         }
         calc {
           CountableSum((n: nat) => mu(f(n)))
-          ==
+       ==
           mu(f(0)) + CountableSum((n: nat) => mu(f(n)), 1)
-          ==
+       ==
           mu(f(0)) + mu(f(1)) + CountableSum((n: nat) => mu(f(n)), 2)
-          ==
+       ==
           mu(e1) + mu(e2) + CountableSum((n: nat) => mu(f(n)), 2)
-          ==
+       ==
           mu(e1) + mu(e2);
         }
       }
@@ -142,9 +142,9 @@ module MeasureTheory {
     assert CountableUnion(f) == e1 + e2 by {
       calc {
         CountableUnion(f);
-        == { CountableUnionSplit(f, 0); }
+      == { CountableUnionSplit(f, 0); }
         e1 + CountableUnion(f, 1);
-        == { CountableUnionSplit(f, 1); }
+      == { CountableUnionSplit(f, 1); }
         e1 + e2;
       }
     }
