@@ -5,7 +5,7 @@
 
 // RUN: %verify "%s"
 
-include "../src/Dafny-VMC.dfy"
+include "../../src/Dafny-VMC.dfy"
 
 module RandomExamples {
   import DafnyVMC

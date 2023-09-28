@@ -167,15 +167,3 @@ assert B by {
       </td>
    </tr>
 </table>
-
-
-
-
-
-
-
-
-
-
-
-
