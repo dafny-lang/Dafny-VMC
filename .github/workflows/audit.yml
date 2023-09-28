@@ -1,0 +1,20 @@
+name: 'Build C#'
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run audit
+        run: scripts/audit.sh
+      - name: Commit audit
+        run: |
+          git config --global user.name 'John Tristan'
+          git config --global user.email 'jtristan@users.noreply.github.com'
+          git commit -am "Automated audit report"
+          git push
