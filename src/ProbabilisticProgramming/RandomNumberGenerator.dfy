@@ -6,7 +6,7 @@
 include "../Math/MeasureTheory.dfy"
 
 module RandomNumberGenerator {
-  import opened MeasureTheory
+  import MeasureTheory
 
   /************
    Definitions
@@ -27,5 +27,5 @@ module RandomNumberGenerator {
   *******/
 
   lemma {:axiom} RNGHasMeasure()
-    ensures IsProbability(event_space, sample_space, mu)
+    ensures MeasureTheory.IsProbability(event_space, sample_space, mu)
 }
