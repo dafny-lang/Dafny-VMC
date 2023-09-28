@@ -8,13 +8,13 @@
 include "../src/Dafny-VMC.dfy"
 
 module RandomExamples {
-  import opened DafnyVMC
+  import DafnyVMC
 
   method Main()
     decreases *
   {
     var n := 100000;
-    var r: DRandomExternUniform := new DRandomExternUniform();
+    var r: DafnyVMC.DRandomExternUniform := new DafnyVMC.DRandomExternUniform();
 
     var t := 0;
     for i := 0 to n {
