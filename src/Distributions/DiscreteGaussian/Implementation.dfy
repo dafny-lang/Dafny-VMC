@@ -6,11 +6,9 @@
 include "Interface.dfy"
 
 module DiscreteGaussianImplementation {
-  import opened DiscreteGaussianInterface
-  import opened DiscreteLaplaceInterface
-  import opened BernoulliExpNegInterface
+  import DiscreteGaussianInterface
 
-  trait {:termination false} TDiscreteGaussian extends IDiscreteGaussian {
+  trait {:termination false} TDiscreteGaussian extends DiscreteGaussianInterface.IDiscreteGaussian {
 
     // Based on Algorithm 3 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     // Note that we take sigma as a parameter, not sigma^2, to avoid square roots.

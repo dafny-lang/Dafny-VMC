@@ -8,19 +8,19 @@ include "Interface.dfy"
 include "Model.dfy"
 
 module BernoulliImplementation {
-  import opened MeasureTheory
-  import opened BernoulliModel
-  import opened BernoulliInterface
+  import MeasureTheory
+  import BernoulliModel
+  import BernoulliInterface
 
-  trait {:termination false} TBernoulli extends IBernoulli {
+  trait {:termination false} TBernoulli extends BernoulliInterface.IBernoulli {
 
     method Bernoulli(p: real) returns (c: bool)
       modifies this
       decreases *
       requires 0.0 <= p <= 1.0
-      ensures ProbBernoulli(p)(old(s)) == (c, s)
+      ensures BernoulliModel.ProbBernoulli(p)(old(s)) == (c, s)
     {
-      var q: Probability := p as real;
+      var q: MeasureTheory.Probability := p as real;
 
       var b := Coin();
       if b {
@@ -38,7 +38,7 @@ module BernoulliImplementation {
       }
 
       while true
-        invariant ProbBernoulli(p)(old(s)) == ProbBernoulli(q)(s)
+        invariant BernoulliModel.ProbBernoulli(p)(old(s)) == BernoulliModel.ProbBernoulli(q)(s)
         decreases *
       {
         b := Coin();

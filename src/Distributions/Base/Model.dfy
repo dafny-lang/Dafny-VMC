@@ -7,10 +7,10 @@ include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 
 module BaseModel {
-  import opened RandomNumberGenerator
-  import opened Monad
+  import RandomNumberGenerator
+  import Monad
 
-  function CoinModel(s: RNG): (bool, RNG) {
+  function CoinModel(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
     Monad.Deconstruct(s)
   }
 }

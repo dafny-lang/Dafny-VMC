@@ -6,9 +6,9 @@
 include "../Bernoulli/Interface.dfy"
 
 module BernoulliExpNegInterface {
-  import opened BernoulliInterface
+  import BernoulliInterface
   
-  trait {:termination false} IBernoulliExpNeg extends IBernoulli {
+  trait {:termination false} IBernoulliExpNeg extends BernoulliInterface.IBernoulli {
 
     method BernoulliExpNeg(gamma: real) returns (c: bool)
       modifies this

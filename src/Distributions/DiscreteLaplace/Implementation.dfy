@@ -6,9 +6,9 @@
 include "Interface.dfy"
 
 module DiscreteLaplaceImplementation {
-  import opened DiscreteLaplaceInterface
+  import DiscreteLaplaceInterface
 
-  trait {:termination false} TDiscreteLaplace extends IDiscreteLaplace {
+  trait {:termination false} TDiscreteLaplace extends DiscreteLaplaceInterface.IDiscreteLaplace {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method DiscreteLaplace(s: nat, t: nat) returns (z: int)

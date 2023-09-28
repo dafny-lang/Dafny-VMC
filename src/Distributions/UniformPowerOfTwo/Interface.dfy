@@ -7,10 +7,10 @@ include "../Base/Interface.dfy"
 include "Model.dfy"
 
 module UniformPowerOfTwoInterface {
-  import opened BaseInterface
-  import opened UniformPowerOfTwoModel
+  import BaseInterface
+  import UniformPowerOfTwoModel
 
-  trait {:termination false} IUniformPowerOfTwo extends TBase {
+  trait {:termination false} IUniformPowerOfTwo extends BaseInterface.TBase {
 
     method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this

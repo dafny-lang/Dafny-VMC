@@ -7,22 +7,22 @@ include "RandomNumberGenerator.dfy"
 include "../Math/MeasureTheory.dfy"
 
 module Monad {
-  import opened RandomNumberGenerator
-  import opened MeasureTheory
+  import RandomNumberGenerator
+  import MeasureTheory
 
   /************
    Definitions
   ************/
 
-  type Hurd<A> = RNG -> (A, RNG)
+  type Hurd<A> = RandomNumberGenerator.RNG -> (A, RandomNumberGenerator.RNG)
 
   // Equation (2.38)
-  function Tail(s: RNG): (s': RNG) {
+  function Tail(s: RandomNumberGenerator.RNG): (s': RandomNumberGenerator.RNG) {
     TailIsRNG(s);
     (n: nat) => s(n+1)
   }
 
-  function IterateTail(s: RNG, n: nat): (t: RNG)
+  function IterateTail(s: RandomNumberGenerator.RNG, n: nat): (t: RandomNumberGenerator.RNG)
     ensures t(0) == s(n)
   {
     if n == 0 then
@@ -31,22 +31,22 @@ module Monad {
       IterateTail(Tail(s), n - 1)
   }
 
-  lemma TailOfIterateTail(s: RNG, n: nat)
+  lemma TailOfIterateTail(s: RandomNumberGenerator.RNG, n: nat)
     ensures Tail(IterateTail(s, n)) == IterateTail(s, n + 1)
   {}
 
   // Equation (2.37)
-  function Head(s: RNG): bool {
+  function Head(s: RandomNumberGenerator.RNG): bool {
     s(0)
   }
 
   // Equation (2.42)
-  function Deconstruct(s: RNG): (bool, RNG) {
+  function Deconstruct(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
     (Head(s), Tail(s))
   }
 
   // Equation (2.41)
-  function Drop(n: nat, s: RNG): (s': RNG)
+  function Drop(n: nat, s: RandomNumberGenerator.RNG): (s': RandomNumberGenerator.RNG)
     ensures Head(s') == s(n)
   {
     if n == 0 then
@@ -57,7 +57,7 @@ module Monad {
 
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
-    (s: RNG) =>
+    (s: RandomNumberGenerator.RNG) =>
       var (a, s') := f(s);
       g(a)(s')
   }
@@ -68,7 +68,7 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: RNG) => (a, s)
+    (s: RandomNumberGenerator.RNG) => (a, s)
   }
 
   function Map<A,B>(f: A -> B, m: Hurd<A>): Hurd<B> {
@@ -76,7 +76,7 @@ module Monad {
   }
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
-    (s: RNG) =>
+    (s: RandomNumberGenerator.RNG) =>
       var (f, s') := ff(s);
       f(s')
   }
@@ -85,11 +85,11 @@ module Monad {
    Lemmas
   *******/
 
-  lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: RNG)
+  lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: RandomNumberGenerator.RNG)
     ensures Bind(Return(a), g)(s) == g(a)(s)
   {}
 
-  lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: RNG)
+  lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: RandomNumberGenerator.RNG)
     ensures Bind(Bind(f, g), h)(s) == Bind(f, (a: A) => Bind(g(a), h))(s)
   {
     var (a, s') := f(s);
@@ -103,13 +103,13 @@ module Monad {
     }
   }
 
-  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RNG)
+  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RandomNumberGenerator.RNG)
     ensures Composition(Composition(f, g), h)(a)(s) == Composition(f, Composition(g, h))(a)(s)
   {
     BindIsAssociative(f(a), g, h, s);
   }
 
-  lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: RNG)
+  lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: RandomNumberGenerator.RNG)
     ensures Join(Map(Return, f))(s) == Join(Return(f))(s)
   {
     var (a, t) := f(s);
@@ -122,7 +122,7 @@ module Monad {
     }
   }
 
-  lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: RNG)
+  lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: RandomNumberGenerator.RNG)
     ensures Join(Map(Join, fff))(s) == Join(Join(fff))(s)
   {
     var (ff, t) := fff(s);
@@ -136,24 +136,24 @@ module Monad {
     }
   }
 
-  lemma {:axiom} TailIsRNG(s: RNG)
-    ensures IsRNG((n: nat) => s(n+1))
+  lemma {:axiom} TailIsRNG(s: RandomNumberGenerator.RNG)
+    ensures RandomNumberGenerator.IsRNG((n: nat) => s(n+1))
 
   // Equation (2.68) && (2.77)
   lemma {:axiom} HeadIsMeasurable(b: bool)
     ensures
       var e := (iset s | Head(s) == b);
-      && e in event_space
-      && mu(e) == 0.5
+      && e in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(e) == 0.5
 
   // Equation (2.82)
-  lemma {:axiom} MeasureHeadDrop(n: nat, s: RNG)
+  lemma {:axiom} MeasureHeadDrop(n: nat, s: RandomNumberGenerator.RNG)
     ensures
-      && (iset s | Head(Drop(n, s))) in event_space
-      && mu(iset s | Head(Drop(n, s))) == 0.5
+      && (iset s | Head(Drop(n, s))) in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(iset s | Head(Drop(n, s))) == 0.5
 
   // Equation (2.78)
   lemma {:axiom} TailIsMeasurePreserving()
-    ensures IsMeasurePreserving(event_space, mu, event_space, mu, Tail)
+    ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, Tail)
 }
 

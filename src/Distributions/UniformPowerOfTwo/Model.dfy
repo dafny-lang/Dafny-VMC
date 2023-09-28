@@ -10,22 +10,22 @@ include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 
 module UniformPowerOfTwoModel {
-  import opened RandomNumberGenerator
-  import opened Quantifier
-  import opened Monad
-  import opened Independence
-  import opened WhileAndUntil
+  import RandomNumberGenerator
+  import Quantifier
+  import Monad
+  import Independence
+  import WhileAndUntil
 
-  function UnifStep(m: nat): Hurd<nat> {
-    Bind(Deconstruct, (b: bool) => Return(if b then 2*m + 1 else 2*m))
+  function UnifStep(m: nat): Monad.Hurd<nat> {
+    Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 2*m + 1 else 2*m))
   }
 
   // Definition 48
-  function ProbUnif(n: nat): (h: Hurd<nat>) {
+  function ProbUnif(n: nat): (h: Monad.Hurd<nat>) {
     if n == 0 then
-      Return(0)
+      Monad.Return(0)
     else
-      Bind(ProbUnif(n/2), UnifStep)
+      Monad.Bind(ProbUnif(n/2), UnifStep)
   }
 
   lemma {:axiom} ProbUnifTerminates(n: nat)
@@ -33,27 +33,27 @@ module UniformPowerOfTwoModel {
     ensures
       var b := ProbUnif(n - 1);
       var c := (x: nat) => x < n;
-      && IsIndepFn(b)
-      && ExistsStar(Helper2(b, c))
-      && ProbUntilTerminates(b, c)
+      && Independence.IsIndepFn(b)
+      && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
+      && WhileAndUntil.ProbUntilTerminates(b, c)
 
-  function ProbUnifAlternative(n: nat, s: RNG, k: nat := 1, u: nat := 0): (t: (nat, RNG))
+  function ProbUnifAlternative(n: nat, s: RandomNumberGenerator.RNG, k: nat := 1, u: nat := 0): (t: (nat, RandomNumberGenerator.RNG))
     requires k >= 1
     decreases 2*n - k
   {
     if k > n then
       (u, s)
     else
-      ProbUnifAlternative(n, Tail(s), 2*k, if Head(s) then 2*u + 1 else 2*u)
+      ProbUnifAlternative(n, Monad.Tail(s), 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)
   }
 
-  function UnifAlternativeModel(n: nat, k: nat := 1, u: nat := 0): Hurd<nat>
+  function UnifAlternativeModel(n: nat, k: nat := 1, u: nat := 0): Monad.Hurd<nat>
     requires k >= 1
   {
-    (s: RNG) => ProbUnifAlternative(n, s, k, u)
+    (s: RandomNumberGenerator.RNG) => ProbUnifAlternative(n, s, k, u)
   }
 
-  function UnifModel(n: nat): (f: Hurd<nat>)
+  function UnifModel(n: nat): (f: Monad.Hurd<nat>)
     ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
   {
     var f := ProbUnif(n);
@@ -65,25 +65,26 @@ module UniformPowerOfTwoModel {
     f
   }
 
-  lemma ProbUnifCorrespondence(n: nat, s: RNG)
+  // incomplete
+  lemma ProbUnifCorrespondence(n: nat, s: RandomNumberGenerator.RNG)
     ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
   {
     var f := (m: nat) =>
         var g := (b: bool) =>
-                   Return(if b then 2*m + 1 else 2*m);
-        Bind(Deconstruct, g);
+                   Monad.Return(if b then 2*m + 1 else 2*m);
+        Monad.Bind(Monad.Deconstruct, g);
     if n == 0 {
     } else if n == 1 {
       assert n / 2 == 0;
       assert (0, s) == ProbUnif(n/2)(s);
       calc {
         ProbUnif(n)(s);
-        Bind(ProbUnif(n/2), f)(s);
+        Monad.Bind(ProbUnif(n/2), f)(s);
         f(0)(s);
-        Bind(Deconstruct, (b: bool) => Return(if b then 1 else 0))(s);
-        Return(if Head(s) then 1 else 0)(Tail(s));
-        (if Head(s) then 1 else 0, Tail(s));
-        ProbUnifAlternative(1, Tail(s), 2, if Head(s) then 1 else 0);
+        Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 1 else 0))(s);
+        Monad.Return(if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
+        (if Monad.Head(s) then 1 else 0, Monad.Tail(s));
+        ProbUnifAlternative(1, Monad.Tail(s), 2, if Monad.Head(s) then 1 else 0);
         ProbUnifAlternative(1, s, 1, 0);
         ProbUnifAlternative(n, s);
       }
