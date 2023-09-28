@@ -22,6 +22,10 @@ module BernoulliRationalCorrectness {
   import Monad
   import BernoulliRationalModel
 
+  /*******
+   Lemmas
+  *******/
+
   lemma ProbBernoulliRationalIsIndepFn(m: nat, n: nat)
     requires n != 0
     requires m <= n
@@ -44,7 +48,7 @@ module BernoulliRationalCorrectness {
   }
 
 
-  lemma {:timeLimit 20} {:vcs_split_on_every_assert} BernoulliRationalCorrectness(m: nat, n: nat)
+  lemma BernoulliRationalCorrectness(m: nat, n: nat)
     requires n != 0
     requires m <= n
     ensures
@@ -111,7 +115,7 @@ module BernoulliRationalCorrectness {
         RandomNumberGenerator.mu(e);
         { assert e == e1 + e2; }
         RandomNumberGenerator.mu(e1 + e2);
-        { reveal A1; reveal A2; assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.LemmaPosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.PosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
         RandomNumberGenerator.mu(e1) + RandomNumberGenerator.mu(e2);
         { reveal A1; reveal A2; }
         (1.0 / n as real) + ((m-1) as real / n as real);

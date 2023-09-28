@@ -14,6 +14,8 @@ Following are guidelines that one should follow unless there is a good technical
 * In particular, avoid `{:vcs_split_on_every_assert}` as this can increase the verification time a lot.
 * Keep proofs short and modular, as for a pencil and paper proof.
 * Prefer structured proofs in natural deduction rathen than sequences of assertions.
+* Instead of
+    * <pre>lemma LemmaXYZ</pre> simply write <pre>lemma XYZ<pre>
 * Unless it is logically or mathematically necessary:
 <table>
    <tr>
