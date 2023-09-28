@@ -1,6 +1,6 @@
 # VMC: a Library for Verified Monte Carlo Algorithms
 
-The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At the moment, the API is intentionally limited in scope, and only supports compilation to Java. For the future, we plan to extend both the functionality and the range of supported languages.
+The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At the moment, the API is intentionally limited in scope, and only supports compilation to C# and Java. For the future, we plan to extend both the functionality and the range of supported languages.
 
 To use `DafnyVMC` in your code, you must:
 
