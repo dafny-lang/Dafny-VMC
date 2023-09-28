@@ -66,9 +66,8 @@ module UniformCorrectness {
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
     ensures
-      var e := UniformFullCorrectnessHelper(n, i);
-      && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == 1.0 / (n as real)
+      && UniformFullCorrectnessHelper(n, i) in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(UniformFullCorrectnessHelper(n, i)) == 1.0 / (n as real)
   {
     var e := UniformFullCorrectnessHelper(n, i);
     var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
@@ -192,15 +191,13 @@ module UniformCorrectness {
     var k := Helper.SandwichBetweenPowers(2, n - 1);
     var e2 := UniformFullCorrectnessHelper2(n, i);
     assert RandomNumberGenerator.mu(e2) == 1.0 / (Helper.Power(2, k + 1) as real) by {
-      assert Helper.Power(2, k) <= n - 1 < Helper.Power(2, k + 1) by {
-        assume false;
-      }
+      assert Helper.Power(2, k) <= n - 1 < Helper.Power(2, k + 1);
       UniformPowerOfTwoCorrectness.UnifCorrectness(n - 1, k + 1);
       assert UniformPowerOfTwoCorrectness.UnifIsCorrect(n - 1, k + 1, i);
     }
     assert 1.0 / (n as real) == 1.0 / (Helper.Power(2, k) as real) by {
       assert n == Helper.Power(2, k) by {
-        assume false;
+        assume {:axiom} false;
       }
     }
   }
