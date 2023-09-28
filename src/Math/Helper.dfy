@@ -53,7 +53,7 @@ module Helper {
    Lemmas
   *******/
 
-  lemma LemmaAboutNatDivision(a: nat, b: nat)
+  lemma NatDivisionHelper(a: nat, b: nat)
     requires b != 0
     ensures a / b == (a as real / b as real).Floor
   {
@@ -147,7 +147,7 @@ module Helper {
     ensures 0.5 * x == x / 2.0
   {}
 
-  lemma LemmaRealAssoc(x: real, y: real)
+  lemma RealAssoc(x: real, y: real)
     requires y != 0.0
     ensures (x * y) / y == x
   {
@@ -162,31 +162,31 @@ module Helper {
     }
   }
 
-  lemma LemmaNatAssoc(a: nat, b: nat)
+  lemma NatAssoc(a: nat, b: nat)
     requires b != 0
     ensures ((a as real) * (b as real)) / (b as real) == (a as real)
   {
-    LemmaRealAssoc(a as real, b as real);
+    RealAssoc(a as real, b as real);
   }
 
-  lemma LemmaNatDivision(a: nat, b: nat)
+  lemma NatDivision(a: nat, b: nat)
     requires b != 0
     ensures (a * b) / b == a
   {
     calc {
       (a * b) / b;
-    == { LemmaAboutNatDivision(a * b, b); }
+    == { NatDivisionHelper(a * b, b); }
       ((a * b) as real / b as real).Floor;
     == { assert (a * b) as real == (a as real) * (b as real); }
       (((a as real) * (b as real)) / (b as real)).Floor;
-    == { LemmaNatAssoc(a, b); }
+    == { NatAssoc(a, b); }
       ((a as real)).Floor;
     ==
       a;
     }
   }
 
-  lemma LemmaAboutPower(b: nat, n: int)
+  lemma PowerDivision(b: nat, n: int)
     requires b != 0 && n >= 1
     ensures Power(b, n) / b == Power(b, n - 1)
   {
@@ -209,7 +209,7 @@ module Helper {
         (b * Power(b, n - 1)) / b;
       == { }
         (Power(b, n - 1) * b) / b;
-      == { LemmaNatDivision(Power(b, n - 1), b); }
+      == { NatDivision(Power(b, n - 1), b); }
         Power(b, n - 1);
       }
     }
@@ -235,7 +235,7 @@ module Helper {
   // }
 
   // See Logarithm.dfy in Stdlib
-  lemma {:axiom} LemmaLogPower(base: nat, n: nat)
+  lemma {:axiom} LogPower(base: nat, n: nat)
     requires base > 1
     requires n != 0
     ensures Power(base, n) != 0
