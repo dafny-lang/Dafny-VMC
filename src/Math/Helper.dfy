@@ -33,22 +33,6 @@ module Helper {
     case _ => b * Power(b, n - 1)
   }
 
-  // See Logarithm.dfy in Stdlib
-  function {:axiom} Log(base: nat, pow: nat): (log: nat)
-    requires base > 1
-    requires pow != 0
-    ensures pow == 1 ==> log == 0
-    ensures pow > 1 ==> log > 0
-  // {
-  //   if pow < base then
-  //     0
-  //   else
-  //     DivDecreases(pow, base);
-  //     var log := 1 + Log(base, pow / base);
-  //     assert log > 0;
-  //     log
-  // }
-
   /*******
    Lemmas
   *******/
@@ -215,32 +199,92 @@ module Helper {
     }
   }
 
-  // // See DivMod.dfy in StdLib
-  // lemma DivDecreases(n: nat, d: nat)
-  //   requires n != 0
-  //   requires 1 < d
-  //   ensures n / d < n
-  // {
-  //   calc {
-  //     n / d;
-  //   == { LemmaAboutNatDivision(n, d); }
-  //     (n as real / d as real).Floor;
-  //   < { assert n as real / d as real < n as real / 1 as real; }
-  //     (n as real / 1 as real).Floor;
-  //   ==
-  //     (n as real).Floor;
-  //   ==
-  //     n;
-  //   }
-  // }
+  // See DivMod.dfy in StdLib
+  lemma DivDecreases(n: nat, d: nat)
+    requires n >= 1
+    requires 2 <= d
+    ensures n / d < n
+  {
+    if n / d == 0 {} else {
+      calc {
+        n;
+        ==
+        (n / d) * d + (n % d);
+        >=
+        (n / d) * d;
+        >=
+        (n / d) * 2;
+        >=
+        (n / d) + (n / d);
+        >
+        n / d;
+      }
+    }
+  }
 
-  // See Logarithm.dfy in Stdlib
-  lemma {:axiom} LogPower(base: nat, n: nat)
+  lemma MultiplicationIsMonotonic(factor: nat, x: int, y: int)
+    requires x <= y
+    ensures x * factor <= y * factor
+  {}
+
+  lemma SandwichBetweenPowers(base: nat, n: nat) returns (k: nat)
     requires base > 1
-    requires n != 0
-    ensures Power(base, n) != 0
-    ensures Log(base, Power(base, n)) == n
-    ensures Power(base, Log(base, n)) == n
+    requires n > 0
+    decreases n
+    ensures Power(base, k) <= n < Power(base, k + 1)
+  {
+    if n < base {
+      k := 0;
+      calc {
+        Power(base, k);
+        ==
+        1;
+        <=
+        n;
+        <
+        base;
+        ==
+        Power(base, 1);
+        ==
+        Power(base, k + 1);
+      }
+    } else {
+      assert n / base < n by {
+        DivDecreases(n, base);
+      }
+      var k' := SandwichBetweenPowers(base, n / base);
+      assert Power(base, k') <= n / base < Power(base, k' + 1);
+      k := k' + 1;
+      assert Power(base, k) <= n by {
+        calc {
+          Power(base, k);
+          == { assert base >= 1; }
+          Power(base, k') * base;
+          <= { MultiplicationIsMonotonic(base, Power(base, k'), n / base); }
+          (n / base) * base;
+          <=
+          (n / base) * base + (n % base);
+          ==
+          n;
+        }
+      }
+      assert n < Power(base, k + 1) by {
+        calc {
+          n;
+          ==
+          (n / base) * base + (n % base);
+          <
+          (n / base) * base + base;
+          ==
+          (n / base + 1) * base;
+          <= { MultiplicationIsMonotonic(base, n / base + 1, Power(base, k' + 1)); }
+          Power(base, k' + 1) * base;
+          ==
+          Power(base, k + 1);
+        }
+      }
+    }
+  }
 
   lemma LemmaDivisionByTwo(n: nat)
     requires n != 0
