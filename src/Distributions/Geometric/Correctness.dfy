@@ -10,22 +10,21 @@ include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 include "Model.dfy"
 
-import opened WhileAndUntil
-import opened Independence
-import opened RandomNumberGenerator
+module GeometricCorrectness {
+  import Helper
+  import WhileAndUntil
+  import Independence
+  import RandomNumberGenerator
+  import GeometricModel
 
-lemma {:axiom} ProbWhileGeometricTerminates()
-  ensures
-    var fst := (t: (bool, int)) => t.0;
-    ProbWhileTerminates(ProbGeometricIter, fst)
+  // Equation (4.19)
+  lemma {:axiom} ProbGeometricIsIndepFn()
+    ensures Independence.IsIndepFn(GeometricModel.ProbGeometric())
 
-// Equation (4.19)
-lemma {:axiom} ProbGeometricIsIndepFn()
-  ensures IsIndepFn(ProbGeometric())
-
-// Equation (4.20)
-lemma {:axiom} ProbGeometricCorrectness(n: nat)
-  ensures
-    var e := iset s | ProbGeometric()(s).0 == n;
-    && e in event_space
-    && mu(e) == Helper.RealPower(1.0 / 2.0, n + 1)
+  // Equation (4.20)
+  lemma {:axiom} ProbGeometricCorrectness(n: nat)
+    ensures
+      var e := iset s | GeometricModel.ProbGeometric()(s).0 == n;
+      && e in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(e) == Helper.RealPower(1.0 / 2.0, n + 1)
+}

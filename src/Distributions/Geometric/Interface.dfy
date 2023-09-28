@@ -7,10 +7,10 @@ include "../../ProbabilisticProgramming/Monad.dfy"
 include "../Base/Interface.dfy"
 
 module GeometricInterface {
-  import opened BaseInterface
-  import opened Monad
+  import BaseInterface
+  import Monad
 
-  trait {:termination false} IGeometric extends TBase {
+  trait {:termination false} IGeometric extends BaseInterface.TBase {
 
     method Geometric() returns (c: nat)
       modifies this

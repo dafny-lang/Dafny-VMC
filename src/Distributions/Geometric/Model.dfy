@@ -5,23 +5,32 @@
 
 include "../../ProbabilisticProgramming/Monad.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
-include "Correctness.dfy"
 
-import opened Monad
-import opened WhileAndUntil
+module GeometricModel {
+  import Monad
+  import WhileAndUntil
 
-// Equation (4.18)
-function ProbGeometric(): Hurd<int> {
-  var fst := (t: (bool, int)) => t.0;
-  var f := (t: (bool, int)) => Return(t.1 - 1);
-  ProbWhileGeometricTerminates();
-  var g := ProbWhile(fst, ProbGeometricIter, (true, 0));
-  Bind(g, f)
+  // Equation (4.18)
+  function ProbGeometric(): Monad.Hurd<int> {
+    var fst := (t: (bool, int)) => t.0;
+    var f := (t: (bool, int)) => Monad.Return(t.1 - 1);
+    ProbWhileGeometricTerminates();
+    var g := WhileAndUntil.ProbWhile(fst, ProbGeometricIter, (true, 0));
+    Monad.Bind(g, f)
+  }
+
+    // Equation (4.17)
+  function ProbGeometricIter(t: (bool, int)): (f: Monad.Hurd<(bool, int)>)
+    ensures forall s :: f(s) == ((Monad.Head(s), t.1 + 1), Monad.Tail(s))
+  {
+    Monad.Bind(Monad.Deconstruct, (b': bool) => Monad.Return((b', t.1 + 1)))
+  }
+
+  lemma {:axiom} ProbWhileGeometricTerminates()
+    ensures
+      var fst := (t: (bool, int)) => t.0;
+      WhileAndUntil.ProbWhileTerminates(ProbGeometricIter, fst)
+
 }
 
-  // Equation (4.17)
-function ProbGeometricIter(t: (bool, int)): (f: Hurd<(bool, int)>)
-  ensures forall s :: f(s) == ((Head(s), t.1 + 1), Tail(s))
-{
-  Bind(Deconstruct, (b': bool) => Return((b', t.1 + 1)))
-}
+
