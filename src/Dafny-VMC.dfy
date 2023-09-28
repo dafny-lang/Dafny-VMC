@@ -16,21 +16,21 @@ include "Distributions/UniformPowerOfTwo/Implementation.dfy"
 include "Distributions/Uniform/Implementation.dfy"
 
 module DafnyVMC {
-  import opened BaseInterface
-  import opened BernoulliImplementation
-  import opened BernoulliRationalImplementation
-  import opened GeometricImplementation
-  import opened UniformPowerOfTwoImplementation
-  import opened UniformImplementation
-  import opened BernoulliExpNegImplementation
-  import opened DiscreteGaussianImplementation
-  import opened DiscreteLaplaceImplementation
+  import BaseInterface
+  import BernoulliImplementation
+  import BernoulliRationalImplementation
+  import GeometricImplementation
+  import UniformPowerOfTwoImplementation
+  import UniformImplementation
+  import BernoulliExpNegImplementation
+  import DiscreteGaussianImplementation
+  import DiscreteLaplaceImplementation
 
-  class DRandomFoundational extends TBase, TUniformPowerOfTwo, TBernoulli, TBernoulliRational, TGeometric, TUniformFoundational, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+  class DRandomFoundational extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, BernoulliRationalImplementation.TBernoulliRational, GeometricImplementation.TGeometric, UniformImplementation.TUniformFoundational, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends TBase, TUniformPowerOfTwo, TBernoulli, TBernoulliRational, TGeometric, TUniformExtern, TBernoulliExpNeg, TDiscreteGaussian, TDiscreteLaplace {
+  class DRandomExternUniform extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, BernoulliRationalImplementation.TBernoulliRational, GeometricImplementation.TGeometric, UniformImplementation.TUniformExtern, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
     constructor {:extern} ()
   }
 }
