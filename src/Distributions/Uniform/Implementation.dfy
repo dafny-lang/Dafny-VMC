@@ -3,22 +3,18 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-include "../../Math/MeasureTheory.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
 include "../UniformPowerOfTwo/Interface.dfy"
 include "../UniformPowerOfTwo/Implementation.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
 module UniformImplementation {
-  import opened MeasureTheory
-  import opened Monad
-  import opened UniformPowerOfTwoInterface
-  import opened UniformPowerOfTwoModel
-  import opened UniformModel
-  import opened UniformInterface
+  import UniformPowerOfTwoInterface
+  import UniformPowerOfTwoModel
+  import UniformModel
+  import UniformInterface
 
-  trait {:termination false} TUniformFoundational extends IUniform {
+  trait {:termination false} TUniformFoundational extends UniformInterface.IUniform {
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *
@@ -40,7 +36,7 @@ module UniformImplementation {
 
   method {:extern "DRandomUniform", "Uniform"} ExternUniform(n: nat) returns (u: nat)
 
-  trait {:termination false} TUniformExtern extends IUniform {
+  trait {:termination false} TUniformExtern extends UniformInterface.IUniform {
     method Uniform(n: nat) returns (u: nat)
       modifies this
       decreases *

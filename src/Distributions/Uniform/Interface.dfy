@@ -8,11 +8,11 @@ include "../UniformPowerOfTwo/Interface.dfy"
 include "Model.dfy"
 
 module UniformInterface {
-  import opened BaseInterface
-  import opened UniformModel
-  import opened UniformPowerOfTwoInterface
+  import BaseInterface
+  import UniformModel
+  import UniformPowerOfTwoInterface
 
-  trait {:termination false} IUniform extends TBase, IUniformPowerOfTwo {
+  trait {:termination false} IUniform extends BaseInterface.TBase, UniformPowerOfTwoInterface.IUniformPowerOfTwo {
 
     method Uniform(n: nat) returns (u: nat)
       modifies this
