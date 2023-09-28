@@ -13,8 +13,9 @@ jobs:
       - name: Run audit
         run: DAFNY=dafny/dafny scripts/audit.sh
       - name: Commit audit
-        run: |
-          git config --global user.name 'John Tristan'
-          git config --global user.email 'jtristan@users.noreply.github.com'
-          git commit -am "Automated audit report"
-          git push
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: John Tristan
+          author_email: mail@example.com
+          message: 'Adding audit log'
+          add: 'audit.log'
