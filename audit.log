@@ -1,0 +1,112 @@
+
+Auditing ./src/Dafny-VMC.dfy
+
+Auditing ./src/Distributions/Base/Interface.dfy
+ Coin: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Distributions/Base/Model.dfy
+
+Auditing ./src/Distributions/Bernoulli/Correctness.dfy
+ ProbBernoulliIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ BernoulliCorrectness: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Distributions/Bernoulli/Implementation.dfy
+
+Auditing ./src/Distributions/Bernoulli/Interface.dfy
+ Bernoulli: Compiled declaration has no body and has an ensures clause. 
+
+Auditing ./src/Distributions/Bernoulli/Model.dfy
+ ProbBernoulli: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Distributions/BernoulliExpNeg/Implementation.dfy
+
+Auditing ./src/Distributions/BernoulliExpNeg/Interface.dfy
+
+Auditing ./src/Distributions/BernoulliRational/Correctness.dfy
+
+Auditing ./src/Distributions/BernoulliRational/Implementation.dfy
+
+Auditing ./src/Distributions/BernoulliRational/Interface.dfy
+ BernoulliRational: Compiled declaration has no body and has an ensures clause. 
+
+Auditing ./src/Distributions/BernoulliRational/Model.dfy
+
+Auditing ./src/Distributions/DiscreteGaussian/Implementation.dfy
+
+Auditing ./src/Distributions/DiscreteGaussian/Interface.dfy
+
+Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
+
+Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
+
+Auditing ./src/Distributions/Geometric/Correctness.dfy
+ ProbGeometricIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ ProbGeometricCorrectness: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Distributions/Geometric/Implementation.dfy
+
+Auditing ./src/Distributions/Geometric/Interface.dfy
+ Geometric: Compiled declaration has no body and has an ensures clause. 
+
+Auditing ./src/Distributions/Geometric/Model.dfy
+ ProbWhileGeometricTerminates: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Distributions/Uniform/Correctness.dfy
+ ProbUniformIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Distributions/Uniform/Implementation.dfy
+ Uniform: Definition has `assume {:axiom}` statement in body. 
+ Uniform: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Distributions/Uniform/Interface.dfy
+ Uniform: Compiled declaration has no body and has an ensures clause. 
+
+Auditing ./src/Distributions/Uniform/Model.dfy
+
+Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
+ ProbUniformAlternative: Definition has `assume {:axiom}` statement in body. 
+ ProbUnifIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ ProbUnifForAllStar: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Distributions/UniformPowerOfTwo/Implementation.dfy
+
+Auditing ./src/Distributions/UniformPowerOfTwo/Interface.dfy
+ UniformPowerOfTwo: Compiled declaration has no body and has an ensures clause. 
+
+Auditing ./src/Distributions/UniformPowerOfTwo/Model.dfy
+ ProbUnifTerminates: Declaration has explicit `{:axiom}` attribute. 
+ ProbUnifCorrespondence: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Math/Helper.dfy
+ Log: Declaration has explicit `{:axiom}` attribute. 
+ LogPower: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Math/MeasureTheory.dfy
+ CountableSum: Definition has `assume {:axiom}` statement in body. 
+ CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/ProbabilisticProgramming/Independence.dfy
+ IsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ DeconstructIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ ReturnIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ IndepFnIsCompositional: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/ProbabilisticProgramming/Monad.dfy
+ TailIsRNG: Declaration has explicit `{:axiom}` attribute. 
+ HeadIsMeasurable: Declaration has explicit `{:axiom}` attribute. 
+ MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
+ TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/ProbabilisticProgramming/Quantifier.dfy
+
+Auditing ./src/ProbabilisticProgramming/RandomNumberGenerator.dfy
+ IsRNG: Declaration has explicit `{:axiom}` attribute. 
+ RNGHasMeasure: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/ProbabilisticProgramming/WhileAndUntil.dfy
+ ProbWhile: Definition has `assume {:axiom}` statement in body. 
+ EnsureProbWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
+ ProbUntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
+ ProbUntilAsBind: Declaration has explicit `{:axiom}` attribute. 
+ EnsureProbUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+

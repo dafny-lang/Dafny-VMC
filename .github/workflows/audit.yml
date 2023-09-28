@@ -1,0 +1,17 @@
+name: 'Audit'
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/prep.sh
+      - run: cp audit.log audit_.log
+      - run: DAFNY=dafny/dafny bash scripts/audit.sh
+      - run: cat audit.log
+      - run: diff audit.log audit_.log
