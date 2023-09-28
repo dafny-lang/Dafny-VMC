@@ -8,30 +8,30 @@ include "Monad.dfy"
 include "../Math/MeasureTheory.dfy"
 
 module Independence {
-  import opened Monad
-  import opened RandomNumberGenerator
-  import opened MeasureTheory
+  import Monad
+  import RandomNumberGenerator
+  import MeasureTheory
 
   /************
    Definitions
   ************/
 
   // Definition 33
-  ghost predicate IsIndepFunctionCondition<A(!new)>(f: Hurd<A>, A: iset<A>, E: iset<RNG>) {
+  ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<RandomNumberGenerator.RNG>) {
     var e1 := iset s | f(s).1 in E;
     var e2 := iset s | f(s).0 in A;
-    AreIndepEvents(event_space, mu, e1, e2)
+    MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
   }
 
   // Definition 33
-  ghost predicate IsIndepFunction<A(!new)>(f: Hurd<A>) {
-    forall A: iset<A>, E: iset<RNG> | E in event_space :: IsIndepFunctionCondition(f, A, E)
+  ghost predicate IsIndepFunction<A(!new)>(f: Monad.Hurd<A>) {
+    forall A: iset<A>, E: iset<RandomNumberGenerator.RNG> | E in RandomNumberGenerator.event_space :: IsIndepFunctionCondition(f, A, E)
   }
 
   // Definition 35
-  ghost predicate {:axiom} IsIndepFn<A>(f: Hurd<A>)
+  ghost predicate {:axiom} IsIndepFn<A>(f: Monad.Hurd<A>)
     ensures IsIndepFunction(f)
-    ensures IsMeasurable(event_space, event_space, s => f(s).1)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
 
   /*******
    Lemmas
@@ -39,20 +39,20 @@ module Independence {
 
   // Equation (3.17)
   lemma {:axiom} DeconstructIsIndepFn()
-    ensures IsIndepFn(Deconstruct)
+    ensures IsIndepFn(Monad.Deconstruct)
 
   // Equation (3.18)
   lemma {:axiom} ReturnIsIndepFn<T>(x: T)
-    ensures IsIndepFn(Return(x))
+    ensures IsIndepFn(Monad.Return(x))
 
   // Equation (3.19)
-  lemma {:axiom} IndepFnIsCompositional<A, B>(f: Hurd<A>, g: A -> Hurd<B>)
+  lemma {:axiom} IndepFnIsCompositional<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
     requires IsIndepFn(f)
     requires forall a :: IsIndepFn(g(a))
-    ensures IsIndepFn(Bind(f, g))
+    ensures IsIndepFn(Monad.Bind(f, g))
 
-  lemma AreIndepEventsConjunctElimination(e1: iset<RNG>, e2: iset<RNG>)
-    requires AreIndepEvents(event_space, mu, e1, e2)
-    ensures mu(e1 * e2) == mu(e1) * mu(e2)
+  lemma AreIndepEventsConjunctElimination(e1: iset<RandomNumberGenerator.RNG>, e2: iset<RandomNumberGenerator.RNG>)
+    requires MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
+    ensures RandomNumberGenerator.mu(e1 * e2) == RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2)
   {}
 }
