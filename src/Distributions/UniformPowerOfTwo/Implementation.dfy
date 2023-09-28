@@ -3,18 +3,14 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-include "../../Math/MeasureTheory.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
 module UniformPowerOfTwoImplementation {
-  import opened MeasureTheory
-  import opened Monad
-  import opened UniformPowerOfTwoModel
-  import opened UniformPowerOfTwoInterface
+  import UniformPowerOfTwoModel
+  import UniformPowerOfTwoInterface
 
-  trait {:termination false} TUniformPowerOfTwo extends IUniformPowerOfTwo {
+  trait {:termination false} TUniformPowerOfTwo extends UniformPowerOfTwoInterface.IUniformPowerOfTwo {
     method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this
       ensures UniformPowerOfTwoModel.UnifModel(n)(old(s)) == (u, s)
@@ -25,7 +21,7 @@ module UniformPowerOfTwoImplementation {
       while k <= n
         decreases 2*n - k
         invariant k >= 1
-        invariant UnifAlternativeModel(n)(old(s)) == UnifAlternativeModel(n, k, u)(s)
+        invariant UniformPowerOfTwoModel.UnifAlternativeModel(n)(old(s)) == UniformPowerOfTwoModel.UnifAlternativeModel(n, k, u)(s)
       {
         var b := Coin();
         k := 2*k;
