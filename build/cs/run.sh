@@ -1,4 +1,5 @@
 #!/bin/bash
 
 rm -f build/cs/Dafny-VMC.cs
-dotnet run --project docs/csharp/cs.csproj
+cp docs/csharp/BuildTest.cs build/cs/
+dotnet run --project build/cs/cs.csproj
