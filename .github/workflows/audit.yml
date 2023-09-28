@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run audit
-        run: scripts/audit.sh
+        run: DAFNY=dafny/dafny scripts/audit.sh
       - name: Commit audit
         run: |
           git config --global user.name 'John Tristan'
