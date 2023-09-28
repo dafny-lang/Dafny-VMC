@@ -62,7 +62,64 @@ module UniformCorrectness {
    Lemmas
   *******/
 
-  lemma Helper1(n: nat, i: nat)
+  // Equation (4.12) / PROB_BERN_UNIFORM
+  lemma UniformFullCorrectness(n: nat, i: nat)
+    requires 0 <= i < n
+    ensures
+      var e := UniformFullCorrectnessHelper(n, i);
+      && e in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(e) == 1.0 / (n as real)
+  {
+    var e := UniformFullCorrectnessHelper(n, i);
+    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
+    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i;
+    var e2 := UniformFullCorrectnessHelper2(n, i);
+    var b := UniformPowerOfTwoModel.ProbUnif(n-1);
+    var c := (x: nat) => x < n;
+    var d := (x: nat) => x == i;
+
+    assert Independence.IsIndepFn(b) && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c)) by {
+      UniformPowerOfTwoModel.ProbUnifTerminates(n);
+    }
+
+    assert WhileAndUntil.ProbUntilTerminates(b, c) by {
+      WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
+    }
+
+    var x := WhileAndUntil.ConstructEvents(b, c, d);
+    assert E0: x.0 == e;
+
+    assert EEqual: RandomNumberGenerator.mu(e) == RandomNumberGenerator.mu(e2) by {
+      UniformFullCorrectnessSameMeasure(n, i);
+    }
+
+    assert E2Equal: RandomNumberGenerator.mu(e2) == 1.0 / (n as real) by {
+      assert n >= 1;
+      if n == 1 {
+        assert i == 0;
+        assert RandomNumberGenerator.mu(e2) == 1.0 / (n as real) by { UniformCorrectnessCorrectMeasureCaseNOne(); }
+      } else {
+        assert RandomNumberGenerator.mu(e2) == 1.0 / (n as real) by { UniformCorrectnessCorrectMeasureCaseNGreaterOne(n, i); }
+      }
+    }
+
+    assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
+      reveal EEqual;
+      reveal E2Equal;
+    }
+
+    assert e in RandomNumberGenerator.event_space by {
+      assert e == x.0 by {
+        reveal E0;
+      }
+      assert e in RandomNumberGenerator.event_space <==> x.0 in RandomNumberGenerator.event_space;
+      assert x.0 in RandomNumberGenerator.event_space by {
+        WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
+      }
+    }
+  }
+
+  lemma UniformFullCorrectnessSameMeasure(n: nat, i: nat)
     requires 0 <= i < n
     ensures RandomNumberGenerator.mu(UniformFullCorrectnessHelper(n, i)) == RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i)
   {
@@ -119,7 +176,7 @@ module UniformCorrectness {
     }
   }
 
-  lemma Helper2()
+  lemma UniformCorrectnessCorrectMeasureCaseNOne()
     ensures RandomNumberGenerator.mu(UniformFullCorrectnessHelper2(1, 0)) == 1.0 / (1 as real)
   {
     assert (iset s | UniformPowerOfTwoModel.ProbUnif(0)(s).0 == 0) == (iset s {:trigger true} | true) by {
@@ -127,7 +184,7 @@ module UniformCorrectness {
     RandomNumberGenerator.RNGHasMeasure();
   }
 
-  lemma Helper3(n: nat, i: nat)
+  lemma UniformCorrectnessCorrectMeasureCaseNGreaterOne(n: nat, i: nat)
     requires i < n
     requires 2 <= n
     ensures RandomNumberGenerator.mu(UniformFullCorrectnessHelper2(n,i)) == 1.0 / (n as real)
@@ -144,63 +201,6 @@ module UniformCorrectness {
     assert 1.0 / (n as real) == 1.0 / (Helper.Power(2, k) as real) by {
       assert n == Helper.Power(2, k) by {
         assume false;
-      }
-    }
-  }
-
-  // Equation (4.12) / PROB_BERN_UNIFORM
-  lemma UniformFullCorrectness(n: nat, i: nat)
-    requires 0 <= i < n
-    ensures
-      var e := UniformFullCorrectnessHelper(n, i);
-      && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == 1.0 / (n as real)
-  {
-    var e := UniformFullCorrectnessHelper(n, i);
-    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
-    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i;
-    var e2 := UniformFullCorrectnessHelper2(n, i);
-    var b := UniformPowerOfTwoModel.ProbUnif(n-1);
-    var c := (x: nat) => x < n;
-    var d := (x: nat) => x == i;
-
-    assert Independence.IsIndepFn(b) && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c)) by {
-      UniformPowerOfTwoModel.ProbUnifTerminates(n);
-    }
-
-    assert WhileAndUntil.ProbUntilTerminates(b, c) by {
-      WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
-    }
-
-    var x := WhileAndUntil.ConstructEvents(b, c, d);
-    assert E0: x.0 == e;
-
-    assert EEqual: RandomNumberGenerator.mu(e) == RandomNumberGenerator.mu(e2) by {
-      Helper1(n, i);
-    }
-
-    assert E2Equal: RandomNumberGenerator.mu(e2) == 1.0 / (n as real) by {
-      assert n >= 1;
-      if n == 1 {
-        assert i == 0;
-        assert RandomNumberGenerator.mu(e2) == 1.0 / (n as real) by { Helper2(); }
-      } else {
-        assert RandomNumberGenerator.mu(e2) == 1.0 / (n as real) by { Helper3(n, i); }
-      }
-    }
-
-    assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
-      reveal EEqual;
-      reveal E2Equal;
-    }
-
-    assert e in RandomNumberGenerator.event_space by {
-      assert e == x.0 by {
-        reveal E0;
-      }
-      assert e in RandomNumberGenerator.event_space <==> x.0 in RandomNumberGenerator.event_space;
-      assert x.0 in RandomNumberGenerator.event_space by {
-        WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
       }
     }
   }
