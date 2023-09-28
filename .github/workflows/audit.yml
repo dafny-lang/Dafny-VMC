@@ -9,12 +9,16 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@master 
+        with:
+          persist-credentials: false 
+          fetch-depth: 0 
       - name: Run audit
         run: DAFNY=dafny/dafny scripts/audit.sh
       - name: Commit audit
-        uses: EndBug/add-and-commit@v9
+        uses: actions-js/push@master
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           author_name: John Tristan
           author_email: mail@example.com
           message: 'Adding audit log'
