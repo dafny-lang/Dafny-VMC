@@ -81,6 +81,16 @@ module MeasureTheory {
    Lemmas
   *******/
 
+  lemma PreImageIdentity<S(!new)>(f: S -> S, e: iset<S>)
+    requires forall s: S :: f(s) == s
+    ensures PreImage(f, e) == e
+  {}
+
+  lemma PreImagesEqual<S(!new),T,U>(f: S -> T, e: iset<T>, f': S -> U, e': iset<U>)
+    requires forall s: S :: f(s) in e <==> f'(s) in e'
+    ensures PreImage(f, e) == PreImage(f', e')
+  {}
+
   // Equation (2.18)
   lemma LemmaPosCountAddImpliesAdd<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, mu: iset<T> -> real)
     requires IsSigmaAlgebra(event_space, sample_space)

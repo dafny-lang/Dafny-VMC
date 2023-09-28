@@ -5,7 +5,7 @@
 
 module Helper {
   /************
-   Definitions  
+   Definitions
   ************/
 
   function Abs(x: real): real {
@@ -40,7 +40,7 @@ module Helper {
     ensures pow == 1 ==> log == 0
     ensures pow > 1 ==> log > 0
   // {
-  //   if pow < base then 
+  //   if pow < base then
   //     0
   //   else
   //     DivDecreases(pow, base);
@@ -50,7 +50,7 @@ module Helper {
   // }
 
   /*******
-   Lemmas  
+   Lemmas
   *******/
 
   lemma LemmaAboutNatDivision(a: nat, b: nat)
@@ -85,8 +85,62 @@ module Helper {
     ensures a / x == b / x
   {}
 
+  lemma SmallDivMod(n: nat, m: nat)
+    requires m > 0
+    requires n < m
+    ensures n / m == 0
+    ensures n % m == n
+  {}
+
+  lemma DivModAddDenominator(n: nat, m: nat)
+    requires m > 0
+    ensures (n + m) / m == n / m + 1
+    ensures (n + m) % m == n % m
+  {
+    var zp := (n + m) / m - n / m - 1;
+    assert 0 == m * zp + ((n + m) % m) - (n % m);
+  }
+
+  lemma DivModIsUnique(n: nat, m: nat, a: nat, b: nat)
+    requires m > 0
+    requires b < m
+    requires n == a * m + b
+    ensures a == n / m
+    ensures b == n % m
+  {
+    if a == 0 {
+      assert n == b;
+    } else {
+      assert (n - m) / m == a - 1 && (n - m) % m == b by { DivModIsUnique(n - m, m, a - 1, b); }
+      assert n / m == a && n % m == b by { DivModAddDenominator(n - m, m); }
+    }
+  }
+
+  lemma DivModAddMultiple(a: nat, b: nat, c: nat)
+    requires a > 0
+    ensures (c * a + b) / a == c + b / a
+    ensures (c * a + b) % a == b % a
+  {
+    calc {
+      a * c + b;
+      ==
+      a * c + (a * (b / a) + b % a);
+      ==
+      a * (c + b / a) + b % a;
+    }
+    DivModIsUnique(a * c + b, a, c + b / a, b % a);
+  }
+
   lemma MultiplicationSubstitute(x: real, a: real, b: real)
-    ensures a == b ==> (a * x == b * x)
+    requires a == b
+    ensures a * x == b * x
+  {}
+
+  lemma InverseSubstitute(x: real, y: real)
+    requires x != 0.0
+    requires y != 0.0
+    requires x == y
+    ensures 1.0 / x == 1.0 / y
   {}
 
   lemma DivisionByTwo(x: real)
@@ -226,5 +280,15 @@ module Helper {
   lemma AdditionOfFractions(x: real, y: real, z: real)
     requires z != 0.0
     ensures (x / z) + (y / z) == (x + y) / z
+  {}
+
+  lemma DivDivToDivMul(x: real, y: real, z: real)
+    requires y != 0.0
+    requires z != 0.0
+    ensures (x / y) / z == x / (y * z)
+  {}
+
+  lemma NatMulNatToReal(x: nat, y: nat)
+    ensures (x * y) as real == (x as real) * (y as real)
   {}
 }

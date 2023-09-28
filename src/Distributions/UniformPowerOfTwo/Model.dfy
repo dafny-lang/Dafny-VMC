@@ -16,16 +16,16 @@ module UniformPowerOfTwoModel {
   import opened Independence
   import opened WhileAndUntil
 
+  function UnifStep(m: nat): Hurd<nat> {
+    Bind(Deconstruct, (b: bool) => Return(if b then 2*m + 1 else 2*m))
+  }
+
   // Definition 48
   function ProbUnif(n: nat): (h: Hurd<nat>) {
     if n == 0 then
       Return(0)
     else
-      var f := (m: nat) =>
-                  var g := (b: bool) =>
-                            Return(if b then 2*m + 1 else 2*m);
-                  Bind(Deconstruct, g);
-      Bind(ProbUnif(n/2), f)
+      Bind(ProbUnif(n/2), UnifStep)
   }
 
   lemma {:axiom} ProbUnifTerminates(n: nat)
