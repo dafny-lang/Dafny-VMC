@@ -92,7 +92,7 @@ module MeasureTheory {
   {}
 
   // Equation (2.18)
-  lemma LemmaPosCountAddImpliesAdd<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, mu: iset<T> -> real)
+  lemma PosCountAddImpliesAdd<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, mu: iset<T> -> real)
     requires IsSigmaAlgebra(event_space, sample_space)
     requires IsPositive(event_space, mu)
     requires IsCountablyAdditive(event_space, mu)
@@ -103,7 +103,7 @@ module MeasureTheory {
       assert CountableUnion(f) == e1 + e2;
       assert CountableSum((n: nat) => mu(f(n))) == mu(e1) + mu(e2) by {
         assert CountableSum((n: nat) => mu(f(n)), 2) == 0.0 by {
-          LemmaCountableSumOfZeroesIsZero((n: nat) => mu(f(n)), 2);
+          CountableSumOfZeroesIsZero((n: nat) => mu(f(n)), 2);
         }
         calc {
           CountableSum((n: nat) => mu(f(n)))
@@ -124,7 +124,7 @@ module MeasureTheory {
     }
   }
 
-  lemma {:axiom} LemmaCountableSumOfZeroesIsZero(f: nat -> real, i: nat := 0)
+  lemma {:axiom} CountableSumOfZeroesIsZero(f: nat -> real, i: nat := 0)
     requires forall n | n >= i :: f(n) == 0.0
     ensures CountableSum(f, i) == 0.0
 

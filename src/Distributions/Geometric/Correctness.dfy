@@ -17,6 +17,10 @@ module GeometricCorrectness {
   import RandomNumberGenerator
   import GeometricModel
 
+  /*******
+   Lemmas
+  *******/
+  
   // Equation (4.19)
   lemma {:axiom} ProbGeometricIsIndepFn()
     ensures Independence.IsIndepFn(GeometricModel.ProbGeometric())
