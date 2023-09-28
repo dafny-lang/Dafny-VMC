@@ -46,15 +46,15 @@ module UniformCorrectness {
     }
   }
 
-  /*******
-   Lemmas
-  *******/
-
   ghost function UniformFullCorrectnessHelper(n: nat, i: nat): iset<RandomNumberGenerator.RNG>
     requires 0 <= i < n
   {
     iset s | UniformModel.ProbUniform(n)(s).0 == i
   }
+
+  /*******
+   Lemmas
+  *******/
 
   // Equation (4.12) / PROB_BERN_UNIFORM
   lemma {:vcs_split_on_every_assert} UniformFullCorrectness(n: nat, i: nat)
@@ -152,9 +152,9 @@ module UniformCorrectness {
                 Helper.Power(2, k - 1);
               == { assert k == Helper.Log(2, n); }
                 Helper.Power(2, Helper.Log(2, n) - 1);
-              == { Helper.LemmaAboutPower(2, Helper.Log(2, n)); }
+              == { Helper.PowerDivision(2, Helper.Log(2, n)); }
                 Helper.Power(2, Helper.Log(2, n)) / 2;
-              == { Helper.LemmaLogPower(2, n); assert Helper.Power(2, Helper.Log(2, n)) == n; Helper.DivisionSubstituteAlternative(2, Helper.Power(2, Helper.Log(2, n)), n); }
+              == { Helper.LogPower(2, n); assert Helper.Power(2, Helper.Log(2, n)) == n; Helper.DivisionSubstituteAlternative(2, Helper.Power(2, Helper.Log(2, n)), n); }
                 n / 2;
               <= { Helper.LemmaDivisionByTwo(n); }
                 n - 1;
@@ -163,7 +163,7 @@ module UniformCorrectness {
                 n - 1;
               <
                 n;
-              == { Helper.LemmaLogPower(2, n); }
+              == { Helper.LogPower(2, n); }
                 Helper.Power(2, Helper.Log(2, n));
               == { assert Helper.Log(2, n) == k; }
                 Helper.Power(2, k);
@@ -175,7 +175,7 @@ module UniformCorrectness {
           assert 1.0 / (n as real) == 1.0 / (Helper.Power(2, k) as real) by {
             assert n == Helper.Power(2, k) by {
               assert k == Helper.Log(2, n);
-              Helper.LemmaLogPower(2, n);
+              Helper.LogPower(2, n);
             }
           }
         }
