@@ -22,6 +22,6 @@ time $DAFNY test --target:$TARGET_LANG interop/$TARGET_LANG/DRandomCoin.$TARGET_
 
 echo Running $TARGET_LANG documentation...
 echo "Running docs/ExamplesFoundational.dfy"
-$DAFNY run docs/ExamplesFoundational.dfy --target:$TARGET_LANG --input interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG
+$DAFNY run docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG --input interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG
 echo "docs/ExamplesExternUniform.dfy"
-$DAFNY run docs/ExamplesExternUniform.dfy --target:$TARGET_LANG --input interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG
+$DAFNY run docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG --input interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG
