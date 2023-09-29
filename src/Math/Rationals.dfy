@@ -127,13 +127,13 @@ module Rationals {
       assert r.numer < next_multiple;
       calc {
         ToReal(r);
-        ==
+      ==
         r.numer as real / r.denom as real;
-        < { DivStrictlyMonotonic(r.denom as real, r.numer as real, next_multiple as real); }
+      < { DivStrictlyMonotonic(r.denom as real, r.numer as real, next_multiple as real); }
         next_multiple as real / r.denom as real;
-        ==
+      ==
         (floor + 1) as real;
-        ==
+      ==
         Floor(r) as real + 1.0;
       }
     }
@@ -148,13 +148,13 @@ module Rationals {
   {
     calc {
       ToReal(FractionalPart(r));
-      == { FloorFractionalPartRelation(r); }
+    == { FloorFractionalPartRelation(r); }
       ToReal(Sub(r, Int(Floor(r))));
-      == { SubIsCorrect(r, Int(Floor(r))); }
+    == { SubIsCorrect(r, Int(Floor(r))); }
       ToReal(r) - ToReal(Int(Floor(r)));
-      ==
+    ==
       ToReal(r) - Floor(r) as real;
-      == { FloorIsCorrect(r); }
+    == { FloorIsCorrect(r); }
       ToReal(r) - ToReal(r).Floor as real;
     }
   }
