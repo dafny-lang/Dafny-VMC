@@ -57,7 +57,7 @@ module Rationals {
     r.numer / r.denom
   }
 
-  function Fractional(r: Rational): Rational {
+  function FractionalPart(r: Rational): Rational {
     Rational(r.numer % r.denom, r.denom)
   }
 
@@ -139,16 +139,16 @@ module Rationals {
     }
   }
 
-  lemma FloorFractionalRelation(r: Rational)
-    ensures r == Add(Int(Floor(r)), Fractional(r))
+  lemma FloorFractionalPartRelation(r: Rational)
+    ensures r == Add(Int(Floor(r)), FractionalPart(r))
   {}
 
-  lemma FractionalIsCorrect(r: Rational)
-    ensures ToReal(Fractional(r)) == ToReal(r) - ToReal(r).Floor as real
+  lemma FractionalPartIsCorrect(r: Rational)
+    ensures ToReal(FractionalPart(r)) == ToReal(r) - ToReal(r).Floor as real
   {
     calc {
-      ToReal(Fractional(r));
-      == { FloorFractionalRelation(r); }
+      ToReal(FractionalPart(r));
+      == { FloorFractionalPartRelation(r); }
       ToReal(Sub(r, Int(Floor(r))));
       == { SubIsCorrect(r, Int(Floor(r))); }
       ToReal(r) - ToReal(Int(Floor(r)));

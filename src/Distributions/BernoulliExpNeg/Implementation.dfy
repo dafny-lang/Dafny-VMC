@@ -38,7 +38,7 @@ module BernoulliExpNegImplementation {
           }
           k := k + 1;
         }
-        c:= BernoulliExpNeg(Rationals.Fractional(gamma));
+        c:= BernoulliExpNeg(Rationals.FractionalPart(gamma));
       }
     }
 
