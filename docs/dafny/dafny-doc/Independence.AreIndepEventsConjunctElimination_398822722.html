@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="Independence_589220550.html">Independence</a>.AreIndepEventsConjunctElimination</span></b></span><br>
+<span class="from-file">From file: Independence.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>AreIndepEventsConjunctElimination</b>(<span class="code">e1</span>: <span class="code">iset&lt;<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>&gt;</span>, <span class="code">e2</span>: <span class="code">iset&lt;<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>&gt;</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">RandomNumberGenerator.mu(e1 * e2) == RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2)</span><br>
+<br>
+</body>
+</html>

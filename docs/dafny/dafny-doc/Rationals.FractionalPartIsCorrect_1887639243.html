@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="Rationals_41836205.html">Rationals</a>.FractionalPartIsCorrect</span></b></span><br>
+<span class="from-file">From file: Rationals.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>FractionalPartIsCorrect</b>(<span class="code">r</span>: <span class="code"><a href="Rationals.Rational_1758903841.html">Rational</a></span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">ToReal(FractionalPart(r)) == ToReal(r) - ToReal(r).Floor as real</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>decreases</b> <span class="code">r</span><br>
+<br>
+</body>
+</html>

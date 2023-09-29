@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>function <span class="code"><a href="UniformPowerOfTwoModel_1429099141.html">UniformPowerOfTwoModel</a>.ProbUnifAlternative</span></b></span><br>
+<span class="from-file">From file: Model.dfy<br>
+</span><br>
+<span class="code">static function <b>ProbUnifAlternative</b>(<span class="code">n</span>: <span class="code">nat</span>, <span class="code">s</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>, <span class="code">k</span>: <span class="code">nat</span> := <span class="code">1</span>, <span class="code">u</span>: <span class="code">nat</span> := <span class="code">0</span>): <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">k >= 1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>decreases</b> <span class="code">2 * n - k</span><br>
+<pre>  {
+    if k > n then
+      (u, s)
+    else
+      ProbUnifAlternative(n, Monad.Tail(s), 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)
+  }</pre><br>
+</body>
+</html>

@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>predicate <span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a>.IsSigmaAlgebra</span></b></span><br>
+<span class="from-file">From file: MeasureTheory.dfy<br>
+</span><br>
+<span class="code">ghost static predicate <b>IsSigmaAlgebra</b>&lt;<span class="code">T(!new)</span>&gt;(<span class="code">event_space</span>: <span class="code">iset&lt;<span class="code">iset&lt;<span class="code">T</span>&gt;</span>&gt;</span>, <span class="code">sample_space</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span>): <span class="code">bool</span></span><br>
+<pre>  {
+    && (forall e | e in event_space :: e <= sample_space)
+    && (iset{}) in event_space
+    && (forall e | e in event_space :: (sample_space - e) in event_space)
+    && (forall f: nat -> iset<T> | (forall n :: f(n) in event_space) :: (CountableUnion(f) in event_space))
+  }</pre><br>
+</body>
+</html>

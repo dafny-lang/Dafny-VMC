@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>predicate <span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a>.IsMeasurePreserving</span></b></span><br>
+<span class="from-file">From file: MeasureTheory.dfy<br>
+</span><br>
+<span class="code">ghost static predicate <b>IsMeasurePreserving</b>&lt;<span class="code">S(!new)</span>,<span class="code">T</span>&gt;(<span class="code">event_space_s</span>: <span class="code">iset&lt;<span class="code">iset&lt;<span class="code">S</span>&gt;</span>&gt;</span>, <span class="code">mu_s</span>: <span class="code">iset&lt;<span class="code">S</span>&gt;</span> <span class="code">-></span> <span class="code">real</span>, <span class="code">event_space_t</span>: <span class="code">iset&lt;<span class="code">iset&lt;<span class="code">T</span>&gt;</span>&gt;</span>, <span class="code">mu_t</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span> <span class="code">-></span> <span class="code">real</span>, <span class="code">f</span>: <span class="code">S</span> <span class="code">-></span> <span class="code">T</span>): <span class="code">bool</span></span><br>
+<pre>  {
+    && IsMeasurable(event_space_s, event_space_t, f)
+    && forall e | e in event_space_t :: mu_s(PreImage(f, e)) == mu_t(e)
+  }</pre><p style="margin-left: 25px;"><span class="doctext">Definition 10</span></p>
+</body>
+</html>

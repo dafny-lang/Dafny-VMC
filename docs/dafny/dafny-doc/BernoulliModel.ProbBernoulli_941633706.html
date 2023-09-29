@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>function <span class="code"><a href="BernoulliModel_469102917.html">BernoulliModel</a>.ProbBernoulli</span></b></span><br>
+<span class="from-file">From file: Model.dfy<br>
+</span><br>
+<span class="code">static function <b>ProbBernoulli</b>(<span class="code">numer</span>: <span class="code">nat</span>, <span class="code">denom</span>: <span class="code">nat</span>): <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">bool</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">denom != 0</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">numer <= denom</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">forall s: RandomNumberGenerator.RNG {:trigger UniformModel.ProbUniform(denom)(s)} {:trigger f(s)} :: f(s).0 == (UniformModel.ProbUniform(denom)(s).0 < numer)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">forall s: RandomNumberGenerator.RNG {:trigger UniformModel.ProbUniform(denom)(s)} {:trigger f(s)} :: f(s).1 == UniformModel.ProbUniform(denom)(s).1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>decreases</b> <span class="code">numer</span>, <span class="code">denom</span><br>
+<pre>  {
+    Monad.Bind(UniformModel.ProbUniform(denom), (k: nat) => Monad.Return(k < numer))
+  }</pre><p style="margin-left: 25px;"><span class="doctext">Footnote 5, p. 82</span></p>
+</body>
+</html>

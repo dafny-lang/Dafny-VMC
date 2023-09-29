@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>predicate <span class="code"><a href="Independence_589220550.html">Independence</a>.IsIndepFunctionCondition</span></b></span><br>
+<span class="from-file">From file: Independence.dfy<br>
+</span><br>
+<span class="code">ghost static predicate <b>IsIndepFunctionCondition</b>&lt;<span class="code">A(!new)</span>&gt;(<span class="code">f</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>, <span class="code">A</span>: <span class="code">iset&lt;<span class="code">A</span>&gt;</span>, <span class="code">E</span>: <span class="code">iset&lt;<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>&gt;</span>): <span class="code">bool</span></span><br>
+<pre>  {
+    var e1 := iset s | f(s).1 in E;
+    var e2 := iset s | f(s).0 in A;
+    MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
+  }</pre><p style="margin-left: 25px;"><span class="doctext">**********
+Definitions
+***********
+Definition 33</span></p>
+</body>
+</html>

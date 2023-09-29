@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a>.PosCountAddImpliesAdd</span></b></span><br>
+<span class="from-file">From file: MeasureTheory.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>PosCountAddImpliesAdd</b>&lt;<span class="code">T(!new)</span>&gt;(<span class="code">event_space</span>: <span class="code">iset&lt;<span class="code">iset&lt;<span class="code">T</span>&gt;</span>&gt;</span>, <span class="code">sample_space</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span>, <span class="code">mu</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span> <span class="code">-></span> <span class="code">real</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">IsSigmaAlgebra(event_space, sample_space)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">IsPositive(event_space, mu)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">IsCountablyAdditive(event_space, mu)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">IsAdditive(event_space, mu)</span><br>
+<br>
+</body>
+</html>

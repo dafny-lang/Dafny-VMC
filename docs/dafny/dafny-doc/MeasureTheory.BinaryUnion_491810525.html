@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a>.BinaryUnion</span></b></span><br>
+<span class="from-file">From file: MeasureTheory.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>BinaryUnion</b>&lt;<span class="code">T(!new)</span>&gt;(<span class="code">event_space</span>: <span class="code">iset&lt;<span class="code">iset&lt;<span class="code">T</span>&gt;</span>&gt;</span>, <span class="code">sample_space</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span>, <span class="code">e1</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span>, <span class="code">e2</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">IsSigmaAlgebra(event_space, sample_space)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">e1 in event_space</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">e2 in event_space</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">e1 + e2 in event_space</span><br>
+<br>
+</body>
+</html>

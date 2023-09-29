@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>predicate <span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a>.IsAdditive</span></b></span><br>
+<span class="from-file">From file: MeasureTheory.dfy<br>
+</span><br>
+<span class="code">ghost static predicate <b>IsAdditive</b>&lt;<span class="code">T(!new)</span>&gt;(<span class="code">event_space</span>: <span class="code">iset&lt;<span class="code">iset&lt;<span class="code">T</span>&gt;</span>&gt;</span>, <span class="code">mu</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span> <span class="code">-></span> <span class="code">real</span>): <span class="code">bool</span></span><br>
+<pre>  {
+    forall e1, e2 | e1 in event_space && e2 in event_space && e1 * e2 == iset{} :: mu(e1) + mu(e2) == mu(e1 + e2)
+  }</pre><p style="margin-left: 25px;"><span class="doctext">Definition 5</span></p>
+</body>
+</html>

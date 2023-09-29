@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a>.PreImagesEqual</span></b></span><br>
+<span class="from-file">From file: MeasureTheory.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>PreImagesEqual</b>&lt;<span class="code">S(!new)</span>,<span class="code">T</span>,<span class="code">U</span>&gt;(<span class="code">f</span>: <span class="code">S</span> <span class="code">-></span> <span class="code">T</span>, <span class="code">e</span>: <span class="code">iset&lt;<span class="code">T</span>&gt;</span>, <span class="code">f'</span>: <span class="code">S</span> <span class="code">-></span> <span class="code">U</span>, <span class="code">e'</span>: <span class="code">iset&lt;<span class="code">U</span>&gt;</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">forall s: S {:trigger f'(s)} {:trigger f(s)} :: f(s) in e <==> f'(s) in e'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">PreImage(f, e) == PreImage(f', e')</span><br>
+<br>
+</body>
+</html>

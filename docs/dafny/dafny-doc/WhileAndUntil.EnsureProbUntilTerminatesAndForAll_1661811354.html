@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="WhileAndUntil_1831516632.html">WhileAndUntil</a>.EnsureProbUntilTerminatesAndForAll</span></b></span><br>
+<span class="from-file">From file: WhileAndUntil.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>EnsureProbUntilTerminatesAndForAll</b>&lt;<span class="code">A(!new)</span>&gt;(<span class="code">b</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>, <span class="code">c</span>: <span class="code">A</span> <span class="code">-></span> <span class="code">bool</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">Independence.IsIndepFn(b)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">Quantifier.ExistsStar(Helper2(b, c))</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">ProbUntilTerminates(b, c)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">Quantifier.ForAllStar(Helper3(b, c))</span><br>
+<br>
+</body>
+</html>

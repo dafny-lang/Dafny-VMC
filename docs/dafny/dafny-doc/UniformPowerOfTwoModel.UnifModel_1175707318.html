@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>function <span class="code"><a href="UniformPowerOfTwoModel_1429099141.html">UniformPowerOfTwoModel</a>.UnifModel</span></b></span><br>
+<span class="from-file">From file: Model.dfy<br>
+</span><br>
+<span class="code">static function <b>UnifModel</b>(<span class="code">n</span>: <span class="code">nat</span>): <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">forall s: RandomNumberGenerator.RNG {:trigger UnifAlternativeModel(n)(s)} {:trigger f(s)} :: f(s) == UnifAlternativeModel(n)(s)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>decreases</b> <span class="code">n</span><br>
+<pre>  {
+    var f := ProbUnif(n);
+    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
+      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
+        ProbUnifCorrespondence(n, s);
+      }
+    }
+    f
+  }</pre><br>
+</body>
+</html>

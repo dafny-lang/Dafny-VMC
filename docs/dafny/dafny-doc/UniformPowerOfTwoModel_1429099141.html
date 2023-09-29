@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>module <span class="code">UniformPowerOfTwoModel</span></b></span><br>
+<span class="from-file">From file: Model.dfy<br>
+</span><br>
+<div id="full" class="full">
+<span class="code">module UniformPowerOfTwoModel</span><br>
+<h3>Imports</h3>
+<table>
+<tr><td>import <a href="UniformPowerOfTwoModel.Independence__import_1235044406.html"><span class="code"><b>Independence</b></span></a></td><td> = </td><td><span class="code"><a href="Independence_589220550.html">Independence</a></span>`<a href="Independence.Independence__export_1330247282.html"><span class="code">Independence</span></a></td><td></td></tr>
+<tr><td>import <a href="UniformPowerOfTwoModel.Monad__import_667602243.html"><span class="code"><b>Monad</b></span></a></td><td> = </td><td><span class="code"><a href="Monad_65335.html">Monad</a></span>`<a href="Monad.Monad__export_591075148.html"><span class="code">Monad</span></a></td><td></td></tr>
+<tr><td>import <a href="UniformPowerOfTwoModel.Quantifier__import_1053806548.html"><span class="code"><b>Quantifier</b></span></a></td><td> = </td><td><span class="code"><a href="Quantifier_213647244.html">Quantifier</a></span>`<a href="Quantifier.Quantifier__export_1496509318.html"><span class="code">Quantifier</span></a></td><td></td></tr>
+<tr><td>import <a href="UniformPowerOfTwoModel.RandomNumberGenerator__import_681058105.html"><span class="code"><b>RandomNumberGenerator</b></span></a></td><td> = </td><td><span class="code"><a href="RandomNumberGenerator_818938029.html">RandomNumberGenerator</a></span>`<a href="RandomNumberGenerator.RandomNumberGenerator__export_751475112.html"><span class="code">RandomNumberGenerator</span></a></td><td></td></tr>
+<tr><td>import <a href="UniformPowerOfTwoModel.WhileAndUntil__import_1770393956.html"><span class="code"><b>WhileAndUntil</b></span></a></td><td> = </td><td><span class="code"><a href="WhileAndUntil_1831516632.html">WhileAndUntil</a></span>`<a href="WhileAndUntil.WhileAndUntil__export_1148647830.html"><span class="code">WhileAndUntil</span></a></td><td></td></tr>
+</table>
+<h3>Functions</h3>
+<table>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.ProbUnif_234830568.html">ProbUnif</a></b>(<span class="code">n</span>: <span class="code">nat</span>): <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span></td><td> &mdash; <span class="doctext">Definition 48</span></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.ProbUnifAlternative_762077699.html">ProbUnifAlternative</a></b>(<span class="code">n</span>: <span class="code">nat</span>, <span class="code">s</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>, <span class="code">k</span>: <span class="code">nat</span> := <span class="code">1</span>, <span class="code">u</span>: <span class="code">nat</span> := <span class="code">0</span>): <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span></td><td></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.UnifAlternativeModel_435761753.html">UnifAlternativeModel</a></b>(<span class="code">n</span>: <span class="code">nat</span>, <span class="code">k</span>: <span class="code">nat</span> := <span class="code">1</span>, <span class="code">u</span>: <span class="code">nat</span> := <span class="code">0</span>): <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span></td><td></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.UnifModel_1175707318.html">UnifModel</a></b>(<span class="code">n</span>: <span class="code">nat</span>): <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span></td><td></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.UnifStep_235142333.html">UnifStep</a></b>(<span class="code">m</span>: <span class="code">nat</span>): <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></span></td><td></td></tr></td></tr>
+</table>
+<h3>Lemmas</h3>
+<table>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.ProbUnifCorrespondence_1803737186.html">ProbUnifCorrespondence</a></b>(<span class="code">n</span>: <span class="code">nat</span>, <span class="code">s</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span></td><td></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="UniformPowerOfTwoModel.ProbUnifTerminates_1904718040.html">ProbUnifTerminates</a></b>(<span class="code">n</span>: <span class="code">nat</span>)</span></td><td></td></tr></td></tr>
+</table>
+</div>
+</body>
+</html>

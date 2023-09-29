@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>method <span class="code"><a href="UniformImplementation_1273743606.html">UniformImplementation</a>.<a href="UniformImplementation.TUniformFoundational_569721088.html">TUniformFoundational</a>.Uniform</span></b></span><br>
+<span class="from-file">From file: Implementation.dfy<br>
+</span><br>
+<span class="code">method <b>Uniform</b>(<span class="code">n</span>: <span class="code">nat</span>) <b>returns</b> (<span class="code">u</span>: <span class="code">nat</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>requires</b> <span class="code">n > 0</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>modifies</b> <span class="code">this</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">u < n</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">UniformModel.ProbUniform(n)(old(s)) == (u, s)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>decreases</b> <span class="code">*</span><br>
+<br>
+</body>
+</html>

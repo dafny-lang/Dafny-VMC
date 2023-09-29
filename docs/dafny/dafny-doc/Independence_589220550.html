@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>module <span class="code">Independence</span></b></span><br>
+<span class="from-file">From file: Independence.dfy<br>
+</span><br>
+<div id="full" class="full">
+<span class="code">module Independence</span><br>
+<h3>Imports</h3>
+<table>
+<tr><td>import <a href="Independence.MeasureTheory__import_2142107470.html"><span class="code"><b>MeasureTheory</b></span></a></td><td> = </td><td><span class="code"><a href="MeasureTheory_1336554713.html">MeasureTheory</a></span>`<a href="MeasureTheory.MeasureTheory__export_1609271360.html"><span class="code">MeasureTheory</span></a></td><td></td></tr>
+<tr><td>import <a href="Independence.Monad__import_620544364.html"><span class="code"><b>Monad</b></span></a></td><td> = </td><td><span class="code"><a href="Monad_65335.html">Monad</a></span>`<a href="Monad.Monad__export_591075148.html"><span class="code">Monad</span></a></td><td></td></tr>
+<tr><td>import <a href="Independence.RandomNumberGenerator__import_2028009762.html"><span class="code"><b>RandomNumberGenerator</b></span></a></td><td> = </td><td><span class="code"><a href="RandomNumberGenerator_818938029.html">RandomNumberGenerator</a></span>`<a href="RandomNumberGenerator.RandomNumberGenerator__export_751475112.html"><span class="code">RandomNumberGenerator</span></a></td><td></td></tr>
+</table>
+<h3>Functions</h3>
+<table>
+<tr><td><tr><td><span class="code"><b><a href="Independence.IsIndepFn_1937095588.html">IsIndepFn</a></b>&lt;<span class="code">A</span>&gt;(<span class="code">f</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>): <span class="code">bool</span></span></td><td> &mdash; <span class="doctext">Definition 35</span></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="Independence.IsIndepFunction_484560378.html">IsIndepFunction</a></b>&lt;<span class="code">A(!new)</span>&gt;(<span class="code">f</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>): <span class="code">bool</span></span></td><td> &mdash; <span class="doctext">Definition 33</span></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="Independence.IsIndepFunctionCondition_244147825.html">IsIndepFunctionCondition</a></b>&lt;<span class="code">A(!new)</span>&gt;(<span class="code">f</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>, <span class="code">A</span>: <span class="code">iset&lt;<span class="code">A</span>&gt;</span>, <span class="code">E</span>: <span class="code">iset&lt;<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>&gt;</span>): <span class="code">bool</span></span></td><td> &mdash; <span class="doctext">**********
+Definitions
+***********
+Definition 33</span></td></tr></td></tr>
+</table>
+<h3>Lemmas</h3>
+<table>
+<tr><td><tr><td><span class="code"><b><a href="Independence.AreIndepEventsConjunctElimination_398822722.html">AreIndepEventsConjunctElimination</a></b>(<span class="code">e1</span>: <span class="code">iset&lt;<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>&gt;</span>, <span class="code">e2</span>: <span class="code">iset&lt;<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>&gt;</span>)</span></td><td></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="Independence.DeconstructIsIndepFn_974733258.html">DeconstructIsIndepFn</a></b>()</span></td><td> &mdash; <span class="doctext">*****
+Lemmas
+******</span></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="Independence.IndepFnIsCompositional_993359621.html">IndepFnIsCompositional</a></b>&lt;<span class="code">A</span>,<span class="code">B</span>&gt;(<span class="code">f</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>, <span class="code">g</span>: <span class="code">A</span> <span class="code">-></span> <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">B</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>)</span></td><td></td></tr></td></tr>
+<tr><td><tr><td><span class="code"><b><a href="Independence.ReturnIsIndepFn_2063450092.html">ReturnIsIndepFn</a></b>&lt;<span class="code">T</span>&gt;(<span class="code">x</span>: <span class="code">T</span>)</span></td><td></td></tr></td></tr>
+</table>
+</div>
+</body>
+</html>

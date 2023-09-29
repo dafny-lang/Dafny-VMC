@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dafny Documentation</title>
+<link rel="icon" type="image/png" href="dafny-favicon.png">
+<meta name="description" content="Documentation for Dafny code produced by dafnydoc">
+<meta name="author" content="dafnydoc">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<span style="font-size:24px;"><b>lemma <span class="code"><a href="Monad_65335.html">Monad</a>.JoinIsAssociative</span></b></span><br>
+<span class="from-file">From file: Monad.dfy<br>
+</span><br>
+<span class="code">ghost static lemma <b>JoinIsAssociative</b>&lt;<span class="code">A</span>&gt;(<span class="code">fff</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span> <span class="code">~></span> <span class="code">(<span class="code">A</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>,<span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span>, <span class="code">s</span>: <span class="code">nat</span> <span class="code">~></span> <span class="code">bool</span>)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>ensures</b> <span class="code">Join(Map(Join, fff))(s) == Join(Join(fff))(s)</span><br>
+<br>
+</body>
+</html>
