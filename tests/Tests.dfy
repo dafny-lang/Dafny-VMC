@@ -107,29 +107,6 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
   }
 
-  method TestGeometric(n: nat, r: GeometricInterface.IGeometric)
-    decreases *
-    requires n > 0
-    modifies r
-  {
-    var a := 0;
-    var b := 0;
-    var sum := 0;
-    var sumSquaredDiff := 0.0;
-    for i := 0 to n {
-      var k := r.Geometric();
-      sum := sum + k;
-      match k {
-        case 5 => a := a + 1;
-        case 10 => b := b + 1;
-        case _ =>
-      }
-    }
-    testBernoulliIsWithin4SigmaOfTrueMean(n, a as real, 0.015625, "p(5)");
-    testBernoulliIsWithin4SigmaOfTrueMean(n, b as real, 0.00048828125, "p(10)");
-    testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
-  }
-
   method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     requires n > 0
