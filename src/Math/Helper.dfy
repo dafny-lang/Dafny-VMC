@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 module Helper {
   /************
@@ -123,9 +123,9 @@ module Helper {
   {
     calc {
       a * c + b;
-      ==
+    ==
       a * c + (a * (b / a) + b % a);
-      ==
+    ==
       a * (c + b / a) + b % a;
     }
     DivModIsUnique(a * c + b, a, c + b / a, b % a);

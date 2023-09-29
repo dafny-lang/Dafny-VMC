@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "../../ProbabilisticProgramming/Monad.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
@@ -19,7 +19,7 @@ module GeometricModel {
     Monad.Bind(g, f)
   }
 
-    // Equation (4.17)
+  // Equation (4.17)
   function ProbGeometricIter(t: (bool, int)): (f: Monad.Hurd<(bool, int)>)
     ensures forall s :: f(s) == ((Monad.Head(s), t.1 + 1), Monad.Tail(s))
   {

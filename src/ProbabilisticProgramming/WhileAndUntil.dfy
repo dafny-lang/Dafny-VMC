@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "Monad.dfy"
 include "Quantifier.dfy"
@@ -32,8 +32,8 @@ module WhileAndUntil {
 
   // Definition 39 / True iff mu(iset s | ProbWhile(c, b, a)(s) terminates) == 1
   ghost predicate ProbWhileTerminates<A(!new)>(b: A -> Monad.Hurd<A>, c: A -> bool) {
-    var P := (a: A) => 
-      (s: RandomNumberGenerator.RNG) => exists n :: !c(ProbWhileCut(c, b, n, a)(s).0);
+    var P := (a: A) =>
+               (s: RandomNumberGenerator.RNG) => exists n :: !c(ProbWhileCut(c, b, n, a)(s).0);
     forall a :: Quantifier.ForAllStar(P(a))
   }
 
@@ -48,12 +48,12 @@ module WhileAndUntil {
       Monad.Return(a)
   }
 
-  method ProbWhileImperative<A>(c: A -> bool, b: A -> Monad.Hurd<A>, a: A, s: RandomNumberGenerator.RNG) returns (t: (A, RandomNumberGenerator.RNG)) 
+  method ProbWhileImperative<A>(c: A -> bool, b: A -> Monad.Hurd<A>, a: A, s: RandomNumberGenerator.RNG) returns (t: (A, RandomNumberGenerator.RNG))
     requires ProbWhileTerminates(b, c)
     ensures ProbWhile(c, b, a)(s) == t
     decreases *
   {
-    while c(a) 
+    while c(a)
       decreases *
     {
       var (a, s) := b(a)(s);
@@ -61,7 +61,7 @@ module WhileAndUntil {
     return (a, s);
   }
 
-  method ProbWhileImperativeAlternative<A>(c: A -> bool, b: A -> Monad.Hurd<A>, a: A, s: RandomNumberGenerator.RNG) returns (t: (A, RandomNumberGenerator.RNG)) 
+  method ProbWhileImperativeAlternative<A>(c: A -> bool, b: A -> Monad.Hurd<A>, a: A, s: RandomNumberGenerator.RNG) returns (t: (A, RandomNumberGenerator.RNG))
     requires ProbWhileTerminates(b, c)
     ensures ProbWhile(c, b, a)(s) == t
     decreases *
@@ -86,7 +86,7 @@ module WhileAndUntil {
   // Definition 44
   function ProbUntil<A>(b: Monad.Hurd<A>, c: A -> bool): (f: Monad.Hurd<A>)
     requires ProbUntilTerminates(b, c)
-    ensures 
+    ensures
       var c' := (a: A) => !c(a);
       var b' := (a: A) => b;
       forall s :: f(s) == ProbWhile(c', b', b(s).0)(b(s).1)
