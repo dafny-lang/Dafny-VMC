@@ -8,6 +8,7 @@
 include "../../src/Dafny-VMC.dfy"
 
 module RandomExamples {
+  import Rationals
   import DafnyVMC
 
   method Main()
@@ -55,62 +56,39 @@ module RandomExamples {
     }
     print "Estimated probabilities for UniformInterval(7,10): ", (a as real) / (n as real), "; ", (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
 
-    a := 0;
-    b := 0;
-    for i := 0 to n {
-      var k := r.Geometric();
-      if k == 5 {
-        a := a + 1;
-      } else if k == 10  {
-        b := b + 1;
-      }
-    }
-    print "Estimated probabilities for Geometric(0.5): " , (a as real) / (n as real), " (should be around 0.015625) and " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
-
     t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(1, 5);
+      var b := r.Bernoulli(Rationals.Rational(1, 5));
       if b {
         t := t + 1;
       }
     }
 
-    print "Estimated parameter for BernoulliRational(1, 5): ", (t as real) / (n as real), " (should be around 0.2)\n";
+    print "Estimated parameter for Bernoulli(1, 5): ", (t as real) / (n as real), " (should be around 0.2)\n";
 
     t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(0, 5);
+      var b := r.Bernoulli(Rationals.Rational(0, 5));
       if b {
         t := t + 1;
       }
     }
 
-    print "Estimated parameter for BernoulliRational(0, 5): ", (t as real) / (n as real), " (should be around 0.0)\n";
+    print "Estimated parameter for Bernoulli(0, 5): ", (t as real) / (n as real), " (should be around 0.0)\n";
 
     t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(5, 5);
+      var b := r.Bernoulli(Rationals.Rational(5, 5));
       if b {
         t := t + 1;
       }
     }
 
-    print "Estimated parameter for BernoulliRational(5, 5): ", (t as real) / (n as real), " (should be around 1.0\n";
-
-
-    t := 0;
-    for i := 0 to n {
-      var b := r.Bernoulli(0.2);
-      if b {
-        t := t + 1;
-      }
-    }
-
-    print "Estimated parameter for Bernoulli(0.2): ", (t as real) / (n as real), " (should be around 0.2)\n";
+    print "Estimated parameter for Bernoulli(5, 5): ", (t as real) / (n as real), " (should be around 1.0\n";
 
     t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNeg(2.30258509299); // about -ln(0.1)
+      var u := r.BernoulliExpNeg(Rationals.Rational(12381, 5377)); // about -ln(0.1)
       if u {
         t := t + 1;
       }
@@ -121,7 +99,7 @@ module RandomExamples {
     var count1 := 0;
     var countneg1 := 0;
     for i := 0 to n {
-      var u := r.DiscreteLaplace(5, 7); // DiscreteLaplace(7/5)
+      var u := r.DiscreteLaplace(Rationals.Rational(7, 5));
       match u {
         case -1 => countneg1 := countneg1 + 1;
         case 0 => count0 := count0 + 1;
@@ -138,7 +116,7 @@ module RandomExamples {
     count1 := 0;
     countneg1 := 0;
     for i := 0 to n {
-      var u := r.DiscreteGaussian(1.4);
+      var u := r.DiscreteGaussian(Rationals.Rational(7, 5));
       match u {
         case -1 => countneg1 := countneg1 + 1;
         case 0 => count0 := count0 + 1;

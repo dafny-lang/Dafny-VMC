@@ -3,14 +3,13 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "../src/Dafny-VMC.dfy"
+include "../src/Dafny-VMC.dfy"
 
- module Tests {
+module Tests {
+  import Rationals
   import BaseInterface
   import UniformInterface
-  import GeometricInterface
   import BernoulliInterface
-  import BernoulliRationalInterface
   import BernoulliExpNegInterface
   import DiscreteLaplaceInterface
   import DiscreteGaussianInterface
@@ -108,37 +107,14 @@
     testBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
   }
 
-  method TestGeometric(n: nat, r: GeometricInterface.IGeometric)
-    decreases *
-    requires n > 0
-    modifies r
-  {
-    var a := 0;
-    var b := 0;
-    var sum := 0;
-    var sumSquaredDiff := 0.0;
-    for i := 0 to n {
-      var k := r.Geometric();
-      sum := sum + k;
-      match k {
-        case 5 => a := a + 1;
-        case 10 => b := b + 1;
-        case _ =>
-      }
-    }
-    testBernoulliIsWithin4SigmaOfTrueMean(n, a as real, 0.015625, "p(5)");
-    testBernoulliIsWithin4SigmaOfTrueMean(n, b as real, 0.00048828125, "p(10)");
-    testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
-  }
-
-  method TestBernoulliRational(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+  method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     requires n > 0
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(1, 5);
+      var b := r.Bernoulli(Rationals.Rational(1, 5));
       if b {
         t := t + 1;
       }
@@ -146,13 +122,13 @@
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
-  method TestBernoulliRational2(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+  method TestBernoulli2(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(0, 5);
+      var b := r.Bernoulli(Rationals.Rational(0, 5));
       if b {
         t := t + 1;
       }
@@ -161,34 +137,19 @@
     expect t == 0;
   }
 
-  method TestBernoulliRational3(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+  method TestBernoulli3(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(5, 5);
+      var b := r.Bernoulli(Rationals.Rational(5, 5));
       if b {
         t := t + 1;
       }
     }
 
     expect t == n;
-  }
-
-  method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
-    decreases *
-    requires n > 0
-    modifies r
-  {
-    var t := 0;
-    for i := 0 to n {
-      var b := r.Bernoulli(0.2);
-      if b {
-        t := t + 1;
-      }
-    }
-    testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
   method TestBernoulliExpNeg(n: nat, r: BernoulliExpNegInterface.IBernoulliExpNeg)
@@ -198,7 +159,7 @@
   {
     var t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNeg(2.30258509299); // about -ln(0.1)
+      var u := r.BernoulliExpNeg(Rationals.Rational(12381, 5377)); // about -ln(0.1)
       if u {
         t := t + 1;
       }
@@ -216,7 +177,7 @@
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteLaplace(5, 7); // DiscreteLaplace(7/5)
+      var u := r.DiscreteLaplace(Rationals.Rational(7, 5));
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];
@@ -247,7 +208,7 @@
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteGaussian(1.4);
+      var u := r.DiscreteGaussian(Rationals.Rational(7, 5));
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];
@@ -267,4 +228,4 @@
     var varianceBound := 1.4 * 1.4; // variance of DiscreteGaussian(1.4) is < 1.4^2
     testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
   }
- }
+}

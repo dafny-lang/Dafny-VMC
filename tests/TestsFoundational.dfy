@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "../src/Dafny-VMC.dfy"
- include "Tests.dfy"
+include "../src/Dafny-VMC.dfy"
+include "Tests.dfy"
 
 module TestsFoundational {
   import DafnyVMC
@@ -29,39 +29,25 @@ module TestsFoundational {
     Tests.TestUniformInterval(1_000_000, r);
   }
 
-  method {:test} TestGeometric()
-    decreases *
-  {
-    var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestGeometric(1_000_000, r);
-  }
-
-  method {:test} TestBernoulliRational()
-    decreases *
-  {
-    var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestBernoulliRational(1_000_000, r);
-  }
-
-  method {:test} TestBernoulliRational2()
-    decreases *
-  {
-    var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestBernoulliRational2(1_000_000, r);
-  }  
-
-  method {:test} TestBernoulliRational3()
-    decreases *
-  {
-    var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestBernoulliRational3(1_000_000, r);
-  }  
-
   method {:test} TestBernoulli()
     decreases *
   {
     var r := new DafnyVMC.DRandomFoundational();
     Tests.TestBernoulli(1_000_000, r);
+  }
+
+  method {:test} TestBernoulli2()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomFoundational();
+    Tests.TestBernoulli2(1_000_000, r);
+  }
+
+  method {:test} TestBernoulli3()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomFoundational();
+    Tests.TestBernoulli3(1_000_000, r);
   }
 
   method {:test} TestBernoulliExpNeg()

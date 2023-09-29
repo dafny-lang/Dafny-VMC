@@ -1,20 +1,21 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
+include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 
 module DiscreteLaplaceImplementation {
+  import Rationals
   import DiscreteLaplaceInterface
 
   trait {:termination false} TDiscreteLaplace extends DiscreteLaplaceInterface.IDiscreteLaplace {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
-    method DiscreteLaplace(s: nat, t: nat) returns (z: int)
+    method DiscreteLaplace(scale: Rationals.Rational) returns (z: int)
       modifies this
-      requires s >= 1
-      requires t >= 1
+      requires scale.numer >= 1
       decreases *
     {
       var b := true;
@@ -22,8 +23,8 @@ module DiscreteLaplaceImplementation {
       while b && y == 0
         decreases *
       {
-        var u := Uniform(t);
-        var d := BernoulliExpNeg(u as real / t as real);
+        var u := Uniform(scale.numer);
+        var d := BernoulliExpNeg(Rationals.Rational(u, scale.numer));
         if !d {
           continue;
         }
@@ -32,14 +33,14 @@ module DiscreteLaplaceImplementation {
         while a
           decreases *
         {
-          a := BernoulliExpNeg(1.0);
+          a := BernoulliExpNeg(Rationals.Int(1));
           if a {
             v := v + 1;
           }
         }
-        var x := u + t * v;
-        y := x / s;
-        b := Bernoulli(0.5);
+        var x := u + scale.numer * v;
+        y := x / scale.denom;
+        b := Bernoulli(Rationals.Rational(1, 2));
       }
       z := if b then -y else y;
     }

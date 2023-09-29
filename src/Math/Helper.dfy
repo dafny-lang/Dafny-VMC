@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 module Helper {
   /************
@@ -32,6 +32,15 @@ module Helper {
     case 1 => b
     case _ => b * Power(b, n - 1)
   }
+
+  // See LOG2_ML
+  function Log2(n: nat): nat {
+    if n == 0 then
+      0
+    else
+      Log2(n / 2) + 1
+  }
+
 
   /*******
    Lemmas
@@ -107,9 +116,9 @@ module Helper {
   {
     calc {
       a * c + b;
-      ==
+    ==
       a * c + (a * (b / a) + b % a);
-      ==
+    ==
       a * (c + b / a) + b % a;
     }
     DivModIsUnique(a * c + b, a, c + b / a, b % a);
@@ -335,4 +344,20 @@ module Helper {
   lemma NatMulNatToReal(x: nat, y: nat)
     ensures (x * y) as real == (x as real) * (y as real)
   {}
+
+  lemma Log2LowerSuc(n: nat)
+    ensures n + 1 <= Power(2, Log2(n))
+  {}
+
+  lemma Log2BothSides(n: nat)
+    requires n != 0
+    ensures Power(2, Log2(n) - 1) <= n < Power(2, Log2(n))
+  {}
+
+  lemma SimplifyFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    requires y != 0.0
+    ensures (x / z) / (y / z) == x / y
+  {}
+
 }
