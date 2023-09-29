@@ -7,14 +7,10 @@ Auditing ./src/Distributions/Base/Interface.dfy
 Auditing ./src/Distributions/Base/Model.dfy
 
 Auditing ./src/Distributions/Bernoulli/Correctness.dfy
- /!\ No terms found to trigger on.
- /!\ No terms found to trigger on.
- /!\ No terms found to trigger on.
 
 Auditing ./src/Distributions/Bernoulli/Implementation.dfy
 
 Auditing ./src/Distributions/Bernoulli/Interface.dfy
- Bernoulli: Compiled declaration has no body and has an ensures clause. 
 
 Auditing ./src/Distributions/Bernoulli/Model.dfy
 
@@ -31,9 +27,6 @@ Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
 Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
 
 Auditing ./src/Distributions/Uniform/Correctness.dfy
- /!\ No terms found to trigger on.
- /!\ No terms found to trigger on.
- /!\ No terms found to trigger on.
  ProbUniformIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/Uniform/Implementation.dfy
@@ -41,7 +34,6 @@ Auditing ./src/Distributions/Uniform/Implementation.dfy
  Uniform: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Distributions/Uniform/Interface.dfy
- Uniform: Compiled declaration has no body and has an ensures clause. 
 
 Auditing ./src/Distributions/Uniform/Model.dfy
 
@@ -54,7 +46,6 @@ Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
 Auditing ./src/Distributions/UniformPowerOfTwo/Implementation.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Interface.dfy
- UniformPowerOfTwo: Compiled declaration has no body and has an ensures clause. 
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Model.dfy
  ProbUnifTerminates: Declaration has explicit `{:axiom}` attribute. 
