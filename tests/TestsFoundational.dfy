@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "../src/Dafny-VMC.dfy"
- include "Tests.dfy"
+include "../src/Dafny-VMC.dfy"
+include "Tests.dfy"
 
 module TestsFoundational {
   import DafnyVMC
@@ -48,14 +48,14 @@ module TestsFoundational {
   {
     var r := new DafnyVMC.DRandomFoundational();
     Tests.TestBernoulliRational2(1_000_000, r);
-  }  
+  }
 
   method {:test} TestBernoulliRational3()
     decreases *
   {
     var r := new DafnyVMC.DRandomFoundational();
     Tests.TestBernoulliRational3(1_000_000, r);
-  }  
+  }
 
   method {:test} TestBernoulli()
     decreases *

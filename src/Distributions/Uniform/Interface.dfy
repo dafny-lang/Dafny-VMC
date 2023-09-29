@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "../Base/Interface.dfy"
 include "../UniformPowerOfTwo/Interface.dfy"

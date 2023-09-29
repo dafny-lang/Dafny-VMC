@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "../../Math/MeasureTheory.dfy"
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
@@ -13,7 +13,7 @@ module BernoulliCorrectness {
   import RandomNumberGenerator
   import Independence
   import BernoulliModel
-  
+
   /*******
    Lemmas
   *******/
