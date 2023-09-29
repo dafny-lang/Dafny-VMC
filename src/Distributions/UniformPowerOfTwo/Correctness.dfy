@@ -95,6 +95,21 @@ module UniformPowerOfTwoCorrectness {
    Lemmas
   *******/
 
+  // PROB_BERN_UNIF
+  lemma {:axiom} UnifCorrectness2(n: nat, m: nat)
+    ensures
+      var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
+      && e in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(e) == if m < Helper.Power(2, Helper.Log2(n)) then 1.0 / (Helper.Power(2, Helper.Log2(n)) as real) else 0.0
+
+  // PROB_BERN_UNIF_LT
+  lemma {:axiom} UnifCorrectness2Helper(n: nat, m: nat)
+    requires m <= Helper.Power(2, Helper.Log2(n))
+    ensures 
+      var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 < m;
+      && e in RandomNumberGenerator.event_space
+      && RandomNumberGenerator.mu(e) == (m as real) / (Helper.Power(2, Helper.Log2(n)) as real)
+
   // Equation (4.8)
   lemma UnifCorrectness(n: nat, k: nat)
     requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
@@ -328,13 +343,6 @@ module UniformPowerOfTwoCorrectness {
   // Equation (4.7)
   lemma {:axiom} ProbUnifIsIndepFn(n: nat)
     ensures Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n))
-
-  // See PROB_UNIFORM_TERMINATES
-  lemma {:axiom} ProbUnifForAllStar(n: nat)
-    requires n != 0
-    ensures
-      var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
-      Quantifier.ForAllStar(p)
 
   lemma ProbUnifIsMeasurePreserving(n: nat)
     ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, ProbUnif1(n))
