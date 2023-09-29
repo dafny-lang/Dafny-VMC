@@ -436,7 +436,7 @@ module Limits {
     requires b != 0.0
     ensures Abs(a / b) == Abs(a) / Abs(b)
   {
-    assume false;
+    if a >= 0.0 {}
   }
 
   lemma OneOverNPlus1IsAntimonotonic(m: nat, n: nat)

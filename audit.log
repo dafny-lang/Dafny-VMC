@@ -62,6 +62,8 @@ Auditing ./src/Distributions/UniformPowerOfTwo/Model.dfy
 
 Auditing ./src/Math/Helper.dfy
 
+Auditing ./src/Math/Limits.dfy
+
 Auditing ./src/Math/MeasureTheory.dfy
  CountableSum: Definition has `assume {:axiom}` statement in body. 
  CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
