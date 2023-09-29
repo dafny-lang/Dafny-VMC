@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"DafnyVMC","l":"DRandomExternUniform"},{"p":"DafnyVMC","l":"DRandomFoundational"}];updateSearchResults();
