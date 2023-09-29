@@ -23,6 +23,9 @@ Auditing ./src/Distributions/BernoulliExpNeg/Implementation.dfy
 Auditing ./src/Distributions/BernoulliExpNeg/Interface.dfy
 
 Auditing ./src/Distributions/BernoulliRational/Correctness.dfy
+ /!\ No terms found to trigger on.
+ /!\ No terms found to trigger on.
+ /!\ No terms found to trigger on.
 
 Auditing ./src/Distributions/BernoulliRational/Implementation.dfy
 
@@ -52,6 +55,9 @@ Auditing ./src/Distributions/Geometric/Model.dfy
  ProbWhileGeometricTerminates: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/Uniform/Correctness.dfy
+ /!\ No terms found to trigger on.
+ /!\ No terms found to trigger on.
+ /!\ No terms found to trigger on.
  ProbUniformIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/Uniform/Implementation.dfy
@@ -65,8 +71,9 @@ Auditing ./src/Distributions/Uniform/Model.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
  ProbUniformAlternative: Definition has `assume {:axiom}` statement in body. 
+ UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
+ UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
  ProbUnifIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
- ProbUnifForAllStar: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Implementation.dfy
 
@@ -78,8 +85,6 @@ Auditing ./src/Distributions/UniformPowerOfTwo/Model.dfy
  ProbUnifCorrespondence: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Math/Helper.dfy
- Log: Declaration has explicit `{:axiom}` attribute. 
- LogPower: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Math/MeasureTheory.dfy
  CountableSum: Definition has `assume {:axiom}` statement in body. 
