@@ -7,7 +7,7 @@
 
 include "Distributions/Base/Interface.dfy"
 include "Distributions/Bernoulli/Implementation.dfy"
-include "Distributions/BernoulliRational/Implementation.dfy"
+include "Distributions/Bernoulli/Implementation.dfy"
 include "Distributions/BernoulliExpNeg/Implementation.dfy"
 include "Distributions/DiscreteGaussian/Implementation.dfy"
 include "Distributions/DiscreteLaplace/Implementation.dfy"
@@ -18,7 +18,6 @@ include "Distributions/Uniform/Implementation.dfy"
 module DafnyVMC {
   import BaseInterface
   import BernoulliImplementation
-  import BernoulliRationalImplementation
   import GeometricImplementation
   import UniformPowerOfTwoImplementation
   import UniformImplementation
@@ -26,11 +25,11 @@ module DafnyVMC {
   import DiscreteGaussianImplementation
   import DiscreteLaplaceImplementation
 
-  class DRandomFoundational extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, BernoulliRationalImplementation.TBernoulliRational, GeometricImplementation.TGeometric, UniformImplementation.TUniformFoundational, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
+  class DRandomFoundational extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, GeometricImplementation.TGeometric, UniformImplementation.TUniformFoundational, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, BernoulliRationalImplementation.TBernoulliRational, GeometricImplementation.TGeometric, UniformImplementation.TUniformExtern, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
+  class DRandomExternUniform extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, GeometricImplementation.TGeometric, UniformImplementation.TUniformExtern, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
     constructor {:extern} ()
   }
 }

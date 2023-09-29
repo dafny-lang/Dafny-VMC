@@ -3,17 +3,20 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
+include "../../Math/Rationals.dfy"
 include "../BernoulliExpNeg/Interface.dfy"
 include "../DiscreteLaplace/Interface.dfy"
 
 module DiscreteGaussianInterface {
+  import Rationals
   import BernoulliExpNegInterface
   import DiscreteLaplaceInterface
 
   trait {:termination false} IDiscreteGaussian extends DiscreteLaplaceInterface.IDiscreteLaplace, BernoulliExpNegInterface.IBernoulliExpNeg {
-    method DiscreteGaussian(sigma: real) returns (y: int)
+    // Takes the sigma (not sigma^2!) as a fraction
+    method DiscreteGaussian(sigma: Rationals.Rational) returns (y: int)
       modifies this
-      requires sigma > 0.0
+      requires sigma.numer >= 1
       decreases *
   }
 }

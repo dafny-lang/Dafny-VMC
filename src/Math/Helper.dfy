@@ -33,21 +33,14 @@ module Helper {
     case _ => b * Power(b, n - 1)
   }
 
-  // See Logarithm.dfy in Stdlib
-  function {:axiom} Log(base: nat, pow: nat): (log: nat)
-    requires base > 1
-    requires pow != 0
-    ensures pow == 1 ==> log == 0
-    ensures pow > 1 ==> log > 0
-  // {
-  //   if pow < base then
-  //     0
-  //   else
-  //     DivDecreases(pow, base);
-  //     var log := 1 + Log(base, pow / base);
-  //     assert log > 0;
-  //     log
-  // }
+  // See LOG2_ML
+  function Log2(n: nat): nat {
+    if n == 0 then
+      0
+    else
+      Log2(n / 2) + 1
+  }
+
 
   /*******
    Lemmas
@@ -234,14 +227,6 @@ module Helper {
   //   }
   // }
 
-  // See Logarithm.dfy in Stdlib
-  lemma {:axiom} LogPower(base: nat, n: nat)
-    requires base > 1
-    requires n != 0
-    ensures Power(base, n) != 0
-    ensures Log(base, Power(base, n)) == n
-    ensures Power(base, Log(base, n)) == n
-
   lemma LemmaDivisionByTwo(n: nat)
     requires n != 0
     ensures n / 2 <= n - 1
@@ -291,4 +276,20 @@ module Helper {
   lemma NatMulNatToReal(x: nat, y: nat)
     ensures (x * y) as real == (x as real) * (y as real)
   {}
+
+  lemma Log2LowerSuc(n: nat)
+    ensures n + 1 <= Power(2, Log2(n))
+  {}
+
+  lemma Log2BothSides(n: nat)
+    requires n != 0
+    ensures Power(2, Log2(n) - 1) <= n < Power(2, Log2(n))
+  {}
+
+  lemma SimplifyFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    requires y != 0.0
+    ensures (x / z) / (y / z) == x / y
+  {}
+
 }

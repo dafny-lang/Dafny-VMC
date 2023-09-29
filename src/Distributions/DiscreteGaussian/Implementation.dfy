@@ -3,28 +3,41 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
+include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 
 module DiscreteGaussianImplementation {
+  import Rationals
   import DiscreteGaussianInterface
 
   trait {:termination false} TDiscreteGaussian extends DiscreteGaussianInterface.IDiscreteGaussian {
 
     // Based on Algorithm 3 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     // Note that we take sigma as a parameter, not sigma^2, to avoid square roots.
-    method DiscreteGaussian(sigma: real) returns (y: int)
+    method DiscreteGaussian(sigma: Rationals.Rational) returns (y: int)
       modifies this
-      requires sigma > 0.0
+      requires sigma.numer >= 1
       decreases *
     {
-      var t := sigma.Floor + 1;
+      var sigmaSquared := Rationals.Mul(sigma, sigma);
+      var t := Rationals.Floor(sigma) + 1;
       while true
         decreases *
       {
-        y := DiscreteLaplace(1, t);
-        var y_abs := if y < 0 then -y else y;
-        var numerator_term := y_abs as real - sigma * sigma / t as real;
-        var c := BernoulliExpNeg(numerator_term * numerator_term / 2.0 / sigma / sigma);
+        y := DiscreteLaplace(Rationals.Int(t));
+        var yAbs := if y < 0 then -y else y;
+        var numeratorTerm := Rationals.Sub(
+          Rationals.Int(yAbs),
+          Rationals.Div(sigmaSquared, Rationals.Int(t))
+        );
+        var gamma := Rationals.Div(
+          Rationals.Mul(numeratorTerm, numeratorTerm),
+          Rationals.Mul(
+            Rationals.Int(2),
+            sigmaSquared
+          )
+        );
+        var c := BernoulliExpNeg(gamma);
         if c {
           return;
         }
