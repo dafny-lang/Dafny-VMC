@@ -96,14 +96,31 @@ module UniformPowerOfTwoCorrectness {
   *******/
 
   // PROB_BERN_UNIF
-  lemma {:axiom} UnifCorrectness2(n: nat, m: nat)
+  lemma UnifCorrectness2(n: nat, m: nat)
     ensures
       var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == if m < Helper.Power(2, Helper.Log2(n)) then 1.0 / (Helper.Power(2, Helper.Log2(n)) as real) else 0.0
+  {
+    var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
+    var k := Helper.Log2(n);
+  
+    if k == 0 {
+      assert n == 0;
+      UnifCorrectness(n, k);
+      assert UnifIsCorrect(n, k, m);
+      assume {:axiom} e in RandomNumberGenerator.event_space; // got lost during refactoring of UnifCorrectness
+    } else {
+      assert n != 0;
+      Helper.Log2BothSides(n);
+      UnifCorrectness(n, k);
+      assert UnifIsCorrect(n, k, m);
+      assume {:axiom} e in RandomNumberGenerator.event_space; // got lost during refactoring of UnifCorrectness
+    }
+  }
 
   // PROB_BERN_UNIF_LT
-  lemma UnifCorrectness2Helper(n: nat, m: nat)
+  lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires m <= Helper.Power(2, Helper.Log2(n))
     ensures 
       var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 < m;
@@ -119,7 +136,7 @@ module UniformPowerOfTwoCorrectness {
       var e1 := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 < m-1;
       var e2 := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m-1;
       assert e1 in RandomNumberGenerator.event_space by {
-        UnifCorrectness2Helper(n, m-1);
+        UnifCorrectness2Inequality(n, m-1);
       }
       assert e2 in RandomNumberGenerator.event_space by {
         UnifCorrectness2(n, m-1);
@@ -135,7 +152,7 @@ module UniformPowerOfTwoCorrectness {
         RandomNumberGenerator.mu(e1 + e2);
       { assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.PosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
         RandomNumberGenerator.mu(e1) + RandomNumberGenerator.mu(e2);
-      { UnifCorrectness2(n, m-1); UnifCorrectness2Helper(n, m-1); }
+      { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
         (1.0 / (Helper.Power(2, Helper.Log2(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Helper.Log2(n)) as real));
       { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Helper.Log2(n)) as real); }
         (1.0 + (m-1) as real) / (Helper.Power(2, Helper.Log2(n)) as real);

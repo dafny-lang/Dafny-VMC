@@ -281,6 +281,11 @@ module Helper {
     ensures n + 1 <= Power(2, Log2(n))
   {}
 
+  lemma Log2BothSides(n: nat)
+    requires n != 0
+    ensures Power(2, Log2(n) - 1) <= n < Power(2, Log2(n))
+  {}
+
   lemma SimplifyFractions(x: real, y: real, z: real)
     requires z != 0.0
     requires y != 0.0
