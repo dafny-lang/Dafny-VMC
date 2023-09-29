@@ -7,8 +7,9 @@ Auditing ./src/Distributions/Base/Interface.dfy
 Auditing ./src/Distributions/Base/Model.dfy
 
 Auditing ./src/Distributions/Bernoulli/Correctness.dfy
- ProbBernoulliIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
- BernoulliCorrectness: Declaration has explicit `{:axiom}` attribute. 
+ /!\ No terms found to trigger on.
+ /!\ No terms found to trigger on.
+ /!\ No terms found to trigger on.
 
 Auditing ./src/Distributions/Bernoulli/Implementation.dfy
 
@@ -16,23 +17,10 @@ Auditing ./src/Distributions/Bernoulli/Interface.dfy
  Bernoulli: Compiled declaration has no body and has an ensures clause. 
 
 Auditing ./src/Distributions/Bernoulli/Model.dfy
- ProbBernoulli: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Distributions/BernoulliExpNeg/Implementation.dfy
 
 Auditing ./src/Distributions/BernoulliExpNeg/Interface.dfy
-
-Auditing ./src/Distributions/BernoulliRational/Correctness.dfy
- /!\ No terms found to trigger on.
- /!\ No terms found to trigger on.
- /!\ No terms found to trigger on.
-
-Auditing ./src/Distributions/BernoulliRational/Implementation.dfy
-
-Auditing ./src/Distributions/BernoulliRational/Interface.dfy
- BernoulliRational: Compiled declaration has no body and has an ensures clause. 
-
-Auditing ./src/Distributions/BernoulliRational/Model.dfy
 
 Auditing ./src/Distributions/DiscreteGaussian/Implementation.dfy
 
@@ -89,6 +77,8 @@ Auditing ./src/Math/Helper.dfy
 Auditing ./src/Math/MeasureTheory.dfy
  CountableSum: Definition has `assume {:axiom}` statement in body. 
  CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Math/Rationals.dfy
 
 Auditing ./src/ProbabilisticProgramming/Independence.dfy
  IsIndepFn: Declaration has explicit `{:axiom}` attribute. 
