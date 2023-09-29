@@ -6,6 +6,7 @@
 include "../src/Dafny-VMC.dfy"
 
 module Tests {
+  import Rationals
   import BaseInterface
   import UniformInterface
   import GeometricInterface
@@ -138,7 +139,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(1, 5);
+      var b := r.BernoulliRational(Rationals.Rational(1, 5));
       if b {
         t := t + 1;
       }
@@ -152,7 +153,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(0, 5);
+      var b := r.BernoulliRational(Rationals.Rational(0, 5));
       if b {
         t := t + 1;
       }
@@ -167,7 +168,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(5, 5);
+      var b := r.BernoulliRational(Rationals.Rational(5, 5));
       if b {
         t := t + 1;
       }
@@ -198,7 +199,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNeg(2.30258509299); // about -ln(0.1)
+      var u := r.BernoulliExpNeg(Rationals.Rational(12381, 5377)); // about -ln(0.1)
       if u {
         t := t + 1;
       }
@@ -216,7 +217,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteLaplace(5, 7); // DiscreteLaplace(7/5)
+      var u := r.DiscreteLaplace(Rationals.Rational(7, 5));
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];
@@ -247,7 +248,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteGaussian(1.4);
+      var u := r.DiscreteGaussian(Rationals.Rational(7, 5));
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];

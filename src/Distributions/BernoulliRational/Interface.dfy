@@ -3,21 +3,22 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
+include "../../Math/Rationals.dfy"
 include "../Uniform/Interface.dfy"
 include "Model.dfy"
 
 module BernoulliRationalInterface {
+  import Rationals
   import UniformInterface
   import BernoulliRationalModel
 
   trait {:termination false} IBernoulliRational extends UniformInterface.IUniform {
 
-    method BernoulliRational(m: nat, n: nat) returns (c: bool)
+    method BernoulliRational(p: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
-      requires n != 0
-      requires m <= n
-      ensures BernoulliRationalModel.ProbBernoulliRational(m, n)(old(s)) == (c, s)
+      requires 0 <= p.numer <= p.denom
+      ensures BernoulliRationalModel.ProbBernoulliRational(p.numer, p.denom)(old(s)) == (c, s)
 
   }
 }

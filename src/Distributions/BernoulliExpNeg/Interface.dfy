@@ -3,17 +3,20 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../Bernoulli/Interface.dfy"
+include "../../Math/Rationals.dfy"
+include "../../Math/Rationals.dfy"
+include "../BernoulliRational/Interface.dfy"
 
 module BernoulliExpNegInterface {
-  import BernoulliInterface
+  import Rationals
+  import BernoulliRationalInterface
 
-  trait {:termination false} IBernoulliExpNeg extends BernoulliInterface.IBernoulli {
+  trait {:termination false} IBernoulliExpNeg extends BernoulliRationalInterface.IBernoulliRational {
 
-    method BernoulliExpNeg(gamma: real) returns (c: bool)
+    method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
-      requires gamma >= 0.0
+      requires gamma.numer >= 0
 
   }
 }

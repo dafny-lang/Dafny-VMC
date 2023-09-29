@@ -11,13 +11,13 @@ module BernoulliRationalModel {
   import Monad
 
   // Footnote 5, p. 82
-  function ProbBernoulliRational(m: nat, n: nat): (f: Monad.Hurd<bool>)
-    requires n != 0
-    requires m <= n
-    ensures forall s :: f(s).0 == (UniformModel.ProbUniform(n)(s).0 < m)
-    ensures forall s :: f(s).1 == UniformModel.ProbUniform(n)(s).1
+  function ProbBernoulliRational(numer: nat, denom: nat): (f: Monad.Hurd<bool>)
+    requires denom != 0
+    requires numer <= denom
+    ensures forall s :: f(s).0 == (UniformModel.ProbUniform(denom)(s).0 < numer)
+    ensures forall s :: f(s).1 == UniformModel.ProbUniform(denom)(s).1
   {
-    Monad.Bind(UniformModel.ProbUniform(n), (k: nat) => Monad.Return(k < m))
+    Monad.Bind(UniformModel.ProbUniform(denom), (k: nat) => Monad.Return(k < numer))
   }
 
 }
