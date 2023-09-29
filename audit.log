@@ -1,7 +1,6 @@
 
 Auditing ./src/Dafny-VMC.dfy
-src/Dafny-VMC.dfy(14,8): Error: Unable to open the include file:///Users/trjohnb/Code/Dafny-VMC/src/Distributions/Geometric/Implementation.dfy because Could not find a part of the path '/Users/trjohnb/Code/Dafny-VMC/src/Distributions/Geometric/Implementation.dfy'..
-1 parse errors detected in Dafny-VMC.dfy
+
 Auditing ./src/Distributions/Base/Interface.dfy
  Coin: Definition has `assume {:axiom}` statement in body. 
 

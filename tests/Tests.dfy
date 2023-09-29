@@ -9,7 +9,6 @@ module Tests {
   import Rationals
   import BaseInterface
   import UniformInterface
-  import GeometricInterface
   import BernoulliInterface
   import BernoulliExpNegInterface
   import DiscreteLaplaceInterface
