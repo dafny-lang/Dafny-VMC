@@ -99,7 +99,7 @@ module UniformCorrectness {
 
         assert RandomNumberGenerator.mu(e2) == (n as real) by {
           Helper.Log2LowerSuc(n-1);
-          UniformPowerOfTwoCorrectness.UnifCorrectness2Helper(n-1, n);
+          UniformPowerOfTwoCorrectness.UnifCorrectness2Inequality(n-1, n);
           assert Helper.Power(2, Helper.Log2(n-1)) == 1;
         }
 
@@ -121,7 +121,7 @@ module UniformCorrectness {
         }
         assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real) by {
           Helper.Log2LowerSuc(n-1);
-          UniformPowerOfTwoCorrectness.UnifCorrectness2Helper(n-1, n);
+          UniformPowerOfTwoCorrectness.UnifCorrectness2Inequality(n-1, n);
         }
         calc {
           RandomNumberGenerator.mu(e);
