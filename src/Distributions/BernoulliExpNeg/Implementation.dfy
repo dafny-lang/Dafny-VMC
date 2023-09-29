@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 include "../../Math/Rationals.dfy"
-include "../BernoulliRational/Interface.dfy"
+include "../Bernoulli/Interface.dfy"
 include "Interface.dfy"
 
 module BernoulliExpNegImplementation {
@@ -21,12 +21,12 @@ module BernoulliExpNegImplementation {
     {
       if gamma.numer <= gamma.denom {
         var k := 1;
-        var a := BernoulliRational(Rationals.Rational(gamma.numer, k * gamma.denom));
+        var a := Bernoulli(Rationals.Rational(gamma.numer, k * gamma.denom));
         while a
           decreases *
         {
           k := k + 1;
-          a := BernoulliRational(Rationals.Rational(gamma.numer, k * gamma.denom));
+          a := Bernoulli(Rationals.Rational(gamma.numer, k * gamma.denom));
         }
         c := k % 2 == 1;
       } else {

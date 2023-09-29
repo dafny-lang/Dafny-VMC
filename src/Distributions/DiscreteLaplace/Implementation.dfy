@@ -40,7 +40,7 @@ module DiscreteLaplaceImplementation {
         }
         var x := u + scale.numer * v;
         y := x / scale.denom;
-        b := Bernoulli(0.5);
+        b := Bernoulli(Rationals.Rational(1, 2));
       }
       z := if b then -y else y;
     }

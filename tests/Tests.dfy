@@ -11,7 +11,6 @@ module Tests {
   import UniformInterface
   import GeometricInterface
   import BernoulliInterface
-  import BernoulliRationalInterface
   import BernoulliExpNegInterface
   import DiscreteLaplaceInterface
   import DiscreteGaussianInterface
@@ -132,14 +131,14 @@ module Tests {
     testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
   }
 
-  method TestBernoulliRational(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+  method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     requires n > 0
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(Rationals.Rational(1, 5));
+      var b := r.Bernoulli(Rationals.Rational(1, 5));
       if b {
         t := t + 1;
       }
@@ -147,13 +146,13 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
-  method TestBernoulliRational2(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+  method TestBernoulli2(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(Rationals.Rational(0, 5));
+      var b := r.Bernoulli(Rationals.Rational(0, 5));
       if b {
         t := t + 1;
       }
@@ -162,34 +161,19 @@ module Tests {
     expect t == 0;
   }
 
-  method TestBernoulliRational3(n: nat, r: BernoulliRationalInterface.IBernoulliRational)
+  method TestBernoulli3(n: nat, r: BernoulliInterface.IBernoulli)
     decreases *
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliRational(Rationals.Rational(5, 5));
+      var b := r.Bernoulli(Rationals.Rational(5, 5));
       if b {
         t := t + 1;
       }
     }
 
     expect t == n;
-  }
-
-  method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
-    decreases *
-    requires n > 0
-    modifies r
-  {
-    var t := 0;
-    for i := 0 to n {
-      var b := r.Bernoulli(0.2);
-      if b {
-        t := t + 1;
-      }
-    }
-    testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
   method TestBernoulliExpNeg(n: nat, r: BernoulliExpNegInterface.IBernoulliExpNeg)

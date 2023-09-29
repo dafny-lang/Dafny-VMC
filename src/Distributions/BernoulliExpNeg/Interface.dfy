@@ -5,13 +5,13 @@
 
 include "../../Math/Rationals.dfy"
 include "../../Math/Rationals.dfy"
-include "../BernoulliRational/Interface.dfy"
+include "../Bernoulli/Interface.dfy"
 
 module BernoulliExpNegInterface {
   import Rationals
-  import BernoulliRationalInterface
+  import BernoulliInterface
 
-  trait {:termination false} IBernoulliExpNeg extends BernoulliRationalInterface.IBernoulliRational {
+  trait {:termination false} IBernoulliExpNeg extends BernoulliInterface.IBernoulli {
 
     method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
       modifies this
