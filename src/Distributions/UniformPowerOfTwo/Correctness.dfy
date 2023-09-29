@@ -109,13 +109,13 @@ module UniformPowerOfTwoCorrectness {
       assert n == 0;
       UnifCorrectness(n, k);
       assert UnifIsCorrect(n, k, m);
-      assume {:axiom} e in RandomNumberGenerator.event_space; // got lost during refactoring of UnifCorrectness
+      assume {:axiom} e in RandomNumberGenerator.event_space; // add later
     } else {
       assert n != 0;
       Helper.Log2BothSides(n);
       UnifCorrectness(n, k);
       assert UnifIsCorrect(n, k, m);
-      assume {:axiom} e in RandomNumberGenerator.event_space; // got lost during refactoring of UnifCorrectness
+      assume {:axiom} e in RandomNumberGenerator.event_space; // add later
     }
   }
 
