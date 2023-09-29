@@ -104,7 +104,7 @@ module UniformPowerOfTwoCorrectness {
   {
     var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
     var k := Helper.Log2(n);
-  
+
     if k == 0 {
       assert n == 0;
       UnifCorrectness(n, k);
@@ -122,7 +122,7 @@ module UniformPowerOfTwoCorrectness {
   // PROB_BERN_UNIF_LT
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires m <= Helper.Power(2, Helper.Log2(n))
-    ensures 
+    ensures
       var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 < m;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == (m as real) / (Helper.Power(2, Helper.Log2(n)) as real)
@@ -148,15 +148,15 @@ module UniformPowerOfTwoCorrectness {
       }
       calc {
         RandomNumberGenerator.mu(e);
-      { assert e == e1 + e2; }
+        { assert e == e1 + e2; }
         RandomNumberGenerator.mu(e1 + e2);
-      { assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.PosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
+        { assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.PosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
         RandomNumberGenerator.mu(e1) + RandomNumberGenerator.mu(e2);
-      { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
+        { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
         (1.0 / (Helper.Power(2, Helper.Log2(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Helper.Log2(n)) as real));
-      { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Helper.Log2(n)) as real); }
+        { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Helper.Log2(n)) as real); }
         (1.0 + (m-1) as real) / (Helper.Power(2, Helper.Log2(n)) as real);
-      { assert 1.0 + (m-1) as real == (m as real); }
+        { assert 1.0 + (m-1) as real == (m as real); }
         (m as real) / (Helper.Power(2, Helper.Log2(n)) as real);
       }
     }
