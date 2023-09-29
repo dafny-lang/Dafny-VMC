@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "Interface.dfy"
 include "Model.dfy"
@@ -12,7 +12,7 @@ module BernoulliRationalImplementation {
 
   trait {:termination false} TBernoulliRational extends BernoulliRationalInterface.IBernoulliRational {
 
-   method BernoulliRational(m: nat, n: nat) returns (c: bool)
+    method BernoulliRational(m: nat, n: nat) returns (c: bool)
       modifies this
       decreases *
       requires n != 0

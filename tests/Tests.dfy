@@ -3,9 +3,9 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- include "../src/Dafny-VMC.dfy"
+include "../src/Dafny-VMC.dfy"
 
- module Tests {
+module Tests {
   import BaseInterface
   import UniformInterface
   import GeometricInterface
@@ -267,4 +267,4 @@
     var varianceBound := 1.4 * 1.4; // variance of DiscreteGaussian(1.4) is < 1.4^2
     testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
   }
- }
+}

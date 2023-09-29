@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "../../Math/Helper.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
@@ -20,7 +20,7 @@ module GeometricCorrectness {
   /*******
    Lemmas
   *******/
-  
+
   // Equation (4.19)
   lemma {:axiom} ProbGeometricIsIndepFn()
     ensures Independence.IsIndepFn(GeometricModel.ProbGeometric())

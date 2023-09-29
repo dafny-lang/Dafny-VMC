@@ -1,7 +1,7 @@
 /*******************************************************************************
-*  Copyright by the contributors to the Dafny Project
-*  SPDX-License-Identifier: MIT
-*******************************************************************************/
+ *  Copyright by the contributors to the Dafny Project
+ *  SPDX-License-Identifier: MIT
+ *******************************************************************************/
 
 include "RandomNumberGenerator.dfy"
 include "Monad.dfy"
@@ -29,7 +29,7 @@ module Independence {
   }
 
   // Definition 35
-  ghost predicate {:axiom} IsIndepFn<A>(f: Monad.Hurd<A>)
+  predicate {:axiom} IsIndepFn<A>(f: Monad.Hurd<A>)
     ensures IsIndepFunction(f)
     ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
 
