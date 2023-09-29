@@ -29,13 +29,6 @@ module TestsExternUniform {
     Tests.TestUniformInterval(1_000_000, r);
   }
 
-  method {:test} TestGeometric()
-    decreases *
-  {
-    var r := new DafnyVMC.DRandomExternUniform();
-    Tests.TestGeometric(1_000_000, r);
-  }
-
   method {:test} TestBernoulli()
     decreases *
   {

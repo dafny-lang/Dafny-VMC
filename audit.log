@@ -30,18 +30,6 @@ Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
 
 Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
 
-Auditing ./src/Distributions/Geometric/Correctness.dfy
- ProbGeometricIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
- ProbGeometricCorrectness: Declaration has explicit `{:axiom}` attribute. 
-
-Auditing ./src/Distributions/Geometric/Implementation.dfy
-
-Auditing ./src/Distributions/Geometric/Interface.dfy
- Geometric: Compiled declaration has no body and has an ensures clause. 
-
-Auditing ./src/Distributions/Geometric/Model.dfy
- ProbWhileGeometricTerminates: Declaration has explicit `{:axiom}` attribute. 
-
 Auditing ./src/Distributions/Uniform/Correctness.dfy
  /!\ No terms found to trigger on.
  /!\ No terms found to trigger on.

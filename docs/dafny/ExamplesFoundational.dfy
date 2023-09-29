@@ -56,18 +56,6 @@ module RandomExamples {
     }
     print "Estimated probabilities for UniformInterval(7,10): ", (a as real) / (n as real), "; ", (b as real) / (n as real), "; " , (c as real) / (n as real), " (each should be around 0.33)\n";
 
-    a := 0;
-    b := 0;
-    for i := 0 to n {
-      var k := r.Geometric();
-      if k == 5 {
-        a := a + 1;
-      } else if k == 10  {
-        b := b + 1;
-      }
-    }
-    print "Estimated probabilities for Geometric(0.5): " , (a as real) / (n as real), " (should be around 0.015625) and " , (b as real) / (n as real), " (should be around 0.00048828125) \n";
-
     t := 0;
     for i := 0 to n {
       var b := r.Bernoulli(Rationals.Rational(1, 5));
