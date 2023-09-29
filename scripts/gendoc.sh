@@ -14,6 +14,9 @@ then
   exit 1
 fi
 
+echo Generating Dafny documentation...
+$DAFNY doc src/Dafny-VMC.dfy --output docs/dafny/dafny-doc/
+
 echo Generating Java documentation...
 $DAFNY translate java src/Dafny-VMC.dfy 
 cp $DAFNYSOURCE/Source/DafnyRuntime/DafnyRuntimeJava/src/main/java/dafny/*.java src/Dafny-VMC-java/dafny/
