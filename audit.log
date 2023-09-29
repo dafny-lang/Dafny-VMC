@@ -1,6 +1,7 @@
 
 Auditing ./src/Dafny-VMC.dfy
-
+src/Dafny-VMC.dfy(14,8): Error: Unable to open the include file:///Users/trjohnb/Code/Dafny-VMC/src/Distributions/Geometric/Implementation.dfy because Could not find a part of the path '/Users/trjohnb/Code/Dafny-VMC/src/Distributions/Geometric/Implementation.dfy'..
+1 parse errors detected in Dafny-VMC.dfy
 Auditing ./src/Distributions/Base/Interface.dfy
  Coin: Definition has `assume {:axiom}` statement in body. 
 
@@ -29,18 +30,6 @@ Auditing ./src/Distributions/DiscreteGaussian/Interface.dfy
 Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
 
 Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
-
-Auditing ./src/Distributions/Geometric/Correctness.dfy
- ProbGeometricIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
- ProbGeometricCorrectness: Declaration has explicit `{:axiom}` attribute. 
-
-Auditing ./src/Distributions/Geometric/Implementation.dfy
-
-Auditing ./src/Distributions/Geometric/Interface.dfy
- Geometric: Compiled declaration has no body and has an ensures clause. 
-
-Auditing ./src/Distributions/Geometric/Model.dfy
- ProbWhileGeometricTerminates: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/Uniform/Correctness.dfy
  /!\ No terms found to trigger on.
