@@ -76,7 +76,7 @@ module RandomExamples {
       }
     }
 
-    print "Estimated parameter for Bernoulli(1, 5): ", (t as real) / (n as real), " (should be around 0.2)\n";
+    print "Estimated parameter for Bernoulli(1/5): ", (t as real) / (n as real), " (should be around 0.2)\n";
 
     t := 0;
     for i := 0 to n {
@@ -86,7 +86,7 @@ module RandomExamples {
       }
     }
 
-    print "Estimated parameter for Bernoulli(0, 5): ", (t as real) / (n as real), " (should be around 0.0)\n";
+    print "Estimated parameter for Bernoulli(0/5): ", (t as real) / (n as real), " (should be around 0.0)\n";
 
     t := 0;
     for i := 0 to n {
@@ -96,7 +96,7 @@ module RandomExamples {
       }
     }
 
-    print "Estimated parameter for Bernoulli(5, 5): ", (t as real) / (n as real), " (should be around 1.0\n";
+    print "Estimated parameter for Bernoulli(5/5): ", (t as real) / (n as real), " (should be around 1.0\n";
 
     t := 0;
     for i := 0 to n {
