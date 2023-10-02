@@ -4,14 +4,13 @@
  *******************************************************************************/
 
 include "../../Math/Rationals.dfy"
-include "../../Math/Rationals.dfy"
-include "../Bernoulli/Interface.dfy"
+include "../Bernoulli/Bernoulli.dfy"
 
 module BernoulliExpNegInterface {
   import Rationals
-  import BernoulliInterface
+  import Bernoulli
 
-  trait {:termination false} IBernoulliExpNeg extends BernoulliInterface.IBernoulli {
+  trait {:termination false} IBernoulliExpNeg extends Bernoulli.Interface.IBernoulli {
 
     method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
       modifies this

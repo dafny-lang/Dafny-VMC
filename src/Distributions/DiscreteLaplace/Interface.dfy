@@ -4,17 +4,17 @@
  *******************************************************************************/
 
 include "../../Math/Rationals.dfy"
-include "../Bernoulli/Interface.dfy"
+include "../Bernoulli/Bernoulli.dfy"
 include "../Uniform/Interface.dfy"
 include "../BernoulliExpNeg/Interface.dfy"
 
 module DiscreteLaplaceInterface {
   import Rationals
-  import BernoulliInterface
+  import Bernoulli
   import UniformInterface
   import BernoulliExpNegInterface
 
-  trait {:termination false} IDiscreteLaplace extends BernoulliInterface.IBernoulli, UniformInterface.IUniform, BernoulliExpNegInterface.IBernoulliExpNeg {
+  trait {:termination false} IDiscreteLaplace extends Bernoulli.Interface.IBernoulli, UniformInterface.IUniform, BernoulliExpNegInterface.IBernoulliExpNeg {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method DiscreteLaplace(scale: Rationals.Rational) returns (z: int)
