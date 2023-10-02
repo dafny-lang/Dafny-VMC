@@ -35,7 +35,15 @@ module Independence {
    Lemmas
   *******/
 
-  lemma {:axiom} IsIndepFnImpliesMeasurable<A(!new)>(f: Monad.Hurd<A>)
+  lemma {:axiom} IsIndepFnImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
+    requires IsIndepFn(f)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.boolEventSpace, s => f(s).0)
+
+  lemma {:axiom} IsIndepFnImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
+    requires IsIndepFn(f)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => f(s).0)
+
+  lemma {:axiom} IsIndepFnImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndepFn(f)
     ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
 

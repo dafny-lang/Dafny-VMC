@@ -52,17 +52,27 @@ module UniformPowerOfTwoCorrectness {
     var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
     var k := Helper.Log2(n);
 
+    assert e in RandomNumberGenerator.event_space by {
+      assert iset{m} in MeasureTheory.natEventSpace;
+      var preimage := MeasureTheory.PreImage((s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n)(s).0, iset{m});
+      assert preimage in RandomNumberGenerator.event_space by {
+        assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => UniformPowerOfTwoModel.ProbUnif(n)(s).0) by {
+          ProbUnifIsIndepFn(n);
+          Independence.IsIndepFnImpliesFstMeasurableNat(UniformPowerOfTwoModel.ProbUnif(n));
+        }
+      }
+      assert e == preimage;
+    }
+
     if k == 0 {
       assert n == 0;
       UnifCorrectness(n, k);
       assert UnifIsCorrect(n, k, m);
-      assume {:axiom} e in RandomNumberGenerator.event_space; // add later
     } else {
       assert n != 0;
       Helper.Log2BothSides(n);
       UnifCorrectness(n, k);
       assert UnifIsCorrect(n, k, m);
-      assume {:axiom} e in RandomNumberGenerator.event_space; // add later
     }
   }
 
@@ -357,7 +367,7 @@ module UniformPowerOfTwoCorrectness {
     var f := ProbUnif1(n);
     assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, f) by {
       ProbUnifIsIndepFn(n);
-      Independence.IsIndepFnImpliesMeasurable(UniformPowerOfTwoModel.ProbUnif(n));
+      Independence.IsIndepFnImpliesSndMeasurable(UniformPowerOfTwoModel.ProbUnif(n));
       assert Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n));
     }
     var g := ProbUnif1(n / 2);
