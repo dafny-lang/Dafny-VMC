@@ -9,7 +9,7 @@ module Tests {
   import Rationals
   import BaseInterface
   import UniformInterface
-  import BernoulliInterface
+  import Bernoulli
   import BernoulliExpNegInterface
   import DiscreteLaplaceInterface
   import DiscreteGaussianInterface
@@ -107,7 +107,7 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
   }
 
-  method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
+  method TestBernoulli(n: nat, r: Bernoulli.Interface.IBernoulli)
     decreases *
     requires n > 0
     modifies r
@@ -122,7 +122,7 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
-  method TestBernoulli2(n: nat, r: BernoulliInterface.IBernoulli)
+  method TestBernoulli2(n: nat, r: Bernoulli.Interface.IBernoulli)
     decreases *
     modifies r
   {
@@ -137,7 +137,7 @@ module Tests {
     expect t == 0;
   }
 
-  method TestBernoulli3(n: nat, r: BernoulliInterface.IBernoulli)
+  method TestBernoulli3(n: nat, r: Bernoulli.Interface.IBernoulli)
     decreases *
     modifies r
   {
