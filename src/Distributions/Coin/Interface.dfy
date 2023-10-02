@@ -10,7 +10,7 @@ module CoinInterface {
   import RandomNumberGenerator
   import Model = CoinModel
 
-  method {:extern "DRandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
+  method {:extern "DRandomCoin", "CoinSample"} ExternCoinSample() returns (b: bool)
   
   trait {:termination false} Trait {
     ghost var s: RandomNumberGenerator.RNG
