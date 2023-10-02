@@ -6,13 +6,13 @@
 using System;
 using System.Numerics;
 
-namespace CoinImplementation {
+namespace CoinInterface {
 
     public class DRandomCoin {
 
       private static Random r = new Random();
 
-      public static bool CoinSample() {
+      public static bool Coin() {
         return r.Next(2) == 0;
       }
 

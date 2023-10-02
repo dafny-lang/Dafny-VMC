@@ -1,4 +1,4 @@
-package CoinImplementation;
+package CoinInterface;
 
 import java.security.SecureRandom;
 import java.math.BigInteger;
@@ -6,7 +6,7 @@ import java.math.BigInteger;
 public class DRandomCoin {
   private static SecureRandom r = new SecureRandom();
 
-  public static boolean CoinSample() {
+  public static boolean Coin() {
     return r.nextBoolean();
   }
 }

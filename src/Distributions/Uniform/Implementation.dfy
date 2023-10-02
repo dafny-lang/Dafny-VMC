@@ -32,7 +32,7 @@ module UniformImplementation {
     }
   }
 
-  method {:extern "DRandomUniform", "UniformSample"} ExternUniformSample(n: nat) returns (u: nat)
+  method {:extern "DRandomUniform", "Uniform"} ExternUniformSample(n: nat) returns (u: nat)
 
   trait {:termination false} TraitExtern extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
