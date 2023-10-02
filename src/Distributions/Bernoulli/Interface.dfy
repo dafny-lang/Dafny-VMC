@@ -18,7 +18,7 @@ module BernoulliInterface {
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures Model.BernoulliSample(p.numer, p.denom)(old(s)) == (c, s)
+      ensures Model.Sample(p.numer, p.denom)(old(s)) == (c, s)
 
   }
 }

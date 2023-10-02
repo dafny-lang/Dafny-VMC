@@ -17,7 +17,7 @@ module CoinInterface {
 
     method CoinSample() returns (b: bool)
       modifies this
-      ensures Model.CoinSample(old(s)) == (b, s)
+      ensures Model.Sample(old(s)) == (b, s)
     {
       b := ExternCoinSample();
       assume {:axiom} false;

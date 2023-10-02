@@ -14,7 +14,7 @@ module UniformPowerOfTwoInterface {
 
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       modifies this
-      ensures Model.UniformPowerOfTwoSample(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
 
   }
 }

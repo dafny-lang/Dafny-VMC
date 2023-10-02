@@ -31,14 +31,14 @@ module UniformCorrectness {
   ghost function UniformFullCorrectnessHelper(n: nat, i: nat): iset<RandomNumberGenerator.RNG>
     requires 0 <= i < n
   {
-    iset s | Model.UniformSample(n)(s).0 == i
+    iset s | Model.Sample(n)(s).0 == i
   }
 
   /*******
    Lemmas
   *******/
 
-  // Correctness theorem for Model.UniformSample
+  // Correctness theorem for Model.Sample
   // Equation (4.12) / PROB_BERN_UNIFORM
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
@@ -48,16 +48,16 @@ module UniformCorrectness {
       && RandomNumberGenerator.mu(e) == 1.0 / (n as real)
   {
     var e := UniformFullCorrectnessHelper(n, i);
-    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0 < n;
-    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0 == i;
-    var e1 := iset s {:trigger UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0} | UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0 == i;
-    var e2 := iset s {:trigger UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0} | UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0 < n;
-    var b := UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1);
+    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(n-1)(s).0 < n;
+    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(n-1)(s).0 == i;
+    var e1 := iset s {:trigger UniformPowerOfTwo.Model.Sample(n-1)(s).0} | UniformPowerOfTwo.Model.Sample(n-1)(s).0 == i;
+    var e2 := iset s {:trigger UniformPowerOfTwo.Model.Sample(n-1)(s).0} | UniformPowerOfTwo.Model.Sample(n-1)(s).0 < n;
+    var b := UniformPowerOfTwo.Model.Sample(n-1);
     var c := (x: nat) => x < n;
     var d := (x: nat) => x == i;
 
     assert Independence.IsIndepFn(b) && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c)) by {
-      UniformPowerOfTwo.Model.UniformPowerOfTwoSampleTerminates(n);
+      UniformPowerOfTwo.Model.SampleTerminates(n);
     }
 
     assert WhileAndUntil.ProbUntilTerminates(b, c) by {
@@ -70,10 +70,10 @@ module UniformCorrectness {
 
     assert x.0 == e;
     assert x.1 == e1 by {
-      assert forall s :: d(b(s).0) && c(b(s).0) <==> (UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0 == i);
+      assert forall s :: d(b(s).0) && c(b(s).0) <==> (UniformPowerOfTwo.Model.Sample(n-1)(s).0 == i);
     }
     assert x.2 == e2 by {
-      assert forall s :: c(b(s).0) <==> UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(s).0 < n;
+      assert forall s :: c(b(s).0) <==> UniformPowerOfTwo.Model.Sample(n-1)(s).0 < n;
     }
 
     assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
@@ -127,11 +127,11 @@ module UniformCorrectness {
     }
   }
 
-  // Correctness theorem for Model.UniformIntervalSample
+  // Correctness theorem for Model.IntervalSample
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
     ensures
-      var e := iset s | Model.UniformIntervalSample(a, b)(s).0 == i;
+      var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == (1.0 / ((b-a) as real))
   {
@@ -141,16 +141,16 @@ module UniformCorrectness {
     var e' := UniformFullCorrectnessHelper(b - a, i - a);
     assert e' in RandomNumberGenerator.event_space by { UniformFullCorrectness(b - a, i - a); }
     assert RandomNumberGenerator.mu(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
-    var e := iset s | Model.UniformIntervalSample(a, b)(s).0 == i;
+    var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
     assert e == e' by {
-      forall s ensures Model.UniformIntervalSample(a, b)(s).0 == i <==> Model.UniformSample(b-a)(s).0 == i - a {
-        assert Model.UniformIntervalSample(a, b)(s).0 == a + Model.UniformSample(b - a)(s).0;
+      forall s ensures Model.IntervalSample(a, b)(s).0 == i <==> Model.Sample(b-a)(s).0 == i - a {
+        assert Model.IntervalSample(a, b)(s).0 == a + Model.Sample(b - a)(s).0;
       }
     }
   }
 
   // Equation (4.10)
-  lemma {:axiom} UniformSampleIsIndepFn(n: nat)
+  lemma {:axiom} SampleIsIndepFn(n: nat)
     requires n > 0
-    ensures Independence.IsIndepFn(Model.UniformSample(n))
+    ensures Independence.IsIndepFn(Model.Sample(n))
 }

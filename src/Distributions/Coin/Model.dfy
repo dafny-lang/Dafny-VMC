@@ -10,7 +10,7 @@ module CoinModel {
   import RandomNumberGenerator
   import Monad
 
-  function CoinSample(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
+  function Sample(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
     Monad.Deconstruct(s)
   }
 }

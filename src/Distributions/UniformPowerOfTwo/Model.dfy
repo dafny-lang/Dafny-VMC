@@ -25,23 +25,23 @@ module UniformPowerOfTwoModel {
   }
 
   // Definition 48
-  function UniformPowerOfTwoSample(n: nat): (h: Monad.Hurd<nat>) {
+  function Sample(n: nat): (h: Monad.Hurd<nat>) {
     if n == 0 then
       Monad.Return(0)
     else
-      Monad.Bind(UniformPowerOfTwoSample(n/2), UnifStep)
+      Monad.Bind(Sample(n/2), UnifStep)
   }
 
-  lemma {:axiom} UniformPowerOfTwoSampleTerminates(n: nat)
+  lemma {:axiom} SampleTerminates(n: nat)
     requires n > 0
     ensures
-      var b := UniformPowerOfTwoSample(n - 1);
+      var b := Sample(n - 1);
       var c := (x: nat) => x < n;
       && Independence.IsIndepFn(b)
       && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
       && WhileAndUntil.ProbUntilTerminates(b, c)
 
-  function UniformPowerOfTwoSampleAlternative(n: nat, k: nat := 1, u: nat := 0): Monad.Hurd<nat>
+  function SampleAlternative(n: nat, k: nat := 1, u: nat := 0): Monad.Hurd<nat>
     requires k >= 1
     decreases 2*n - k
   {
@@ -49,12 +49,12 @@ module UniformPowerOfTwoModel {
       if k > n then
         (u, s)
       else
-        UniformPowerOfTwoSampleAlternative(n, 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s))
+        SampleAlternative(n, 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s))
   }
 
   // incomplete
-  lemma UniformPowerOfTwoSampleCorrespondence(n: nat, s: RandomNumberGenerator.RNG)
-    ensures UniformPowerOfTwoSampleAlternative(n)(s) == UniformPowerOfTwoSample(n)(s)
+  lemma SampleCorrespondence(n: nat, s: RandomNumberGenerator.RNG)
+    ensures SampleAlternative(n)(s) == Sample(n)(s)
   {
     var f := (m: nat) =>
         var g := (b: bool) =>
@@ -63,17 +63,17 @@ module UniformPowerOfTwoModel {
     if n == 0 {
     } else if n == 1 {
       assert n / 2 == 0;
-      assert (0, s) == UniformPowerOfTwoSample(n/2)(s);
+      assert (0, s) == Sample(n/2)(s);
       calc {
-        UniformPowerOfTwoSample(n)(s);
-        Monad.Bind(UniformPowerOfTwoSample(n/2), f)(s);
+        Sample(n)(s);
+        Monad.Bind(Sample(n/2), f)(s);
         f(0)(s);
         Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 1 else 0))(s);
         Monad.Return(if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
         (if Monad.Head(s) then 1 else 0, Monad.Tail(s));
-        UniformPowerOfTwoSampleAlternative(1, 2, if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
-        UniformPowerOfTwoSampleAlternative(1, 1, 0)(s);
-        UniformPowerOfTwoSampleAlternative(n)(s);
+        SampleAlternative(1, 2, if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
+        SampleAlternative(1, 1, 0)(s);
+        SampleAlternative(n)(s);
       }
     } else {
       assume {:axiom} false;

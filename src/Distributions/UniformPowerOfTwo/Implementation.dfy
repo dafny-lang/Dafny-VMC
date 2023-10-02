@@ -13,7 +13,7 @@ module UniformPowerOfTwoImplementation {
   trait {:termination false} Trait extends Interface.Trait {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       modifies this
-      ensures Model.UniformPowerOfTwoSample(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
     {
       var k := 1;
       u := 0;
@@ -21,13 +21,13 @@ module UniformPowerOfTwoImplementation {
       while k <= n
         decreases 2*n - k
         invariant k >= 1
-        invariant Model.UniformPowerOfTwoSampleAlternative(n)(old(s)) == Model.UniformPowerOfTwoSampleAlternative(n, k, u)(s)
+        invariant Model.SampleAlternative(n)(old(s)) == Model.SampleAlternative(n, k, u)(s)
       {
         var b := CoinSample();
         k := 2*k;
         u := if b then 2*u + 1 else 2*u;
       }
-      Model.UniformPowerOfTwoSampleCorrespondence(n, old(s));
+      Model.SampleCorrespondence(n, old(s));
     }
   }
 }

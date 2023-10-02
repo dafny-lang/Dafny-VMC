@@ -24,16 +24,16 @@ module BernoulliCorrectness {
    Lemmas
   *******/
 
-  lemma BernoulliSampleIsIndepFn(m: nat, n: nat)
+  lemma SampleIsIndepFn(m: nat, n: nat)
     requires n != 0
     requires m <= n
-    ensures Independence.IsIndepFn(Model.BernoulliSample(m, n))
+    ensures Independence.IsIndepFn(Model.Sample(m, n))
   {
-    var f := Uniform.Model.UniformSample(n);
+    var f := Uniform.Model.Sample(n);
     var g := (k: nat) => Monad.Return(k < m);
 
     assert Independence.IsIndepFn(f) by {
-      Uniform.Correctness.UniformSampleIsIndepFn(n);
+      Uniform.Correctness.SampleIsIndepFn(n);
     }
 
     assert forall k: nat :: Independence.IsIndepFn(g(k)) by {
@@ -50,18 +50,18 @@ module BernoulliCorrectness {
     requires n != 0
     requires m <= n
     ensures
-      var e := iset s | Model.BernoulliSample(m, n)(s).0;
+      var e := iset s | Model.Sample(m, n)(s).0;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == m as real / n as real
   {
-    var e := iset s | Model.BernoulliSample(m, n)(s).0;
+    var e := iset s | Model.Sample(m, n)(s).0;
 
     if m == 0 {
       assert e == iset{} by {
-        forall s ensures !Model.BernoulliSample(m, n)(s).0 {
+        forall s ensures !Model.Sample(m, n)(s).0 {
           calc {
-            Model.BernoulliSample(m, n)(s).0;
-            Uniform.Model.UniformSample(n)(s).0 < 0;
+            Model.Sample(m, n)(s).0;
+            Uniform.Model.Sample(n)(s).0 < 0;
             false;
           }
         }
@@ -73,22 +73,22 @@ module BernoulliCorrectness {
         assert MeasureTheory.IsPositive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu);
       }
     } else {
-      var e1 := iset s | Uniform.Model.UniformSample(n)(s).0 == m-1;
-      var e2 := (iset s {:trigger Uniform.Model.UniformSample(n)(s).0} | Model.BernoulliSample(m-1, n)(s).0);
+      var e1 := iset s | Uniform.Model.Sample(n)(s).0 == m-1;
+      var e2 := (iset s {:trigger Uniform.Model.Sample(n)(s).0} | Model.Sample(m-1, n)(s).0);
 
-      assert (iset s | Uniform.Model.UniformSample(n)(s).0 < m-1) == e2 by {
-        assert (iset s | Uniform.Model.UniformSample(n)(s).0 < m-1) == (iset s {:trigger Uniform.Model.UniformSample(n)(s).0} | Model.BernoulliSample(m-1, n)(s).0) by {
-          forall s ensures Uniform.Model.UniformSample(n)(s).0 < m-1 <==> Model.BernoulliSample(m-1, n)(s).0 {
-            assert Uniform.Model.UniformSample(n)(s).0 < m-1 <==> Model.BernoulliSample(m-1, n)(s).0;
+      assert (iset s | Uniform.Model.Sample(n)(s).0 < m-1) == e2 by {
+        assert (iset s | Uniform.Model.Sample(n)(s).0 < m-1) == (iset s {:trigger Uniform.Model.Sample(n)(s).0} | Model.Sample(m-1, n)(s).0) by {
+          forall s ensures Uniform.Model.Sample(n)(s).0 < m-1 <==> Model.Sample(m-1, n)(s).0 {
+            assert Uniform.Model.Sample(n)(s).0 < m-1 <==> Model.Sample(m-1, n)(s).0;
           }
         }
       }
 
       calc {
         e;
-        iset s | Uniform.Model.UniformSample(n)(s).0 < m;
-        iset s | Uniform.Model.UniformSample(n)(s).0 == m-1 || Uniform.Model.UniformSample(n)(s).0 < m-1;
-        (iset s | Uniform.Model.UniformSample(n)(s).0 == m-1) + (iset s | Uniform.Model.UniformSample(n)(s).0 < m-1);
+        iset s | Uniform.Model.Sample(n)(s).0 < m;
+        iset s | Uniform.Model.Sample(n)(s).0 == m-1 || Uniform.Model.Sample(n)(s).0 < m-1;
+        (iset s | Uniform.Model.Sample(n)(s).0 == m-1) + (iset s | Uniform.Model.Sample(n)(s).0 < m-1);
         e1 + e2;
       }
 
