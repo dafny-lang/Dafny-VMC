@@ -54,11 +54,11 @@ module UniformPowerOfTwoCorrectness {
 
     assert e in RandomNumberGenerator.event_space by {
       assert iset{m} in MeasureTheory.natEventSpace;
-      var preimage := MeasureTheory.PreImage((s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n)(s).0, iset{m});
+      var preimage := MeasureTheory.PreImage((s: RandomNumberGenerator.RNG) => Model.Sample(n)(s).0, iset{m});
       assert preimage in RandomNumberGenerator.event_space by {
-        assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => UniformPowerOfTwoModel.ProbUnif(n)(s).0) by {
-          ProbUnifIsIndepFn(n);
-          Independence.IsIndepFnImpliesFstMeasurableNat(UniformPowerOfTwoModel.ProbUnif(n));
+        assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => Model.Sample(n)(s).0) by {
+          SampleIsIndepFn(n);
+          Independence.IsIndepFnImpliesFstMeasurableNat(Model.Sample(n));
         }
       }
       assert e == preimage;
