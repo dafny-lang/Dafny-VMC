@@ -7,5 +7,5 @@ module Bernoulli {
   import Interface = BernoulliInterface
   import Implementation = BernoulliImplementation
   import Correctness = BernoulliCorrectness
-  import Model = BernoulliCorrectness
+  import Model = BernoulliModel
 }
