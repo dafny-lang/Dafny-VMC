@@ -6,7 +6,7 @@ import java.math.BigInteger;
 public class DRandomCoin {
   private static SecureRandom r = new SecureRandom();
 
-  public static boolean Coin() {
+  public static boolean CoinSample() {
     return r.nextBoolean();
   }
 }

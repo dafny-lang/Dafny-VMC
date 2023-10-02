@@ -10,7 +10,7 @@ type DRandomCoin_ struct {}
 
 var DRandomCoin = DRandomCoin_{}
 
-func (d DRandomCoin_) Coin() bool {
+func (d DRandomCoin_) CoinSample() bool {
   return rand.Intn(2) == 1
 }
 
