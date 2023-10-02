@@ -26,17 +26,6 @@ module UniformPowerOfTwoCorrectness {
    Definitions
   ************/
 
-  function ProbUniformAlternative(n: nat, s: RandomNumberGenerator.RNG): (t: (nat, RandomNumberGenerator.RNG))
-    requires n > 0
-  {
-    assume {:axiom} false; // Assume termination
-    var (u, s) := UniformPowerOfTwoModel.ProbUnif(n-1)(s);
-    if u < n then
-      (u, s)
-    else
-      ProbUniformAlternative(n, s)
-  }
-
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
   {

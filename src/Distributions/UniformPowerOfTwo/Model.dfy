@@ -37,37 +37,20 @@ module UniformPowerOfTwoModel {
       && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
       && WhileAndUntil.ProbUntilTerminates(b, c)
 
-  function ProbUnifAlternative(n: nat, s: RandomNumberGenerator.RNG, k: nat := 1, u: nat := 0): (t: (nat, RandomNumberGenerator.RNG))
+  function ProbUnifAlternative(n: nat, k: nat := 1, u: nat := 0): Monad.Hurd<nat>
     requires k >= 1
     decreases 2*n - k
   {
-    if k > n then
-      (u, s)
-    else
-      ProbUnifAlternative(n, Monad.Tail(s), 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)
-  }
-
-  function UnifAlternativeModel(n: nat, k: nat := 1, u: nat := 0): Monad.Hurd<nat>
-    requires k >= 1
-  {
-    (s: RandomNumberGenerator.RNG) => ProbUnifAlternative(n, s, k, u)
-  }
-
-  function UnifModel(n: nat): (f: Monad.Hurd<nat>)
-    ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
-  {
-    var f := ProbUnif(n);
-    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
-      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
-        ProbUnifCorrespondence(n, s);
-      }
-    }
-    f
+    (s: RandomNumberGenerator.RNG) =>
+      if k > n then
+        (u, s)
+      else
+        ProbUnifAlternative(n, 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s))
   }
 
   // incomplete
   lemma ProbUnifCorrespondence(n: nat, s: RandomNumberGenerator.RNG)
-    ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
+    ensures ProbUnifAlternative(n)(s) == ProbUnif(n)(s)
   {
     var f := (m: nat) =>
         var g := (b: bool) =>
@@ -84,9 +67,9 @@ module UniformPowerOfTwoModel {
         Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 1 else 0))(s);
         Monad.Return(if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
         (if Monad.Head(s) then 1 else 0, Monad.Tail(s));
-        ProbUnifAlternative(1, Monad.Tail(s), 2, if Monad.Head(s) then 1 else 0);
-        ProbUnifAlternative(1, s, 1, 0);
-        ProbUnifAlternative(n, s);
+        ProbUnifAlternative(1, 2, if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
+        ProbUnifAlternative(1, 1, 0)(s);
+        ProbUnifAlternative(n)(s);
       }
     } else {
       assume {:axiom} false;
