@@ -77,7 +77,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  // See PROB_BERN_UNIF_LT in HOL implementation. 
+  // See PROB_BERN_UNIF_LT in HOL implementation.
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires m <= Helper.Power(2, Helper.Log2(n))
     ensures
