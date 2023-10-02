@@ -13,7 +13,7 @@ module UniformPowerOfTwoImplementation {
   trait {:termination false} TUniformPowerOfTwo extends UniformPowerOfTwoInterface.IUniformPowerOfTwo {
     method UniformPowerOfTwo(n: nat) returns (u: nat)
       modifies this
-      ensures UniformPowerOfTwoModel.UnifModel(n)(old(s)) == (u, s)
+      ensures UniformPowerOfTwoModel.ProbUnif(n)(old(s)) == (u, s)
     {
       var k := 1;
       u := 0;
@@ -21,12 +21,13 @@ module UniformPowerOfTwoImplementation {
       while k <= n
         decreases 2*n - k
         invariant k >= 1
-        invariant UniformPowerOfTwoModel.UnifAlternativeModel(n)(old(s)) == UniformPowerOfTwoModel.UnifAlternativeModel(n, k, u)(s)
+        invariant UniformPowerOfTwoModel.ProbUnifAlternative(n)(old(s)) == UniformPowerOfTwoModel.ProbUnifAlternative(n, k, u)(s)
       {
         var b := Coin();
         k := 2*k;
         u := if b then 2*u + 1 else 2*u;
       }
+      UniformPowerOfTwoModel.ProbUnifCorrespondence(n, old(s));
     }
   }
 }
