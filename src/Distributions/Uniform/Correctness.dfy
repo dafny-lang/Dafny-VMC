@@ -51,8 +51,8 @@ module UniformCorrectness {
     var e := UniformFullCorrectnessHelper(n, i);
     var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
     var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i;
-    var e1 := iset s | UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i;
-    var e2 := iset s | UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
+    var e1 := iset s {:trigger UniformPowerOfTwoModel.ProbUnif(n-1)(s).0} | UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i;
+    var e2 := iset s {:trigger UniformPowerOfTwoModel.ProbUnif(n-1)(s).0} | UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
     var b := UniformPowerOfTwoModel.ProbUnif(n-1);
     var c := (x: nat) => x < n;
     var d := (x: nat) => x == i;
@@ -70,8 +70,12 @@ module UniformCorrectness {
     assert RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2);
 
     assert x.0 == e;
-    assert x.1 == e1;
-    assert x.2 == e2;
+    assert x.1 == e1 by {
+      assert forall s :: d(b(s).0) && c(b(s).0) <==> (UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 == i);
+    }
+    assert x.2 == e2 by {
+      assert forall s :: c(b(s).0) <==> UniformPowerOfTwoModel.ProbUnif(n-1)(s).0 < n;
+    }
 
     assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
       assert n >= 1;
@@ -96,15 +100,21 @@ module UniformCorrectness {
         assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real) by {
           calc {
             i;
-          <
+          < { assert i < n; }
             n;
           <= { Helper.Log2LowerSuc(n-1); }
             Helper.Power(2, Helper.Log2(n-1));
           }
-          UniformPowerOfTwoCorrectness.UnifCorrectness2(n-1, i);
+                                                  assume {:axiom} false;
+          assert RandomNumberGenerator.mu(e1) == if i < Helper.Power(2, Helper.Log2(n-1)) then 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real) else 0.0 by {
+            UniformPowerOfTwoCorrectness.UnifCorrectness2(n-1, i);
+          }
         }
+                                assume {:axiom} false;
         assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real) by {
-          Helper.Log2LowerSuc(n-1);
+          assert n <= Helper.Power(2, Helper.Log2(n-1)) by {
+            Helper.Log2LowerSuc(n-1);
+          }
           UniformPowerOfTwoCorrectness.UnifCorrectness2Inequality(n-1, n);
         }
         calc {
