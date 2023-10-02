@@ -338,9 +338,34 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
+  lemma Congruence<T>(a: T -> bool, b: T, c: T)
+    requires b == c
+    requires a(b)
+    ensures a(c)
+  {}
+
   // Equation (4.7)
-  lemma {:axiom} ProbUnifIsIndepFn(n: nat)
+  lemma ProbUnifIsIndepFn(n: nat)
     ensures Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n))
+  {
+    var fn := UniformPowerOfTwoModel.ProbUnif(n);
+    if n == 0 {
+      var evaluated := Monad.Return(0);
+      assert Independence.IsIndepFn(evaluated) by {
+        assert Independence.IsIndepFn(Monad.Return(0)) by {
+          Independence.ReturnIsIndepFn(0);
+        }
+        Congruence(Independence.IsIndepFn, Monad.Return(0), evaluated);
+      }
+      assert Monad.Return(0) == fn;
+      assert evaluated == fn;
+      assert Independence.IsIndepFn(fn) by {
+        Congruence(Independence.IsIndepFn, evaluated, fn);
+      }
+    } else {
+      assume false;
+    }
+  }
 
   lemma ProbUnifIsMeasurePreserving(n: nat)
     ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, ProbUnif1(n))

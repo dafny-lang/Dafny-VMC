@@ -37,6 +37,12 @@ module Independence {
    Lemmas
   *******/
 
+  lemma IsIndepFnCongruence<A>(f: Monad.Hurd<A>, g: Monad.Hurd<A>)
+    requires IsIndepFn(f)
+    requires f == g
+    ensures IsIndepFn(g)
+  {}
+
   // Equation (3.17)
   lemma {:axiom} DeconstructIsIndepFn()
     ensures IsIndepFn(Monad.Deconstruct)
