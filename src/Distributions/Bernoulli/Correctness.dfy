@@ -76,10 +76,10 @@ module BernoulliCorrectness {
       }
     } else {
       var e1 := iset s | UniformModel.ProbUniform(n)(s).0 == m-1;
-      var e2 := (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | BernoulliModel.ProbBernoulli(m-1, n)(s).0);
+      var e2 := (iset s | BernoulliModel.ProbBernoulli(m-1, n)(s).0);
 
       assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == e2 by {
-        assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | BernoulliModel.ProbBernoulli(m-1, n)(s).0) by {
+        assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == (iset s | BernoulliModel.ProbBernoulli(m-1, n)(s).0) by {
           forall s ensures UniformModel.ProbUniform(n)(s).0 < m-1 <==> BernoulliModel.ProbBernoulli(m-1, n)(s).0 {
             assert UniformModel.ProbUniform(n)(s).0 < m-1 <==> BernoulliModel.ProbBernoulli(m-1, n)(s).0;
           }
