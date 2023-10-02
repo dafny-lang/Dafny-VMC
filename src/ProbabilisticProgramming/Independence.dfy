@@ -29,19 +29,19 @@ module Independence {
   }
 
   // Definition 35
-  predicate {:axiom} IsIndepFn<A>(f: Monad.Hurd<A>)
-    ensures IsIndepFunction(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
+  ghost predicate IsIndepFn<A(!new)>(f: Monad.Hurd<A>)
 
   /*******
    Lemmas
   *******/
 
-  lemma IsIndepFnCongruence<A>(f: Monad.Hurd<A>, g: Monad.Hurd<A>)
+  lemma {:axiom} IsIndepFnImpliesMeasurable<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndepFn(f)
-    requires f == g
-    ensures IsIndepFn(g)
-  {}
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
+
+  lemma {:axiom} IsIndepFnImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
+    requires IsIndepFn(f)
+    ensures IsIndepFunction(f)
 
   // Equation (3.17)
   lemma {:axiom} DeconstructIsIndepFn()

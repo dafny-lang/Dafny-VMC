@@ -338,32 +338,27 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma Congruence<T>(a: T -> bool, b: T, c: T)
-    requires b == c
-    requires a(b)
-    ensures a(c)
-  {}
-
   // Equation (4.7)
   lemma ProbUnifIsIndepFn(n: nat)
+    decreases n
     ensures Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n))
   {
     var fn := UniformPowerOfTwoModel.ProbUnif(n);
     if n == 0 {
-      var evaluated := Monad.Return(0);
-      assert Independence.IsIndepFn(evaluated) by {
-        assert Independence.IsIndepFn(Monad.Return(0)) by {
-          Independence.ReturnIsIndepFn(0);
-        }
-        Congruence(Independence.IsIndepFn, Monad.Return(0), evaluated);
-      }
-      assert Monad.Return(0) == fn;
-      assert evaluated == fn;
-      assert Independence.IsIndepFn(fn) by {
-        Congruence(Independence.IsIndepFn, evaluated, fn);
-      }
+      Independence.ReturnIsIndepFn(0 as nat);
     } else {
-      assume false;
+      assert Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n / 2)) by {
+        ProbUnifIsIndepFn(n / 2);
+      }
+      forall m: nat ensures Independence.IsIndepFn(UniformPowerOfTwoModel.UnifStep(m)) {
+        Independence.DeconstructIsIndepFn();
+        var g := UniformPowerOfTwoModel.UnifStepHelper(m);
+        forall b: bool ensures Independence.IsIndepFn(g(b)) {
+          Independence.ReturnIsIndepFn((if b then 2 * m + 1 else 2 * m) as nat);
+        }
+        Independence.IndepFnIsCompositional(Monad.Deconstruct, g);
+      }
+      Independence.IndepFnIsCompositional(UniformPowerOfTwoModel.ProbUnif(n / 2), UniformPowerOfTwoModel.UnifStep);
     }
   }
 
@@ -373,6 +368,7 @@ module UniformPowerOfTwoCorrectness {
     var f := ProbUnif1(n);
     assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, f) by {
       ProbUnifIsIndepFn(n);
+      Independence.IsIndepFnImpliesMeasurable(UniformPowerOfTwoModel.ProbUnif(n));
       assert Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n));
     }
     var g := ProbUnif1(n / 2);
@@ -613,6 +609,7 @@ module UniformPowerOfTwoCorrectness {
           assert Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n / 2)) by {
             ProbUnifIsIndepFn(n / 2);
           }
+          Independence.IsIndepFnImpliesIsIndepFunction(UniformPowerOfTwoModel.ProbUnif(n / 2));
         }
         assert E in RandomNumberGenerator.event_space by { reveal EMeasure; }
         assert Independence.IsIndepFunctionCondition(UniformPowerOfTwoModel.ProbUnif(n / 2), A, E);
@@ -709,6 +706,7 @@ module UniformPowerOfTwoCorrectness {
           assert Independence.IsIndepFn(UniformPowerOfTwoModel.ProbUnif(n / 2)) by {
             ProbUnifIsIndepFn(n / 2);
           }
+          Independence.IsIndepFnImpliesIsIndepFunction(UniformPowerOfTwoModel.ProbUnif(n / 2));
         }
         assert E in RandomNumberGenerator.event_space;
         assert Independence.IsIndepFunctionCondition(UniformPowerOfTwoModel.ProbUnif(n / 2), A, E);
