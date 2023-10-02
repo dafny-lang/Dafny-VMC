@@ -29,7 +29,7 @@ module Independence {
   }
 
   // Definition 35
-  ghost predicate IsIndepFn<A(!new)>(f: Monad.Hurd<A>)
+  ghost predicate {:axiom} IsIndepFn<A(!new)>(f: Monad.Hurd<A>)
 
   /*******
    Lemmas
