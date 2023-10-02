@@ -292,4 +292,17 @@ module Helper {
     ensures (x / z) / (y / z) == x / y
   {}
 
+  lemma PowerOfTwoLemma(k: nat)
+    ensures (1.0 / Power(2, k) as real) / 2.0 == 1.0 / (Power(2, k + 1) as real)
+  {
+    calc {
+      (1.0 / Power(2, k) as real) / 2.0;
+    == { DivDivToDivMul(1.0, Power(2, k) as real, 2.0); }
+      1.0 / (Power(2, k) as real * 2.0);
+    == { NatMulNatToReal(Power(2, k), 2); }
+      1.0 / (Power(2, k) * 2) as real;
+    ==
+      1.0 / (Power(2, k + 1) as real);
+    }
+  }
 }
