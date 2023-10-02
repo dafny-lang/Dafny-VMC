@@ -40,10 +40,8 @@ Auditing ./src/Distributions/Uniform/Interface.dfy
 Auditing ./src/Distributions/Uniform/Model.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
- ProbUniformAlternative: Definition has `assume {:axiom}` statement in body. 
  UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
  UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
- ProbUnifIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Implementation.dfy
 
@@ -63,6 +61,8 @@ Auditing ./src/Math/Rationals.dfy
 
 Auditing ./src/ProbabilisticProgramming/Independence.dfy
  IsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ IsIndepFnImpliesMeasurable: Declaration has explicit `{:axiom}` attribute. 
+ IsIndepFnImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
  DeconstructIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
  ReturnIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
  IndepFnIsCompositional: Declaration has explicit `{:axiom}` attribute. 
