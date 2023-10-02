@@ -51,7 +51,7 @@ module Tests {
   }
 
 
-  method TestCoin(n: nat, r: Base.Interface.Trait)
+  method TestCoin(n: nat, r: Coin.Interface.Trait)
     requires n > 0
     modifies r
   {
