@@ -26,22 +26,6 @@ module UniformPowerOfTwoCorrectness {
    Definitions
   ************/
 
-  // Definition 50
-  // An approximately uniform sampler: may have too much mass on 0.
-  function ProbUniformCut(t: nat, n: nat): Monad.Hurd<nat>
-    requires n > 0
-  {
-    if t == 0 then
-      Monad.Return(0)
-    else
-      var f := (m: nat) =>
-                 if n <= m then
-                   ProbUniformCut(t-1, n)
-                 else
-                   Monad.Return(m);
-      Monad.Bind(UniformPowerOfTwoModel.ProbUnif(n-1), f)
-  }
-
   function ProbUniformAlternative(n: nat, s: RandomNumberGenerator.RNG): (t: (nat, RandomNumberGenerator.RNG))
     requires n > 0
   {
@@ -68,8 +52,8 @@ module UniformPowerOfTwoCorrectness {
   *******/
 
   // Correctness Theorem for UniformPowerOfTwoModel.ProbUnif.
-  // In contrast to, UnifCorrectness, this lemma does not follow
-  // the thesis, but models PROB_BERN_UNIF of the HOL implementation .
+  // In contrast to UnifCorrectness, this lemma does not follow
+  // the thesis, but models PROB_BERN_UNIF of the HOL implementation.
   lemma UnifCorrectness2(n: nat, m: nat)
     ensures
       var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
@@ -93,7 +77,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  // See PROB_BERN_UNIF_LT in HOL implementation 
+  // See PROB_BERN_UNIF_LT in HOL implementation. 
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires m <= Helper.Power(2, Helper.Log2(n))
     ensures
@@ -137,7 +121,8 @@ module UniformPowerOfTwoCorrectness {
   }
 
   // Correctness Theorem for UniformPowerOfTwoModel.ProbUnif.
-  // In contrast to, UnifCorrectness2, this lemma follows equation (4.8).
+  // In contrast to UnifCorrectness2, this lemma follows equation (4.8)
+  // instead of the HOL implementation.
   lemma UnifCorrectness(n: nat, k: nat)
     requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
@@ -352,8 +337,6 @@ module UniformPowerOfTwoCorrectness {
       assert UnifIsCorrect(n, k, m);
     }
   }
-
-
 
   // Equation (4.7)
   lemma {:axiom} ProbUnifIsIndepFn(n: nat)
