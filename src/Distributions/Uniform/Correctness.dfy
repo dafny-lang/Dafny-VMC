@@ -29,23 +29,6 @@ module UniformCorrectness {
    Definitions
   ************/
 
-  method ProbUniformImper(n: nat, s: RandomNumberGenerator.RNG) returns (t: (nat, RandomNumberGenerator.RNG))
-    requires n > 0
-    ensures t == UniformModel.ProbUniform(n)(s)
-    decreases *
-  {
-    var (u, s) := UniformPowerOfTwoModel.ProbUnif(n-1)(s);
-    while true
-      decreases *
-    {
-      if u < n {
-        return (u, s);
-      } else {
-        var (u, s) := UniformPowerOfTwoModel.ProbUnif(n-1)(s);
-      }
-    }
-  }
-
   ghost function UniformFullCorrectnessHelper(n: nat, i: nat): iset<RandomNumberGenerator.RNG>
     requires 0 <= i < n
   {
@@ -56,8 +39,9 @@ module UniformCorrectness {
    Lemmas
   *******/
 
+  // Correctness theorem for UniformModel.ProbUniform
   // Equation (4.12) / PROB_BERN_UNIFORM
-  lemma {:vcs_split_on_every_assert} UniformFullCorrectness(n: nat, i: nat)
+  lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
     ensures
       var e := UniformFullCorrectnessHelper(n, i);
@@ -134,7 +118,8 @@ module UniformCorrectness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} UniformFullIntervalCorrectness(a: int, b: int, i: int)
+  // Correctness theorem for UniformModel.ProbUniformInterval
+  lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
     ensures
       var e := iset s | UniformModel.ProbUniformInterval(a, b)(s).0 == i;
