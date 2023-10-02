@@ -105,12 +105,10 @@ module UniformCorrectness {
           <= { Helper.Log2LowerSuc(n-1); }
             Helper.Power(2, Helper.Log2(n-1));
           }
-                                                  assume {:axiom} false;
           assert RandomNumberGenerator.mu(e1) == if i < Helper.Power(2, Helper.Log2(n-1)) then 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real) else 0.0 by {
             UniformPowerOfTwoCorrectness.UnifCorrectness2(n-1, i);
           }
         }
-                                assume {:axiom} false;
         assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real) by {
           assert n <= Helper.Power(2, Helper.Log2(n-1)) by {
             Helper.Log2LowerSuc(n-1);
@@ -119,7 +117,9 @@ module UniformCorrectness {
         }
         calc {
           RandomNumberGenerator.mu(e);
+          { assert e == x.0; assert e1 == x.1; assert e2 == x.2; assert RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2); }
           RandomNumberGenerator.mu(e1) / RandomNumberGenerator.mu(e2);
+          { assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real); assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real); }
           (1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real));
           { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2(n-1)) as real); }
           1.0 / (n as real);
