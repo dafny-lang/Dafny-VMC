@@ -6,6 +6,8 @@ Auditing ./src/Distributions/Base/Interface.dfy
 
 Auditing ./src/Distributions/Base/Model.dfy
 
+Auditing ./src/Distributions/Bernoulli/Bernoulli.dfy
+
 Auditing ./src/Distributions/Bernoulli/Correctness.dfy
 
 Auditing ./src/Distributions/Bernoulli/Implementation.dfy
