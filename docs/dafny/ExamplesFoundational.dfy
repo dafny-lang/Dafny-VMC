@@ -58,7 +58,7 @@ module RandomExamples {
 
     t := 0;
     for i := 0 to n {
-      var b := r.Bernoulli(Rationals.Rational(1, 5));
+      var b := r.BernoulliSample(Rationals.Rational(1, 5));
       if b {
         t := t + 1;
       }
