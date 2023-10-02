@@ -26,22 +26,6 @@ module UniformPowerOfTwoCorrectness {
    Definitions
   ************/
 
-  // Definition 50
-  // An approximately uniform sampler: may have too much mass on 0.
-  function ProbUniformCut(t: nat, n: nat): Monad.Hurd<nat>
-    requires n > 0
-  {
-    if t == 0 then
-      Monad.Return(0)
-    else
-      var f := (m: nat) =>
-                 if n <= m then
-                   ProbUniformCut(t-1, n)
-                 else
-                   Monad.Return(m);
-      Monad.Bind(UniformPowerOfTwoModel.ProbUnif(n-1), f)
-  }
-
   function ProbUniformAlternative(n: nat, s: RandomNumberGenerator.RNG): (t: (nat, RandomNumberGenerator.RNG))
     requires n > 0
   {
@@ -51,34 +35,6 @@ module UniformPowerOfTwoCorrectness {
       (u, s)
     else
       ProbUniformAlternative(n, s)
-  }
-
-  function ProbUnifExistence(n: nat, s: RandomNumberGenerator.RNG, j: nat): (i: nat)
-    ensures UniformPowerOfTwoModel.ProbUnif(n)(s).1(j) == s(i)
-  {
-    if n == 0 then
-      j
-    else
-      var i := ProbUnifExistence(n / 2, s, j + 1);
-      calc {
-        UniformPowerOfTwoModel.ProbUnif(n)(s).1(j);
-      ==
-        Monad.Tail(UniformPowerOfTwoModel.ProbUnif(n / 2)(s).1)(j);
-      ==
-        UniformPowerOfTwoModel.ProbUnif(n / 2)(s).1(j + 1);
-      ==
-        s(i);
-      }
-      i
-  }
-
-  function ProbUnifDeconstruct(n: nat, m: nat, s: RandomNumberGenerator.RNG): (i: nat)
-    ensures s(i) == Monad.Deconstruct(UniformPowerOfTwoModel.ProbUnif(n / 2)(s).1).0
-  {
-    var i := ProbUnifExistence(n / 2, s, 0);
-    assert UniformPowerOfTwoModel.ProbUnif(n / 2)(s).1(0) == s(i);
-    assert Monad.Deconstruct(UniformPowerOfTwoModel.ProbUnif(n / 2)(s).1).0 == UniformPowerOfTwoModel.ProbUnif(n / 2)(s).1(0);
-    i
   }
 
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
@@ -95,7 +51,9 @@ module UniformPowerOfTwoCorrectness {
    Lemmas
   *******/
 
-  // PROB_BERN_UNIF
+  // Correctness Theorem for UniformPowerOfTwoModel.ProbUnif.
+  // In contrast to UnifCorrectness, this lemma does not follow
+  // the thesis, but models PROB_BERN_UNIF of the HOL implementation.
   lemma UnifCorrectness2(n: nat, m: nat)
     ensures
       var e := iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m;
@@ -119,7 +77,7 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  // PROB_BERN_UNIF_LT
+  // See PROB_BERN_UNIF_LT in HOL implementation.
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires m <= Helper.Power(2, Helper.Log2(n))
     ensures
@@ -162,7 +120,9 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  // Equation (4.8)
+  // Correctness Theorem for UniformPowerOfTwoModel.ProbUnif.
+  // In contrast to UnifCorrectness2, this lemma follows equation (4.8)
+  // instead of the HOL implementation.
   lemma UnifCorrectness(n: nat, k: nat)
     requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
@@ -206,7 +166,7 @@ module UniformPowerOfTwoCorrectness {
   {
     assert Helper.Power(2, 0) == 1;
     if m == 0 {
-      assert (iset s | UniformPowerOfTwoModel.ProbUnif(0)(s).0 == m) == (iset s {:trigger true} | true);
+      assert (iset s | UniformPowerOfTwoModel.ProbUnif(0)(s).0 == m) == (iset s | true);
       RandomNumberGenerator.RNGHasMeasure();
     } else {
       assert (iset s | UniformPowerOfTwoModel.ProbUnif(0)(s).0 == m) == iset{};
@@ -223,17 +183,17 @@ module UniformPowerOfTwoCorrectness {
       RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m);
     == { ProbUnifCaseSplit(n, m); }
       RandomNumberGenerator.mu(iset s | 2*UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 == m) / 2.0;
-    == { assert (iset s | 2*UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 == m) == (iset s {:trigger 0 == m} | 0 == m); }
-      RandomNumberGenerator.mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
+    == { assert (iset s | 2*UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 == m) == (iset s | 0 == m); }
+      RandomNumberGenerator.mu(iset s | 0 == m) / 2.0;
     }
     if m < Helper.Power(2, 1) {
       assert m == 0;
       calc {
         RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m);
       ==
-        RandomNumberGenerator.mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG {:trigger 0 == m} | 0 == m) == (iset s {:trigger true} | true); }
-        RandomNumberGenerator.mu(iset s {:trigger true} | true) / 2.0;
+        RandomNumberGenerator.mu(iset s | 0 == m) / 2.0;
+      == { assert (iset s: RandomNumberGenerator.RNG | 0 == m) == (iset s | true); }
+        RandomNumberGenerator.mu(iset s | true) / 2.0;
       == { RandomNumberGenerator.RNGHasMeasure(); }
         1.0 / 2.0;
       ==
@@ -246,8 +206,8 @@ module UniformPowerOfTwoCorrectness {
       calc {
         RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m);
       ==
-        RandomNumberGenerator.mu(iset s {:trigger 0 == m} | 0 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG {:trigger 0 == m} | 0 == m) == iset{}; }
+        RandomNumberGenerator.mu(iset s | 0 == m) / 2.0;
+      == { assert (iset s: RandomNumberGenerator.RNG | 0 == m) == iset{}; }
         RandomNumberGenerator.mu(iset {}) / 2.0;
       == { RandomNumberGenerator.RNGHasMeasure(); }
         0.0 / 2.0;
@@ -266,18 +226,18 @@ module UniformPowerOfTwoCorrectness {
       RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m);
     == { ProbUnifCaseSplit(n, m); }
       RandomNumberGenerator.mu(iset s | 2*UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 + 1 == m) / 2.0;
-    == { assert (iset s | 2*UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 + 1 == m) == (iset s {:trigger 1 == m} | 1 == m); }
-      RandomNumberGenerator.mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
+    == { assert (iset s | 2*UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 + 1 == m) == (iset s | 1 == m); }
+      RandomNumberGenerator.mu(iset s | 1 == m) / 2.0;
     }
     if m < Helper.Power(2, 1) {
       assert m == 1;
       calc {
         RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m);
       ==
-        RandomNumberGenerator.mu(iset s {:trigger 1 == m} | 1 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG {:trigger 1 == m} | 1 == m) == (iset s {:trigger true} | true); }
-        RandomNumberGenerator.mu(iset s {:trigger true} | true) / 2.0;
-      == { RandomNumberGenerator.RNGHasMeasure(); Helper.DivisionSubstituteAlternativeReal(2.0, RandomNumberGenerator.mu(iset s {:trigger true} | true), 1.0); }
+        RandomNumberGenerator.mu(iset s | 1 == m) / 2.0;
+      == { assert (iset s: RandomNumberGenerator.RNG | 1 == m) == (iset s | true); }
+        RandomNumberGenerator.mu(iset s | true) / 2.0;
+      == { RandomNumberGenerator.RNGHasMeasure(); Helper.DivisionSubstituteAlternativeReal(2.0, RandomNumberGenerator.mu(iset s | true), 1.0); }
         1.0 / 2.0;
       ==
         1.0 / (Helper.Power(2, 1) as real);
@@ -287,8 +247,8 @@ module UniformPowerOfTwoCorrectness {
       calc {
         RandomNumberGenerator.mu(iset s: RandomNumberGenerator.RNG | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m);
       ==
-        RandomNumberGenerator.mu(iset s: RandomNumberGenerator.RNG {:trigger 1 == m} | 1 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG {:trigger 1 == m} | 1 == m) == iset{}; }
+        RandomNumberGenerator.mu(iset s: RandomNumberGenerator.RNG | 1 == m) / 2.0;
+      == { assert (iset s: RandomNumberGenerator.RNG | 1 == m) == iset{}; }
         RandomNumberGenerator.mu(iset {}) / 2.0;
       == { RandomNumberGenerator.RNGHasMeasure(); }
         0.0 / 2.0;
@@ -325,7 +285,7 @@ module UniformPowerOfTwoCorrectness {
         RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 == u) / 2.0;
       ==
         (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
-      == { PowerOfTwoLemma(k - 1); }
+      == { Helper.PowerOfTwoLemma(k - 1); }
         1.0 / (Helper.Power(2, k) as real);
       }
       assert UnifIsCorrect(n / 2, k - 1, u);
@@ -365,7 +325,7 @@ module UniformPowerOfTwoCorrectness {
         RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n / 2)(s).0 == u) / 2.0;
       ==
         (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
-      == { PowerOfTwoLemma(k - 1); }
+      == { Helper.PowerOfTwoLemma(k - 1); }
         1.0 / (Helper.Power(2, k) as real);
       }
       assert UnifIsCorrect(n, k, m);
@@ -375,20 +335,6 @@ module UniformPowerOfTwoCorrectness {
       assert UnifIsCorrect(n / 2, k - 1, u);
       assert RandomNumberGenerator.mu(iset s | UniformPowerOfTwoModel.ProbUnif(n)(s).0 == m) == 0.0;
       assert UnifIsCorrect(n, k, m);
-    }
-  }
-
-  lemma PowerOfTwoLemma(k: nat)
-    ensures (1.0 / Helper.Power(2, k) as real) / 2.0 == 1.0 / (Helper.Power(2, k + 1) as real)
-  {
-    calc {
-      (1.0 / Helper.Power(2, k) as real) / 2.0;
-    == { Helper.DivDivToDivMul(1.0, Helper.Power(2, k) as real, 2.0); }
-      1.0 / (Helper.Power(2, k) as real * 2.0);
-    == { Helper.NatMulNatToReal(Helper.Power(2, k), 2); }
-      1.0 / (Helper.Power(2, k) * 2) as real;
-    ==
-      1.0 / (Helper.Power(2, k + 1) as real);
     }
   }
 

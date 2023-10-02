@@ -33,11 +33,4 @@ module UniformModel {
       var (x, s') := ProbUniform(b - a)(s);
       (a + x, s')
   }
-
-  function UniformIntervalModel(a: int, b: int): (f: Hurd<int>)
-    requires a < b
-    ensures forall s :: f(s).0 == a + ProbUniform(b - a)(s).0
-  {
-    ProbUniformInterval(a, b)
-  }
 }
