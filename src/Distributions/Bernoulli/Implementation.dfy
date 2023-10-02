@@ -7,18 +7,18 @@ include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module BernoulliImplementation {
+module Implementation {
   import Rationals
-  import BernoulliModel
-  import BernoulliInterface
+  import Model
+  import Interface
 
-  trait {:termination false} TBernoulli extends BernoulliInterface.IBernoulli {
+  trait {:termination false} TBernoulli extends Interface.IBernoulli {
 
     method Bernoulli(p: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures BernoulliModel.ProbBernoulli(p.numer, p.denom)(old(s)) == (c, s)
+      ensures Model.ProbBernoulli(p.numer, p.denom)(old(s)) == (c, s)
     {
       var k := Uniform(p.denom);
       c := k < p.numer;

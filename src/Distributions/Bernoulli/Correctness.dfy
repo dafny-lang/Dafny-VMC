@@ -12,7 +12,7 @@ include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 include "Model.dfy"
 
-module BernoulliCorrectness {
+module Correctness {
   import MeasureTheory
   import Helper
   import UniformModel
@@ -20,7 +20,7 @@ module BernoulliCorrectness {
   import RandomNumberGenerator
   import Independence
   import Monad
-  import BernoulliModel
+  import Model
 
   /*******
    Lemmas
@@ -29,7 +29,7 @@ module BernoulliCorrectness {
   lemma ProbBernoulliIsIndepFn(m: nat, n: nat)
     requires n != 0
     requires m <= n
-    ensures Independence.IsIndepFn(BernoulliModel.ProbBernoulli(m, n))
+    ensures Independence.IsIndepFn(Model.ProbBernoulli(m, n))
   {
     var f := UniformModel.ProbUniform(n);
     var g := (k: nat) => Monad.Return(k < m);
@@ -52,17 +52,17 @@ module BernoulliCorrectness {
     requires n != 0
     requires m <= n
     ensures
-      var e := iset s | BernoulliModel.ProbBernoulli(m, n)(s).0;
+      var e := iset s | Model.ProbBernoulli(m, n)(s).0;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == m as real / n as real
   {
-    var e := iset s | BernoulliModel.ProbBernoulli(m, n)(s).0;
+    var e := iset s | Model.ProbBernoulli(m, n)(s).0;
 
     if m == 0 {
       assert e == iset{} by {
-        forall s ensures !BernoulliModel.ProbBernoulli(m, n)(s).0 {
+        forall s ensures !Model.ProbBernoulli(m, n)(s).0 {
           calc {
-            BernoulliModel.ProbBernoulli(m, n)(s).0;
+            Model.ProbBernoulli(m, n)(s).0;
             UniformModel.ProbUniform(n)(s).0 < 0;
             false;
           }
@@ -76,12 +76,12 @@ module BernoulliCorrectness {
       }
     } else {
       var e1 := iset s | UniformModel.ProbUniform(n)(s).0 == m-1;
-      var e2 := (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | BernoulliModel.ProbBernoulli(m-1, n)(s).0);
+      var e2 := (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | Model.ProbBernoulli(m-1, n)(s).0);
 
       assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == e2 by {
-        assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | BernoulliModel.ProbBernoulli(m-1, n)(s).0) by {
-          forall s ensures UniformModel.ProbUniform(n)(s).0 < m-1 <==> BernoulliModel.ProbBernoulli(m-1, n)(s).0 {
-            assert UniformModel.ProbUniform(n)(s).0 < m-1 <==> BernoulliModel.ProbBernoulli(m-1, n)(s).0;
+        assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | Model.ProbBernoulli(m-1, n)(s).0) by {
+          forall s ensures UniformModel.ProbUniform(n)(s).0 < m-1 <==> Model.ProbBernoulli(m-1, n)(s).0 {
+            assert UniformModel.ProbUniform(n)(s).0 < m-1 <==> Model.ProbBernoulli(m-1, n)(s).0;
           }
         }
       }

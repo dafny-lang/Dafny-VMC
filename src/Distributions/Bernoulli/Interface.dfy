@@ -7,10 +7,10 @@ include "../../Math/Rationals.dfy"
 include "../Uniform/Interface.dfy"
 include "Model.dfy"
 
-module BernoulliInterface {
+module Interface {
   import Rationals
   import UniformInterface
-  import BernoulliModel
+  import Model
 
   trait {:termination false} IBernoulli extends UniformInterface.IUniform {
 
@@ -18,7 +18,7 @@ module BernoulliInterface {
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures BernoulliModel.ProbBernoulli(p.numer, p.denom)(old(s)) == (c, s)
+      ensures Model.ProbBernoulli(p.numer, p.denom)(old(s)) == (c, s)
 
   }
 }

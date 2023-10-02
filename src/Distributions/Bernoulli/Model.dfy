@@ -6,7 +6,7 @@
 include "../Uniform/Model.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 
-module BernoulliModel {
+module Model {
   import UniformModel
   import Monad
 
