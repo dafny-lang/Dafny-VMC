@@ -16,8 +16,12 @@ module UniformPowerOfTwoModel {
   import Independence
   import WhileAndUntil
 
+  function UnifStepHelper(m: nat): bool -> Monad.Hurd<nat> {
+    (b: bool) => Monad.Return(if b then 2*m + 1 else 2*m)
+  }
+
   function UnifStep(m: nat): Monad.Hurd<nat> {
-    Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 2*m + 1 else 2*m))
+    Monad.Bind(Monad.Deconstruct, UnifStepHelper(m))
   }
 
   // Definition 48
