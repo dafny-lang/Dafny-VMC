@@ -1,4 +1,4 @@
-package BaseInterface
+package CoinImplementation
 
 import (
 	"math/rand"
