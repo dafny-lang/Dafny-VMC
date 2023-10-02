@@ -38,7 +38,6 @@ Auditing ./src/Distributions/Uniform/Interface.dfy
 Auditing ./src/Distributions/Uniform/Model.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
- ProbUniformAlternative: Definition has `assume {:axiom}` statement in body. 
  UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
  UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
  ProbUnifIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
