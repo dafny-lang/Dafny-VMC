@@ -50,8 +50,6 @@ Auditing ./src/Distributions/Uniform/Model.dfy
 Auditing ./src/Distributions/Uniform/Uniform.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
- UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
- UnifCorrectness2: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Implementation.dfy
 
@@ -73,7 +71,9 @@ Auditing ./src/Math/Rationals.dfy
 
 Auditing ./src/ProbabilisticProgramming/Independence.dfy
  IsIndepFn: Declaration has explicit `{:axiom}` attribute. 
- IsIndepFnImpliesMeasurable: Declaration has explicit `{:axiom}` attribute. 
+ IsIndepFnImpliesFstMeasurableBool: Declaration has explicit `{:axiom}` attribute. 
+ IsIndepFnImpliesFstMeasurableNat: Declaration has explicit `{:axiom}` attribute. 
+ IsIndepFnImpliesSndMeasurable: Declaration has explicit `{:axiom}` attribute. 
  IsIndepFnImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
  DeconstructIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
  ReturnIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
