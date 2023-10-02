@@ -127,11 +127,11 @@ module UniformCorrectness {
     }
   }
 
-  // Correctness theorem for Model.UniformSampleInterval
+  // Correctness theorem for Model.UniformIntervalSample
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
     ensures
-      var e := iset s | Model.UniformSampleInterval(a, b)(s).0 == i;
+      var e := iset s | Model.UniformIntervalSample(a, b)(s).0 == i;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == (1.0 / ((b-a) as real))
   {
@@ -141,10 +141,10 @@ module UniformCorrectness {
     var e' := UniformFullCorrectnessHelper(b - a, i - a);
     assert e' in RandomNumberGenerator.event_space by { UniformFullCorrectness(b - a, i - a); }
     assert RandomNumberGenerator.mu(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
-    var e := iset s | Model.UniformSampleInterval(a, b)(s).0 == i;
+    var e := iset s | Model.UniformIntervalSample(a, b)(s).0 == i;
     assert e == e' by {
-      forall s ensures Model.UniformSampleInterval(a, b)(s).0 == i <==> Model.UniformSample(b-a)(s).0 == i - a {
-        assert Model.UniformSampleInterval(a, b)(s).0 == a + Model.UniformSample(b - a)(s).0;
+      forall s ensures Model.UniformIntervalSample(a, b)(s).0 == i <==> Model.UniformSample(b-a)(s).0 == i - a {
+        assert Model.UniformIntervalSample(a, b)(s).0 == a + Model.UniformSample(b - a)(s).0;
       }
     }
   }

@@ -19,18 +19,18 @@ module UniformModel {
   import opened UniformPowerOfTwoModel
 
   // Definition 49
-  function ProbUniform(n: nat): Hurd<nat>
+  function UniformSample(n: nat): Hurd<nat>
     requires n > 0
   {
-    ProbUnifTerminates(n);
-    ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
+    UniformPowerOfTwoSampleTerminates(n);
+    ProbUntil(UniformPowerOfTwoSample(n-1), (x: nat) => x < n)
   }
 
-  function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
+  function UniformIntervalSample(a: int, b: int): (f: Hurd<int>)
     requires a < b
   {
     (s: RNG) =>
-      var (x, s') := ProbUniform(b - a)(s);
+      var (x, s') := UniformSample(b - a)(s);
       (a + x, s')
   }
 }

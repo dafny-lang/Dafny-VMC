@@ -18,14 +18,14 @@ module UniformImplementation {
       decreases *
       requires n > 0
       ensures u < n
-      ensures Model.ProbUniform(n)(old(s)) == (u, s)
+      ensures Model.UniformSample(n)(old(s)) == (u, s)
     {
       assume {:axiom} false;
       u := UniformPowerOfTwoSample(n-1);
       while u >= n
         decreases *
-        invariant Model.ProbUniform(n)(old(s)) == UniformPowerOfTwo.Model.ProbUnif(n-1)(old(s))
-        invariant (u, s) == UniformPowerOfTwo.Model.ProbUnif(n-1)(old(s))
+        invariant Model.UniformSample(n)(old(s)) == UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(old(s))
+        invariant (u, s) == UniformPowerOfTwo.Model.UniformPowerOfTwoSample(n-1)(old(s))
       {
         u := UniformPowerOfTwoSample(n-1);
       }
@@ -40,7 +40,7 @@ module UniformImplementation {
       decreases *
       requires n > 0
       ensures u < n
-      ensures Model.ProbUniform(n)(old(s)) == (u, s)
+      ensures Model.UniformSample(n)(old(s)) == (u, s)
     {
       u := ExternUniformSample(n);
       assume {:axiom} false;

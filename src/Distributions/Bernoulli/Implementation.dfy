@@ -18,7 +18,7 @@ module BernoulliImplementation {
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures Model.ProbBernoulli(p.numer, p.denom)(old(s)) == (c, s)
+      ensures Model.BernoulliSample(p.numer, p.denom)(old(s)) == (c, s)
     {
       var k := UniformSample(p.denom);
       c := k < p.numer;
