@@ -4,17 +4,17 @@
  *******************************************************************************/
 
 include "../../Math/Rationals.dfy"
-include "../Uniform/Interface.dfy"
+include "../Uniform/Uniform.dfy"
 include "Model.dfy"
 
-module Interface {
+module BernoulliInterface {
   import Rationals
-  import UniformInterface
-  import Model
+  import Uniform
+  import Model = BernoulliModel
 
-  trait {:termination false} IBernoulli extends UniformInterface.IUniform {
+  trait {:termination false} Trait extends Uniform.Interface.Trait {
 
-    method Bernoulli(p: Rationals.Rational) returns (c: bool)
+    method BernoulliSample(p: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom

@@ -6,20 +6,20 @@
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "Model.dfy"
 
-module BaseInterface {
+module CoinInterface {
   import RandomNumberGenerator
-  import BaseModel
+  import Model = CoinModel
 
-  method {:extern "DRandomCoin", "Coin"} ExternCoin() returns (b: bool)
-
-  trait {:termination false} TBase {
+  method {:extern "DRandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
+  
+  trait {:termination false} Trait {
     ghost var s: RandomNumberGenerator.RNG
 
-    method Coin() returns (b: bool)
+    method CoinSample() returns (b: bool)
       modifies this
-      ensures BaseModel.CoinModel(old(s)) == (b, s)
+      ensures Model.CoinSample(old(s)) == (b, s)
     {
-      b := ExternCoin();
+      b := ExternCoinSample();
       assume {:axiom} false;
     }
 

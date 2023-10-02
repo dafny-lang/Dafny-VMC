@@ -5,28 +5,28 @@
 
 // RUN: %verify "%s"
 
-include "Distributions/Base/Interface.dfy"
+include "Distributions/Coin/Coin.dfy"
 include "Distributions/Bernoulli/Bernoulli.dfy"
-include "Distributions/BernoulliExpNeg/Implementation.dfy"
-include "Distributions/DiscreteGaussian/Implementation.dfy"
-include "Distributions/DiscreteLaplace/Implementation.dfy"
-include "Distributions/UniformPowerOfTwo/Implementation.dfy"
-include "Distributions/Uniform/Implementation.dfy"
+include "Distributions/BernoulliExpNeg/BernoulliExpNeg.dfy"
+include "Distributions/DiscreteGaussian/DiscreteGaussian.dfy"
+include "Distributions/DiscreteLaplace/DiscreteLaplace.dfy"
+include "Distributions/UniformPowerOfTwo/UniformPowerOfTwo.dfy"
+include "Distributions/Uniform/Uniform.dfy"
 
 module DafnyVMC {
-  import BaseInterface
+  import Coin
   import Bernoulli
-  import UniformPowerOfTwoImplementation
-  import UniformImplementation
-  import BernoulliExpNegImplementation
-  import DiscreteGaussianImplementation
-  import DiscreteLaplaceImplementation
+  import UniformPowerOfTwo
+  import Uniform
+  import BernoulliExpNeg
+  import DiscreteGaussian
+  import DiscreteLaplace
 
-  class DRandomFoundational extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, Bernoulli.Implementation.TBernoulli, UniformImplementation.TUniformFoundational, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
+  class DRandomFoundational extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, Bernoulli.Implementation.TBernoulli, UniformImplementation.TUniformExtern, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
+  class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitExtern, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
     constructor {:extern} ()
   }
 }

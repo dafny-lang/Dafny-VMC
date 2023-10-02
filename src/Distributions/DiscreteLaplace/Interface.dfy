@@ -5,19 +5,19 @@
 
 include "../../Math/Rationals.dfy"
 include "../Bernoulli/Bernoulli.dfy"
-include "../Uniform/Interface.dfy"
-include "../BernoulliExpNeg/Interface.dfy"
+include "../Uniform/Uniform.dfy"
+include "../BernoulliExpNeg/BernoulliExpNeg.dfy"
 
 module DiscreteLaplaceInterface {
   import Rationals
   import Bernoulli
-  import UniformInterface
-  import BernoulliExpNegInterface
+  import Uniform
+  import BernoulliExpNeg
 
-  trait {:termination false} IDiscreteLaplace extends Bernoulli.Interface.IBernoulli, UniformInterface.IUniform, BernoulliExpNegInterface.IBernoulliExpNeg {
+  trait {:termination false} Trait extends Bernoulli.Interface.Trait, Uniform.Interface.Trait, BernoulliExpNeg.Interface.Trait {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
-    method DiscreteLaplace(scale: Rationals.Rational) returns (z: int)
+    method DiscreteLaplaceSample(scale: Rationals.Rational) returns (z: int)
       modifies this
       requires scale.numer >= 1
       decreases *

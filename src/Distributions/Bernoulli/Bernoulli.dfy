@@ -4,8 +4,8 @@ include "Interface.dfy"
 include "Model.dfy"
 
 module Bernoulli {
-  import Interface
-  import Implementation
-  import Correctness
-  import Model
+  import Interface = BernoulliInterface
+  import Implementation = BernoulliImplementation
+  import Correctness = BernoulliCorrectness
+  import Model = BernoulliCorrectness
 }

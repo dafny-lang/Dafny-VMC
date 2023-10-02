@@ -8,13 +8,13 @@ include "Interface.dfy"
 
 module DiscreteGaussianImplementation {
   import Rationals
-  import DiscreteGaussianInterface
+  import Interface = DiscreteGaussianInterface
 
-  trait {:termination false} TDiscreteGaussian extends DiscreteGaussianInterface.IDiscreteGaussian {
+  trait {:termination false} Trait extends Interface.Trait {
 
     // Based on Algorithm 3 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     // Note that we take sigma as a parameter, not sigma^2, to avoid square roots.
-    method DiscreteGaussian(sigma: Rationals.Rational) returns (y: int)
+    method DiscreteGaussianSample(sigma: Rationals.Rational) returns (y: int)
       modifies this
       requires sigma.numer >= 1
       decreases *
@@ -24,7 +24,7 @@ module DiscreteGaussianImplementation {
       while true
         decreases *
       {
-        y := DiscreteLaplace(Rationals.Int(t));
+        y := DiscreteLaplaceSample(Rationals.Int(t));
         var yAbs := if y < 0 then -y else y;
         var numeratorTerm := Rationals.Sub(
           Rationals.Int(yAbs),
@@ -37,7 +37,7 @@ module DiscreteGaussianImplementation {
             sigmaSquared
           )
         );
-        var c := BernoulliExpNeg(gamma);
+        var c := BernoulliExpNegSample(gamma);
         if c {
           return;
         }

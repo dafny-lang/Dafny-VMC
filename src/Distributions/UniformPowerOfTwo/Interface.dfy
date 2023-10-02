@@ -3,18 +3,18 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../Base/Interface.dfy"
+include "../Coin/Coin.dfy"
 include "Model.dfy"
 
 module UniformPowerOfTwoInterface {
-  import BaseInterface
-  import UniformPowerOfTwoModel
+  import Coin
+  import Model = UniformPowerOfTwoModel
 
-  trait {:termination false} IUniformPowerOfTwo extends BaseInterface.TBase {
+  trait {:termination false} Trait extends Coin.Interface.Trait {
 
-    method UniformPowerOfTwo(n: nat) returns (u: nat)
+    method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       modifies this
-      ensures UniformPowerOfTwoModel.ProbUnif(n)(old(s)) == (u, s)
+      ensures Model.ProbUnif(n)(old(s)) == (u, s)
 
   }
 }

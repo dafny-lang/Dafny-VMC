@@ -12,7 +12,7 @@ include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 include "Model.dfy"
 
-module Correctness {
+module BernoulliCorrectness {
   import MeasureTheory
   import Helper
   import UniformModel
@@ -20,7 +20,7 @@ module Correctness {
   import RandomNumberGenerator
   import Independence
   import Monad
-  import Model
+  import Model = BernoulliModel
 
   /*******
    Lemmas

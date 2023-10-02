@@ -4,17 +4,17 @@
  *******************************************************************************/
 
 include "../../Math/Rationals.dfy"
-include "../BernoulliExpNeg/Interface.dfy"
-include "../DiscreteLaplace/Interface.dfy"
+include "../BernoulliExpNeg/BernoulliExpNeg.dfy"
+include "../DiscreteLaplace/DiscreteLaplace.dfy"
 
 module DiscreteGaussianInterface {
   import Rationals
-  import BernoulliExpNegInterface
-  import DiscreteLaplaceInterface
+  import BernoulliExpNeg
+  import DiscreteLaplace
 
-  trait {:termination false} IDiscreteGaussian extends DiscreteLaplaceInterface.IDiscreteLaplace, BernoulliExpNegInterface.IBernoulliExpNeg {
+  trait {:termination false} Trait extends DiscreteLaplace.Interface.Trait, BernoulliExpNeg.Interface.Trait {
     // Takes the sigma (not sigma^2!) as a fraction
-    method DiscreteGaussian(sigma: Rationals.Rational) returns (y: int)
+    method DiscreteGaussianSample(sigma: Rationals.Rational) returns (y: int)
       modifies this
       requires sigma.numer >= 1
       decreases *

@@ -10,9 +10,9 @@ module BernoulliExpNegInterface {
   import Rationals
   import Bernoulli
 
-  trait {:termination false} IBernoulliExpNeg extends Bernoulli.Interface.IBernoulli {
+  trait {:termination false} Trait extends Bernoulli.Interface.Trait {
 
-    method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
+    method BernoulliExpNegSample(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
       requires gamma.numer >= 0
