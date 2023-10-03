@@ -11,11 +11,11 @@ For example, to run the examples in the `docs` directory, run one of the followi
 
 ```bash
 # C#
-$ dafny run docs/ExamplesFoundational.dfy --target:cs --input src/interop/cs/DRandomCoin.cs --input src/interop/cs/DRandomUniform.cs
-$ dafny run docs/ExamplesExternUniform.dfy --target:cs --input src/interop/cs/DRandomCoin.cs --input src/interop/cs/DRandomUniform.cs
+$ dafny run docs/dafny/ExamplesFoundational.dfy --target:cs --input src/interop/cs/DRandomCoin.cs --input src/interop/cs/DRandomUniform.cs
+$ dafny run docs/dafny/ExamplesExternUniform.dfy --target:cs --input src/interop/cs/DRandomCoin.cs --input src/interop/cs/DRandomUniform.cs
 # Java
-$ dafny run docs/ExamplesFoundational.dfy --target:java --input src/interop/java/DRandomCoin.java --input src/interop/java/DRandomUniform.java
-$ dafny run docs/ExamplesExternUniform.dfy --target:java --input src/interop/java/DRandomCoin.java --input src/interop/java/DRandomUniform.java
+$ dafny run docs/dafny/ExamplesFoundational.dfy --target:java --input src/interop/java/DRandomCoin.java --input src/interop/java/DRandomUniform.java
+$ dafny run docs/dafny/ExamplesExternUniform.dfy --target:java --input src/interop/java/DRandomCoin.java --input src/interop/java/DRandomUniform.java
 ```
 
 (If you aren't using `dafny run` to run your program,
