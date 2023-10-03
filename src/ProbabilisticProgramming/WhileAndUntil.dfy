@@ -191,4 +191,10 @@ module WhileAndUntil {
     EnsureProbUntilTerminates(b, c);
     assume {:axiom} Quantifier.ForAllStar(Helper3(b, c));
   }
+
+  // Equation (3.28)
+  lemma {:axiom} EnsureProbWhileIsIndepFn<A(!new)>(c: A -> bool, b: A -> Monad.Hurd<A>, a: A)
+    requires forall a' :: Independence.IsIndepFn(b(a'))
+    requires ProbWhileTerminates(b, c)
+    ensures Independence.IsIndepFn(ProbWhile(c, b, a))
 }
