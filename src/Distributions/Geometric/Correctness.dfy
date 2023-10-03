@@ -28,20 +28,20 @@ module GeometricCorrectness {
   {
     var fst := (t: (bool, int)) => t.0;
     var f := (t: (bool, int)) => Monad.Return(t.1 - 1);
-    assert forall t :: Independence.IsIndepFn(f(t)) by {
-      forall t ensures Independence.IsIndepFn(f(t)) {
-        Independence.ReturnIsIndepFn(t.1 - 1);
-      }
-    }
     assert WhileAndUntil.ProbWhileTerminates(Model.SampleIter, fst) by {
       Model.ProbWhileSampleTerminates();
     }
-    assert forall a' :: Independence.IsIndepFn(Model.SampleIter(a'));
     var g := WhileAndUntil.ProbWhile(fst, Model.SampleIter, (true, 0));
-    assert Independence.IsIndepFn(g) by {
-      WhileAndUntil.EnsureProbWhileIsIndepFn(fst, Model.SampleIter, (true, 0));
-    }
     assert Independence.IsIndepFn(Monad.Bind(g, f)) by {
+      assert Independence.IsIndepFn(g) by {
+        assert forall a' :: Independence.IsIndepFn(Model.SampleIter(a'));
+        WhileAndUntil.EnsureProbWhileIsIndepFn(fst, Model.SampleIter, (true, 0));
+      }
+      assert forall t :: Independence.IsIndepFn(f(t)) by {
+        forall t ensures Independence.IsIndepFn(f(t)) {
+          Independence.ReturnIsIndepFn(t.1 - 1);
+        }
+      }
       Independence.IndepFnIsCompositional(g, f);
     }
   }

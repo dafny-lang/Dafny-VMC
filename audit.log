@@ -37,7 +37,6 @@ Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
 Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
 
 Auditing ./src/Distributions/Geometric/Correctness.dfy
- SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
  SampleCorrectness: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/Geometric/Geometric.dfy
@@ -111,4 +110,5 @@ Auditing ./src/ProbabilisticProgramming/WhileAndUntil.dfy
  ProbUntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
  ProbUntilAsBind: Declaration has explicit `{:axiom}` attribute. 
  EnsureProbUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+ EnsureProbWhileIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 
