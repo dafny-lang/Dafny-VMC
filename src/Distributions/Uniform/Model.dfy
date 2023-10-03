@@ -8,29 +8,29 @@ include "../../ProbabilisticProgramming/Monad.dfy"
 include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
-include "../UniformPowerOfTwo/Model.dfy"
+include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
 
 module UniformModel {
-  import opened RandomNumberGenerator
-  import opened Quantifier
-  import opened Monad
-  import opened Independence
-  import opened WhileAndUntil
-  import opened UniformPowerOfTwoModel
+  import RandomNumberGenerator
+  import Quantifier
+  import Monad
+  import Independence
+  import WhileAndUntil
+  import UniformPowerOfTwo
 
   // Definition 49
-  function ProbUniform(n: nat): Hurd<nat>
+  function Sample(n: nat): Monad.Hurd<nat>
     requires n > 0
   {
-    ProbUnifTerminates(n);
-    ProbUntil(ProbUnif(n-1), (x: nat) => x < n)
+    UniformPowerOfTwo.Model.SampleTerminates(n);
+    WhileAndUntil.ProbUntil(UniformPowerOfTwo.Model.Sample(n-1), (x: nat) => x < n)
   }
 
-  function ProbUniformInterval(a: int, b: int): (f: Hurd<int>)
+  function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
   {
-    (s: RNG) =>
-      var (x, s') := ProbUniform(b - a)(s);
+    (s: RandomNumberGenerator.RNG) =>
+      var (x, s') := Sample(b - a)(s);
       (a + x, s')
   }
 }

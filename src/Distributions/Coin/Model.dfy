@@ -6,11 +6,11 @@
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 
-module BaseModel {
+module CoinModel {
   import RandomNumberGenerator
   import Monad
 
-  function CoinModel(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
+  function Sample(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
     Monad.Deconstruct(s)
   }
 }

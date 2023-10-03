@@ -1,10 +1,7 @@
 
 Auditing ./src/Dafny-VMC.dfy
 
-Auditing ./src/Distributions/Base/Interface.dfy
- Coin: Definition has `assume {:axiom}` statement in body. 
-
-Auditing ./src/Distributions/Base/Model.dfy
+Auditing ./src/Distributions/Bernoulli/Bernoulli.dfy
 
 Auditing ./src/Distributions/Bernoulli/Correctness.dfy
 
@@ -14,28 +11,43 @@ Auditing ./src/Distributions/Bernoulli/Interface.dfy
 
 Auditing ./src/Distributions/Bernoulli/Model.dfy
 
+Auditing ./src/Distributions/BernoulliExpNeg/BernoulliExpNeg.dfy
+
 Auditing ./src/Distributions/BernoulliExpNeg/Implementation.dfy
 
 Auditing ./src/Distributions/BernoulliExpNeg/Interface.dfy
 
+Auditing ./src/Distributions/Coin/Coin.dfy
+
+Auditing ./src/Distributions/Coin/Interface.dfy
+ CoinSample: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Distributions/Coin/Model.dfy
+
+Auditing ./src/Distributions/DiscreteGaussian/DiscreteGaussian.dfy
+
 Auditing ./src/Distributions/DiscreteGaussian/Implementation.dfy
 
 Auditing ./src/Distributions/DiscreteGaussian/Interface.dfy
+
+Auditing ./src/Distributions/DiscreteLaplace/DiscreteLaplace.dfy
 
 Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
 
 Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
 
 Auditing ./src/Distributions/Uniform/Correctness.dfy
- ProbUniformIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 
 Auditing ./src/Distributions/Uniform/Implementation.dfy
- Uniform: Definition has `assume {:axiom}` statement in body. 
- Uniform: Definition has `assume {:axiom}` statement in body. 
+ UniformSample: Definition has `assume {:axiom}` statement in body. 
+ UniformSample: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Distributions/Uniform/Interface.dfy
 
 Auditing ./src/Distributions/Uniform/Model.dfy
+
+Auditing ./src/Distributions/Uniform/Uniform.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Correctness.dfy
 
@@ -44,8 +56,10 @@ Auditing ./src/Distributions/UniformPowerOfTwo/Implementation.dfy
 Auditing ./src/Distributions/UniformPowerOfTwo/Interface.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Model.dfy
- ProbUnifTerminates: Declaration has explicit `{:axiom}` attribute. 
- ProbUnifCorrespondence: Definition has `assume {:axiom}` statement in body. 
+ SampleTerminates: Declaration has explicit `{:axiom}` attribute. 
+ SampleCorrespondence: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Distributions/UniformPowerOfTwo/UniformPowerOfTwo.dfy
 
 Auditing ./src/Math/Helper.dfy
 

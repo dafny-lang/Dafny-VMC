@@ -5,8 +5,7 @@
 
 include "../../Math/MeasureTheory.dfy"
 include "../../Math/Helper.dfy"
-include "../Uniform/Model.dfy"
-include "../Uniform/Correctness.dfy"
+include "../Uniform/Uniform.dfy"
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
@@ -15,27 +14,26 @@ include "Model.dfy"
 module BernoulliCorrectness {
   import MeasureTheory
   import Helper
-  import UniformModel
-  import UniformCorrectness
+  import Uniform
   import RandomNumberGenerator
   import Independence
   import Monad
-  import BernoulliModel
+  import Model = BernoulliModel
 
   /*******
    Lemmas
   *******/
 
-  lemma ProbBernoulliIsIndepFn(m: nat, n: nat)
+  lemma SampleIsIndepFn(m: nat, n: nat)
     requires n != 0
     requires m <= n
-    ensures Independence.IsIndepFn(BernoulliModel.ProbBernoulli(m, n))
+    ensures Independence.IsIndepFn(Model.Sample(m, n))
   {
-    var f := UniformModel.ProbUniform(n);
+    var f := Uniform.Model.Sample(n);
     var g := (k: nat) => Monad.Return(k < m);
 
     assert Independence.IsIndepFn(f) by {
-      UniformCorrectness.ProbUniformIsIndepFn(n);
+      Uniform.Correctness.SampleIsIndepFn(n);
     }
 
     assert forall k: nat :: Independence.IsIndepFn(g(k)) by {
@@ -52,18 +50,18 @@ module BernoulliCorrectness {
     requires n != 0
     requires m <= n
     ensures
-      var e := iset s | BernoulliModel.ProbBernoulli(m, n)(s).0;
+      var e := iset s | Model.Sample(m, n)(s).0;
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == m as real / n as real
   {
-    var e := iset s | BernoulliModel.ProbBernoulli(m, n)(s).0;
+    var e := iset s | Model.Sample(m, n)(s).0;
 
     if m == 0 {
       assert e == iset{} by {
-        forall s ensures !BernoulliModel.ProbBernoulli(m, n)(s).0 {
+        forall s ensures !Model.Sample(m, n)(s).0 {
           calc {
-            BernoulliModel.ProbBernoulli(m, n)(s).0;
-            UniformModel.ProbUniform(n)(s).0 < 0;
+            Model.Sample(m, n)(s).0;
+            Uniform.Model.Sample(n)(s).0 < 0;
             false;
           }
         }
@@ -75,28 +73,28 @@ module BernoulliCorrectness {
         assert MeasureTheory.IsPositive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu);
       }
     } else {
-      var e1 := iset s | UniformModel.ProbUniform(n)(s).0 == m-1;
-      var e2 := (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | BernoulliModel.ProbBernoulli(m-1, n)(s).0);
+      var e1 := iset s | Uniform.Model.Sample(n)(s).0 == m-1;
+      var e2 := (iset s {:trigger Uniform.Model.Sample(n)(s).0} | Model.Sample(m-1, n)(s).0);
 
-      assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == e2 by {
-        assert (iset s | UniformModel.ProbUniform(n)(s).0 < m-1) == (iset s {:trigger UniformModel.ProbUniform(n)(s).0} | BernoulliModel.ProbBernoulli(m-1, n)(s).0) by {
-          forall s ensures UniformModel.ProbUniform(n)(s).0 < m-1 <==> BernoulliModel.ProbBernoulli(m-1, n)(s).0 {
-            assert UniformModel.ProbUniform(n)(s).0 < m-1 <==> BernoulliModel.ProbBernoulli(m-1, n)(s).0;
+      assert (iset s | Uniform.Model.Sample(n)(s).0 < m-1) == e2 by {
+        assert (iset s | Uniform.Model.Sample(n)(s).0 < m-1) == (iset s {:trigger Uniform.Model.Sample(n)(s).0} | Model.Sample(m-1, n)(s).0) by {
+          forall s ensures Uniform.Model.Sample(n)(s).0 < m-1 <==> Model.Sample(m-1, n)(s).0 {
+            assert Uniform.Model.Sample(n)(s).0 < m-1 <==> Model.Sample(m-1, n)(s).0;
           }
         }
       }
 
       calc {
         e;
-        iset s | UniformModel.ProbUniform(n)(s).0 < m;
-        iset s | UniformModel.ProbUniform(n)(s).0 == m-1 || UniformModel.ProbUniform(n)(s).0 < m-1;
-        (iset s | UniformModel.ProbUniform(n)(s).0 == m-1) + (iset s | UniformModel.ProbUniform(n)(s).0 < m-1);
+        iset s | Uniform.Model.Sample(n)(s).0 < m;
+        iset s | Uniform.Model.Sample(n)(s).0 == m-1 || Uniform.Model.Sample(n)(s).0 < m-1;
+        (iset s | Uniform.Model.Sample(n)(s).0 == m-1) + (iset s | Uniform.Model.Sample(n)(s).0 < m-1);
         e1 + e2;
       }
 
       assert A1: e1 in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e1) == 1.0 / (n as real) by {
-        UniformCorrectness.UniformFullCorrectness(n, m-1);
-        assert e1 == UniformCorrectness.UniformFullCorrectnessHelper(n, m-1);
+        Uniform.Correctness.UniformFullCorrectness(n, m-1);
+        assert e1 == Uniform.Correctness.UniformFullCorrectnessHelper(n, m-1);
       }
 
       assert A2: e2 in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e2) == (m-1) as real / n as real by {

@@ -7,12 +7,12 @@ include "../src/Dafny-VMC.dfy"
 
 module Tests {
   import Rationals
-  import BaseInterface
-  import UniformInterface
-  import BernoulliInterface
-  import BernoulliExpNegInterface
-  import DiscreteLaplaceInterface
-  import DiscreteGaussianInterface
+  import Coin
+  import Uniform
+  import Bernoulli
+  import BernoulliExpNeg
+  import DiscreteLaplace
+  import DiscreteGaussian
 
   function Abs(x: real): real {
     if x < 0.0 then -x else x
@@ -51,13 +51,13 @@ module Tests {
   }
 
 
-  method TestCoin(n: nat, r: BaseInterface.TBase)
+  method TestCoin(n: nat, r: Coin.Interface.Trait)
     requires n > 0
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.Coin();
+      var b := r.CoinSample();
       if b {
         t := t + 1;
       }
@@ -65,7 +65,7 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
   }
 
-  method TestUniform(n: nat, r: UniformInterface.IUniform)
+  method TestUniform(n: nat, r: Uniform.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
@@ -74,7 +74,7 @@ module Tests {
     var b := 0;
     var c := 0;
     for i := 0 to n {
-      var k := r.Uniform(3);
+      var k := r.UniformSample(3);
       match k {
         case 0 => a := a + 1;
         case 1 => b := b + 1;
@@ -86,7 +86,7 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(2)");
   }
 
-  method TestUniformInterval(n: nat, r: UniformInterface.IUniform)
+  method TestUniformInterval(n: nat, r: Uniform.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
@@ -95,7 +95,7 @@ module Tests {
     var b := 0;
     var c := 0;
     for i := 0 to n {
-      var k := r.UniformInterval(7,10);
+      var k := r.UniformIntervalSample(7,10);
       match k {
         case 7 => a := a + 1;
         case 8 => b := b + 1;
@@ -107,14 +107,14 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
   }
 
-  method TestBernoulli(n: nat, r: BernoulliInterface.IBernoulli)
+  method TestBernoulli(n: nat, r: Bernoulli.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.Bernoulli(Rationals.Rational(1, 5));
+      var b := r.BernoulliSample(Rationals.Rational(1, 5));
       if b {
         t := t + 1;
       }
@@ -122,13 +122,13 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
-  method TestBernoulli2(n: nat, r: BernoulliInterface.IBernoulli)
+  method TestBernoulli2(n: nat, r: Bernoulli.Interface.Trait)
     decreases *
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.Bernoulli(Rationals.Rational(0, 5));
+      var b := r.BernoulliSample(Rationals.Rational(0, 5));
       if b {
         t := t + 1;
       }
@@ -137,13 +137,13 @@ module Tests {
     expect t == 0;
   }
 
-  method TestBernoulli3(n: nat, r: BernoulliInterface.IBernoulli)
+  method TestBernoulli3(n: nat, r: Bernoulli.Interface.Trait)
     decreases *
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.Bernoulli(Rationals.Rational(5, 5));
+      var b := r.BernoulliSample(Rationals.Rational(5, 5));
       if b {
         t := t + 1;
       }
@@ -152,14 +152,14 @@ module Tests {
     expect t == n;
   }
 
-  method TestBernoulliExpNeg(n: nat, r: BernoulliExpNegInterface.IBernoulliExpNeg)
+  method TestBernoulliExpNeg(n: nat, r: BernoulliExpNeg.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNeg(Rationals.Rational(12381, 5377)); // about -ln(0.1)
+      var u := r.BernoulliExpNegSample(Rationals.Rational(12381, 5377)); // about -ln(0.1)
       if u {
         t := t + 1;
       }
@@ -167,7 +167,7 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.1, "p(true)");
   }
 
-  method TestDiscreteLaplace(n: nat, r: DiscreteLaplaceInterface.IDiscreteLaplace)
+  method TestDiscreteLaplace(n: nat, r: DiscreteLaplace.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
@@ -177,7 +177,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteLaplace(Rationals.Rational(7, 5));
+      var u := r.DiscreteLaplaceSample(Rationals.Rational(7, 5));
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];
@@ -198,7 +198,7 @@ module Tests {
     testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, variance, "mean");
   }
 
-  method TestDiscreteGaussian(n: nat, r: DiscreteGaussianInterface.IDiscreteGaussian)
+  method TestDiscreteGaussian(n: nat, r: DiscreteGaussian.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
@@ -208,7 +208,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteGaussian(Rationals.Rational(7, 5));
+      var u := r.DiscreteGaussianSample(Rationals.Rational(7, 5));
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];

@@ -6,7 +6,7 @@
 using System;
 using System.Numerics;
 
-namespace BaseInterface {
+namespace CoinInterface {
 
     public class DRandomCoin {
 

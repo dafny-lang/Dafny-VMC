@@ -4,16 +4,15 @@
  *******************************************************************************/
 
 include "../../Math/Rationals.dfy"
-include "../../Math/Rationals.dfy"
-include "../Bernoulli/Interface.dfy"
+include "../Bernoulli/Bernoulli.dfy"
 
 module BernoulliExpNegInterface {
   import Rationals
-  import BernoulliInterface
+  import Bernoulli
 
-  trait {:termination false} IBernoulliExpNeg extends BernoulliInterface.IBernoulli {
+  trait {:termination false} Trait extends Bernoulli.Interface.Trait {
 
-    method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
+    method BernoulliExpNegSample(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
       requires gamma.numer >= 0
