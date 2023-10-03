@@ -57,7 +57,6 @@ Auditing ./src/Distributions/UniformPowerOfTwo/Interface.dfy
 
 Auditing ./src/Distributions/UniformPowerOfTwo/Model.dfy
  SampleTerminates: Declaration has explicit `{:axiom}` attribute. 
- SampleCorrespondence: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Distributions/UniformPowerOfTwo/UniformPowerOfTwo.dfy
 
