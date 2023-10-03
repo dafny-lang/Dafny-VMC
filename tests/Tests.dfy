@@ -13,6 +13,7 @@ module Tests {
   import BernoulliExpNeg
   import DiscreteLaplace
   import DiscreteGaussian
+  import Geometric
 
   function Abs(x: real): real {
     if x < 0.0 then -x else x
@@ -227,5 +228,28 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, counts[-2] as real, 0.102713, "p(-2)");
     var varianceBound := 1.4 * 1.4; // variance of DiscreteGaussian(1.4) is < 1.4^2
     testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
+  }
+
+  method TestGeometric(n: nat, r: Geometric.Interface.Trait)
+    decreases *
+    requires n > 0
+    modifies r
+  {
+    var a := 0;
+    var b := 0;
+    var sum := 0;
+    var sumSquaredDiff := 0.0;
+    for i := 0 to n {
+      var k := r.GeometricSample();
+      sum := sum + k;
+      match k {
+        case 5 => a := a + 1;
+        case 10 => b := b + 1;
+        case _ =>
+      }
+    }
+    testBernoulliIsWithin4SigmaOfTrueMean(n, a as real, 0.015625, "p(5)");
+    testBernoulliIsWithin4SigmaOfTrueMean(n, b as real, 0.00048828125, "p(10)");
+    testEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (1.0 - 0.5) / 0.5, (1.0 - 0.5) / (0.5 * 0.5), "mean");
   }
 }

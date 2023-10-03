@@ -12,6 +12,7 @@ include "Distributions/DiscreteGaussian/DiscreteGaussian.dfy"
 include "Distributions/DiscreteLaplace/DiscreteLaplace.dfy"
 include "Distributions/UniformPowerOfTwo/UniformPowerOfTwo.dfy"
 include "Distributions/Uniform/Uniform.dfy"
+include "Distributions/Geometric/Geometric.dfy"
 
 module DafnyVMC {
   import Coin
@@ -21,12 +22,13 @@ module DafnyVMC {
   import BernoulliExpNeg
   import DiscreteGaussian
   import DiscreteLaplace
+  import Geometric
 
-  class DRandomFoundational extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
+  class DRandomFoundational extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, Geometric.Implementation.Trait {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitExtern, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
+  class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitExtern, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, Geometric.Implementation.Trait {
     constructor {:extern} ()
   }
 }
