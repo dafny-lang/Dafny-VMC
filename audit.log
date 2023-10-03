@@ -36,6 +36,20 @@ Auditing ./src/Distributions/DiscreteLaplace/Implementation.dfy
 
 Auditing ./src/Distributions/DiscreteLaplace/Interface.dfy
 
+Auditing ./src/Distributions/Geometric/Correctness.dfy
+ SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+ SampleCorrectness: Declaration has explicit `{:axiom}` attribute. 
+
+Auditing ./src/Distributions/Geometric/Geometric.dfy
+
+Auditing ./src/Distributions/Geometric/Implementation.dfy
+ GeometricSample: Definition has `assume {:axiom}` statement in body. 
+
+Auditing ./src/Distributions/Geometric/Interface.dfy
+
+Auditing ./src/Distributions/Geometric/Model.dfy
+ ProbWhileGeometricTerminates: Declaration has explicit `{:axiom}` attribute. 
+
 Auditing ./src/Distributions/Uniform/Correctness.dfy
  SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 
