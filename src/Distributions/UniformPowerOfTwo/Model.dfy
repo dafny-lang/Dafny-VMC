@@ -34,15 +34,6 @@ module UniformPowerOfTwoModel {
       Monad.Bind(Sample(n/2), UnifStep)
   }
 
-  lemma {:axiom} SampleTerminates(n: nat)
-    requires n > 0
-    ensures
-      var b := Sample(n - 1);
-      var c := (x: nat) => x < n;
-      && Independence.IsIndepFn(b)
-      && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
-      && WhileAndUntil.ProbUntilTerminates(b, c)
-
   // A tail recursive version of Sample, closer to the imperative implementation
   function SampleTailRecursive(n: nat, u: nat := 0): Monad.Hurd<nat>
     decreases n
