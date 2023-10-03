@@ -9,4 +9,4 @@ then
 fi
 
 echo "Formatting all Dafny files..."
-$DAFNY format .
+$DAFNY format dfyconfig.toml
