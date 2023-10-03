@@ -48,7 +48,7 @@ Auditing ./src/Distributions/Geometric/Implementation.dfy
 Auditing ./src/Distributions/Geometric/Interface.dfy
 
 Auditing ./src/Distributions/Geometric/Model.dfy
- ProbWhileGeometricTerminates: Declaration has explicit `{:axiom}` attribute. 
+ ProbWhileSampleTerminates: Definition has `assume {:axiom}` statement in body. 
 
 Auditing ./src/Distributions/Uniform/Correctness.dfy
  SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 

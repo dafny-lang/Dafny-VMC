@@ -18,7 +18,7 @@ module GeometricModel {
   function Sample(): Monad.Hurd<int> {
     var fst := (t: (bool, int)) => t.0;
     var f := (t: (bool, int)) => Monad.Return(t.1 - 1);
-    ProbWhileGeometricTerminates();
+    ProbWhileSampleTerminates();
     var g := WhileAndUntil.ProbWhile(fst, SampleIter, (true, 0));
     Monad.Bind(g, f)
   }
@@ -42,7 +42,7 @@ module GeometricModel {
     f
   }
 
-  lemma ProbWhileGeometricTerminates()
+  lemma ProbWhileSampleTerminates()
     ensures
       var fst := (t: (bool, int)) => t.0;
       WhileAndUntil.ProbWhileTerminates(SampleIter, fst)
