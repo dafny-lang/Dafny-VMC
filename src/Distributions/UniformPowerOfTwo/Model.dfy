@@ -152,12 +152,12 @@ module UniformPowerOfTwoModel {
         (var (u, s') := Sample(Power2(k - l))(s); SampleTailRecursive(Power2(l - 1), u)(s'));
         { reveal Ineq1; }
         (var (u, s') := Sample(Power2(k - l))(s);
-          SampleTailRecursive(Power2(l - 1) / 2, if Monad.Head(s') then 2 * u + 1 else 2 * u)(Monad.Tail(s')));
+         SampleTailRecursive(Power2(l - 1) / 2, if Monad.Head(s') then 2 * u + 1 else 2 * u)(Monad.Tail(s')));
         { assert Power2(k - l + 1) / 2 == Power2(k - l); }
         (var (u', s') := Monad.Bind(Sample(Power2(k - l)), UnifStep)(s);
-          SampleTailRecursive(Power2(l - 2), u')(s'));
+         SampleTailRecursive(Power2(l - 2), u')(s'));
         (var (u', s') := Sample(Power2(k - l + 1))(s);
-          SampleTailRecursive(Power2(l - 2), u')(s'));
+         SampleTailRecursive(Power2(l - 2), u')(s'));
         Monad.Bind(Sample(Power2(k - l + 1)), (u: nat) => SampleTailRecursive(Power2(l - 2), u))(s);
         { RelateWithTailRecursive(k, l - 1, s); }
         Sample(Power2(k))(s);
