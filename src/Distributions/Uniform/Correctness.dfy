@@ -57,7 +57,7 @@ module UniformCorrectness {
     var d := (x: nat) => x == i;
 
     assert Independence.IsIndepFn(b) && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c)) by {
-      UniformPowerOfTwo.Model.SampleTerminates(n);
+      Model.SampleTerminates(n);
     }
 
     assert WhileAndUntil.ProbUntilTerminates(b, c) by {
