@@ -27,12 +27,14 @@ module UniformPowerOfTwoCorrectness {
   ************/
 
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
-    requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
+    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
   {
     RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
-  function Sample1(n: nat): RandomNumberGenerator.RNG -> RandomNumberGenerator.RNG {
+  function Sample1(n: nat): RandomNumberGenerator.RNG -> RandomNumberGenerator.RNG
+    requires n >= 1
+  {
     (s: RandomNumberGenerator.RNG) => Model.Sample(n)(s).1
   }
 
@@ -44,13 +46,14 @@ module UniformPowerOfTwoCorrectness {
   // In contrast to UnifCorrectness, this lemma does not follow
   // the thesis, but models PROB_BERN_UNIF of the HOL implementation.
   lemma UnifCorrectness2(n: nat, m: nat)
+    requires n >= 1
     ensures
       var e := iset s | Model.Sample(n)(s).0 == m;
       && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == if m < Helper.Power(2, Helper.Log2(n)) then 1.0 / (Helper.Power(2, Helper.Log2(n)) as real) else 0.0
+      && RandomNumberGenerator.mu(e) == if m < Helper.Power(2, Model.Log2Floor(n)) then 1.0 / (Helper.Power(2, Model.Log2Floor(n)) as real) else 0.0
   {
     var e := iset s | Model.Sample(n)(s).0 == m;
-    var k := Helper.Log2(n);
+    var k := Model.Log2Floor(n);
 
     assert e in RandomNumberGenerator.event_space by {
       assert iset{m} in MeasureTheory.natEventSpace;
@@ -65,12 +68,12 @@ module UniformPowerOfTwoCorrectness {
     }
 
     if k == 0 {
-      assert n == 0;
+      assert n == 1;
       UnifCorrectness(n, k);
       assert UnifIsCorrect(n, k, m);
     } else {
-      assert n != 0;
-      Helper.Log2BothSides(n);
+      assert n > 1;
+      Model.Power2OfLog2Floor(n);
       UnifCorrectness(n, k);
       assert UnifIsCorrect(n, k, m);
     }
@@ -78,11 +81,12 @@ module UniformPowerOfTwoCorrectness {
 
   // See PROB_BERN_UNIF_LT in HOL implementation.
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
-    requires m <= Helper.Power(2, Helper.Log2(n))
+    requires n >= 1
+    requires m <= Helper.Power(2, Model.Log2Floor(n))
     ensures
       var e := iset s | Model.Sample(n)(s).0 < m;
       && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == (m as real) / (Helper.Power(2, Helper.Log2(n)) as real)
+      && RandomNumberGenerator.mu(e) == (m as real) / (Helper.Power(2, Model.Log2Floor(n)) as real)
   {
     var e := iset s | Model.Sample(n)(s).0 < m;
 
@@ -110,11 +114,11 @@ module UniformPowerOfTwoCorrectness {
         { assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.PosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
         RandomNumberGenerator.mu(e1) + RandomNumberGenerator.mu(e2);
         { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
-        (1.0 / (Helper.Power(2, Helper.Log2(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Helper.Log2(n)) as real));
-        { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Helper.Log2(n)) as real); }
-        (1.0 + (m-1) as real) / (Helper.Power(2, Helper.Log2(n)) as real);
+        (1.0 / (Helper.Power(2, Model.Log2Floor(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Model.Log2Floor(n)) as real));
+        { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Model.Log2Floor(n)) as real); }
+        (1.0 + (m-1) as real) / (Helper.Power(2, Model.Log2Floor(n)) as real);
         { assert 1.0 + (m-1) as real == (m as real); }
-        (m as real) / (Helper.Power(2, Helper.Log2(n)) as real);
+        (m as real) / (Helper.Power(2, Model.Log2Floor(n)) as real);
       }
     }
   }
@@ -123,22 +127,21 @@ module UniformPowerOfTwoCorrectness {
   // In contrast to UnifCorrectness2, this lemma follows equation (4.8)
   // instead of the HOL implementation.
   lemma UnifCorrectness(n: nat, k: nat)
-    requires (n == 0 && k == 0) || (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k))
+    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
   {
     forall m: nat ensures UnifIsCorrect(n, k, m) {
-      if (n == 0 && k == 0) {
-        UnifCorrectnessCaseNZeroKZero(m);
+      if (n == 1 && k == 0) {
+        UnifCorrectnessCaseNOneKZero(m);
       } else {
-        assert (k != 0 && Helper.Power(2, k - 1) <= n < Helper.Power(2, k));
         assert n > 0;
         assert n > 1 ==> n / 2 > 0;
-        if k - 2 < 0 {
+        if k == 0 {
           assert 0 < k < 2;
           assert k == 1;
           assert Helper.Power(2, k) == 2;
-          assert 0 < n < 2;
-          assert n == 1;
+          assert 2 <= n < 4;
+          assert n == 2;
           assert n / 2 == 0;
           if m % 2 == 0 {
             UnifCorrectnessCaseKOneMEven(n, m);
@@ -147,8 +150,7 @@ module UniformPowerOfTwoCorrectness {
             UnifCorrectnessCaseKOneMOdd(n, m);
           }
         } else {
-          assert Helper.Power(2, k - 1) / 2 <= n / 2 < Helper.Power(2, k) / 2;
-          assert Helper.Power(2, k - 2) <= n / 2 < Helper.Power(2, k - 1);
+          assert Helper.Power(2, k - 1) <= n / 2 < Helper.Power(2, k);
           var u := m / 2;
           if m % 2 == 0 {
             UnifCorrectnessCaseKGreaterOneMEven(n, k, m);
@@ -160,21 +162,21 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma UnifCorrectnessCaseNZeroKZero(m: nat)
-    ensures UnifIsCorrect(0, 0, m)
+  lemma UnifCorrectnessCaseNOneKZero(m: nat)
+    ensures UnifIsCorrect(1, 0, m)
   {
     assert Helper.Power(2, 0) == 1;
     if m == 0 {
-      assert (iset s | Model.Sample(0)(s).0 == m) == (iset s | true);
+      assert (iset s | Model.Sample(1)(s).0 == m) == (iset s | true);
       RandomNumberGenerator.RNGHasMeasure();
     } else {
-      assert (iset s | Model.Sample(0)(s).0 == m) == iset{};
+      assert (iset s | Model.Sample(1)(s).0 == m) == iset{};
       RandomNumberGenerator.RNGHasMeasure();
     }
   }
 
   lemma UnifCorrectnessCaseKOneMEven(n: nat, m: nat)
-    requires 1 <= n < 2
+    requires 2 <= n < 4
     requires m % 2 == 0
     ensures UnifIsCorrect(n, 1, m)
   {
@@ -217,7 +219,7 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma UnifCorrectnessCaseKOneMOdd(n: nat, m: nat)
-    requires 1 <= n < 2
+    requires 2 <= n < 4
     requires m % 2 == 1
     ensures UnifIsCorrect(n, 1, m)
   {
@@ -258,8 +260,8 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma UnifCorrectnessCaseKGreaterOneMEven(n: nat, k: nat, m: nat)
-    requires k >= 2
-    requires Helper.Power(2, k - 1) <= n < Helper.Power(2, k)
+    requires k >= 1
+    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
     requires m % 2 == 0
     ensures UnifIsCorrect(n, k, m)
   {
@@ -298,8 +300,8 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma UnifCorrectnessCaseKGreaterOneMOdd(n: nat, k: nat, m: nat)
-    requires k >= 2
-    requires Helper.Power(2, k - 1) <= n < Helper.Power(2, k)
+    requires k >= 1
+    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
     requires m % 2 == 1
     ensures UnifIsCorrect(n, k, m)
   {
@@ -339,11 +341,12 @@ module UniformPowerOfTwoCorrectness {
 
   // Equation (4.7)
   lemma SampleIsIndepFn(n: nat)
+    requires n >= 1
     decreases n
     ensures Independence.IsIndepFn(Model.Sample(n))
   {
     var fn := Model.Sample(n);
-    if n == 0 {
+    if n == 1 {
       Independence.ReturnIsIndepFn(0 as nat);
     } else {
       assert Independence.IsIndepFn(Model.Sample(n / 2)) by {
@@ -362,6 +365,7 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma SampleIsMeasurePreserving(n: nat)
+    requires n >= 1
     ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, Sample1(n))
   {
     var f := Sample1(n);
@@ -370,8 +374,7 @@ module UniformPowerOfTwoCorrectness {
       Independence.IsIndepFnImpliesSndMeasurable(Model.Sample(n));
       assert Independence.IsIndepFn(Model.Sample(n));
     }
-    var g := Sample1(n / 2);
-    if n == 0 {
+    if n == 1 {
       forall e | e in RandomNumberGenerator.event_space ensures RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.mu(e) {
         forall s: RandomNumberGenerator.RNG ensures f(s) == s {
           assert f(s) == s;
@@ -380,6 +383,7 @@ module UniformPowerOfTwoCorrectness {
       }
       assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, f);
     } else {
+      var g := Sample1(n / 2);
       forall e | e in RandomNumberGenerator.event_space ensures RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.mu(e) {
         var e' := (iset s | Monad.Tail(s) in e);
         assert e' in RandomNumberGenerator.event_space by {
@@ -424,7 +428,7 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma SampleTailDecompose(n: nat, s: RandomNumberGenerator.RNG)
-    requires n != 0
+    requires n >= 2
     ensures Model.Sample(n)(s).1 == Monad.Tail(Model.Sample(n / 2)(s).1)
   {
     var (a, s') := Model.Sample(n / 2)(s);
@@ -449,7 +453,7 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma SampleCorrectnessIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
-    requires n > 0
+    requires n >= 2
     ensures
       var a := Model.Sample(n / 2)(s).0;
       var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
@@ -476,7 +480,7 @@ module UniformPowerOfTwoCorrectness {
 
   lemma SampleCorrectnessEvenCaseIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
     requires m % 2 == 0
-    requires n > 0
+    requires n >= 2
     ensures
       var a := Model.Sample(n / 2)(s).0;
       var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
@@ -505,7 +509,7 @@ module UniformPowerOfTwoCorrectness {
 
   lemma SampleOddCaseIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
     requires m % 2 == 1
-    requires n > 0
+    requires n >= 2
     ensures
       var a := Model.Sample(n / 2)(s).0;
       var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
@@ -531,7 +535,7 @@ module UniformPowerOfTwoCorrectness {
 
   lemma SampleEvenCaseSetEquality(n: nat, m: nat)
     requires m % 2 == 0
-    requires n > 0
+    requires n >= 2
     ensures
       var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
       var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
@@ -546,7 +550,7 @@ module UniformPowerOfTwoCorrectness {
 
   lemma SampleOddCaseSetEquality(n: nat, m: nat)
     requires m % 2 == 1
-    requires n > 0
+    requires n >= 2
     ensures
       var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
       var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
@@ -559,9 +563,9 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma SampleEvenCase(n: nat, m: nat)
+  lemma {:vcs_split_on_every_assert} SampleEvenCase(n: nat, m: nat)
     requires m % 2 == 0
-    requires n > 0
+    requires n >= 2
     ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 == m) / 2.0
   {
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
@@ -662,7 +666,7 @@ module UniformPowerOfTwoCorrectness {
 
   lemma SampleOddCase(n: nat, m: nat)
     requires m % 2 == 1
-    requires n > 0
+    requires n >= 2
     ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) / 2.0
   {
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
@@ -751,7 +755,7 @@ module UniformPowerOfTwoCorrectness {
   }
 
   lemma SampleCaseSplit(n: nat, m: nat)
-    requires n > 0
+    requires n >= 2
     ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == if m % 2 == 0 then RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 == m) / 2.0 else RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) / 2.0
   {
     if m % 2 == 0 {

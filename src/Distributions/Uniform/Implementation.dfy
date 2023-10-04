@@ -20,14 +20,15 @@ module UniformImplementation {
       ensures u < n
       ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      assume {:axiom} false;
-      u := UniformPowerOfTwoSample(n-1);
+      ghost var prev_s := s;
+      u := UniformPowerOfTwoSample(2 * n);
       while u >= n
         decreases *
-        invariant Model.Sample(n)(old(s)) == UniformPowerOfTwo.Model.Sample(n-1)(old(s))
-        invariant (u, s) == UniformPowerOfTwo.Model.Sample(n-1)(old(s))
+        invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prev_s)
+        invariant (u, s) == UniformPowerOfTwo.Model.Sample(2 * n)(prev_s)
       {
-        u := UniformPowerOfTwoSample(n-1);
+        prev_s := s;
+        u := UniformPowerOfTwoSample(2 * n);
       }
     }
   }
