@@ -10,4 +10,4 @@ fi
 
 echo "Checking the formatting of all Dafny files..."
 echo "Run \`DAFNY=dafny scripts/format.sh\` to fix any errors."
-$DAFNY format --check .
+$DAFNY format --check dfyconfig.toml
