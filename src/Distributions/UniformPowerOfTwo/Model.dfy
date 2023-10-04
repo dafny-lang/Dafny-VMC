@@ -56,8 +56,8 @@ module UniformPowerOfTwoModel {
     if n == 1 {
       assert SampleTailRecursive(n)(s) == Sample(n)(s);
     } else {
-      var k := Log2Floor(n);
-      assert Helper.Power(2, k) <= n < Helper.Power(2, k + 1) by { Power2OfLog2Floor(n); }
+      var k := Helper.Log2Floor(n);
+      assert Helper.Power(2, k) <= n < Helper.Power(2, k + 1) by { Helper.Power2OfLog2Floor(n); }
       calc {
         SampleTailRecursive(n)(s);
         { SampleTailRecursiveEqualIfSameLog2Floor(n, Helper.Power(2, k), k, 0, s); }
@@ -70,25 +70,6 @@ module UniformPowerOfTwoModel {
       }
     }
   }
-
-  function Log2Floor(n: nat): nat
-    requires n >= 1
-    decreases n
-  {
-    if n < 2
-    then 0
-    else Log2Floor(n / 2) + 1
-  }
-
-  lemma PowerGreater0(base: nat, exponent: nat)
-    requires base >= 2
-    ensures Helper.Power(base, exponent) >= 1
-  {}
-
-  lemma Power2OfLog2Floor(n: nat)
-    requires n >= 1
-    ensures Helper.Power(2, Log2Floor(n)) <= n < Helper.Power(2, Log2Floor(n) + 1)
-  {}
 
   // All numbers between consecutive powers of 2 behave the same as arguments to SampleTailRecursive
   lemma SampleTailRecursiveEqualIfSameLog2Floor(m: nat, n: nat, k: nat, u: nat, s: RandomNumberGenerator.RNG)
@@ -148,8 +129,8 @@ module UniformPowerOfTwoModel {
         Sample(Helper.Power(2, m + l))(s);
       }
     } else {
-      assert Ineq1: Helper.Power(2, l) >= 1 by { PowerGreater0(2, l); }
-      assert Helper.Power(2, m) >= 1 by { PowerGreater0(2, m); }
+      assert Ineq1: Helper.Power(2, l) >= 1 by { Helper.PowerGreater0(2, l); }
+      assert Helper.Power(2, m) >= 1 by { Helper.PowerGreater0(2, m); }
       calc {
         Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
         (var (u, s') := Sample(Helper.Power(2, m))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));

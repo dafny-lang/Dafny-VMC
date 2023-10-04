@@ -77,23 +77,23 @@ module UniformCorrectness {
     }
 
     assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
-      assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real) by {
-        assert i < Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) by {
-          UniformPowerOfTwo.Model.Power2OfLog2Floor(n);
+      assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+        assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
+          Helper.Power2OfLog2Floor(n);
         }
         UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i);
       }
-      assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real) by {
-        assert n < Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) by { UniformPowerOfTwo.Model.Power2OfLog2Floor(n); }
+      assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+        assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by { Helper.Power2OfLog2Floor(n); }
         UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n);
       }
       calc {
         RandomNumberGenerator.mu(e);
         { assert e == x.0; assert e1 == x.1; assert e2 == x.2; assert RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2); }
         RandomNumberGenerator.mu(e1) / RandomNumberGenerator.mu(e2);
-        { assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real); assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real); }
-        (1.0 / (Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real)) / ((n as real) / (Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real));
-        { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, UniformPowerOfTwo.Model.Log2Floor(2 * n)) as real); }
+        { assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real); assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real); }
+        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real));
+        { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2Floor(2 * n)) as real); }
         1.0 / (n as real);
       }
     }
