@@ -18,6 +18,6 @@ echo Generating Dafny documentation...
 $DAFNY doc dfyconfig.toml --output docs/dafny/dafny-doc/
 
 echo Generating Java documentation...
-$DAFNY translate java dfyconfig.toml
+$DAFNY translate java src/Dafny-VMC.dfy
 cp $DAFNYSOURCE/Source/DafnyRuntime/DafnyRuntimeJava/src/main/java/dafny/*.java src/Dafny-VMC-java/dafny/
 javadoc -d docs/java/java-doc/ -sourcepath src/Dafny-VMC-java -package DafnyVMC
