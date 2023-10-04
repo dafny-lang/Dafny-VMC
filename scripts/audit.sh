@@ -8,10 +8,4 @@ then
   exit 1
 fi
 
-echo '' > audit.log
-
-for file in `find ./src -type f -name '*.dfy' | xargs -n1 | sort | xargs`
-do
-  echo Auditing $file >> audit.log
-  $DAFNY audit $file | grep -v '{:termination false}\|{:extern}\|decreases *\|Dafny auditor completed\|Dafny program verifier\|No terms found to trigger on\|Compiled declaration has no body' | sed 's/.*Warning://' | sed 's/Possible.*//' >> audit.log
-done
+$DAFNY audit dfyconfig.toml | grep -v '{:termination false}\|{:extern}\|decreases *\|Dafny auditor completed\|Dafny program verifier\|No terms found to trigger on\|Compiled declaration has no body' | sed 's/Warning: //' | sed 's/Possible mitigation: .*//' | sed '/^$/d' | sort > audit.log
