@@ -131,142 +131,37 @@ module UniformPowerOfTwoCorrectness {
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
   {
     forall m: nat ensures UnifIsCorrect(n, k, m) {
-      if (n == 1 && k == 0) {
-        UnifCorrectnessCaseNOneKZero(m);
+      assert n >= 1 by { Helper.PowerGreater0(2, k); }
+      if k == 0 {
+        UnifCorrectnessCaseNOne(m);
       } else {
-        assert n > 0;
-        assert n > 1 ==> n / 2 > 0;
-        if k == 0 {
-          assert 0 < k < 2;
-          assert k == 1;
-          assert Helper.Power(2, k) == 2;
-          assert 2 <= n < 4;
-          assert n == 2;
-          assert n / 2 == 0;
-          if m % 2 == 0 {
-            UnifCorrectnessCaseKOneMEven(n, m);
-          } else {
-            assert m % 2 == 1;
-            UnifCorrectnessCaseKOneMOdd(n, m);
-          }
+        if m % 2 == 0 {
+          UnifCorrectnessCaseMEven(n, k, m / 2);
         } else {
-          assert Helper.Power(2, k - 1) <= n / 2 < Helper.Power(2, k);
-          var u := m / 2;
-          if m % 2 == 0 {
-            UnifCorrectnessCaseKGreaterOneMEven(n, k, m);
-          } else {
-            UnifCorrectnessCaseKGreaterOneMOdd(n, k, m);
-          }
+          UnifCorrectnessCaseMOdd(n, k, m / 2);
         }
       }
     }
   }
 
-  lemma UnifCorrectnessCaseNOneKZero(m: nat)
+  lemma UnifCorrectnessCaseNOne(m: nat)
     ensures UnifIsCorrect(1, 0, m)
   {
     assert Helper.Power(2, 0) == 1;
     if m == 0 {
-      assert (iset s | Model.Sample(1)(s).0 == m) == (iset s | true);
-      RandomNumberGenerator.RNGHasMeasure();
+      assert (iset s | Model.Sample(1)(s).0 == m) == (iset s);
     } else {
       assert (iset s | Model.Sample(1)(s).0 == m) == iset{};
-      RandomNumberGenerator.RNGHasMeasure();
     }
+    RandomNumberGenerator.RNGHasMeasure();
   }
 
-  lemma UnifCorrectnessCaseKOneMEven(n: nat, m: nat)
-    requires 2 <= n < 4
-    requires m % 2 == 0
-    ensures UnifIsCorrect(n, 1, m)
-  {
-    calc {
-      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-    == { SampleCaseSplit(n, m); }
-      RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 == m) / 2.0;
-    == { assert (iset s | 2*Model.Sample(n / 2)(s).0 == m) == (iset s | 0 == m); }
-      RandomNumberGenerator.mu(iset s | 0 == m) / 2.0;
-    }
-    if m < Helper.Power(2, 1) {
-      assert m == 0;
-      calc {
-        RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-      ==
-        RandomNumberGenerator.mu(iset s | 0 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG | 0 == m) == (iset s | true); }
-        RandomNumberGenerator.mu(iset s | true) / 2.0;
-      == { RandomNumberGenerator.RNGHasMeasure(); }
-        1.0 / 2.0;
-      ==
-        1.0 / (2 as real);
-      == { assert Helper.Power(2, 1) == 2; }
-        1.0 / (Helper.Power(2, 1) as real);
-      }
-    } else {
-      assert m != 0;
-      calc {
-        RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-      ==
-        RandomNumberGenerator.mu(iset s | 0 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG | 0 == m) == iset{}; }
-        RandomNumberGenerator.mu(iset {}) / 2.0;
-      == { RandomNumberGenerator.RNGHasMeasure(); }
-        0.0 / 2.0;
-      ==
-        0.0;
-      }
-    }
-  }
-
-  lemma UnifCorrectnessCaseKOneMOdd(n: nat, m: nat)
-    requires 2 <= n < 4
-    requires m % 2 == 1
-    ensures UnifIsCorrect(n, 1, m)
-  {
-    calc {
-      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-    == { SampleCaseSplit(n, m); }
-      RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) / 2.0;
-    == { assert (iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) == (iset s | 1 == m); }
-      RandomNumberGenerator.mu(iset s | 1 == m) / 2.0;
-    }
-    if m < Helper.Power(2, 1) {
-      assert m == 1;
-      calc {
-        RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-      ==
-        RandomNumberGenerator.mu(iset s | 1 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG | 1 == m) == (iset s | true); }
-        RandomNumberGenerator.mu(iset s | true) / 2.0;
-      == { RandomNumberGenerator.RNGHasMeasure(); Helper.DivisionSubstituteAlternativeReal(2.0, RandomNumberGenerator.mu(iset s | true), 1.0); }
-        1.0 / 2.0;
-      ==
-        1.0 / (Helper.Power(2, 1) as real);
-      }
-    } else {
-      assert m != 1;
-      calc {
-        RandomNumberGenerator.mu(iset s: RandomNumberGenerator.RNG | Model.Sample(n)(s).0 == m);
-      ==
-        RandomNumberGenerator.mu(iset s: RandomNumberGenerator.RNG | 1 == m) / 2.0;
-      == { assert (iset s: RandomNumberGenerator.RNG | 1 == m) == iset{}; }
-        RandomNumberGenerator.mu(iset {}) / 2.0;
-      == { RandomNumberGenerator.RNGHasMeasure(); }
-        0.0 / 2.0;
-      ==
-        0.0;
-      }
-    }
-  }
-
-  lemma UnifCorrectnessCaseKGreaterOneMEven(n: nat, k: nat, m: nat)
+  lemma UnifCorrectnessCaseMEven(n: nat, k: nat, u: nat)
     requires k >= 1
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
-    requires m % 2 == 0
-    ensures UnifIsCorrect(n, k, m)
+    ensures UnifIsCorrect(n, k, 2 * u)
   {
-    var u := m / 2;
-    assert m == 2 * u;
+    var m := 2 * u;
     calc {
       RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
     == { SampleCaseSplit(n, m); }
@@ -276,7 +171,6 @@ module UniformPowerOfTwoCorrectness {
     }
     if m < Helper.Power(2, k) {
       assert RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) == 1.0 / (Helper.Power(2, k - 1) as real) by {
-        assert u < Helper.Power(2, k - 1);
         UnifCorrectness(n / 2, k - 1);
         assert UnifIsCorrect(n / 2, k - 1, u);
       }
@@ -295,18 +189,15 @@ module UniformPowerOfTwoCorrectness {
       UnifCorrectness(n / 2, k - 1);
       assert UnifIsCorrect(n / 2, k - 1, u);
       assert RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == 0.0;
-      assert UnifIsCorrect(n / 2, k - 1, u);
     }
   }
 
-  lemma UnifCorrectnessCaseKGreaterOneMOdd(n: nat, k: nat, m: nat)
+  lemma UnifCorrectnessCaseMOdd(n: nat, k: nat, u: nat)
     requires k >= 1
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
-    requires m % 2 == 1
-    ensures UnifIsCorrect(n, k, m)
+    ensures UnifIsCorrect(n, k, 2 * u + 1)
   {
-    var u := m / 2;
-    assert m == 2 * u + 1;
+    var m := 2 * u + 1;
     calc {
       RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
     == { SampleCaseSplit(n, m); }
@@ -335,7 +226,6 @@ module UniformPowerOfTwoCorrectness {
       UnifCorrectness(n / 2, k - 1);
       assert UnifIsCorrect(n / 2, k - 1, u);
       assert RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == 0.0;
-      assert UnifIsCorrect(n, k, m);
     }
   }
 
