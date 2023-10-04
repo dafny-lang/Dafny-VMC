@@ -26,6 +26,11 @@ module Helper {
     else Log2Floor(n / 2) + 1
   }
 
+  lemma Log2FloorDef(n: nat)
+    requires n >= 1
+    ensures Log2Floor(2 * n) == Log2Floor(n) + 1
+  {}
+
 
   /*******
    Lemmas
