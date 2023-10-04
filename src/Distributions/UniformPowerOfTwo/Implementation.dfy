@@ -15,17 +15,15 @@ module UniformPowerOfTwoImplementation {
       modifies this
       ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      var k := 1;
       u := 0;
+      var n' := n;
 
-      while k <= n
-        decreases 2*n - k
-        invariant k >= 1
-        invariant Model.SampleAlternative(n)(old(s)) == Model.SampleAlternative(n, k, u)(s)
+      while n' > 0
+        invariant Model.SampleTailRecursive(n)(old(s)) == Model.SampleTailRecursive(n', u)(s)
       {
         var b := CoinSample();
-        k := 2*k;
         u := if b then 2*u + 1 else 2*u;
+        n' := n' / 2;
       }
       Model.SampleCorrespondence(n, old(s));
     }

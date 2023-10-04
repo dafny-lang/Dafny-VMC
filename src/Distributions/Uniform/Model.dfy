@@ -22,9 +22,19 @@ module UniformModel {
   function Sample(n: nat): Monad.Hurd<nat>
     requires n > 0
   {
-    UniformPowerOfTwo.Model.SampleTerminates(n);
+    SampleTerminates(n);
     WhileAndUntil.ProbUntil(UniformPowerOfTwo.Model.Sample(n-1), (x: nat) => x < n)
   }
+
+
+  lemma {:axiom} SampleTerminates(n: nat)
+    requires n > 0
+    ensures
+      var b := UniformPowerOfTwo.Model.Sample(n - 1);
+      var c := (x: nat) => x < n;
+      && Independence.IsIndepFn(b)
+      && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
+      && WhileAndUntil.ProbUntilTerminates(b, c)
 
   function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
