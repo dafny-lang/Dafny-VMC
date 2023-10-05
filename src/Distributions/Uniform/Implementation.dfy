@@ -7,10 +7,10 @@ include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module UniformImplementation {
+module Uniform.Implementation {
   import UniformPowerOfTwo
-  import Model = UniformModel
-  import Interface = UniformInterface
+  import Model
+  import Interface
 
   trait {:termination false} TraitFoundational extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)

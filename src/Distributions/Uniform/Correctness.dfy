@@ -13,7 +13,7 @@ include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
 include "Model.dfy"
 
-module UniformCorrectness {
+module Uniform.Correctness {
   import Helper
   import Monad
   import Independence
@@ -22,7 +22,7 @@ module UniformCorrectness {
   import WhileAndUntil
   import MeasureTheory
   import UniformPowerOfTwo
-  import Model = UniformModel
+  import Model
 
   /************
    Definitions

@@ -7,9 +7,9 @@ include "../Coin/Coin.dfy"
 include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
 include "Model.dfy"
 
-module UniformInterface {
+module Uniform.Interface {
   import Coin
-  import Model = UniformModel
+  import Model
   import UniformPowerOfTwo
 
   trait {:termination false} Trait extends Coin.Interface.Trait, UniformPowerOfTwo.Interface.Trait {
