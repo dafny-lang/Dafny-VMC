@@ -1,7 +1,9 @@
 include "Implementation.dfy"
 include "Interface.dfy"
 
-// module DiscreteGaussian {
-//   import Interface = DiscreteGaussianInterface
-//   import Implementation = DiscreteGaussianImplementation
-// }
+module DiscreteGaussian {
+
+  type T = Interface.Trait
+  type I = Implementation.Trait
+
+}

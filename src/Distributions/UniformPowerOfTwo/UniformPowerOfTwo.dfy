@@ -3,9 +3,9 @@ include "Implementation.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-// module UniformPowerOfTwo {
-//   import Interface = UniformPowerOfTwoInterface
-//   import Implementation = UniformPowerOfTwoImplementation
-//   import Correctness = UniformPowerOfTwoCorrectness
-//   import Model = UniformPowerOfTwoModel
-// }
+module UniformPowerOfTwo {
+
+  type T = Interface.Trait
+  type I = Implementation.Trait
+
+}

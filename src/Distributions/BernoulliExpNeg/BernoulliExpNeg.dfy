@@ -1,7 +1,9 @@
 include "Interface.dfy"
 include "Implementation.dfy"
 
-// module BernoulliExpNeg {
-//   import Interface = BernoulliExpNegInterface
-//   import Implementation = BernoulliExpNegImplementation
-// }
+module BernoulliExpNeg {
+
+  type T = Interface.Trait
+  type I = Implementation.Trait
+
+}

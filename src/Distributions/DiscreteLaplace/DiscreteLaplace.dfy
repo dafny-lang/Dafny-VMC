@@ -1,7 +1,9 @@
 include "Implementation.dfy"
 include "Interface.dfy"
 
-// module DiscreteLaplace {
-//   import Interface = DiscreteLaplaceInterface
-//   import Implementation = DiscreteLaplaceImplementation
-// }
+module DiscreteLaplace {
+
+  type T = Interface.Trait
+  type I = Implementation.Trait
+
+}
