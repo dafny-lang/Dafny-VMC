@@ -6,9 +6,9 @@
 include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 
-module DiscreteLaplaceImplementation {
+module DiscreteLaplace.Implementation {
   import Rationals
-  import Interface = DiscreteLaplaceInterface
+  import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
 
