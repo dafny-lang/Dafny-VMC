@@ -100,6 +100,18 @@ module Helper {
     ensures (x / z) + (y / z) == (x + y) / z
   {}
 
+  lemma DivSubstituteDividend(x: real, y: real, z: real)
+    requires y != 0.0
+    requires x == z
+    ensures x / y == z / y
+  {}
+
+  lemma DivSubstituteDivisor(x: real, y: real, z: real)
+    requires y != 0.0
+    requires y == z
+    ensures x / y == x / z
+  {}
+
   lemma DivDivToDivMul(x: real, y: real, z: real)
     requires y != 0.0
     requires z != 0.0
