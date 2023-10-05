@@ -7,10 +7,17 @@ include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
+module UniformExtern {
+
+  method {:extern "DRandomUniform", "Uniform"} ExternUniformSample(n: nat) returns (u: nat)
+
+}
+
 module Uniform.Implementation {
   import UniformPowerOfTwo
   import Model
   import Interface
+  import UniformExtern
 
   trait {:termination false} TraitFoundational extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
@@ -32,8 +39,6 @@ module Uniform.Implementation {
     }
   }
 
-  method {:extern "DRandomUniform", "Uniform"} ExternUniformSample(n: nat) returns (u: nat)
-
   trait {:termination false} TraitExtern extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
       modifies this
@@ -42,7 +47,7 @@ module Uniform.Implementation {
       ensures u < n
       ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      u := ExternUniformSample(n);
+      u := UniformExtern.ExternUniformSample(n);
       assume {:axiom} false;
     }
   }
