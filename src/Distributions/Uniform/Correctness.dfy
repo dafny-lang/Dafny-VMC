@@ -99,11 +99,11 @@ module UniformCorrectness {
         assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
           calc {
             i;
-            <
+          <
             n;
-            < { Helper.Power2OfLog2Floor(n); }
+          < { Helper.Power2OfLog2Floor(n); }
             Helper.Power(2, Helper.Log2Floor(n) + 1);
-            == { reveal Log2Double; }
+          == { reveal Log2Double; }
             Helper.Power(2, Helper.Log2Floor(2 * n));
           }
         }
