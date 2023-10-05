@@ -6,7 +6,7 @@
 include "../../Math/Rationals.dfy"
 include "../Bernoulli/Bernoulli.dfy"
 
-module BernoulliExpNegInterface {
+module BernoulliExpNeg.Interface {
   import Rationals
   import Bernoulli
 

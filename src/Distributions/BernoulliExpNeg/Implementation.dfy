@@ -6,9 +6,9 @@
 include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 
-module BernoulliExpNegImplementation {
+module BernoulliExpNeg.Implementation {
   import Rationals
-  import Interface = BernoulliExpNegInterface
+  import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
 

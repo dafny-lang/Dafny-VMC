@@ -10,7 +10,7 @@ include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 
-module UniformPowerOfTwoModel {
+module UniformPowerOfTwo.Model {
   import Helper
   import RandomNumberGenerator
   import Quantifier
