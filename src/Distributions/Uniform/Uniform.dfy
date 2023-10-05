@@ -5,8 +5,8 @@ include "Model.dfy"
 
 module Uniform {
 
-  type T = Interface.Trait
-  type If = Implementation.TraitFoundational
-  type Ie = Implementation.TraitExtern
+  trait T extends Interface.Trait {}
+  trait If extends Implementation.TraitFoundational {}
+  trait Ie extends Implementation.TraitExtern {}
 
 }

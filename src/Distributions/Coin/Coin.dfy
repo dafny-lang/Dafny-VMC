@@ -3,6 +3,6 @@ include "Model.dfy"
 
 module Coin {
 
-  type T = Interface.Trait
+  trait T extends Interface.Trait {}
 
 }
