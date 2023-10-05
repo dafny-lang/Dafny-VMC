@@ -135,7 +135,7 @@ module UniformPowerOfTwoCorrectness {
         var u := m / 2;
         calc {
           RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-        == { SampleCaseSplit(n, m); }
+        == { SampleProbRecursiveHalf(n, m); }
           RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 + (m % 2) == m) / 2.0;
         == { assert (iset s | 2 * Model.Sample(n / 2)(s).0 + (m % 2) == m) == (iset s | Model.Sample(n / 2)(s).0 == u); }
           RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
@@ -279,30 +279,6 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma SampleIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
-    requires n >= 2
-    ensures
-      var a := Model.Sample(n / 2)(s).0;
-      var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-      Model.Sample(n)(s).0 == m <==> (2*a + (if b then 1 else 0) == m)
-  {
-    var (a, s') := Model.Sample(n / 2)(s);
-    var (b, s'') := Monad.Deconstruct(s');
-    calc {
-      Model.Sample(n)(s).0;
-    ==
-      Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).0;
-    ==
-      Model.UnifStep(a)(s').0;
-    ==
-      Monad.Bind(Monad.Deconstruct, b => Monad.Return(if b then 2*a + 1 else 2*a))(s').0;
-    ==
-      Monad.Return(if b then 2*a + 1 else 2*a)(s'').0;
-    ==
-      if b then 2*a + 1 else 2*a;
-    }
-  }
-
   lemma SampleSetEquality(n: nat, m: nat)
     requires n >= 2
     ensures
@@ -313,11 +289,25 @@ module UniformPowerOfTwoCorrectness {
     var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
     forall s ensures Model.Sample(n)(s).0 == m <==> (2 * a_of(s) + (if b_of(s) then 1 else 0) == m) {
-      SampleIff(n, s, m);
+      var (a, s') := Model.Sample(n / 2)(s);
+      var (b, s'') := Monad.Deconstruct(s');
+      calc {
+        Model.Sample(n)(s).0;
+      ==
+        Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).0;
+      ==
+        Model.UnifStep(a)(s').0;
+      ==
+        Monad.Bind(Monad.Deconstruct, b => Monad.Return(if b then 2*a + 1 else 2*a))(s').0;
+      ==
+        Monad.Return(if b then 2*a + 1 else 2*a)(s'').0;
+      ==
+        if b then 2*a + 1 else 2*a;
+      }
     }
   }
 
-  lemma SampleCaseSplit(n: nat, m: nat)
+  lemma SampleProbRecursiveHalf(n: nat, m: nat)
     requires n >= 2
     ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
   {
@@ -377,7 +367,7 @@ module UniformPowerOfTwoCorrectness {
       Independence.AreIndepEventsConjunctElimination(e1, e2);
     }
 
-    assert Prob: 0.5 == RandomNumberGenerator.mu(e1) by {
+    assert ProbE1: 0.5 == RandomNumberGenerator.mu(e1) by {
       calc {
         0.5;
       ==
@@ -397,7 +387,7 @@ module UniformPowerOfTwoCorrectness {
       RandomNumberGenerator.mu(e1 * e2);
     == { reveal Indep; }
       RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2);
-    == { reveal Prob; }
+    == { reveal ProbE1; }
       0.5 * RandomNumberGenerator.mu(e2);
     ==
       RandomNumberGenerator.mu(e2) / 2.0;
@@ -407,5 +397,4 @@ module UniformPowerOfTwoCorrectness {
       RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0;
     }
   }
-
 }
