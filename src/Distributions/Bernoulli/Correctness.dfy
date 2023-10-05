@@ -3,14 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/MeasureTheory.dfy"
-include "../../Math/Helper.dfy"
-include "../Uniform/Uniform.dfy"
-include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
-include "../../ProbabilisticProgramming/Independence.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-include "Model.dfy"
-
 module Bernoulli.Correctness {
   import MeasureTheory
   import Helper

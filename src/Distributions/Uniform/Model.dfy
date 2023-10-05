@@ -3,13 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-include "../../ProbabilisticProgramming/Independence.dfy"
-include "../../ProbabilisticProgramming/Quantifier.dfy"
-include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
-include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
-
 module Uniform.Model {
   import RandomNumberGenerator
   import Quantifier

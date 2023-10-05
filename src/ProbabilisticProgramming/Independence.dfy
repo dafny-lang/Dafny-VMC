@@ -3,10 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "RandomNumberGenerator.dfy"
-include "Monad.dfy"
-include "../Math/MeasureTheory.dfy"
-
 module Independence {
   import Monad
   import RandomNumberGenerator

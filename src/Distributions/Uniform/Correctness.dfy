@@ -3,16 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Helper.dfy"
-include "../../Math/MeasureTheory.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-include "../../ProbabilisticProgramming/Independence.dfy"
-include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
-include "../../ProbabilisticProgramming/Quantifier.dfy"
-include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
-include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
-include "Model.dfy"
-
 module Uniform.Correctness {
   import Helper
   import Monad

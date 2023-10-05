@@ -3,9 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-
 module Coin.Model {
   import RandomNumberGenerator
   import Monad

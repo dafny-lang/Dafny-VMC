@@ -3,10 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "../BernoulliExpNeg/BernoulliExpNeg.dfy"
-include "../DiscreteLaplace/DiscreteLaplace.dfy"
-
 module DiscreteGaussian.Interface {
   import Rationals
   import BernoulliExpNeg

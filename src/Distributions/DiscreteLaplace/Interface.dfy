@@ -3,11 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "../Bernoulli/Bernoulli.dfy"
-include "../Uniform/Uniform.dfy"
-include "../BernoulliExpNeg/BernoulliExpNeg.dfy"
-
 module DiscreteLaplace.Interface {
   import Rationals
   import Bernoulli

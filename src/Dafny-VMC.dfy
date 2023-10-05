@@ -3,16 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-// RUN: %verify "%s"
-
-include "Distributions/Coin/Coin.dfy"
-include "Distributions/Bernoulli/Bernoulli.dfy"
-include "Distributions/BernoulliExpNeg/BernoulliExpNeg.dfy"
-include "Distributions/DiscreteGaussian/DiscreteGaussian.dfy"
-include "Distributions/DiscreteLaplace/DiscreteLaplace.dfy"
-include "Distributions/UniformPowerOfTwo/UniformPowerOfTwo.dfy"
-include "Distributions/Uniform/Uniform.dfy"
-
 module DafnyVMC {
   import Coin
   import Bernoulli

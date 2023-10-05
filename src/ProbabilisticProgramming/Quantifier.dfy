@@ -3,8 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "RandomNumberGenerator.dfy"
-
 module Quantifier {
   import RandomNumberGenerator
 
