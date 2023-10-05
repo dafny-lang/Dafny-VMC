@@ -1,4 +1,4 @@
-includes = ["src/**/*.dfy", "src/*.dfy", "tests/Tests.dfy"]
+includes = ["src/**/*.dfy", "tests/*.dfy", "docs/dafny/*.dfy"]
 excludes = []
 
 [options]

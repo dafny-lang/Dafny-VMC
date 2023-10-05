@@ -3,10 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-// RUN: %verify "%s"
-
-include "../../src/Dafny-VMC.dfy"
-
 module RandomExamples {
   import Rationals
   import DafnyVMC
