@@ -25,7 +25,7 @@ echo Running $TARGET_LANG documentation...
 echo "Building docs/dafny/ExamplesFoundational.dfy..." 
 $DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesFoundational.dfy:" 
-if [ $TARGET_LANG==cs ]
+if [ "$TARGET_LANG" = "cs" ]
 then
   dotnet docs/dafny/ExamplesFoundational.dll
 else
@@ -35,7 +35,7 @@ fi
 echo "Building docs/dafny/ExamplesExternUniform.dfy..." 
 $DAFNY build docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesExternUniform.dfy:" 
-if [ $TARGET_LANG==cs ]
+if [ "$TARGET_LANG" = "cs" ]
 then
   dotnet docs/dafny/ExamplesExternUniform.dll
 else
