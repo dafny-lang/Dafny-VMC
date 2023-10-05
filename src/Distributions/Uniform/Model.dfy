@@ -16,18 +16,27 @@ module Uniform.Model {
     requires n > 0
   {
     SampleTerminates(n);
-    WhileAndUntil.ProbUntil(UniformPowerOfTwo.Model.Sample(2 * n), (x: nat) => x < n)
+    WhileAndUntil.ProbUntil(Proposal(n), Accept(n))
   }
 
+  function Proposal(n: nat): Monad.Hurd<nat>
+    requires n > 0
+  {
+    UniformPowerOfTwo.Model.Sample(2 * n)
+  }
+
+  function Accept(n: nat): nat -> bool
+    requires n > 0
+  {
+    (m: nat) => m < n
+  }
 
   lemma {:axiom} SampleTerminates(n: nat)
     requires n > 0
     ensures
-      var b := UniformPowerOfTwo.Model.Sample(2 * n);
-      var c := (x: nat) => x < n;
-      && Independence.IsIndepFn(b)
-      && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
-      && WhileAndUntil.ProbUntilTerminates(b, c)
+      && Independence.IsIndepFn(Proposal(n))
+      && Quantifier.ExistsStar(WhileAndUntil.ProposalIsAccepted(Proposal(n), Accept(n)))
+      && WhileAndUntil.ProbUntilTerminates(Proposal(n), Accept(n))
 
   function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
