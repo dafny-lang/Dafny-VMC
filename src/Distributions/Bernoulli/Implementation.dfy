@@ -7,10 +7,10 @@ include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 include "Model.dfy"
 
-module BernoulliImplementation {
+module Bernoulli.Implementation {
   import Rationals
-  import Model = BernoulliModel
-  import Interface = BernoulliInterface
+  import Model
+  import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
 
