@@ -29,7 +29,7 @@ if [ "$TARGET_LANG" = "cs" ]
 then
   dotnet docs/dafny/ExamplesFoundational.dll
 else
-  java -jar ExamplesFoundational.jar
+  java -jar docs/dafny/ExamplesFoundational.jar
 fi
 
 echo "Building docs/dafny/ExamplesExternUniform.dfy..." 
@@ -39,5 +39,5 @@ if [ "$TARGET_LANG" = "cs" ]
 then
   dotnet docs/dafny/ExamplesExternUniform.dll
 else
-  java -jar ExamplesExternUniform.jar
+  java -jar docs/dafny/ExamplesExternUniform.jar
 fi
