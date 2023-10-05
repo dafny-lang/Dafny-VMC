@@ -20,6 +20,8 @@ time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TAR
 echo "Running tests/TestsExternUniform.dfy:"
 time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
 
-echo Running $TARGET_LANG documentation...
-echo "Running docs/dafny/ExamplesFoundational.dfy and docs/dafny/ExamplesExternUniform.dfy" 
-$DAFNY run dfyconfig.toml --target:$TARGET_LANG --input src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG --no-verify
+echo Building $TARGET_LANG documentation...
+echo "Building docs/dafny/ExamplesFoundational.dfy:" 
+$DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
+echo "Building docs/dafny/ExamplesExternUniform.dfy" 
+$DAFNY build docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
