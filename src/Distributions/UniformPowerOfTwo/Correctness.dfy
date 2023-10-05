@@ -319,33 +319,37 @@ module UniformPowerOfTwoCorrectness {
 
   lemma SampleCaseSplit(n: nat, m: nat)
     requires n >= 2
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 + m % 2 == m) / 2.0
+    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
   {
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
     var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    var A: iset<nat> := (iset x | 2*x + m % 2 == m);
-    var E: iset<RandomNumberGenerator.RNG> := (iset s | Monad.Deconstruct(s).0 <==> m % 2 == 1);
+    var A: iset<nat> := (iset x | x == m / 2);
+    var E: iset<RandomNumberGenerator.RNG> := (iset s | m % 2 == if Monad.Deconstruct(s).0 then 1 else 0);
     var f := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).1;
 
     var e1 := (iset s | Model.Sample(n / 2)(s).1 in E);
     var e2 := (iset s | Model.Sample(n / 2)(s).0 in A);
+    var e3 := (iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m);
 
-    assert Eq1: (iset s | b_of(s) <==> m % 2 == 1) == e1 by {
-      forall s ensures (b_of(s) <==> m % 2 == 1) <==> Model.Sample(n / 2)(s).1 in E {
+    assert SplitEvent: e3 == e1 * e2 by {
+      forall s ensures s in e3 <==> s in e1 && s in e2 {
+        calc {
+          s in e3;
+          2*a_of(s) + (if b_of(s) then 1 else 0) == m;
+          (m % 2 == if b_of(s) then 1 else 0) && a_of(s) == m / 2;
+          s in e1 && s in e2;
+        }
       }
     }
 
-    assert Eq2: (iset s | 2*a_of(s) + m % 2 == m) == e2 by {
-      forall s ensures 2*a_of(s) + m % 2 == m <==> Model.Sample(n / 2)(s).0 in A {
+    assert Eq2: (iset s | a_of(s) == m / 2) == e2 by {
+      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).0 in A {
       }
     }
 
-    assert SplitEvent: (iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m) == (iset s | b_of(s) <==> m % 2 == 1) * (iset s | 2*a_of(s) + m % 2 == m) by {
-      assume false;
-    }
-
-    assert Eq3: (iset s | 2*a_of(s) + m % 2 == m) == (iset s | 2*Model.Sample(n / 2)(s).0 + m % 2 == m) by {
-      forall s ensures 2*a_of(s) + m % 2 == m <==> 2*Model.Sample(n / 2)(s).0 + m % 2 == m {
+    assert Eq3: (iset s | a_of(s) == m / 2) == (iset s | Model.Sample(n / 2)(s).0 == m / 2) by {
+      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).0 == m / 2 {
+        assert a_of(s) == Model.Sample(n / 2)(s).0;
       }
     }
 
@@ -385,28 +389,22 @@ module UniformPowerOfTwoCorrectness {
       }
     }
 
-    assert Prob2: RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2) == 0.5 * RandomNumberGenerator.mu(e2) by {
-      reveal Prob;
-    }
-
     calc {
       RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
     == { SampleSetEquality(n, m); }
-      RandomNumberGenerator.mu(iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m);
+      RandomNumberGenerator.mu(e3);
     == { reveal SplitEvent; }
-      RandomNumberGenerator.mu((iset s | b_of(s) <==> m % 2 == 1) * (iset s | 2*a_of(s) + m % 2 == m));
-    == { reveal Eq1; reveal Eq2; }
       RandomNumberGenerator.mu(e1 * e2);
     == { reveal Indep; }
       RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2);
-    == { reveal Prob2; }
+    == { reveal Prob; }
       0.5 * RandomNumberGenerator.mu(e2);
     ==
       RandomNumberGenerator.mu(e2) / 2.0;
     == { reveal Eq2; }
-      RandomNumberGenerator.mu(iset s | 2*a_of(s) + m % 2 == m) / 2.0;
+      RandomNumberGenerator.mu(iset s | a_of(s) == m / 2) / 2.0;
     == { reveal Eq3; }
-      RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + m % 2 == m) / 2.0;
+      RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0;
     }
   }
 
