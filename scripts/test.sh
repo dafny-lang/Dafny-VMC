@@ -27,7 +27,7 @@ $DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/inter
 echo "Executing compiled docs/dafny/ExamplesFoundational.dfy:" 
 if [ $TARGET_LANG="cs" ]
 then
-  dotnet docs/dafny/ExamplesFoundational.dll
+  dotnet %cd%docs/dafny/ExamplesFoundational.dll
 elif [ $TARGET_LANG="java" ]
 then
   echo "Add this part"
@@ -41,7 +41,7 @@ $DAFNY build docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG src/inte
 echo "Executing compiled docs/dafny/ExamplesExternUniform.dfy:" 
 if [ $TARGET_LANG="cs" ]
 then
-  dotnet docs/dafny/ExamplesExternUniform.dll
+  dotnet %cd%/docs/dafny/ExamplesExternUniform.dll
 elif [ $TARGET_LANG="java" ]
 then
   echo "Add this part."
