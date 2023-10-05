@@ -94,7 +94,7 @@ module Bernoulli.Correctness {
 
       assert A1: e1 in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e1) == 1.0 / (n as real) by {
         Uniform.Correctness.UniformFullCorrectness(n, m-1);
-        assert e1 == Uniform.Correctness.UniformFullCorrectnessHelper(n, m-1);
+        assert e1 == Uniform.Correctness.SampleEquals(n, m-1);
       }
 
       assert A2: e2 in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e2) == (m-1) as real / n as real by {

@@ -28,7 +28,7 @@ module Uniform.Correctness {
    Definitions
   ************/
 
-  ghost function UniformFullCorrectnessHelper(n: nat, i: nat): iset<RandomNumberGenerator.RNG>
+  ghost function SampleEquals(n: nat, i: nat): iset<RandomNumberGenerator.RNG>
     requires 0 <= i < n
   {
     iset s | Model.Sample(n)(s).0 == i
@@ -42,89 +42,102 @@ module Uniform.Correctness {
   // Equation (4.12) / PROB_BERN_UNIFORM
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
-    ensures UniformFullCorrectnessHelper(n, i) in RandomNumberGenerator.event_space
-    ensures RandomNumberGenerator.mu(UniformFullCorrectnessHelper(n, i)) == 1.0 / (n as real)
+    ensures SampleEquals(n, i) in RandomNumberGenerator.event_space
+    ensures RandomNumberGenerator.mu(SampleEquals(n, i)) == 1.0 / (n as real)
   {
-    var e := UniformFullCorrectnessHelper(n, i);
-    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
-    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i;
-    var e1 := iset s {:trigger UniformPowerOfTwo.Model.Sample(2 * n)(s).0} | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i;
-    var e2 := iset s {:trigger UniformPowerOfTwo.Model.Sample(2 * n)(s).0} | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
-    var b := UniformPowerOfTwo.Model.Sample(2 * n);
-    var c := (x: nat) => x < n;
-    var d := (x: nat) => x == i;
+    var equalsI := (x: nat) => x == i;
 
-    assert Independence.IsIndepFn(b) && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c)) by {
+    assert Independence.IsIndepFn(Model.Proposal(n)) && Quantifier.ExistsStar(WhileAndUntil.ProposalIsAccepted(Model.Proposal(n), Model.Accept(n))) by {
       Model.SampleTerminates(n);
     }
 
-    assert WhileAndUntil.ProbUntilTerminates(b, c) by {
-      WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
-    }
+    WhileAndUntil.ProbUntilProbabilityFraction(Model.Proposal(n), Model.Accept(n), equalsI);
+    var eventResultEqualsI := WhileAndUntil.UntilLoopResultHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
+    var eventProposalAcceptedAndEqualsI := WhileAndUntil.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
+    var proposalAccepted := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
 
-    var x := WhileAndUntil.ConstructEvents(b, c, d);
-    WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
-    assert Fraction: RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2);
+    assert Fraction: RandomNumberGenerator.mu(eventResultEqualsI) == RandomNumberGenerator.mu(eventProposalAcceptedAndEqualsI) / RandomNumberGenerator.mu(proposalAccepted);
 
-    assert X0: x.0 == e;
-    assert X1: x.1 == e1 by {
-      forall s ensures s in x.1 <==> s in e1 {
-        calc {
-          s in x.1;
-          d(b(s).0) && c(b(s).0);
-          (UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i);
-          s in e1;
-        }
-      }
-    }
-    assert X2: x.2 == e2 by {
-      forall s ensures s in x.2 <==> s in e2 {
-        calc {
-          s in x.2;
-          c(b(s).0);
-          UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
-          s in e2;
-        }
+    assert Eq: eventResultEqualsI == SampleEquals(n, i) by {
+      forall s ensures s in eventResultEqualsI <==> s in SampleEquals(n, i) {
+        assert s in eventResultEqualsI <==> s in SampleEquals(n, i);
       }
     }
 
-    assert Log2Double: Helper.Log2Floor(2 * n) == Helper.Log2Floor(n) + 1 by { Helper.Log2FloorDef(n); }
-
-    assert UniformFullCorrectnessHelper(n, i) in RandomNumberGenerator.event_space by {
-      reveal X0;
+    assert SampleEquals(n, i) in RandomNumberGenerator.event_space by {
+      reveal Eq;
     }
 
-    assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
-      assert ProbE1: RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
-        assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
-          calc {
-            i;
-          <
-            n;
-          < { Helper.Power2OfLog2Floor(n); }
-            Helper.Power(2, Helper.Log2Floor(n) + 1);
-          == { reveal Log2Double; }
-            Helper.Power(2, Helper.Log2Floor(2 * n));
-          }
-        }
-        UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i);
-      }
-      assert ProbE2: RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
-        assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
-          Helper.Power2OfLog2Floor(n);
-          reveal Log2Double;
-        }
-        UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n);
-      }
+    assert RandomNumberGenerator.mu(SampleEquals(n, i)) == 1.0 / (n as real) by {
       calc {
-        RandomNumberGenerator.mu(e);
-        { reveal X0; reveal X1; reveal X2; reveal Fraction; }
-        RandomNumberGenerator.mu(e1) / RandomNumberGenerator.mu(e2);
-        { reveal ProbE1; reveal ProbE2; }
+        RandomNumberGenerator.mu(SampleEquals(n, i));
+        { reveal Eq; }
+        RandomNumberGenerator.mu(eventResultEqualsI);
+        { reveal Fraction; }
+        RandomNumberGenerator.mu(eventProposalAcceptedAndEqualsI) / RandomNumberGenerator.mu(proposalAccepted);
+        { ProbabilityProposalAcceptedAndEqualsI(n, i); }
+        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / RandomNumberGenerator.mu(proposalAccepted);
+        { ProbabilityProposalAccepted(n); }
         (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real));
         { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2Floor(2 * n)) as real); }
         1.0 / (n as real);
       }
+    }
+  }
+
+  lemma ProbabilityProposalAcceptedAndEqualsI(n: nat, i: nat)
+    requires 0 <= i < n
+    ensures
+      var e := WhileAndUntil.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
+      RandomNumberGenerator.mu(e) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+  {
+    var e := WhileAndUntil.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
+    assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
+      calc {
+        i;
+      <
+        n;
+      < { Helper.Power2OfLog2Floor(n); }
+        Helper.Power(2, Helper.Log2Floor(n) + 1);
+      == { Helper.Log2FloorDef(n); }
+        Helper.Power(2, Helper.Log2Floor(2 * n));
+      }
+    }
+    assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i) by {
+      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i {}
+    }
+    UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i);
+  }
+
+  lemma ProbabilityProposalAccepted(n: nat)
+    requires n >= 1
+    ensures
+      var e := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
+      RandomNumberGenerator.mu(e) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+  {
+    var e := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
+    calc {
+      n;
+      < { Helper.Power2OfLog2Floor(n); }
+      Helper.Power(2, Helper.Log2Floor(n) + 1);
+      == { Helper.Log2FloorDef(n); }
+      Helper.Power(2, Helper.Log2Floor(2 * n));
+    }
+    assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n) by {
+      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n {
+        calc {
+          s in e;
+          Model.Accept(n)(Model.Proposal(n)(s).0);
+          UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
+        }
+      }
+    }
+    calc {
+      RandomNumberGenerator.mu(e);
+      { reveal Equal; }
+      RandomNumberGenerator.mu(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
+      { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
+      (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
     }
   }
 
@@ -139,7 +152,7 @@ module Uniform.Correctness {
     assert 0 <= i - a < b - a by {
       assert a <= i < b;
     }
-    var e' := UniformFullCorrectnessHelper(b - a, i - a);
+    var e' := SampleEquals(b - a, i - a);
     assert e' in RandomNumberGenerator.event_space by { UniformFullCorrectness(b - a, i - a); }
     assert RandomNumberGenerator.mu(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
     var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
