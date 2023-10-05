@@ -66,17 +66,9 @@ module UniformPowerOfTwoCorrectness {
       }
       assert e == preimage;
     }
-
-    if k == 0 {
-      assert n == 1;
-      UnifCorrectness(n, k);
-      assert UnifIsCorrect(n, k, m);
-    } else {
-      assert n > 1;
-      Helper.Power2OfLog2Floor(n);
-      UnifCorrectness(n, k);
-      assert UnifIsCorrect(n, k, m);
-    }
+    Helper.Power2OfLog2Floor(n);
+    UnifCorrectness(n, k);
+    assert UnifIsCorrect(n, k, m);
   }
 
   // See PROB_BERN_UNIF_LT in HOL implementation.
@@ -133,99 +125,44 @@ module UniformPowerOfTwoCorrectness {
     forall m: nat ensures UnifIsCorrect(n, k, m) {
       assert n >= 1 by { Helper.PowerGreater0(2, k); }
       if k == 0 {
-        UnifCorrectnessCaseNOne(m);
-      } else {
-        if m % 2 == 0 {
-          UnifCorrectnessCaseMEven(n, k, m / 2);
+        if m == 0 {
+          assert (iset s | Model.Sample(1)(s).0 == m) == (iset s);
         } else {
-          UnifCorrectnessCaseMOdd(n, k, m / 2);
+          assert (iset s | Model.Sample(1)(s).0 == m) == iset{};
+        }
+        RandomNumberGenerator.RNGHasMeasure();
+      } else {
+        var u := m / 2;
+        calc {
+          RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
+        == { SampleCaseSplit(n, m); }
+          RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 + (m % 2) == m) / 2.0;
+        == { assert (iset s | 2 * Model.Sample(n / 2)(s).0 + (m % 2) == m) == (iset s | Model.Sample(n / 2)(s).0 == u); }
+          RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+        }
+        if m < Helper.Power(2, k) {
+          assert RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) == 1.0 / (Helper.Power(2, k - 1) as real) by {
+            assert u < Helper.Power(2, k - 1);
+            UnifCorrectness(n / 2, k - 1);
+            assert UnifIsCorrect(n / 2, k - 1, u);
+          }
+          calc {
+            RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
+          ==
+            RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+          ==
+            (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
+          == { Helper.PowerOfTwoLemma(k - 1); }
+            1.0 / (Helper.Power(2, k) as real);
+          }
+          assert UnifIsCorrect(n, k, m);
+        } else {
+          assert u >= Helper.Power(2, k - 1);
+          UnifCorrectness(n / 2, k - 1);
+          assert UnifIsCorrect(n / 2, k - 1, u);
+          assert RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == 0.0;
         }
       }
-    }
-  }
-
-  lemma UnifCorrectnessCaseNOne(m: nat)
-    ensures UnifIsCorrect(1, 0, m)
-  {
-    assert Helper.Power(2, 0) == 1;
-    if m == 0 {
-      assert (iset s | Model.Sample(1)(s).0 == m) == (iset s);
-    } else {
-      assert (iset s | Model.Sample(1)(s).0 == m) == iset{};
-    }
-    RandomNumberGenerator.RNGHasMeasure();
-  }
-
-  lemma UnifCorrectnessCaseMEven(n: nat, k: nat, u: nat)
-    requires k >= 1
-    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
-    ensures UnifIsCorrect(n, k, 2 * u)
-  {
-    var m := 2 * u;
-    calc {
-      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-    == { SampleCaseSplit(n, m); }
-      RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 == m) / 2.0;
-    == { assert (iset s | 2 * Model.Sample(n / 2)(s).0 == m) == (iset s | Model.Sample(n / 2)(s).0 == u); }
-      RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
-    }
-    if m < Helper.Power(2, k) {
-      assert RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) == 1.0 / (Helper.Power(2, k - 1) as real) by {
-        UnifCorrectness(n / 2, k - 1);
-        assert UnifIsCorrect(n / 2, k - 1, u);
-      }
-      calc {
-        RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-      ==
-        RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
-      ==
-        (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
-      == { Helper.PowerOfTwoLemma(k - 1); }
-        1.0 / (Helper.Power(2, k) as real);
-      }
-      assert UnifIsCorrect(n / 2, k - 1, u);
-    } else {
-      assert u >= Helper.Power(2, k - 1);
-      UnifCorrectness(n / 2, k - 1);
-      assert UnifIsCorrect(n / 2, k - 1, u);
-      assert RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == 0.0;
-    }
-  }
-
-  lemma UnifCorrectnessCaseMOdd(n: nat, k: nat, u: nat)
-    requires k >= 1
-    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
-    ensures UnifIsCorrect(n, k, 2 * u + 1)
-  {
-    var m := 2 * u + 1;
-    calc {
-      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-    == { SampleCaseSplit(n, m); }
-      RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 + 1 == m) / 2.0;
-    == { assert (iset s | 2 * Model.Sample(n / 2)(s).0 + 1 == m) == (iset s | Model.Sample(n / 2)(s).0 == u); }
-      RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
-    }
-    if m < Helper.Power(2, k) {
-      assert RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) == 1.0 / (Helper.Power(2, k - 1) as real) by {
-        assert u < Helper.Power(2, k - 1);
-        UnifCorrectness(n / 2, k - 1);
-        assert UnifIsCorrect(n / 2, k - 1, u);
-      }
-      calc {
-        RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-      ==
-        RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
-      ==
-        (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
-      == { Helper.PowerOfTwoLemma(k - 1); }
-        1.0 / (Helper.Power(2, k) as real);
-      }
-      assert UnifIsCorrect(n, k, m);
-    } else {
-      assert u >= Helper.Power(2, k - 1);
-      UnifCorrectness(n / 2, k - 1);
-      assert UnifIsCorrect(n / 2, k - 1, u);
-      assert RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == 0.0;
     }
   }
 
@@ -342,14 +279,12 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma SampleCorrectnessIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
+  lemma SampleIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
     requires n >= 2
     ensures
       var a := Model.Sample(n / 2)(s).0;
       var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-      Model.Sample(n)(s).0 == m
-      <==>
-      (b && 2*a + 1 == m) || (!b && 2*a == m)
+      Model.Sample(n)(s).0 == m <==> (2*a + (if b then 1 else 0) == m)
   {
     var (a, s') := Model.Sample(n / 2)(s);
     var (b, s'') := Monad.Deconstruct(s');
@@ -368,218 +303,49 @@ module UniformPowerOfTwoCorrectness {
     }
   }
 
-  lemma SampleCorrectnessEvenCaseIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
-    requires m % 2 == 0
-    requires n >= 2
-    ensures
-      var a := Model.Sample(n / 2)(s).0;
-      var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-      Model.Sample(n)(s).0 == m <==> (!b && 2*a == m)
-  {
-    var a: nat := Model.Sample(n / 2)(s).0;
-    var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    if Model.Sample(n)(s).0 == m {
-      if (b && 2*a + 1 == m) {
-        assert m % 2 == 1 by {
-          Helper.DivModAddMultiple(2, 1, a);
-        }
-        assert m % 2 == 0;
-        assert false;
-      }
-      assert !(b && 2*a + 1 == m) ==> (!b && 2*a == m) by {
-        SampleCorrectnessIff(n, s, m);
-        assert (b && 2*a + 1 == m) || (!b && 2*a == m);
-      }
-    }
-    if (!b && 2*a == m) {
-      assert (b && 2*a + 1 == m) || (!b && 2*a == m);
-      assert Model.Sample(n)(s).0 == m by { SampleCorrectnessIff(n, s, m); }
-    }
-  }
-
-  lemma SampleOddCaseIff(n: nat, s: RandomNumberGenerator.RNG, m: nat)
-    requires m % 2 == 1
-    requires n >= 2
-    ensures
-      var a := Model.Sample(n / 2)(s).0;
-      var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-      Model.Sample(n)(s).0 == m <==> (b && 2*a + 1 == m)
-  {
-    var a := Model.Sample(n / 2)(s).0;
-    var b := Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    if Model.Sample(n)(s).0 == m {
-      if (!b && 2*a == m) {
-        assert m % 2 == 0 by { assert m / 2 == a; }
-        assert m % 2 == 1;
-      }
-      assert !(!b && 2*a == m) ==> (b && 2*a + 1 == m) by {
-        SampleCorrectnessIff(n, s, m);
-        assert (b && 2*a + 1 == m) || (!b && 2*a == m);
-      }
-    }
-    if (b && 2*a + 1 == m) {
-      assert (b && 2*a + 1 == m) || (!b && 2*a == m);
-      assert Model.Sample(n)(s).0 == m by { SampleCorrectnessIff(n, s, m); }
-    }
-  }
-
-  lemma SampleEvenCaseSetEquality(n: nat, m: nat)
-    requires m % 2 == 0
+  lemma SampleSetEquality(n: nat, m: nat)
     requires n >= 2
     ensures
       var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
       var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-      (iset s | Model.Sample(n)(s).0 == m) == (iset s | !b_of(s) && 2*a_of(s) == m)
+      (iset s | Model.Sample(n)(s).0 == m) == (iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m)
   {
     var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    forall s ensures Model.Sample(n)(s).0 == m <==> (!b_of(s) && 2*a_of(s) == m) {
-      SampleCorrectnessEvenCaseIff(n, s, m);
+    forall s ensures Model.Sample(n)(s).0 == m <==> (2 * a_of(s) + (if b_of(s) then 1 else 0) == m) {
+      SampleIff(n, s, m);
     }
   }
 
-  lemma SampleOddCaseSetEquality(n: nat, m: nat)
-    requires m % 2 == 1
+  lemma SampleCaseSplit(n: nat, m: nat)
     requires n >= 2
-    ensures
-      var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-      var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-      (iset s | Model.Sample(n)(s).0 == m) == (iset s | b_of(s) && 2*a_of(s) + 1 == m)
-  {
-    var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    forall s ensures Model.Sample(n)(s).0 == m <==> (b_of(s) && 2*a_of(s) + 1 == m) {
-      SampleOddCaseIff(n, s, m);
-    }
-  }
-
-  lemma {:vcs_split_on_every_assert} SampleEvenCase(n: nat, m: nat)
-    requires m % 2 == 0
-    requires n >= 2
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 == m) / 2.0
+    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 + m % 2 == m) / 2.0
   {
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
     var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    var A: iset<nat> := (iset x | 2*x == m);
-    var E: iset<RandomNumberGenerator.RNG> := (iset s | Monad.Deconstruct(s).0 == false);
-    var f := Sample1(n / 2);
-
-    var e1 := (iset s | Sample1(n / 2)(s) in E);
-    var e2 := (iset s | Model.Sample(n / 2)(s).0 in A);
-
-    assert Eq1: (iset s | !b_of(s)) == e1 by {
-      forall s ensures !b_of(s) <==> Model.Sample(n / 2)(s).1 in E {
-      }
-    }
-
-    assert Eq2: (iset s | 2*a_of(s) == m) == e2 by {
-      forall s ensures 2*a_of(s) == m <==> Model.Sample(n / 2)(s).0 in A {
-      }
-    }
-
-    assert Eq3: (iset s | 2*a_of(s) == m) == (iset s | 2*Model.Sample(n / 2)(s).0 == m) by {
-      forall s ensures 2*a_of(s) == m <==> 2*Model.Sample(n / 2)(s).0 == m {
-      }
-    }
-
-    assert Eq4: e1 == MeasureTheory.PreImage(Sample1(n / 2), E) by {
-      forall s ensures Model.Sample(n / 2)(s).1 in E <==> f(s) in E {
-      }
-    }
-
-    assert EMeasure: E in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(E) == 0.5 by {
-      assert E == (iset s | Monad.Head(s) == false);
-      Monad.HeadIsMeasurable(false);
-    }
-
-    assert Indep: RandomNumberGenerator.mu(e1 * e2) == RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2) by {
-      assert e1 == (iset s | Model.Sample(n / 2)(s).1 in E) by {
-        forall s ensures s in e1 <==> Model.Sample(n / 2)(s).1 in E {
-        }
-      }
-      assert MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2) by {
-        assert Independence.IsIndepFunction(Model.Sample(n / 2)) by {
-          assert Independence.IsIndepFn(Model.Sample(n / 2)) by {
-            SampleIsIndepFn(n / 2);
-          }
-          Independence.IsIndepFnImpliesIsIndepFunction(Model.Sample(n / 2));
-        }
-        assert E in RandomNumberGenerator.event_space by { reveal EMeasure; }
-        assert Independence.IsIndepFunctionCondition(Model.Sample(n / 2), A, E);
-      }
-      Independence.AreIndepEventsConjunctElimination(e1, e2);
-    }
-
-    assert Prob: 0.5 == RandomNumberGenerator.mu(e1) by {
-      calc {
-        0.5;
-      == { reveal EMeasure; }
-        RandomNumberGenerator.mu(E);
-      == { reveal EMeasure; SampleIsMeasurePreserving(n / 2); }
-        RandomNumberGenerator.mu(MeasureTheory.PreImage(Sample1(n / 2), E));
-      == { reveal Eq4; }
-        RandomNumberGenerator.mu(e1);
-      }
-    }
-
-    assert Inter: (iset s | !b_of(s) && 2*a_of(s) == m) == (iset s | !b_of(s)) * (iset s | 2*a_of(s) == m) by {
-      forall s ensures !b_of(s) && 2*a_of(s) == m <==> !b_of(s) && 2*a_of(s) == m {
-      }
-    }
-
-    assert MulSub: RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2) == 0.5 * RandomNumberGenerator.mu(e2) by {
-      reveal EMeasure;
-      assert RandomNumberGenerator.mu(e1) == 0.5 by { reveal Prob; }
-      assert RandomNumberGenerator.mu(e1) == 0.5 ==> RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2) == 0.5 * RandomNumberGenerator.mu(e2);
-    }
-
-    calc {
-      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-    == { SampleEvenCaseSetEquality(n, m); }
-      RandomNumberGenerator.mu(iset s | !b_of(s) && 2*a_of(s) == m);
-    == {  reveal Inter; }
-      RandomNumberGenerator.mu((iset s | !b_of(s)) * (iset s | 2*a_of(s) == m));
-    == { reveal Eq1; reveal Eq2; }
-      RandomNumberGenerator.mu(e1 * e2);
-    == { reveal Indep; }
-      RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2);
-    == { reveal MulSub; }
-      0.5 * RandomNumberGenerator.mu(e2);
-    == { Helper.DivisionByTwo(RandomNumberGenerator.mu(e2)); }
-      RandomNumberGenerator.mu(e2) / 2.0;
-    == { reveal Eq2; }
-      RandomNumberGenerator.mu(iset s | 2*a_of(s) == m) / 2.0;
-    == { reveal Eq3; }
-      RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 == m) / 2.0;
-    }
-  }
-
-  lemma SampleOddCase(n: nat, m: nat)
-    requires m % 2 == 1
-    requires n >= 2
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) / 2.0
-  {
-    var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    var A: iset<nat> := (iset x | 2*x + 1 == m);
-    var E: iset<RandomNumberGenerator.RNG> := (iset s | Monad.Deconstruct(s).0 == true);
+    var A: iset<nat> := (iset x | 2*x + m % 2 == m);
+    var E: iset<RandomNumberGenerator.RNG> := (iset s | Monad.Deconstruct(s).0 <==> m % 2 == 1);
     var f := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).1;
 
     var e1 := (iset s | Model.Sample(n / 2)(s).1 in E);
     var e2 := (iset s | Model.Sample(n / 2)(s).0 in A);
 
-    assert Eq1: (iset s | b_of(s)) == e1 by {
-      forall s ensures b_of(s) <==> Model.Sample(n / 2)(s).1 in E {
+    assert Eq1: (iset s | b_of(s) <==> m % 2 == 1) == e1 by {
+      forall s ensures (b_of(s) <==> m % 2 == 1) <==> Model.Sample(n / 2)(s).1 in E {
       }
     }
 
-    assert Eq2: (iset s | 2*a_of(s) + 1 == m) == e2 by {
-      forall s ensures 2*a_of(s) + 1 == m <==> Model.Sample(n / 2)(s).0 in A {
+    assert Eq2: (iset s | 2*a_of(s) + m % 2 == m) == e2 by {
+      forall s ensures 2*a_of(s) + m % 2 == m <==> Model.Sample(n / 2)(s).0 in A {
       }
     }
 
-    assert Eq3: (iset s | 2*a_of(s) + 1 == m) == (iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) by {
-      forall s ensures 2*a_of(s) + 1 == m <==> 2*Model.Sample(n / 2)(s).0 + 1 == m {
+    assert SplitEvent: (iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m) == (iset s | b_of(s) <==> m % 2 == 1) * (iset s | 2*a_of(s) + m % 2 == m) by {
+      assume false;
+    }
+
+    assert Eq3: (iset s | 2*a_of(s) + m % 2 == m) == (iset s | 2*Model.Sample(n / 2)(s).0 + m % 2 == m) by {
+      forall s ensures 2*a_of(s) + m % 2 == m <==> 2*Model.Sample(n / 2)(s).0 + m % 2 == m {
       }
     }
 
@@ -589,8 +355,8 @@ module UniformPowerOfTwoCorrectness {
     }
 
     assert E in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(E) == 0.5 by {
-      assert E == (iset s | Monad.Head(s) == true);
-      Monad.HeadIsMeasurable(true);
+      assert E == (iset s | Monad.Head(s) == (m % 2 == 1));
+      Monad.HeadIsMeasurable(m % 2 == 1);
     }
 
     assert Indep: RandomNumberGenerator.mu(e1 * e2) == RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2) by {
@@ -625,10 +391,10 @@ module UniformPowerOfTwoCorrectness {
 
     calc {
       RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-    == { SampleOddCaseSetEquality(n, m); }
-      RandomNumberGenerator.mu(iset s | b_of(s) && 2*a_of(s) + 1 == m);
-    == { assert (iset s | b_of(s) && 2*a_of(s) + 1 == m) == (iset s | b_of(s)) * (iset s | 2*a_of(s) + 1 == m); }
-      RandomNumberGenerator.mu((iset s | b_of(s)) * (iset s | 2*a_of(s) + 1 == m));
+    == { SampleSetEquality(n, m); }
+      RandomNumberGenerator.mu(iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m);
+    == { reveal SplitEvent; }
+      RandomNumberGenerator.mu((iset s | b_of(s) <==> m % 2 == 1) * (iset s | 2*a_of(s) + m % 2 == m));
     == { reveal Eq1; reveal Eq2; }
       RandomNumberGenerator.mu(e1 * e2);
     == { reveal Indep; }
@@ -638,20 +404,9 @@ module UniformPowerOfTwoCorrectness {
     ==
       RandomNumberGenerator.mu(e2) / 2.0;
     == { reveal Eq2; }
-      RandomNumberGenerator.mu(iset s | 2*a_of(s) + 1 == m) / 2.0;
+      RandomNumberGenerator.mu(iset s | 2*a_of(s) + m % 2 == m) / 2.0;
     == { reveal Eq3; }
-      RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) / 2.0;
-    }
-  }
-
-  lemma SampleCaseSplit(n: nat, m: nat)
-    requires n >= 2
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == if m % 2 == 0 then RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 == m) / 2.0 else RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + 1 == m) / 2.0
-  {
-    if m % 2 == 0 {
-      SampleEvenCase(n, m);
-    } else {
-      SampleOddCase(n, m);
+      RandomNumberGenerator.mu(iset s | 2*Model.Sample(n / 2)(s).0 + m % 2 == m) / 2.0;
     }
   }
 
