@@ -1,4 +1,4 @@
-package UniformImplementation;
+package Uniform.Implementation;
 
 import java.security.SecureRandom;
 import java.math.BigInteger;

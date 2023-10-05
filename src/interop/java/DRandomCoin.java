@@ -1,4 +1,4 @@
-package CoinInterface;
+package Coin.Interface;
 
 import java.security.SecureRandom;
 import java.math.BigInteger;
