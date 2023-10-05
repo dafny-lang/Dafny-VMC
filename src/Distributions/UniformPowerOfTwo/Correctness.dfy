@@ -151,12 +151,12 @@ module UniformPowerOfTwo.Correctness {
         } else {
           calc {
             RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-            == { SampleProbRecursiveHalf(n, m); }
-              RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
-            == { reveal RecursiveCorrect; }
-              0.0 / 2.0;
-            ==
-              0.0;
+          == { SampleProbRecursiveHalf(n, m); }
+            RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+          == { reveal RecursiveCorrect; }
+            0.0 / 2.0;
+          ==
+            0.0;
           }
           assert UnifIsCorrect(n, k, m);
         }

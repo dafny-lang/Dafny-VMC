@@ -118,9 +118,9 @@ module Uniform.Correctness {
     var e := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
     calc {
       n;
-      < { Helper.Power2OfLog2Floor(n); }
+    < { Helper.Power2OfLog2Floor(n); }
       Helper.Power(2, Helper.Log2Floor(n) + 1);
-      == { Helper.Log2FloorDef(n); }
+    == { Helper.Log2FloorDef(n); }
       Helper.Power(2, Helper.Log2Floor(2 * n));
     }
     assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n) by {
