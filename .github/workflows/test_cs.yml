@@ -9,10 +9,6 @@ jobs:
   test-cs:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 6.0.x
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
       - run: DAFNY=dafny/dafny TARGET_LANG=cs bash scripts/test.sh
