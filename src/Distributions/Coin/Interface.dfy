@@ -6,9 +6,9 @@
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "Model.dfy"
 
-module CoinInterface {
+module Interface {
   import RandomNumberGenerator
-  import Model = CoinModel
+  import Model
 
   method {:extern "DRandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
 

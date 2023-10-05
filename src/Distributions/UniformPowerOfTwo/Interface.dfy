@@ -6,9 +6,9 @@
 include "../Coin/Coin.dfy"
 include "Model.dfy"
 
-module UniformPowerOfTwoInterface {
+module Interface {
   import Coin
-  import Model = UniformPowerOfTwoModel
+  import Model
 
   trait {:termination false} Trait extends Coin.Interface.Trait {
 

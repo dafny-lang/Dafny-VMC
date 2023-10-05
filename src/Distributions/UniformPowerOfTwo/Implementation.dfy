@@ -6,9 +6,9 @@
 include "Interface.dfy"
 include "Model.dfy"
 
-module UniformPowerOfTwoImplementation {
-  import Model = UniformPowerOfTwoModel
-  import Interface = UniformPowerOfTwoInterface
+module Implementation {
+  import Model
+  import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)

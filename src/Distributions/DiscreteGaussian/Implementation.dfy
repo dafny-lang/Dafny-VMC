@@ -6,9 +6,9 @@
 include "../../Math/Rationals.dfy"
 include "Interface.dfy"
 
-module DiscreteGaussianImplementation {
+module Implementation {
   import Rationals
-  import Interface = DiscreteGaussianInterface
+  import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
 

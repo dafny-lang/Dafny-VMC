@@ -18,7 +18,7 @@ module Correctness {
   import RandomNumberGenerator
   import Independence
   import Monad
-  import Model //= Model
+  import Model
 
   /*******
    Lemmas

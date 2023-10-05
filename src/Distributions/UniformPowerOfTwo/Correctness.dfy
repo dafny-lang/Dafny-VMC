@@ -12,7 +12,7 @@ include "../../ProbabilisticProgramming/Quantifier.dfy"
 include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
 include "Model.dfy"
 
-module UniformPowerOfTwoCorrectness {
+module Correctness {
   import Helper
   import Monad
   import Independence
@@ -20,7 +20,7 @@ module UniformPowerOfTwoCorrectness {
   import Quantifier
   import WhileAndUntil
   import MeasureTheory
-  import Model = UniformPowerOfTwoModel
+  import Model
 
   /************
    Definitions

@@ -4,8 +4,8 @@ include "Interface.dfy"
 include "Model.dfy"
 
 module Uniform {
-  import Interface = UniformInterface
-  import Implementation = UniformImplementation
-  import Correctness = UniformCorrectness
-  import Model = UniformModel
+  import Interface
+  import Implementation
+  import Correctness
+  import Model
 }

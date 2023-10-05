@@ -10,7 +10,7 @@ include "Model.dfy"
 module Interface {
   import Rationals
   import Uniform
-  import Model //= BernoulliModel
+  import Model
 
   trait {:termination false} Trait extends Uniform.Interface.Trait {
 

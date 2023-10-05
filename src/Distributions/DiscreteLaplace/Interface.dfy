@@ -8,7 +8,7 @@ include "../Bernoulli/Bernoulli.dfy"
 include "../Uniform/Uniform.dfy"
 include "../BernoulliExpNeg/BernoulliExpNeg.dfy"
 
-module DiscreteLaplaceInterface {
+module Interface {
   import Rationals
   import Bernoulli
   import Uniform

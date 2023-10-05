@@ -6,7 +6,7 @@
 include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 
-module CoinModel {
+module Model {
   import RandomNumberGenerator
   import Monad
 
