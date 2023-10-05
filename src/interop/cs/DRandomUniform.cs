@@ -6,7 +6,7 @@
 using System;
 using System.Numerics;
 
-namespace UniformExtern {
+namespace Uniform_mImplementation {
 
     public class DRandomUniform {
 
