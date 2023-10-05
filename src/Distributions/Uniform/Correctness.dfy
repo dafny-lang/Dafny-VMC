@@ -32,17 +32,15 @@ module Uniform.Correctness {
   // Equation (4.12) / PROB_BERN_UNIFORM
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
-    ensures
-      var e := UniformFullCorrectnessHelper(n, i);
-      && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == 1.0 / (n as real)
+    ensures UniformFullCorrectnessHelper(n, i) in RandomNumberGenerator.event_space
+    ensures RandomNumberGenerator.mu(UniformFullCorrectnessHelper(n, i)) == 1.0 / (n as real)
   {
     var e := UniformFullCorrectnessHelper(n, i);
-    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(n-1)(s).0 < n;
-    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(n-1)(s).0 == i;
-    var e1 := iset s {:trigger UniformPowerOfTwo.Model.Sample(n-1)(s).0} | UniformPowerOfTwo.Model.Sample(n-1)(s).0 == i;
-    var e2 := iset s {:trigger UniformPowerOfTwo.Model.Sample(n-1)(s).0} | UniformPowerOfTwo.Model.Sample(n-1)(s).0 < n;
-    var b := UniformPowerOfTwo.Model.Sample(n-1);
+    var p := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
+    var q := (s: RandomNumberGenerator.RNG) => UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i;
+    var e1 := iset s {:trigger UniformPowerOfTwo.Model.Sample(2 * n)(s).0} | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i;
+    var e2 := iset s {:trigger UniformPowerOfTwo.Model.Sample(2 * n)(s).0} | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
+    var b := UniformPowerOfTwo.Model.Sample(2 * n);
     var c := (x: nat) => x < n;
     var d := (x: nat) => x == i;
 
@@ -56,63 +54,66 @@ module Uniform.Correctness {
 
     var x := WhileAndUntil.ConstructEvents(b, c, d);
     WhileAndUntil.ProbUntilProbabilityFraction(b, c, d);
-    assert RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2);
+    assert Fraction: RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2);
 
-    assert x.0 == e;
-    assert x.1 == e1 by {
-      assert forall s :: d(b(s).0) && c(b(s).0) <==> (UniformPowerOfTwo.Model.Sample(n-1)(s).0 == i);
+    assert X0: x.0 == e;
+    assert X1: x.1 == e1 by {
+      forall s ensures s in x.1 <==> s in e1 {
+        calc {
+          s in x.1;
+          d(b(s).0) && c(b(s).0);
+          (UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i);
+          s in e1;
+        }
+      }
     }
-    assert x.2 == e2 by {
-      assert forall s :: c(b(s).0) <==> UniformPowerOfTwo.Model.Sample(n-1)(s).0 < n;
+    assert X2: x.2 == e2 by {
+      forall s ensures s in x.2 <==> s in e2 {
+        calc {
+          s in x.2;
+          c(b(s).0);
+          UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
+          s in e2;
+        }
+      }
+    }
+
+    assert Log2Double: Helper.Log2Floor(2 * n) == Helper.Log2Floor(n) + 1 by { Helper.Log2FloorDef(n); }
+
+    assert UniformFullCorrectnessHelper(n, i) in RandomNumberGenerator.event_space by {
+      reveal X0;
     }
 
     assert RandomNumberGenerator.mu(e) == 1.0 / (n as real) by {
-      assert n >= 1;
-      if n == 1 {
-        assert RandomNumberGenerator.mu(e1) == 1.0 by {
-          assert e1 == iset s | true;
-          RandomNumberGenerator.RNGHasMeasure();
-        }
-
-        assert RandomNumberGenerator.mu(e2) == (n as real) by {
-          Helper.Log2LowerSuc(n-1);
-          UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(n-1, n);
-          assert Helper.Power(2, Helper.Log2(n-1)) == 1;
-        }
-
-        calc {
-          RandomNumberGenerator.mu(e);
-          RandomNumberGenerator.mu(e1) / RandomNumberGenerator.mu(e2);
-          1.0 / (n as real);
-        }
-      } else {
-        assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real) by {
+      assert ProbE1: RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+        assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
           calc {
             i;
-          < { assert i < n; }
+          <
             n;
-          <= { Helper.Log2LowerSuc(n-1); }
-            Helper.Power(2, Helper.Log2(n-1));
-          }
-          assert RandomNumberGenerator.mu(e1) == if i < Helper.Power(2, Helper.Log2(n-1)) then 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real) else 0.0 by {
-            UniformPowerOfTwo.Correctness.UnifCorrectness2(n-1, i);
+          < { Helper.Power2OfLog2Floor(n); }
+            Helper.Power(2, Helper.Log2Floor(n) + 1);
+          == { reveal Log2Double; }
+            Helper.Power(2, Helper.Log2Floor(2 * n));
           }
         }
-        assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real) by {
-          assert n <= Helper.Power(2, Helper.Log2(n-1)) by {
-            Helper.Log2LowerSuc(n-1);
-          }
-          UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(n-1, n);
+        UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i);
+      }
+      assert ProbE2: RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+        assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
+          Helper.Power2OfLog2Floor(n);
+          reveal Log2Double;
         }
-        calc {
-          RandomNumberGenerator.mu(e);
-          { assert e == x.0; assert e1 == x.1; assert e2 == x.2; assert RandomNumberGenerator.mu(x.0) == RandomNumberGenerator.mu(x.1) / RandomNumberGenerator.mu(x.2); }
-          RandomNumberGenerator.mu(e1) / RandomNumberGenerator.mu(e2);
-          { assert RandomNumberGenerator.mu(e1) == 1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real); assert RandomNumberGenerator.mu(e2) == (n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real); }
-          (1.0 / (Helper.Power(2, Helper.Log2(n-1)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2(n-1)) as real));
-          { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2(n-1)) as real); }
-          1.0 / (n as real);
-        }
+        UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n);
+      }
+      calc {
+        RandomNumberGenerator.mu(e);
+        { reveal X0; reveal X1; reveal X2; reveal Fraction; }
+        RandomNumberGenerator.mu(e1) / RandomNumberGenerator.mu(e2);
+        { reveal ProbE1; reveal ProbE2; }
+        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real));
+        { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2Floor(2 * n)) as real); }
+        1.0 / (n as real);
       }
     }
   }

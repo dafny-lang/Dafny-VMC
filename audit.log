@@ -1,8 +1,7 @@
-src/Distributions/Coin/Interface.dfy(20,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Uniform/Correctness.dfy(143,17): SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/Uniform/Implementation.dfy(19,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Uniform/Implementation.dfy(42,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Uniform/Model.dfy(23,17): SampleTerminates: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Coin/Interface.dfy(23,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Correctness.dfy(154,17): SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Implementation.dfy(47,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Model.dfy(30,17): SampleTerminates: Declaration has explicit `{:axiom}` attribute. 
 src/Math/MeasureTheory.dfy(150,17): CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
 src/Math/MeasureTheory.dfy(25,4): CountableSum: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(28,27): IsIndepFn: Declaration has explicit `{:axiom}` attribute. 

@@ -16,14 +16,14 @@ module Uniform.Model {
     requires n > 0
   {
     SampleTerminates(n);
-    WhileAndUntil.ProbUntil(UniformPowerOfTwo.Model.Sample(n-1), (x: nat) => x < n)
+    WhileAndUntil.ProbUntil(UniformPowerOfTwo.Model.Sample(2 * n), (x: nat) => x < n)
   }
 
 
   lemma {:axiom} SampleTerminates(n: nat)
     requires n > 0
     ensures
-      var b := UniformPowerOfTwo.Model.Sample(n - 1);
+      var b := UniformPowerOfTwo.Model.Sample(2 * n);
       var c := (x: nat) => x < n;
       && Independence.IsIndepFn(b)
       && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
