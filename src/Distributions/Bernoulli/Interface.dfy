@@ -7,10 +7,10 @@ include "../../Math/Rationals.dfy"
 include "../Uniform/Uniform.dfy"
 include "Model.dfy"
 
-module BernoulliInterface {
+module Interface {
   import Rationals
   import Uniform
-  import Model = BernoulliModel
+  import Model //= BernoulliModel
 
   trait {:termination false} Trait extends Uniform.Interface.Trait {
 

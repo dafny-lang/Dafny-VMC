@@ -11,14 +11,14 @@ include "../../ProbabilisticProgramming/Independence.dfy"
 include "../../ProbabilisticProgramming/Monad.dfy"
 include "Model.dfy"
 
-module BernoulliCorrectness {
+module Correctness {
   import MeasureTheory
   import Helper
   import Uniform
   import RandomNumberGenerator
   import Independence
   import Monad
-  import Model = BernoulliModel
+  import Model //= Model
 
   /*******
    Lemmas
