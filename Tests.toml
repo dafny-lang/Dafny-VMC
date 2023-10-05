@@ -1,5 +1,0 @@
-includes = ["src/**/*.dfy", "tests/Tests.dfy"]
-excludes = []
-
-[options]
-enforce-determinism = true

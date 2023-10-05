@@ -1,5 +1,0 @@
-includes = ["src/**/*.dfy", "docs/dafny/ExamplesExternUniform.dfy"]
-excludes = []
-
-[options]
-enforce-determinism = true
