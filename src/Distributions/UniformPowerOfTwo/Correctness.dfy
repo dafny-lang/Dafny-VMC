@@ -131,14 +131,11 @@ module UniformPowerOfTwoCorrectness {
           assert (iset s | Model.Sample(1)(s).0 == m) == iset{};
         }
         RandomNumberGenerator.RNGHasMeasure();
+        assert UnifIsCorrect(n, k, m);
       } else {
         var u := m / 2;
-        calc {
-          RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-        == { SampleProbRecursiveHalf(n, m); }
-          RandomNumberGenerator.mu(iset s | 2 * Model.Sample(n / 2)(s).0 + (m % 2) == m) / 2.0;
-        == { assert (iset s | 2 * Model.Sample(n / 2)(s).0 + (m % 2) == m) == (iset s | Model.Sample(n / 2)(s).0 == u); }
-          RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+        assert Recursive: RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0 by {
+          SampleProbRecursiveHalf(n, m);
         }
         if m < Helper.Power(2, k) {
           assert RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) == 1.0 / (Helper.Power(2, k - 1) as real) by {
@@ -148,7 +145,7 @@ module UniformPowerOfTwoCorrectness {
           }
           calc {
             RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
-          ==
+          == { reveal Recursive; }
             RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
           ==
             (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
@@ -158,6 +155,7 @@ module UniformPowerOfTwoCorrectness {
           assert UnifIsCorrect(n, k, m);
         } else {
           assert u >= Helper.Power(2, k - 1);
+          reveal Recursive;
           UnifCorrectness(n / 2, k - 1);
           assert UnifIsCorrect(n / 2, k - 1, u);
           assert RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == 0.0;
