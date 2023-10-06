@@ -9,4 +9,4 @@ then
 fi
 
 echo Verifying the proofs...
-time $DAFNY verify dfyconfig.toml
+time $DAFNY verify dfyconfig.toml docs/dafny/ExamplesExternUniform.dfy docs/dafny/ExamplesFoundational.dfy tests/Tests.dfy tests/TestsExternUniform.dfy tests/TestsFoundational.dfy

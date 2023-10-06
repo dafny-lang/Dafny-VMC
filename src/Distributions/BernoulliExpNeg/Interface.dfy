@@ -3,9 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "../Bernoulli/Bernoulli.dfy"
-
 module BernoulliExpNeg.Interface {
   import Rationals
   import Bernoulli

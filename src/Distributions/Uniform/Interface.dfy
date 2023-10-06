@@ -3,10 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../Coin/Coin.dfy"
-include "../UniformPowerOfTwo/UniformPowerOfTwo.dfy"
-include "Model.dfy"
-
 module Uniform.Interface {
   import Coin
   import Model

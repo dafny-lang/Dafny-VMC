@@ -3,9 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../Uniform/Uniform.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-
 module Bernoulli.Model {
   import Uniform
   import Monad

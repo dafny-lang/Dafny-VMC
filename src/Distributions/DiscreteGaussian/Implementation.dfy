@@ -3,9 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "Interface.dfy"
-
 module DiscreteGaussian.Implementation {
   import Rationals
   import Interface

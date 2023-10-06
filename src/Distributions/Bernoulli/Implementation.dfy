@@ -3,10 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "Interface.dfy"
-include "Model.dfy"
-
 module Bernoulli.Implementation {
   import Rationals
   import Model

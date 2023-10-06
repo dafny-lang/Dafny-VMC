@@ -3,8 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../src/Dafny-VMC.dfy"
-
 module Tests {
   import Rationals
   import Coin

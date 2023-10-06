@@ -3,9 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../src/Dafny-VMC.dfy"
-include "Tests.dfy"
-
 module TestsExternUniform {
   import DafnyVMC
   import Tests
