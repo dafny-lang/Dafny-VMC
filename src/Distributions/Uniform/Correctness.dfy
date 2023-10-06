@@ -99,13 +99,10 @@ module Uniform.Correctness {
     UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i);
   }
 
-  lemma ProbabilityProposalAccepted(n: nat)
+  lemma Power2Log2Helper(n: nat)
     requires n >= 1
-    ensures
-      var e := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
-      RandomNumberGenerator.mu(e) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+    ensures n < Helper.Power(2, Helper.Log2Floor(2 * n))
   {
-    var e := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
     calc {
       n;
     < { Helper.Power2OfLog2Floor(n); }
@@ -113,6 +110,15 @@ module Uniform.Correctness {
     == { Helper.Log2FloorDef(n); }
       Helper.Power(2, Helper.Log2Floor(2 * n));
     }
+  }
+
+  lemma ProbabilityProposalAccepted(n: nat)
+    requires n >= 1
+    ensures
+      RandomNumberGenerator.mu(WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+  {
+    var e := WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
+    assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by { Power2Log2Helper(n); }
     assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n) by {
       forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n {
         calc {
@@ -122,12 +128,14 @@ module Uniform.Correctness {
         }
       }
     }
-    calc {
-      RandomNumberGenerator.mu(e);
-      { reveal Equal; }
-      RandomNumberGenerator.mu(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
-      { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
-      (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
+    assert RandomNumberGenerator.mu(WhileAndUntil.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+      calc {
+        RandomNumberGenerator.mu(e);
+        { reveal Equal; }
+        RandomNumberGenerator.mu(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
+        { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
+        (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
+      }
     }
   }
 
