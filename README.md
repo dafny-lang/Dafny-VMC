@@ -32,5 +32,4 @@ $ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUni
 $ dafny test --target:java src/interop/cs/DRandomCoin.java src/interop/cs/DRandomUniform.java tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
 # Java TestsExternUniform
 $ dafny test --target:java src/interop/cs/DRandomCoin.java src/interop/cs/DRandomUniform.java tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
-
 ```
