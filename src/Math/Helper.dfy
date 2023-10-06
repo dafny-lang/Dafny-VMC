@@ -31,10 +31,18 @@ module Helper {
     ensures Log2Floor(2 * n) == Log2Floor(n) + 1
   {}
 
+  function boolToNat(b: bool): nat {
+    if b then 1 else 0
+  }
 
   /*******
    Lemmas
   *******/
+
+  lemma Congruence<T, U>(x: T, y: T, f: T -> U)
+    requires x == y
+    ensures f(x) == f(y)
+  {}
 
   lemma DivisionSubstituteAlternativeReal(x: real, a: real, b: real)
     requires a == b
@@ -51,9 +59,10 @@ module Helper {
     assert 0 == m * zp + ((n + m) % m) - (n % m);
   }
 
-  lemma DivModIsUnique(n: nat, m: nat, a: nat, b: nat)
+  lemma DivModIsUnique(n: int, m: int, a: int, b: int)
+    requires n >= 0
     requires m > 0
-    requires b < m
+    requires 0 <= b < m
     requires n == a * m + b
     ensures a == n / m
     ensures b == n % m

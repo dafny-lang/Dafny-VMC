@@ -256,9 +256,9 @@ module UniformPowerOfTwo.Correctness {
     ==
       Model.UnifStep(a)(s').1;
     ==
-      Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 2*a + 1 else 2*a))(s').1;
+      Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').1;
     ==
-      Monad.Return(if b then 2*a + 1 else 2*a)(s'').1;
+      Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').1;
     ==
       s'';
     ==
@@ -273,11 +273,11 @@ module UniformPowerOfTwo.Correctness {
     ensures
       var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
       var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-      (iset s | Model.Sample(n)(s).0 == m) == (iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m)
+      (iset s | Model.Sample(n)(s).0 == m) == (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m)
   {
     var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
     var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    forall s ensures Model.Sample(n)(s).0 == m <==> (2 * a_of(s) + (if b_of(s) then 1 else 0) == m) {
+    forall s ensures Model.Sample(n)(s).0 == m <==> (2 * a_of(s) + Helper.boolToNat(b_of(s)) == m) {
       var (a, s') := Model.Sample(n / 2)(s);
       var (b, s'') := Monad.Deconstruct(s');
       calc {
@@ -287,9 +287,9 @@ module UniformPowerOfTwo.Correctness {
       ==
         Model.UnifStep(a)(s').0;
       ==
-        Monad.Bind(Monad.Deconstruct, b => Monad.Return(if b then 2*a + 1 else 2*a))(s').0;
+        Monad.Bind(Monad.Deconstruct, b => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').0;
       ==
-        Monad.Return(if b then 2*a + 1 else 2*a)(s'').0;
+        Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').0;
       ==
         if b then 2*a + 1 else 2*a;
       }
@@ -300,22 +300,26 @@ module UniformPowerOfTwo.Correctness {
     requires n >= 2
     ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
   {
-    var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    var A: iset<nat> := (iset x | x == m / 2);
-    var E: iset<RandomNumberGenerator.RNG> := (iset s | m % 2 == if Monad.Deconstruct(s).0 then 1 else 0);
+    var a_of: RandomNumberGenerator.RNG -> nat := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
+    var b_of: RandomNumberGenerator.RNG -> bool := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
+    var A: iset<nat> := (iset x: nat | x == m / 2);
+    var E: iset<RandomNumberGenerator.RNG> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Deconstruct(s).0));
     var f := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).1;
 
     var e1 := (iset s | Model.Sample(n / 2)(s).1 in E);
     var e2 := (iset s | Model.Sample(n / 2)(s).0 in A);
-    var e3 := (iset s | 2*a_of(s) + (if b_of(s) then 1 else 0) == m);
+    var e3 := (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
       forall s ensures s in e3 <==> s in e1 && s in e2 {
+        var a: nat := a_of(s);
+        var b: nat := Helper.boolToNat(b_of(s));
+        assert b < 2;
         calc {
           s in e3;
-          2*a_of(s) + (if b_of(s) then 1 else 0) == m;
-          (m % 2 == if b_of(s) then 1 else 0) && a_of(s) == m / 2;
+          2 * a + b == m;
+          m == a * 2 + b;
+          (a == m / 2) && (b == m % 2);
           s in e1 && s in e2;
         }
       }
@@ -356,7 +360,7 @@ module UniformPowerOfTwo.Correctness {
       Independence.AreIndepEventsConjunctElimination(e1, e2);
     }
 
-    assert ProbE1: 0.5 == RandomNumberGenerator.mu(e1) by {
+    assert ProbE1: RandomNumberGenerator.mu(e1) == 0.5 by {
       calc {
         0.5;
       ==
@@ -376,7 +380,7 @@ module UniformPowerOfTwo.Correctness {
       RandomNumberGenerator.mu(e1 * e2);
     == { reveal Indep; }
       RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2);
-    == { reveal ProbE1; }
+    == { reveal ProbE1; Helper.Congruence(RandomNumberGenerator.mu(e1), 0.5, x => x * RandomNumberGenerator.mu(e2)); }
       0.5 * RandomNumberGenerator.mu(e2);
     ==
       RandomNumberGenerator.mu(e2) / 2.0;
