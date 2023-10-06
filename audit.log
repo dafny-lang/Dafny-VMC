@@ -1,7 +1,17 @@
+src/Distributions/BernoulliExpNeg/Correctness.dfy(13,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(17,17): SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Implementation.dfy(34,6): BernoulliExpNegSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Implementation.dfy(52,6): BernoulliExpNegSampleCaseLe1: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(30,4): GammaReductionLoop: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(60,4): GammaLe1Loop: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Coin/Interface.dfy(20,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Uniform/Correctness.dfy(157,17): SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Uniform/Implementation.dfy(43,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Uniform/Model.dfy(34,17): SampleTerminates: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(2,26): Exp: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(4,17): FunctionalEquation: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(7,17): Increasing: Declaration has explicit `{:axiom}` attribute. 
 src/Math/MeasureTheory.dfy(150,17): CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
 src/Math/MeasureTheory.dfy(25,4): CountableSum: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(28,27): IsIndepFn: Declaration has explicit `{:axiom}` attribute. 

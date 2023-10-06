@@ -6,6 +6,7 @@
 module BernoulliExpNeg.Implementation {
   import Rationals
   import Interface
+  import Model
 
   trait {:termination false} Trait extends Interface.Trait {
 
@@ -14,28 +15,41 @@ module BernoulliExpNeg.Implementation {
       modifies this
       requires gamma.numer >= 0
       decreases *
+      ensures (c, s) == Model.Sample(gamma)(old(s))
     {
-      if gamma.numer <= gamma.denom {
-        var k := 1;
-        var a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
-        while a
-          decreases *
-        {
-          k := k + 1;
-          a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
-        }
-        c := k % 2 == 1;
-      } else {
-        var k := 1;
-        while k <= Rationals.Floor(gamma) {
-          var b := BernoulliExpNegSample(Rationals.Int(1));
-          if !b {
-            return false;
-          }
-          k := k + 1;
-        }
-        c:= BernoulliExpNegSample(Rationals.FractionalPart(gamma));
+      var gamma' := gamma;
+      var b := true;
+      while b && gamma'.numer >= gamma'.denom
+        decreases gamma'.numer
+        invariant gamma'.numer >= 0
+      {
+        b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
+        gamma' := Rationals.Rational(gamma'.numer - gamma'.denom, gamma'.denom);
       }
+      if b {
+        c:= BernoulliExpNegSampleCaseLe1(gamma');
+      } else {
+        c := false;
+      }
+      assume {:axiom} (c, s) == Model.Sample(gamma)(old(s));
+    }
+
+    method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
+      modifies this
+      requires 0 <= gamma.numer <= gamma.denom
+      decreases *
+      ensures (c, s) == Model.SampleGammaLe1(gamma)(old(s))
+    {
+      var k := 0;
+      var a := true;
+      while a
+        decreases *
+      {
+        k := k + 1;
+        a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
+      }
+      c := k % 2 == 1;
+      assume {:axiom} (c, s) == Model.SampleGammaLe1(gamma)(old(s));
     }
 
   }
