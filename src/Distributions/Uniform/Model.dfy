@@ -71,9 +71,9 @@ module Uniform.Model {
         }
         calc {
           RandomNumberGenerator.mu(e);
-          == { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
+        == { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
           n as real / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
-          >
+        >
           0.0;
         }
       }
