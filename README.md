@@ -29,7 +29,7 @@ $ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUni
 # C# TestsExternUniform
 $ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniform.cs tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
 # Java TestsFoundational
-$ dafny test --target:java src/interop/cs/DRandomCoin.java src/interop/cs/DRandomUniform.java tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
+$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniform.java tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
 # Java TestsExternUniform
-$ dafny test --target:java src/interop/cs/DRandomCoin.java src/interop/cs/DRandomUniform.java tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
+$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniform.java tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify 
 ```
