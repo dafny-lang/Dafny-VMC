@@ -20,7 +20,7 @@ module Exponential {
         Exp(x);
         { FunctionalEquation(x / 2.0, x / 2.0); }
         sqrt * sqrt;
-        >=
+      >=
         0.0;
       }
     }
@@ -28,11 +28,11 @@ module Exponential {
       calc {
         0.0;
         Exp(x);
-        < { Increasing(x, x + 1.0); }
+      < { Increasing(x, x + 1.0); }
         Exp(x + 1.0);
         { FunctionalEquation(x, 1.0); }
         Exp(x) * Exp(1.0);
-        ==
+      ==
         0.0;
       }
     }
