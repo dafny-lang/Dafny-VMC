@@ -122,17 +122,19 @@ module UniformPowerOfTwo.Model {
         Sample(Helper.Power(2, m + l))(s);
       }
     } else {
-      assert Ineq1: Helper.Power(2, l) >= 1 by { Helper.PowerGreater0(2, l); }
-      assert Helper.Power(2, m) >= 1 by { Helper.PowerGreater0(2, m); }
+      assert LGreaterZero: Helper.Power(2, l) >= 1 by { Helper.PowerGreater0(2, l); }
+      assert MGreaterZero: Helper.Power(2, m) >= 1 by { Helper.PowerGreater0(2, m); }
+      assert L1GreaterZero: Helper.Power(2, l - 1) >= 1 by { Helper.PowerGreater0(2, l - 1); }
       calc {
         Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
         (var (u, s') := Sample(Helper.Power(2, m))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));
-        { reveal Ineq1; }
+        { reveal LGreaterZero; }
         (var (u, s') := Sample(Helper.Power(2, m))(s);
          SampleTailRecursive(Helper.Power(2, l) / 2, if Monad.Head(s') then 2 * u + 1 else 2 * u)(Monad.Tail(s')));
-        { assert Helper.Power(2, m + 1) / 2 == Helper.Power(2, m); }
+        { assert Helper.Power(2, l) / 2 == Helper.Power(2, l - 1); reveal L1GreaterZero; }
         (var (u', s') := Monad.Bind(Sample(Helper.Power(2, m)), UnifStep)(s);
          SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
+        { assert Helper.Power(2, m + 1) / 2 == Helper.Power(2, m); }
         (var (u', s') := Sample(Helper.Power(2, m + 1))(s);
          SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
         Monad.Bind(Sample(Helper.Power(2, m + 1)), (u: nat) => SampleTailRecursive(Helper.Power(2, l - 1), u))(s);
