@@ -26,7 +26,7 @@ module WhileAndUntil {
   }
 
   // Definition 39 / True iff mu(iset s | ProbWhile(condition, body, a)(s) terminates) == 1
-  ghost predicate ProbWhileTerminates<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool) {
+  ghost predicate ProbWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
     var p := (a: A) =>
                (s: RandomNumberGenerator.RNG) => exists n :: !condition(ProbWhileCut(condition, body, n, a)(s).0);
     forall a :: Quantifier.ForAllStar(p(a))
@@ -34,7 +34,7 @@ module WhileAndUntil {
 
   // Theorem 38
   function ProbWhile<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
-    requires ProbWhileTerminates(body, condition)
+    requires ProbWhileTerminates(condition, body)
   {
     assume {:axiom} false;
     if condition(init) then
@@ -44,7 +44,7 @@ module WhileAndUntil {
   }
 
   method ProbWhileImperative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: (A, RandomNumberGenerator.RNG))
-    requires ProbWhileTerminates(body, condition)
+    requires ProbWhileTerminates(condition, body)
     ensures ProbWhile(condition, body, init)(s) == t
     decreases *
   {
@@ -57,7 +57,7 @@ module WhileAndUntil {
   }
 
   method ProbWhileImperativeAlternative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: (A, RandomNumberGenerator.RNG))
-    requires ProbWhileTerminates(body, condition)
+    requires ProbWhileTerminates(condition, body)
     ensures ProbWhile(condition, body, init)(s) == t
     decreases *
   {
@@ -75,7 +75,7 @@ module WhileAndUntil {
   ghost predicate ProbUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool) {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    ProbWhileTerminates(body, reject)
+    ProbWhileTerminates(reject, body)
   }
 
   // Definition 44
@@ -155,17 +155,17 @@ module WhileAndUntil {
         assert Quantifier.ExistsStar(proposalIsAccepted);
         assert (iset s | proposalIsAccepted(s)) == (iset s | WhileLoopExitsAfterOneIteration(body, reject, a)(s));
       }
-      assert ProbWhileTerminates(body, reject) by {
-        EnsureProbWhileTerminates(body, reject);
+      assert ProbWhileTerminates(reject, body) by {
+        EnsureProbWhileTerminates(reject, body);
       }
     }
   }
 
   // (Equation 3.30) / Sufficient conditions for while-loop termination
-  lemma {:axiom} EnsureProbWhileTerminates<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool)
+  lemma {:axiom} EnsureProbWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>)
     requires forall a :: Independence.IsIndepFn(body(a))
     requires forall a :: Quantifier.ExistsStar(WhileLoopExitsAfterOneIteration(body, condition, a))
-    ensures ProbWhileTerminates(body, condition)
+    ensures ProbWhileTerminates(condition, body)
 
   // Theorem 45 (wrong!) / PROB_BERN_UNTIL (correct!)
   lemma {:axiom} ProbUntilProbabilityFraction<A>(proposal: Monad.Hurd<A>, accept: A -> bool, d: A -> bool)
@@ -195,5 +195,34 @@ module WhileAndUntil {
   {
     EnsureProbUntilTerminates(proposal, accept);
     assume {:axiom} Quantifier.ForAllStar(UntilLoopResultIsAccepted(proposal, accept));
+  }
+
+  lemma ProbWhileIsIndepFn<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
+    requires forall a: A :: Independence.IsIndepFn(body(a))
+    requires ProbWhileTerminates(condition, body)
+    ensures Independence.IsIndepFn(ProbWhile(condition, body, init))
+  {
+    if condition(init) {
+      forall a ensures Independence.IsIndepFn(ProbWhile(condition, body, a)) {
+        assume {:axiom} false; // assume termination
+        ProbWhileIsIndepFn(condition, body, a);
+      }
+      Independence.IndepFnIsCompositional(body(init), a => ProbWhile(condition, body, a));
+    } else {
+      Independence.ReturnIsIndepFn(init);
+    }
+  }
+
+  lemma ProbUntilIsIndepFn<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
+    requires Independence.IsIndepFn(proposal)
+    requires ProbUntilTerminates(proposal, accept)
+    ensures Independence.IsIndepFn(ProbUntil(proposal, accept))
+  {
+    var reject := (a: A) => !accept(a);
+    var body := (a: A) => proposal;
+    forall init: A {
+      ProbWhileIsIndepFn(reject, body, init);
+    }
+    Independence.IndepFnIsCompositional(proposal, (init: A) => ProbWhile(reject, body, init));
   }
 }

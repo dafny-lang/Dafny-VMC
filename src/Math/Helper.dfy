@@ -104,6 +104,19 @@ module Helper {
     ensures Power(2, Log2Floor(n)) <= n < Power(2, Log2Floor(n) + 1)
   {}
 
+  lemma NLtPower2Log2FloorOf2N(n: nat)
+    requires n >= 1
+    ensures n < Power(2, Log2Floor(2 * n))
+  {
+    calc {
+      n;
+    < { Power2OfLog2Floor(n); }
+      Power(2, Log2Floor(n) + 1);
+    == { Log2FloorDef(n); }
+      Power(2, Log2Floor(2 * n));
+    }
+  }
+
   lemma AdditionOfFractions(x: real, y: real, z: real)
     requires z != 0.0
     ensures (x / z) + (y / z) == (x + y) / z
