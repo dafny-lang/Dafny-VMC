@@ -21,7 +21,7 @@ module Uniform.Implementation {
       while u >= n
         decreases *
         invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prev_s)
-        invariant (u, s) == UniformPowerOfTwo.Model.Sample(2 * n)(prev_s)
+        invariant (u, s) == Model.Proposal(n)(prev_s)
       {
         prev_s := s;
         u := UniformPowerOfTwoSample(2 * n);
