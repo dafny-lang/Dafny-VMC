@@ -5,6 +5,7 @@
 
 module Independence {
   import Monad
+  import Partial
   import RandomNumberGenerator
   import MeasureTheory
 
@@ -55,11 +56,22 @@ module Independence {
   lemma {:axiom} ReturnIsIndepFn<T>(x: T)
     ensures IsIndepFn(Monad.Return(x))
 
+  lemma PartialReturnIsIndepFn<T>(x: T)
+    ensures IsIndepFn(Partial.Return(x))
+  {
+    ReturnIsIndepFn(Partial.Terminating(x));
+  }
+
   // Equation (3.19)
   lemma {:axiom} IndepFnIsCompositional<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
     requires IsIndepFn(f)
     requires forall a :: IsIndepFn(g(a))
     ensures IsIndepFn(Monad.Bind(f, g))
+
+  lemma IndepFnIsCompositionalPartial<A, B>(f: Partial.Hurd<A>, g: A -> Partial.Hurd<B>)
+    requires IsIndepFn(f)
+    requires forall a :: IsIndepFn(g(a))
+    ensures IsIndepFn(Partial.Bind(f, g))
 
   lemma AreIndepEventsConjunctElimination(e1: iset<RandomNumberGenerator.RNG>, e2: iset<RandomNumberGenerator.RNG>)
     requires MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)

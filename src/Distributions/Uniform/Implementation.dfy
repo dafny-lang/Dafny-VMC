@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module Uniform.Implementation {
+  import Partial
   import UniformPowerOfTwo
   import Model
   import Interface
@@ -14,7 +15,7 @@ module Uniform.Implementation {
       decreases *
       requires n > 0
       ensures u < n
-      ensures Model.Sample(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (Partial.Terminating(u), s)
     {
       ghost var prev_s := s;
       u := UniformPowerOfTwoSample(2 * n);
@@ -37,7 +38,7 @@ module Uniform.Implementation {
       decreases *
       requires n > 0
       ensures u < n
-      ensures Model.Sample(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (Partial.Terminating(u), s)
     {
       u := ExternUniformSample(n);
       assume {:axiom} false; // assume correctness of extern implementation

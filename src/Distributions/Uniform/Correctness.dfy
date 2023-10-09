@@ -6,6 +6,7 @@
 module Uniform.Correctness {
   import Helper
   import Monad
+  import Partial
   import Independence
   import RandomNumberGenerator
   import Quantifier
@@ -21,7 +22,7 @@ module Uniform.Correctness {
   ghost function SampleEquals(n: nat, i: nat): iset<RandomNumberGenerator.RNG>
     requires 0 <= i < n
   {
-    iset s | Model.Sample(n)(s).0 == i
+    iset s | Model.Sample(n)(s).0 == Partial.Terminating(i)
   }
 
   /*******
@@ -130,7 +131,7 @@ module Uniform.Correctness {
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
     ensures
-      var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
+      var e := iset s | Model.IntervalSample(a, b)(s).0 == Partial.Terminating(i);
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == (1.0 / ((b-a) as real))
   {
@@ -140,10 +141,10 @@ module Uniform.Correctness {
     var e' := SampleEquals(b - a, i - a);
     assert e' in RandomNumberGenerator.event_space by { UniformFullCorrectness(b - a, i - a); }
     assert RandomNumberGenerator.mu(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
-    var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
+    var e := iset s | Model.IntervalSample(a, b)(s).0 == Partial.Terminating(i);
     assert e == e' by {
-      forall s ensures Model.IntervalSample(a, b)(s).0 == i <==> Model.Sample(b-a)(s).0 == i - a {
-        assert Model.IntervalSample(a, b)(s).0 == a + Model.Sample(b - a)(s).0;
+      forall s ensures Model.IntervalSample(a, b)(s).0 == Partial.Terminating(i) <==> Model.Sample(b-a)(s).0 == Partial.Terminating(i - a) {
+        assert Model.IntervalSample(a, b)(s).0 == Model.Sample(b - a)(s).0.Map(x => a + x);
       }
     }
   }

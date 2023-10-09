@@ -9,12 +9,13 @@ module Uniform.Model {
   import RandomNumberGenerator
   import Quantifier
   import Monad
+  import Partial
   import Independence
   import WhileAndUntil
   import UniformPowerOfTwo
 
   // Definition 49
-  function Sample(n: nat): Monad.Hurd<nat>
+  ghost function Sample(n: nat): Partial.Hurd<nat>
     requires n > 0
   {
     SampleTerminates(n);
@@ -33,12 +34,12 @@ module Uniform.Model {
     (m: nat) => m < n
   }
 
-  function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
+  ghost function IntervalSample(a: int, b: int): (f: Partial.Hurd<int>)
     requires a < b
   {
     (s: RandomNumberGenerator.RNG) =>
       var (x, s') := Sample(b - a)(s);
-      (a + x, s')
+      (x.Map(x => a + x), s')
   }
 
   lemma SampleTerminates(n: nat)
