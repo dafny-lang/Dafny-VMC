@@ -204,7 +204,7 @@ module WhileAndUntil {
   {
     if condition(init) {
       forall a ensures Independence.IsIndepFn(ProbWhile(condition, body, a)) {
-        assume {:axiom} false; // assume termination, add later?
+        assume {:axiom} false; // circular reasoning, rewrite this proof
         ProbWhileIsIndepFn(condition, body, a);
       }
       Independence.IndepFnIsCompositional(body(init), a => ProbWhile(condition, body, a));
