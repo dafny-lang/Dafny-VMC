@@ -36,7 +36,7 @@ module WhileAndUntil {
   function ProbWhile<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
     requires ProbWhileTerminates(condition, body)
   {
-    assume {:axiom} false;
+    assume {:axiom} false; // assume termination
     if condition(init) then
       Monad.Bind(body(init), (a': A) => ProbWhile(condition, body, a'))
     else
@@ -194,7 +194,7 @@ module WhileAndUntil {
     ensures Quantifier.ForAllStar(UntilLoopResultIsAccepted(proposal, accept))
   {
     EnsureProbUntilTerminates(proposal, accept);
-    assume {:axiom} Quantifier.ForAllStar(UntilLoopResultIsAccepted(proposal, accept));
+    assume {:axiom} Quantifier.ForAllStar(UntilLoopResultIsAccepted(proposal, accept)); // add later
   }
 
   lemma ProbWhileIsIndepFn<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
@@ -204,7 +204,7 @@ module WhileAndUntil {
   {
     if condition(init) {
       forall a ensures Independence.IsIndepFn(ProbWhile(condition, body, a)) {
-        assume {:axiom} false; // assume termination
+        assume {:axiom} false; // circular reasoning, rewrite this proof
         ProbWhileIsIndepFn(condition, body, a);
       }
       Independence.IndepFnIsCompositional(body(init), a => ProbWhile(condition, body, a));

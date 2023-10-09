@@ -40,7 +40,7 @@ module Uniform.Implementation {
       ensures Model.Sample(n)(old(s)) == (u, s)
     {
       u := ExternUniformSample(n);
-      assume {:axiom} false;
+      assume {:axiom} false; // assume correctness of extern implementation
     }
   }
 }

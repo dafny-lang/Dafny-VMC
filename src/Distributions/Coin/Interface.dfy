@@ -17,7 +17,7 @@ module Coin.Interface {
       ensures Model.Sample(old(s)) == (b, s)
     {
       b := ExternCoinSample();
-      assume {:axiom} false;
+      assume {:axiom} false; // assume correctness of extern implementation
     }
 
   }
