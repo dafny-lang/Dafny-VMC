@@ -31,7 +31,7 @@ module BernoulliExpNeg.Implementation {
       } else {
         c := false;
       }
-      assume {:axiom} (c, s) == Model.Sample(gamma)(old(s));
+      assume {:axiom} (c, s) == Model.Sample(gamma)(old(s)); // add later
     }
 
     method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
@@ -49,7 +49,7 @@ module BernoulliExpNeg.Implementation {
         a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
       }
       c := k % 2 == 1;
-      assume {:axiom} (c, s) == Model.SampleGammaLe1(gamma)(old(s));
+      assume {:axiom} (c, s) == Model.SampleGammaLe1(gamma)(old(s)); // add later
     }
 
   }

@@ -22,7 +22,7 @@ module MeasureTheory {
   }
 
   function CountableSum(f: nat -> real, i: nat := 0): real {
-    assume {:axiom} false;
+    assume {:axiom} false; // assume termination
     f(i) + CountableSum(f, i+1)
   }
 
