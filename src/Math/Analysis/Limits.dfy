@@ -150,7 +150,7 @@ module Limits {
           var s2 := sequence2(n);
           calc {
             Reals.Dist(productSequence(n), productLimit);
-          == { assert productSequence(n) == s1 * s2; }
+          == { assert productSequence(n) == sequence1(n) * sequence2(n) == s1 * s2; }
             Reals.Dist(s1 * s2, limit1 * limit2);
           < { LimitIsMultiplicativeSuffixHelper(s1, limit1, s2, limit2, bound1, epsilon); }
             epsilon;
