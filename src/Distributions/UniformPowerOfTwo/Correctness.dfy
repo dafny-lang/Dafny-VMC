@@ -20,7 +20,7 @@ module UniformPowerOfTwo.Correctness {
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
   {
-    RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
+    RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).Satisfies(val => val == m)) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
   function Sample1(n: nat): RandomNumberGenerator.RNG -> RandomNumberGenerator.RNG

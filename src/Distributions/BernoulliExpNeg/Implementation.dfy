@@ -5,7 +5,6 @@
 
 module BernoulliExpNeg.Implementation {
   import Rationals
-  import Partial
   import Interface
   import Model
 

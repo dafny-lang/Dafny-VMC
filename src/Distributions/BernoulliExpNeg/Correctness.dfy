@@ -7,7 +7,6 @@ module BernoulliExpNeg.Correctness {
   import Rationals
   import Exponential
   import RandomNumberGenerator
-  import Partial
   import Independence
   import Model
 

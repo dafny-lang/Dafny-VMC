@@ -6,12 +6,27 @@
 module Monad {
   import RandomNumberGenerator
   import MeasureTheory
+  import Partials
 
   /************
    Definitions
   ************/
 
-  type Hurd<A> = RandomNumberGenerator.RNG -> (A, RandomNumberGenerator.RNG)
+  type Hurd<A> = RandomNumberGenerator.RNG -> Partials.Partial<(A, RandomNumberGenerator.RNG)>
+
+  ghost function rngsWithResult<A>(f: Hurd<A>, valueProperty: A -> bool, resultRngProperty: RandomNumberGenerator.RNG -> bool): iset<RandomNumberGenerator.RNG> {
+    iset s | match f(s)
+      case Diverging => false
+      case Terminating((a, s')) => valueProperty(a) && resultRngProperty(s')
+  }
+
+  ghost function rngsWithResultValue<A>(f: Hurd<A>, resultValueProperty: A -> bool): iset<RandomNumberGenerator.RNG> {
+    rngsWithResult(f, resultValueProperty, s => true)
+  }
+
+  ghost function rngsWithResultRng<A>(f: Hurd<A>, resultRngProperty: RandomNumberGenerator.RNG -> bool): iset<RandomNumberGenerator.RNG> {
+    rngsWithResult(f, a => true, resultRngProperty)
+  }
 
   // Equation (2.38)
   function Tail(s: RandomNumberGenerator.RNG): (s': RandomNumberGenerator.RNG) {
@@ -38,8 +53,8 @@ module Monad {
   }
 
   // Equation (2.42)
-  function Deconstruct(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
-    (Head(s), Tail(s))
+  function Deconstruct(s: RandomNumberGenerator.RNG): Partials.Partial<(bool, RandomNumberGenerator.RNG)> {
+    Partials.Terminating((Head(s), Tail(s)))
   }
 
   // Equation (2.41)
@@ -55,7 +70,7 @@ module Monad {
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: RandomNumberGenerator.RNG) =>
-      var (a, s') := f(s);
+      var (a, s') :- f(s);
       g(a)(s')
   }
 
@@ -65,7 +80,11 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: RandomNumberGenerator.RNG) => (a, s)
+    (s: RandomNumberGenerator.RNG) => Partials.Terminating((a, s))
+  }
+
+  function Diverge<A>(): Hurd<A> {
+    (s: RandomNumberGenerator.RNG) => Partials.Diverging
   }
 
   function Map<A,B>(f: A -> B, m: Hurd<A>): Hurd<B> {
@@ -73,9 +92,7 @@ module Monad {
   }
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
-    (s: RandomNumberGenerator.RNG) =>
-      var (f, s') := ff(s);
-      f(s')
+    Bind(ff, x => x)
   }
 
   /*******
@@ -89,15 +106,20 @@ module Monad {
   lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: RandomNumberGenerator.RNG)
     ensures Bind(Bind(f, g), h)(s) == Bind(f, (a: A) => Bind(g(a), h))(s)
   {
-    var (a, s') := f(s);
-    var (a', s'') := g(a)(s');
-    assert (a', s'') == Bind(f, g)(s);
-    calc {
-      Bind(Bind(f, g), h)(s);
-      h(a')(s'');
-      Bind(g(a), h)(s');
-      Bind(f, (a: A) => Bind(g(a), h))(s);
-    }
+    match f(s)
+    case Diverging => {}
+    case Terminating((a, s')) =>
+      match g(a)(s')
+      case Diverging => {}
+      case Terminating((a', s'')) => {
+        assert Bind(f, g)(s) == Partials.Terminating((a', s''));
+        calc {
+          Bind(Bind(f, g), h)(s);
+          h(a')(s'');
+          Bind(g(a), h)(s');
+          Bind(f, (a: A) => Bind(g(a), h))(s);
+        }
+      }
   }
 
   lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RandomNumberGenerator.RNG)
@@ -108,29 +130,12 @@ module Monad {
 
   lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: RandomNumberGenerator.RNG)
     ensures Join(Map(Return, f))(s) == Join(Return(f))(s)
-  {
-    var (a, t) := f(s);
-    calc {
-      Join(Return(f))(s);
-    ==
-      (a, t);
-    ==
-      Join(Map(Return, f))(s);
-    }
-  }
+  {}
 
   lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: RandomNumberGenerator.RNG)
     ensures Join(Map(Join, fff))(s) == Join(Join(fff))(s)
   {
-    var (ff, t) := fff(s);
-    var (f, u) := ff(t);
-    calc {
-      Join(Map(Join, fff))(s);
-    ==
-      f(u);
-    ==
-      Join(Join(fff))(s);
-    }
+    BindIsAssociative(fff, x => x, x => x, s);
   }
 
   lemma {:axiom} TailIsRNG(s: RandomNumberGenerator.RNG)

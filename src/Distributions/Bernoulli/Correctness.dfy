@@ -10,7 +10,6 @@ module Bernoulli.Correctness {
   import RandomNumberGenerator
   import Independence
   import Monad
-  import Partial
   import Model
 
   /*******

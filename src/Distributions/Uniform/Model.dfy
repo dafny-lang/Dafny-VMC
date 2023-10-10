@@ -9,7 +9,6 @@ module Uniform.Model {
   import RandomNumberGenerator
   import Quantifier
   import Monad
-  import Partial
   import Independence
   import WhileAndUntil
   import UniformPowerOfTwo

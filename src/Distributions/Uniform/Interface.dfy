@@ -6,7 +6,6 @@
 module Uniform.Interface {
   import Coin
   import Model
-  import Partial
   import UniformPowerOfTwo
 
   trait {:termination false} Trait extends Coin.Interface.Trait, UniformPowerOfTwo.Interface.Trait {

@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module UniformPowerOfTwo.Interface {
+  import Partials
   import Coin
   import Model
 
@@ -13,7 +14,7 @@ module UniformPowerOfTwo.Interface {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
       modifies this
-      ensures Model.Sample(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == Partials.Terminating((u, s))
 
   }
 }

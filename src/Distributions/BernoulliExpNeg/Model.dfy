@@ -7,7 +7,6 @@ module BernoulliExpNeg.Model {
   import Rationals
   import Uniform
   import Monad
-  import Partial
   import WhileAndUntil
   import BernoulliModel = Bernoulli.Model
 

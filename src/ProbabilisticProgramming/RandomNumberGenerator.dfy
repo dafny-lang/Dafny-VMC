@@ -5,6 +5,7 @@
 
 module RandomNumberGenerator {
   import MeasureTheory
+  import Partials
 
   /************
    Definitions
@@ -17,6 +18,10 @@ module RandomNumberGenerator {
   ghost const sample_space: iset<RNG> := iset s: RNG | true
 
   ghost const event_space: iset<iset<RNG>>
+
+  ghost const partial_sample_space: iset<Partials.Partial<RNG>> := iset s: Partials.Partial<RNG>
+
+  ghost const partial_event_space: iset<iset<Partials.Partial<RNG>>> := MeasureTheory.partialEventSpace(event_space)
 
   ghost const mu: iset<RNG> -> real
 

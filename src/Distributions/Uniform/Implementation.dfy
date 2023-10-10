@@ -4,7 +4,6 @@
  *******************************************************************************/
 
 module Uniform.Implementation {
-  import Partial
   import UniformPowerOfTwo
   import Model
   import Interface

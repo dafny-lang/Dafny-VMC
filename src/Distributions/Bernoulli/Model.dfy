@@ -6,7 +6,6 @@
 module Bernoulli.Model {
   import Uniform
   import Monad
-  import Partial
 
   // Footnote 5, p. 82
   ghost function Sample(numer: nat, denom: nat): (f: Partial.Hurd<bool>)

@@ -5,7 +5,6 @@
 
 module Independence {
   import Monad
-  import Partial
   import RandomNumberGenerator
   import MeasureTheory
 
@@ -15,8 +14,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<RandomNumberGenerator.RNG>) {
-    var e1 := iset s | f(s).1 in E;
-    var e2 := iset s | f(s).0 in A;
+    var e1 := Monad.rngsWithResultValue(f, v => v in A);
+    var e2 := Monad.rngsWithResultRng(f, s => s in E);
     MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
   }
 
@@ -34,15 +33,15 @@ module Independence {
 
   lemma {:axiom} IsIndepFnImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
     requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.boolEventSpace, s => f(s).0)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialBoolEventSpace, s => f(s).Map((x: (bool, RandomNumberGenerator.RNG)) => x.0))
 
   lemma {:axiom} IsIndepFnImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
     requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => f(s).0)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialNatEventSpace, s => f(s).Map((x: (nat, RandomNumberGenerator.RNG)) => x.0))
 
   lemma {:axiom} IsIndepFnImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.partial_event_space, s => f(s).Map((x: (A, RandomNumberGenerator.RNG)) => x.1))
 
   lemma {:axiom} IsIndepFnImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndepFn(f)
@@ -57,9 +56,9 @@ module Independence {
     ensures IsIndepFn(Monad.Return(x))
 
   lemma PartialReturnIsIndepFn<T>(x: T)
-    ensures IsIndepFn(Partial.Return(x))
+    ensures IsIndepFn(Monad.Return(x))
   {
-    ReturnIsIndepFn(Partial.Terminating(x));
+    ReturnIsIndepFn(x);
   }
 
   // Equation (3.19)
@@ -68,10 +67,10 @@ module Independence {
     requires forall a :: IsIndepFn(g(a))
     ensures IsIndepFn(Monad.Bind(f, g))
 
-  lemma IndepFnIsCompositionalPartial<A, B>(f: Partial.Hurd<A>, g: A -> Partial.Hurd<B>)
+  lemma IndepFnIsCompositionalPartial<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
     requires IsIndepFn(f)
     requires forall a :: IsIndepFn(g(a))
-    ensures IsIndepFn(Partial.Bind(f, g))
+    ensures IsIndepFn(Monad.Bind(f, g))
 
   lemma AreIndepEventsConjunctElimination(e1: iset<RandomNumberGenerator.RNG>, e2: iset<RandomNumberGenerator.RNG>)
     requires MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)

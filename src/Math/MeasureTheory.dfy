@@ -4,6 +4,8 @@
  *******************************************************************************/
 
 module MeasureTheory {
+  import Partials
+
   /************
    Definitions
   ************/
@@ -34,6 +36,18 @@ module MeasureTheory {
 
   // The sigma algebra on the natural numbers is just the power set
   ghost const natEventSpace: iset<iset<nat>> := iset _: iset<nat>
+
+  ghost function partialEventSpace<T(!new)>(eventSpace: iset<iset<T>>): iset<iset<Partials.Partial<T>>> {
+    iset pset: iset<Partials.Partial<T>> | (iset x: T | Partials.Terminating(x) in pset) in eventSpace
+  }
+
+  ghost const partialBoolSampleSpace: iset<Partials.Partial<bool>> := iset _
+
+  ghost const partialBoolEventSpace: iset<iset<Partials.Partial<bool>>> := iset _
+
+  ghost const partialNatSampleSpace: iset<Partials.Partial<nat>> := iset _
+
+  ghost const partialNatEventSpace: iset<iset<Partials.Partial<nat>>> := iset _
 
   // Definition 5
   ghost predicate IsPositive<T(!new)>(event_space: iset<iset<T>>, mu: iset<T> -> real) {

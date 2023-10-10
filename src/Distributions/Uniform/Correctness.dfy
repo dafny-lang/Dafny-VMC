@@ -6,7 +6,6 @@
 module Uniform.Correctness {
   import Helper
   import Monad
-  import Partial
   import Independence
   import RandomNumberGenerator
   import Quantifier
