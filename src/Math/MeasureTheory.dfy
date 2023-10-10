@@ -22,9 +22,18 @@ module MeasureTheory {
   }
 
   function CountableSum(f: nat -> real, i: nat := 0): real {
-    assume {:axiom} false;
+    assume {:axiom} false; // assume termination
     f(i) + CountableSum(f, i+1)
   }
+
+  ghost const boolSampleSpace: iset<bool> := iset _: bool
+
+  ghost const boolEventSpace: iset<iset<bool>> := iset _: iset<bool>
+
+  ghost const natSampleSpace: iset<nat> := iset _: nat
+
+  // The sigma algebra on the natural numbers is just the power set
+  ghost const natEventSpace: iset<iset<nat>> := iset _: iset<nat>
 
   // Definition 5
   ghost predicate IsPositive<T(!new)>(event_space: iset<iset<T>>, mu: iset<T> -> real) {
@@ -80,6 +89,20 @@ module MeasureTheory {
   /*******
    Lemmas
   *******/
+
+  lemma boolsHaveSigmaAlgebra()
+    ensures IsSigmaAlgebra(boolEventSpace, boolSampleSpace)
+  {
+    forall e | e in boolEventSpace ensures e <= boolSampleSpace {
+      assert e <= boolSampleSpace by {
+        forall x: bool ensures x in e ==> x in boolSampleSpace {}
+      }
+    }
+  }
+
+  lemma natsHaveSigmaAlgebra()
+    ensures IsSigmaAlgebra(natEventSpace, natSampleSpace)
+  {}
 
   lemma PreImageIdentity<S(!new)>(f: S -> S, e: iset<S>)
     requires forall s: S :: f(s) == s

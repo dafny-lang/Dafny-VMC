@@ -3,49 +3,44 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../UniformPowerOfTwo/Interface.dfy"
-include "../UniformPowerOfTwo/Implementation.dfy"
-include "Interface.dfy"
-include "Model.dfy"
+module Uniform.Implementation {
+  import UniformPowerOfTwo
+  import Model
+  import Interface
 
-module UniformImplementation {
-  import UniformPowerOfTwoInterface
-  import UniformPowerOfTwoModel
-  import UniformModel
-  import UniformInterface
-
-  trait {:termination false} TUniformFoundational extends UniformInterface.IUniform {
-    method Uniform(n: nat) returns (u: nat)
+  trait {:termination false} TraitFoundational extends Interface.Trait {
+    method UniformSample(n: nat) returns (u: nat)
       modifies this
       decreases *
       requires n > 0
       ensures u < n
-      ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      assume {:axiom} false;
-      u := UniformPowerOfTwo(n-1);
+      ghost var prev_s := s;
+      u := UniformPowerOfTwoSample(2 * n);
       while u >= n
         decreases *
-        invariant UniformModel.ProbUniform(n)(old(s)) == UniformPowerOfTwoModel.ProbUnif(n-1)(old(s))
-        invariant (u, s) == UniformPowerOfTwoModel.ProbUnif(n-1)(old(s))
+        invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prev_s)
+        invariant (u, s) == Model.Proposal(n)(prev_s)
       {
-        u := UniformPowerOfTwo(n-1);
+        prev_s := s;
+        u := UniformPowerOfTwoSample(2 * n);
       }
     }
   }
 
-  method {:extern "DRandomUniform", "Uniform"} ExternUniform(n: nat) returns (u: nat)
+  method {:extern "DRandomUniform", "Uniform"} ExternUniformSample(n: nat) returns (u: nat)
 
-  trait {:termination false} TUniformExtern extends UniformInterface.IUniform {
-    method Uniform(n: nat) returns (u: nat)
+  trait {:termination false} TraitExtern extends Interface.Trait {
+    method UniformSample(n: nat) returns (u: nat)
       modifies this
       decreases *
       requires n > 0
       ensures u < n
-      ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      u := ExternUniform(n);
-      assume {:axiom} false;
+      u := ExternUniformSample(n);
+      assume {:axiom} false; // assume correctness of extern implementation
     }
   }
 }

@@ -3,20 +3,18 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "../../Math/Rationals.dfy"
-include "../Bernoulli/Interface.dfy"
-
-module BernoulliExpNegInterface {
+module BernoulliExpNeg.Interface {
   import Rationals
-  import BernoulliInterface
+  import Bernoulli
+  import Model
 
-  trait {:termination false} IBernoulliExpNeg extends BernoulliInterface.IBernoulli {
+  trait {:termination false} Trait extends Bernoulli.Interface.Trait {
 
-    method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
+    method BernoulliExpNegSample(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
       requires gamma.numer >= 0
+      ensures (c, s) == Model.Sample(gamma)(old(s))
 
   }
 }

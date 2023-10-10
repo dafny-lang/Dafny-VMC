@@ -9,8 +9,4 @@ then
 fi
 
 echo Verifying the proofs...
-for file in `find ./src -type f -name '*.dfy'`
-do
-    echo Verifying $file...
-    time $DAFNY verify $file
-done
+time $DAFNY verify dfyconfig.toml docs/dafny/ExamplesExternUniform.dfy docs/dafny/ExamplesFoundational.dfy tests/Tests.dfy tests/TestsExternUniform.dfy tests/TestsFoundational.dfy --resource-limit 20000 # 20M resource usage

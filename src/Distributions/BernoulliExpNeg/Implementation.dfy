@@ -3,43 +3,53 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "../Bernoulli/Interface.dfy"
-include "Interface.dfy"
-
-module BernoulliExpNegImplementation {
+module BernoulliExpNeg.Implementation {
   import Rationals
-  import BernoulliExpNegInterface
+  import Interface
+  import Model
 
-  trait {:termination false} TBernoulliExpNeg extends BernoulliExpNegInterface.IBernoulliExpNeg {
+  trait {:termination false} Trait extends Interface.Trait {
 
     // Based on Algorithm 1 in https://arxiv.org/pdf/2004.00010.pdf; unverified
-    method BernoulliExpNeg(gamma: Rationals.Rational) returns (c: bool)
+    method BernoulliExpNegSample(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       requires gamma.numer >= 0
       decreases *
+      ensures (c, s) == Model.Sample(gamma)(old(s))
     {
-      if gamma.numer <= gamma.denom {
-        var k := 1;
-        var a := Bernoulli(Rationals.Rational(gamma.numer, k * gamma.denom));
-        while a
-          decreases *
-        {
-          k := k + 1;
-          a := Bernoulli(Rationals.Rational(gamma.numer, k * gamma.denom));
-        }
-        c := k % 2 == 1;
-      } else {
-        var k := 1;
-        while k <= Rationals.Floor(gamma) {
-          var b := BernoulliExpNeg(Rationals.Int(1));
-          if !b {
-            return false;
-          }
-          k := k + 1;
-        }
-        c:= BernoulliExpNeg(Rationals.FractionalPart(gamma));
+      var gamma' := gamma;
+      var b := true;
+      while b && gamma'.numer >= gamma'.denom
+        decreases gamma'.numer
+        invariant gamma'.numer >= 0
+      {
+        b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
+        gamma' := Rationals.Rational(gamma'.numer - gamma'.denom, gamma'.denom);
       }
+      if b {
+        c:= BernoulliExpNegSampleCaseLe1(gamma');
+      } else {
+        c := false;
+      }
+      assume {:axiom} (c, s) == Model.Sample(gamma)(old(s)); // add later
+    }
+
+    method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
+      modifies this
+      requires 0 <= gamma.numer <= gamma.denom
+      decreases *
+      ensures (c, s) == Model.SampleGammaLe1(gamma)(old(s))
+    {
+      var k := 0;
+      var a := true;
+      while a
+        decreases *
+      {
+        k := k + 1;
+        a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
+      }
+      c := k % 2 == 1;
+      assume {:axiom} (c, s) == Model.SampleGammaLe1(gamma)(old(s)); // add later
     }
 
   }

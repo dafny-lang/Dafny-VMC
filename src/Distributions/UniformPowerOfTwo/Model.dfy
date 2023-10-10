@@ -3,93 +3,144 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-include "../../ProbabilisticProgramming/Independence.dfy"
-include "../../ProbabilisticProgramming/Quantifier.dfy"
-include "../../ProbabilisticProgramming/WhileAndUntil.dfy"
-
-module UniformPowerOfTwoModel {
+module UniformPowerOfTwo.Model {
+  import Helper
   import RandomNumberGenerator
   import Quantifier
   import Monad
   import Independence
   import WhileAndUntil
 
-  function UnifStep(m: nat): Monad.Hurd<nat> {
-    Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 2*m + 1 else 2*m))
+  function UnifStepHelper(m: nat): bool -> Monad.Hurd<nat> {
+    (b: bool) => Monad.Return(if b then 2*m + 1 else 2*m)
   }
 
-  // Definition 48
-  function ProbUnif(n: nat): (h: Monad.Hurd<nat>) {
-    if n == 0 then
+  function UnifStep(m: nat): Monad.Hurd<nat> {
+    Monad.Bind(Monad.Deconstruct, UnifStepHelper(m))
+  }
+
+  // Adapted from Definition 48 (see issue #79 for the reason of the modification)
+  // The return value u is uniformly distributed between 0 <= u < 2^k where 2^k <= n < 2^(k + 1).
+  function Sample(n: nat): (h: Monad.Hurd<nat>)
+    requires n >= 1
+  {
+    if n == 1 then
       Monad.Return(0)
     else
-      Monad.Bind(ProbUnif(n/2), UnifStep)
+      Monad.Bind(Sample(n/2), UnifStep)
   }
 
-  lemma {:axiom} ProbUnifTerminates(n: nat)
-    requires n > 0
-    ensures
-      var b := ProbUnif(n - 1);
-      var c := (x: nat) => x < n;
-      && Independence.IsIndepFn(b)
-      && Quantifier.ExistsStar(WhileAndUntil.Helper2(b, c))
-      && WhileAndUntil.ProbUntilTerminates(b, c)
-
-  function ProbUnifAlternative(n: nat, s: RandomNumberGenerator.RNG, k: nat := 1, u: nat := 0): (t: (nat, RandomNumberGenerator.RNG))
-    requires k >= 1
-    decreases 2*n - k
+  // A tail recursive version of Sample, closer to the imperative implementation
+  function SampleTailRecursive(n: nat, u: nat := 0): Monad.Hurd<nat>
+    requires n >= 1
   {
-    if k > n then
-      (u, s)
-    else
-      ProbUnifAlternative(n, Monad.Tail(s), 2*k, if Monad.Head(s) then 2*u + 1 else 2*u)
+    (s: RandomNumberGenerator.RNG) =>
+      if n == 1 then
+        (u, s)
+      else
+        SampleTailRecursive(n / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s))
   }
 
-  function UnifAlternativeModel(n: nat, k: nat := 1, u: nat := 0): Monad.Hurd<nat>
-    requires k >= 1
+  // Equivalence of Sample and its tail-recursive version
+  lemma SampleCorrespondence(n: nat, s: RandomNumberGenerator.RNG)
+    requires n >= 1
+    ensures SampleTailRecursive(n)(s) == Sample(n)(s)
   {
-    (s: RandomNumberGenerator.RNG) => ProbUnifAlternative(n, s, k, u)
-  }
-
-  function UnifModel(n: nat): (f: Monad.Hurd<nat>)
-    ensures forall s :: f(s) == UnifAlternativeModel(n)(s)
-  {
-    var f := ProbUnif(n);
-    assert forall s :: f(s) == UnifAlternativeModel(n)(s) by {
-      forall s ensures f(s) == UnifAlternativeModel(n)(s) {
-        ProbUnifCorrespondence(n, s);
+    if n == 1 {
+      assert SampleTailRecursive(n)(s) == Sample(n)(s);
+    } else {
+      var k := Helper.Log2Floor(n);
+      assert Helper.Power(2, k) <= n < Helper.Power(2, k + 1) by { Helper.Power2OfLog2Floor(n); }
+      calc {
+        SampleTailRecursive(n)(s);
+        { SampleTailRecursiveEqualIfSameLog2Floor(n, Helper.Power(2, k), k, 0, s); }
+        SampleTailRecursive(Helper.Power(2, k))(s);
+        Monad.Bind(Sample(Helper.Power(2, 0)), (u: nat) => SampleTailRecursive(Helper.Power(2, k), u))(s);
+        { RelateWithTailRecursive(k, 0, s); }
+        Sample(Helper.Power(2, k))(s);
+        { SampleEqualIfSameLog2Floor(n, Helper.Power(2, k), k, s); }
+        Sample(n)(s);
       }
     }
-    f
   }
 
-  // incomplete
-  lemma ProbUnifCorrespondence(n: nat, s: RandomNumberGenerator.RNG)
-    ensures ProbUnifAlternative(n, s) == ProbUnif(n)(s)
+  // All numbers between consecutive powers of 2 behave the same as arguments to SampleTailRecursive
+  lemma SampleTailRecursiveEqualIfSameLog2Floor(m: nat, n: nat, k: nat, u: nat, s: RandomNumberGenerator.RNG)
+    requires m >= 1
+    requires n >= 1
+    requires Helper.Power(2, k) <= m < Helper.Power(2, k + 1)
+    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
+    ensures SampleTailRecursive(m, u)(s) == SampleTailRecursive(n, u)(s)
   {
-    var f := (m: nat) =>
-        var g := (b: bool) =>
-                   Monad.Return(if b then 2*m + 1 else 2*m);
-        Monad.Bind(Monad.Deconstruct, g);
-    if n == 0 {
-    } else if n == 1 {
-      assert n / 2 == 0;
-      assert (0, s) == ProbUnif(n/2)(s);
+    if k == 0 {
+      assert m == n;
+    } else {
+      assert 1 <= m;
+      assert 1 <= n;
       calc {
-        ProbUnif(n)(s);
-        Monad.Bind(ProbUnif(n/2), f)(s);
-        f(0)(s);
-        Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return(if b then 1 else 0))(s);
-        Monad.Return(if Monad.Head(s) then 1 else 0)(Monad.Tail(s));
-        (if Monad.Head(s) then 1 else 0, Monad.Tail(s));
-        ProbUnifAlternative(1, Monad.Tail(s), 2, if Monad.Head(s) then 1 else 0);
-        ProbUnifAlternative(1, s, 1, 0);
-        ProbUnifAlternative(n, s);
+        SampleTailRecursive(m, u)(s);
+        SampleTailRecursive(m / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s));
+        { SampleTailRecursiveEqualIfSameLog2Floor(m / 2, n / 2, k - 1, if Monad.Head(s) then 2*u + 1 else 2*u, Monad.Tail(s)); }
+        SampleTailRecursive(n / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s));
+        SampleTailRecursive(n, u)(s);
+      }
+    }
+  }
+
+  // All numbers between consecutive powers of 2 behave the same as arguments to Sample
+  lemma SampleEqualIfSameLog2Floor(m: nat, n: nat, k: nat, s: RandomNumberGenerator.RNG)
+    requires m >= 1
+    requires n >= 1
+    requires Helper.Power(2, k) <= m < Helper.Power(2, k + 1)
+    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
+    ensures Sample(m)(s) == Sample(n)(s)
+  {
+    if k == 0 {
+      assert m == n;
+    } else {
+      assert 1 <= m;
+      assert 1 <= n;
+      calc {
+        Sample(m)(s);
+        Monad.Bind(Sample(m / 2), UnifStep)(s);
+        { SampleEqualIfSameLog2Floor(m / 2, n / 2, k - 1, s); }
+        Monad.Bind(Sample(n / 2), UnifStep)(s);
+        Sample(n)(s);
+      }
+    }
+  }
+
+  // The induction invariant for the equivalence proof (generalized version of SampleCorrespondence)
+  lemma RelateWithTailRecursive(l: nat, m: nat, s: RandomNumberGenerator.RNG)
+    decreases l
+    ensures Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s) == Sample(Helper.Power(2, m + l))(s)
+  {
+    if l == 0 {
+      calc {
+        Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
+        (var (u, s') := Sample(Helper.Power(2, m))(s); SampleTailRecursive(1, u)(s'));
+        Sample(Helper.Power(2, m + l))(s);
       }
     } else {
-      assume {:axiom} false;
+      assert LGreaterZero: Helper.Power(2, l) >= 1 by { Helper.PowerGreater0(2, l); }
+      assert MGreaterZero: Helper.Power(2, m) >= 1 by { Helper.PowerGreater0(2, m); }
+      assert L1GreaterZero: Helper.Power(2, l - 1) >= 1 by { Helper.PowerGreater0(2, l - 1); }
+      calc {
+        Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
+        (var (u, s') := Sample(Helper.Power(2, m))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));
+        { reveal LGreaterZero; }
+        (var (u, s') := Sample(Helper.Power(2, m))(s);
+         SampleTailRecursive(Helper.Power(2, l) / 2, if Monad.Head(s') then 2 * u + 1 else 2 * u)(Monad.Tail(s')));
+        { assert Helper.Power(2, l) / 2 == Helper.Power(2, l - 1); reveal L1GreaterZero; }
+        (var (u', s') := Monad.Bind(Sample(Helper.Power(2, m)), UnifStep)(s);
+         SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
+        { assert Helper.Power(2, m + 1) / 2 == Helper.Power(2, m); }
+        (var (u', s') := Sample(Helper.Power(2, m + 1))(s);
+         SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
+        Monad.Bind(Sample(Helper.Power(2, m + 1)), (u: nat) => SampleTailRecursive(Helper.Power(2, l - 1), u))(s);
+        { RelateWithTailRecursive(l - 1, m + 1, s); }
+        Sample(Helper.Power(2, m + l))(s);
+      }
     }
   }
 }

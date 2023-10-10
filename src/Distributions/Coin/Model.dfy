@@ -3,14 +3,11 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../ProbabilisticProgramming/RandomNumberGenerator.dfy"
-include "../../ProbabilisticProgramming/Monad.dfy"
-
-module BaseModel {
+module Coin.Model {
   import RandomNumberGenerator
   import Monad
 
-  function CoinModel(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
+  function Sample(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
     Monad.Deconstruct(s)
   }
 }

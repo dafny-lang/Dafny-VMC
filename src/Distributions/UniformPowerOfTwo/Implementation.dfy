@@ -3,30 +3,28 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "Interface.dfy"
-include "Model.dfy"
+module UniformPowerOfTwo.Implementation {
+  import Model
+  import Interface
 
-module UniformPowerOfTwoImplementation {
-  import UniformPowerOfTwoModel
-  import UniformPowerOfTwoInterface
-
-  trait {:termination false} TUniformPowerOfTwo extends UniformPowerOfTwoInterface.IUniformPowerOfTwo {
-    method UniformPowerOfTwo(n: nat) returns (u: nat)
+  trait {:termination false} Trait extends Interface.Trait {
+    method UniformPowerOfTwoSample(n: nat) returns (u: nat)
+      requires n >= 1
       modifies this
-      ensures UniformPowerOfTwoModel.UnifModel(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      var k := 1;
       u := 0;
+      var n' := n;
 
-      while k <= n
-        decreases 2*n - k
-        invariant k >= 1
-        invariant UniformPowerOfTwoModel.UnifAlternativeModel(n)(old(s)) == UniformPowerOfTwoModel.UnifAlternativeModel(n, k, u)(s)
+      while n' > 1
+        invariant n' >= 1
+        invariant Model.SampleTailRecursive(n)(old(s)) == Model.SampleTailRecursive(n', u)(s)
       {
-        var b := Coin();
-        k := 2*k;
+        var b := CoinSample();
         u := if b then 2*u + 1 else 2*u;
+        n' := n' / 2;
       }
+      Model.SampleCorrespondence(n, old(s));
     }
   }
 }

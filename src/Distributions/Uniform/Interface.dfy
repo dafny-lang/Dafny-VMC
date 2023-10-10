@@ -3,34 +3,30 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../Base/Interface.dfy"
-include "../UniformPowerOfTwo/Interface.dfy"
-include "Model.dfy"
+module Uniform.Interface {
+  import Coin
+  import Model
+  import UniformPowerOfTwo
 
-module UniformInterface {
-  import BaseInterface
-  import UniformModel
-  import UniformPowerOfTwoInterface
+  trait {:termination false} Trait extends Coin.Interface.Trait, UniformPowerOfTwo.Interface.Trait {
 
-  trait {:termination false} IUniform extends BaseInterface.TBase, UniformPowerOfTwoInterface.IUniformPowerOfTwo {
-
-    method Uniform(n: nat) returns (u: nat)
+    method UniformSample(n: nat) returns (u: nat)
       modifies this
       decreases *
       requires n > 0
       ensures u < n
-      ensures UniformModel.ProbUniform(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
 
-    method UniformInterval(a: int, b: int) returns (u: int)
+    method UniformIntervalSample(a: int, b: int) returns (u: int)
       modifies this
       decreases *
       requires a < b
       ensures a <= u < b
-      ensures UniformModel.ProbUniformInterval(a, b)(old(s)) == (u, s)
+      ensures Model.IntervalSample(a, b)(old(s)) == (u, s)
     {
-      var v := Uniform(b - a);
-      assert UniformModel.ProbUniform(b-a)(old(s)) == (v, s);
-      assert UniformModel.ProbUniformInterval(a, b)(old(s)) == (a + v, s);
+      var v := UniformSample(b - a);
+      assert Model.Sample(b-a)(old(s)) == (v, s);
+      assert Model.IntervalSample(a, b)(old(s)) == (a + v, s);
       u := a + v;
     }
 

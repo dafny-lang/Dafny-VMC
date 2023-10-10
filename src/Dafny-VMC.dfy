@@ -3,31 +3,20 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-// RUN: %verify "%s"
-
-include "Distributions/Base/Interface.dfy"
-include "Distributions/Bernoulli/Implementation.dfy"
-include "Distributions/Bernoulli/Implementation.dfy"
-include "Distributions/BernoulliExpNeg/Implementation.dfy"
-include "Distributions/DiscreteGaussian/Implementation.dfy"
-include "Distributions/DiscreteLaplace/Implementation.dfy"
-include "Distributions/UniformPowerOfTwo/Implementation.dfy"
-include "Distributions/Uniform/Implementation.dfy"
-
 module DafnyVMC {
-  import BaseInterface
-  import BernoulliImplementation
-  import UniformPowerOfTwoImplementation
-  import UniformImplementation
-  import BernoulliExpNegImplementation
-  import DiscreteGaussianImplementation
-  import DiscreteLaplaceImplementation
+  import Coin
+  import Bernoulli
+  import UniformPowerOfTwo
+  import Uniform
+  import BernoulliExpNeg
+  import DiscreteGaussian
+  import DiscreteLaplace
 
-  class DRandomFoundational extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, UniformImplementation.TUniformFoundational, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
+  class DRandomFoundational extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends BaseInterface.TBase, UniformPowerOfTwoImplementation.TUniformPowerOfTwo, BernoulliImplementation.TBernoulli, UniformImplementation.TUniformExtern, BernoulliExpNegImplementation.TBernoulliExpNeg, DiscreteGaussianImplementation.TDiscreteGaussian, DiscreteLaplaceImplementation.TDiscreteLaplace {
+  class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitExtern, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
     constructor {:extern} ()
   }
 }

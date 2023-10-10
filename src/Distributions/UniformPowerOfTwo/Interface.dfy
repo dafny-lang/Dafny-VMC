@@ -3,18 +3,17 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../Base/Interface.dfy"
-include "Model.dfy"
+module UniformPowerOfTwo.Interface {
+  import Coin
+  import Model
 
-module UniformPowerOfTwoInterface {
-  import BaseInterface
-  import UniformPowerOfTwoModel
+  trait {:termination false} Trait extends Coin.Interface.Trait {
 
-  trait {:termination false} IUniformPowerOfTwo extends BaseInterface.TBase {
-
-    method UniformPowerOfTwo(n: nat) returns (u: nat)
+    // The return value u is uniformly distributed between 0 <= u < 2^k where 2^k <= n < 2^(k + 1).
+    method UniformPowerOfTwoSample(n: nat) returns (u: nat)
+      requires n >= 1
       modifies this
-      ensures UniformPowerOfTwoModel.ProbUnif(n)(old(s)) == (u, s)
+      ensures Model.Sample(n)(old(s)) == (u, s)
 
   }
 }

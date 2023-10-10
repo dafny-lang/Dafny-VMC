@@ -8,22 +8,6 @@ module Helper {
    Definitions
   ************/
 
-  function Abs(x: real): real {
-    if x < 0.0 then
-      -x
-    else
-      x
-  }
-
-  function RealPower(b: real, n: nat): (p: real)
-    ensures b > 0.0 ==> p > 0.0
-  {
-    match n
-    case 0 => 1.0
-    case 1 => b
-    case _ => b * RealPower(b, n - 1)
-  }
-
   function Power(b: nat, n: nat): (p: nat)
     ensures b > 0 ==> p > 0
   {
@@ -33,56 +17,37 @@ module Helper {
     case _ => b * Power(b, n - 1)
   }
 
-  // See LOG2_ML
-  function Log2(n: nat): nat {
-    if n == 0 then
-      0
-    else
-      Log2(n / 2) + 1
+  function Log2Floor(n: nat): nat
+    requires n >= 1
+    decreases n
+  {
+    if n < 2
+    then 0
+    else Log2Floor(n / 2) + 1
   }
 
+  lemma Log2FloorDef(n: nat)
+    requires n >= 1
+    ensures Log2Floor(2 * n) == Log2Floor(n) + 1
+  {}
+
+  function boolToNat(b: bool): nat {
+    if b then 1 else 0
+  }
 
   /*******
    Lemmas
   *******/
 
-  lemma NatDivisionHelper(a: nat, b: nat)
-    requires b != 0
-    ensures a / b == (a as real / b as real).Floor
-  {
-    assert a == (a / b) * b + (a % b);
-    assert a as real == (a / b) as real * b as real + (a % b) as real;
-    assert a as real / b as real == (a / b) as real + (a % b) as real / b as real;
-  }
-
-  lemma DivisionByOne(x: real)
-    ensures x / (1 as real) == x
-    ensures x / 1.0 == x
-  {}
-
-  lemma DivisionSubstitute(x: real, a: real, b: real)
-    requires a == b
-    requires a != 0.0 && b != 0.0
-    ensures x / a == x / b
-  {}
-
-  lemma DivisionSubstituteAlternative(n: nat, a: nat, b: nat)
-    requires a == b
-    requires n != 0
-    ensures a / n == b / n
+  lemma Congruence<T, U>(x: T, y: T, f: T -> U)
+    requires x == y
+    ensures f(x) == f(y)
   {}
 
   lemma DivisionSubstituteAlternativeReal(x: real, a: real, b: real)
     requires a == b
     requires x != 0.0
     ensures a / x == b / x
-  {}
-
-  lemma SmallDivMod(n: nat, m: nat)
-    requires m > 0
-    requires n < m
-    ensures n / m == 0
-    ensures n % m == n
   {}
 
   lemma DivModAddDenominator(n: nat, m: nat)
@@ -94,9 +59,10 @@ module Helper {
     assert 0 == m * zp + ((n + m) % m) - (n % m);
   }
 
-  lemma DivModIsUnique(n: nat, m: nat, a: nat, b: nat)
+  lemma DivModIsUnique(n: int, m: int, a: int, b: int)
+    requires n >= 0
     requires m > 0
-    requires b < m
+    requires 0 <= b < m
     requires n == a * m + b
     ensures a == n / m
     ensures b == n % m
@@ -124,147 +90,48 @@ module Helper {
     DivModIsUnique(a * c + b, a, c + b / a, b % a);
   }
 
-  lemma MultiplicationSubstitute(x: real, a: real, b: real)
-    requires a == b
-    ensures a * x == b * x
-  {}
-
-  lemma InverseSubstitute(x: real, y: real)
-    requires x != 0.0
-    requires y != 0.0
-    requires x == y
-    ensures 1.0 / x == 1.0 / y
-  {}
-
   lemma DivisionByTwo(x: real)
     ensures 0.5 * x == x / 2.0
   {}
 
-  lemma RealAssoc(x: real, y: real)
-    requires y != 0.0
-    ensures (x * y) / y == x
+  lemma PowerGreater0(base: nat, exponent: nat)
+    requires base >= 1
+    ensures Power(base, exponent) >= 1
+  {}
+
+  lemma Power2OfLog2Floor(n: nat)
+    requires n >= 1
+    ensures Power(2, Log2Floor(n)) <= n < Power(2, Log2Floor(n) + 1)
+  {}
+
+  lemma NLtPower2Log2FloorOf2N(n: nat)
+    requires n >= 1
+    ensures n < Power(2, Log2Floor(2 * n))
   {
     calc {
-      (x * y) / y;
-    ==
-      x * (y / y);
-    == { assert y / y == 1.0; }
-      x * 1.0;
-    ==
-      x;
-    }
-  }
-
-  lemma NatAssoc(a: nat, b: nat)
-    requires b != 0
-    ensures ((a as real) * (b as real)) / (b as real) == (a as real)
-  {
-    RealAssoc(a as real, b as real);
-  }
-
-  lemma NatDivision(a: nat, b: nat)
-    requires b != 0
-    ensures (a * b) / b == a
-  {
-    calc {
-      (a * b) / b;
-    == { NatDivisionHelper(a * b, b); }
-      ((a * b) as real / b as real).Floor;
-    == { assert (a * b) as real == (a as real) * (b as real); }
-      (((a as real) * (b as real)) / (b as real)).Floor;
-    == { NatAssoc(a, b); }
-      ((a as real)).Floor;
-    ==
-      a;
-    }
-  }
-
-  lemma PowerDivision(b: nat, n: int)
-    requires b != 0 && n >= 1
-    ensures Power(b, n) / b == Power(b, n - 1)
-  {
-    if n == 1 {
-      calc {
-        Power(b, n) / b;
-      ==
-        b / b;
-      ==
-        1;
-      ==
-        Power(b, 0);
-      ==
-        Power(b, n - 1);
-      }
-    } else {
-      calc {
-        Power(b, n) / b;
-      == { }
-        (b * Power(b, n - 1)) / b;
-      == { }
-        (Power(b, n - 1) * b) / b;
-      == { NatDivision(Power(b, n - 1), b); }
-        Power(b, n - 1);
-      }
-    }
-  }
-
-  // // See DivMod.dfy in StdLib
-  // lemma DivDecreases(n: nat, d: nat)
-  //   requires n != 0
-  //   requires 1 < d
-  //   ensures n / d < n
-  // {
-  //   calc {
-  //     n / d;
-  //   == { LemmaAboutNatDivision(n, d); }
-  //     (n as real / d as real).Floor;
-  //   < { assert n as real / d as real < n as real / 1 as real; }
-  //     (n as real / 1 as real).Floor;
-  //   ==
-  //     (n as real).Floor;
-  //   ==
-  //     n;
-  //   }
-  // }
-
-  lemma LemmaDivisionByTwo(n: nat)
-    requires n != 0
-    ensures n / 2 <= n - 1
-  {
-    if n == 1 {
-      calc {
-        n / 2;
-      ==
-        1 / 2;
-      ==
-        0;
-      ==
-        n - 1;
-      }
-    } else {
-      calc {
-        n / 2;
-      ==
-        (n as real / 2 as real).Floor;
-      ==
-        ((n - 1 + 1) as real / 2 as real).Floor;
-      ==
-        (((n - 1) as real / 2 as real) + (1 as real / 2 as real)).Floor;
-      <=
-        (((n - 1) as real / 2 as real) + 1.0).Floor;
-      ==
-        ((n - 1) as real / 2 as real).Floor + 1;
-      <=
-        n - 2 + 1;
-      ==
-        n - 1;
-      }
+      n;
+    < { Power2OfLog2Floor(n); }
+      Power(2, Log2Floor(n) + 1);
+    == { Log2FloorDef(n); }
+      Power(2, Log2Floor(2 * n));
     }
   }
 
   lemma AdditionOfFractions(x: real, y: real, z: real)
     requires z != 0.0
     ensures (x / z) + (y / z) == (x + y) / z
+  {}
+
+  lemma DivSubstituteDividend(x: real, y: real, z: real)
+    requires y != 0.0
+    requires x == z
+    ensures x / y == z / y
+  {}
+
+  lemma DivSubstituteDivisor(x: real, y: real, z: real)
+    requires y != 0.0
+    requires y == z
+    ensures x / y == x / z
   {}
 
   lemma DivDivToDivMul(x: real, y: real, z: real)
@@ -277,19 +144,23 @@ module Helper {
     ensures (x * y) as real == (x as real) * (y as real)
   {}
 
-  lemma Log2LowerSuc(n: nat)
-    ensures n + 1 <= Power(2, Log2(n))
-  {}
-
-  lemma Log2BothSides(n: nat)
-    requires n != 0
-    ensures Power(2, Log2(n) - 1) <= n < Power(2, Log2(n))
-  {}
-
   lemma SimplifyFractions(x: real, y: real, z: real)
     requires z != 0.0
     requires y != 0.0
     ensures (x / z) / (y / z) == x / y
   {}
 
+  lemma PowerOfTwoLemma(k: nat)
+    ensures (1.0 / Power(2, k) as real) / 2.0 == 1.0 / (Power(2, k + 1) as real)
+  {
+    calc {
+      (1.0 / Power(2, k) as real) / 2.0;
+    == { DivDivToDivMul(1.0, Power(2, k) as real, 2.0); }
+      1.0 / (Power(2, k) as real * 2.0);
+    == { NatMulNatToReal(Power(2, k), 2); }
+      1.0 / (Power(2, k) * 2) as real;
+    ==
+      1.0 / (Power(2, k + 1) as real);
+    }
+  }
 }

@@ -16,12 +16,28 @@ fi
 
 echo Running $TARGET_LANG tests...
 echo "Running tests/TestsFoundational.dfy:"
-time $DAFNY test --target:$TARGET_LANG interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsFoundational.dfy
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 echo "Running tests/TestsExternUniform.dfy:"
-time $DAFNY test --target:$TARGET_LANG interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsExternUniform.dfy
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
 
 echo Running $TARGET_LANG documentation...
-echo "Running docs/ExamplesFoundational.dfy"
-$DAFNY run docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG --input interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG
-echo "docs/ExamplesExternUniform.dfy"
-$DAFNY run docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG --input interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG --input interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG
+
+echo "Building docs/dafny/ExamplesFoundational.dfy..." 
+$DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
+echo "Executing compiled docs/dafny/ExamplesFoundational.dfy:" 
+if [ "$TARGET_LANG" = "cs" ]
+then
+  dotnet docs/dafny/ExamplesFoundational.dll
+else
+  java -jar docs/dafny/ExamplesFoundational.jar
+fi
+
+echo "Building docs/dafny/ExamplesExternUniform.dfy..." 
+$DAFNY build docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
+echo "Executing compiled docs/dafny/ExamplesExternUniform.dfy:" 
+if [ "$TARGET_LANG" = "cs" ]
+then
+  dotnet docs/dafny/ExamplesExternUniform.dll
+else
+  java -jar docs/dafny/ExamplesExternUniform.jar
+fi

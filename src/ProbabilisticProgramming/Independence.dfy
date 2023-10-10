@@ -3,10 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "RandomNumberGenerator.dfy"
-include "Monad.dfy"
-include "../Math/MeasureTheory.dfy"
-
 module Independence {
   import Monad
   import RandomNumberGenerator
@@ -29,13 +25,27 @@ module Independence {
   }
 
   // Definition 35
-  predicate {:axiom} IsIndepFn<A>(f: Monad.Hurd<A>)
-    ensures IsIndepFunction(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
+  ghost predicate {:axiom} IsIndepFn<A(!new)>(f: Monad.Hurd<A>)
 
   /*******
    Lemmas
   *******/
+
+  lemma {:axiom} IsIndepFnImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
+    requires IsIndepFn(f)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.boolEventSpace, s => f(s).0)
+
+  lemma {:axiom} IsIndepFnImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
+    requires IsIndepFn(f)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => f(s).0)
+
+  lemma {:axiom} IsIndepFnImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
+    requires IsIndepFn(f)
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
+
+  lemma {:axiom} IsIndepFnImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
+    requires IsIndepFn(f)
+    ensures IsIndepFunction(f)
 
   // Equation (3.17)
   lemma {:axiom} DeconstructIsIndepFn()

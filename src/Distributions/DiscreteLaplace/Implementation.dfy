@@ -3,17 +3,14 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "Interface.dfy"
-
-module DiscreteLaplaceImplementation {
+module DiscreteLaplace.Implementation {
   import Rationals
-  import DiscreteLaplaceInterface
+  import Interface
 
-  trait {:termination false} TDiscreteLaplace extends DiscreteLaplaceInterface.IDiscreteLaplace {
+  trait {:termination false} Trait extends Interface.Trait {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
-    method DiscreteLaplace(scale: Rationals.Rational) returns (z: int)
+    method DiscreteLaplaceSample(scale: Rationals.Rational) returns (z: int)
       modifies this
       requires scale.numer >= 1
       decreases *
@@ -23,8 +20,8 @@ module DiscreteLaplaceImplementation {
       while b && y == 0
         decreases *
       {
-        var u := Uniform(scale.numer);
-        var d := BernoulliExpNeg(Rationals.Rational(u, scale.numer));
+        var u := UniformSample(scale.numer);
+        var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
         if !d {
           continue;
         }
@@ -33,14 +30,14 @@ module DiscreteLaplaceImplementation {
         while a
           decreases *
         {
-          a := BernoulliExpNeg(Rationals.Int(1));
+          a := BernoulliExpNegSample(Rationals.Int(1));
           if a {
             v := v + 1;
           }
         }
         var x := u + scale.numer * v;
         y := x / scale.denom;
-        b := Bernoulli(Rationals.Rational(1, 2));
+        b := BernoulliSample(Rationals.Rational(1, 2));
       }
       z := if b then -y else y;
     }

@@ -14,4 +14,4 @@ then
   exit 1
 fi
 
-$DAFNY build --target:$TARGET_LANG interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG src/Dafny-VMC.dfy -o build/$TARGET_LANG/Dafny-VMC
+$DAFNY build --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG src/Dafny-VMC.dfy -o build/$TARGET_LANG/Dafny-VMC dfyconfig.toml --no-verify

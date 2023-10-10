@@ -3,24 +3,20 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-include "../../Math/Rationals.dfy"
-include "Interface.dfy"
-include "Model.dfy"
-
-module BernoulliImplementation {
+module Bernoulli.Implementation {
   import Rationals
-  import BernoulliModel
-  import BernoulliInterface
+  import Model
+  import Interface
 
-  trait {:termination false} TBernoulli extends BernoulliInterface.IBernoulli {
+  trait {:termination false} Trait extends Interface.Trait {
 
-    method Bernoulli(p: Rationals.Rational) returns (c: bool)
+    method BernoulliSample(p: Rationals.Rational) returns (c: bool)
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures BernoulliModel.ProbBernoulli(p.numer, p.denom)(old(s)) == (c, s)
+      ensures Model.Sample(p.numer, p.denom)(old(s)) == (c, s)
     {
-      var k := Uniform(p.denom);
+      var k := UniformSample(p.denom);
       c := k < p.numer;
     }
 
