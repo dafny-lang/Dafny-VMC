@@ -5,6 +5,7 @@
 
 module BernoulliExpNeg.Correctness {
   import Rationals
+  import Partials
   import Exponential
   import RandomNumberGenerator
   import Independence
@@ -12,7 +13,11 @@ module BernoulliExpNeg.Correctness {
 
   lemma {:axiom} Correctness(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(gamma)(s).0 == Partial.Terminating(true)) == Exponential.Exp(-Rationals.ToReal(gamma))
+    ensures RandomNumberGenerator.mu(iset s | Model.Sample(gamma)(s).Value() == Partials.Terminating(true)) == Exponential.Exp(-Rationals.ToReal(gamma))
+
+  lemma {:axiom} Termination(gamma: Rationals.Rational)
+    requires 0 <= gamma.numer
+    ensures RandomNumberGenerator.mu(iset s | Model.Sample(gamma)(s).Diverging?) == 0.0
 
   lemma {:axiom} SampleIsIndepFn(gamma: Rationals.Rational)
     requires 0 <= gamma.numer

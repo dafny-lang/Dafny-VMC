@@ -8,7 +8,7 @@ module Coin.Model {
   import RandomNumberGenerator
   import Monad
 
-  function Sample(s: RandomNumberGenerator.RNG): Partials.Partial<(bool, RandomNumberGenerator.RNG)> {
+  function Sample(s: RandomNumberGenerator.RNG): Monad.Result<bool> {
     Monad.Deconstruct(s)
   }
 }

@@ -5,6 +5,7 @@
 
 module Bernoulli.Implementation {
   import Rationals
+  import Monad
   import Model
   import Interface
 
@@ -14,7 +15,7 @@ module Bernoulli.Implementation {
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures Model.Sample(p.numer, p.denom)(old(s)) == (Partial.Terminating(c), s)
+      ensures Model.Sample(p.numer, p.denom)(old(s)) == Monad.Terminating(c, s)
     {
       var k := UniformSample(p.denom);
       c := k < p.numer;

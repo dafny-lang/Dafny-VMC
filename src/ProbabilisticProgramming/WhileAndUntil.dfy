@@ -37,25 +37,21 @@ module WhileAndUntil {
 
   // Theorem 38
   ghost function ProbWhile<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
-    requires ProbWhileTerminates(condition, body)
   {
-    var terminatingRngs: iset<RandomNumberGenerator.RNG> := iset s | ProbWhileTerminatesOn(condition, body, init, s);
     (s: RandomNumberGenerator.RNG) =>
-      if s in terminatingRngs
+      if ProbWhileTerminatesOn(condition, body, init, s)
       then
         var fuel :| ProbWhileCut(condition, body, fuel, init)(s).Terminating?;
         ProbWhileCut(condition, body, fuel, init)(s)
       else
-        Partials.Diverging
+        Monad.Diverging
   }
 
-  method ProbWhileImperative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: Partials.Partial<(A, RandomNumberGenerator.RNG)>)
-    requires ProbWhileTerminates(condition, body)
+  method ProbWhileImperative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: Monad.Result<A>)
     ensures ProbWhile(condition, body, init)(s) == t
     decreases *
 
-  method ProbWhileImperativeAlternative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: Partials.Partial<(A, RandomNumberGenerator.RNG)>)
-    requires ProbWhileTerminates(condition, body)
+  method ProbWhileImperativeAlternative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: Monad.Result<A>)
     ensures ProbWhile(condition, body, init)(s) == t
     decreases *
 
@@ -67,65 +63,55 @@ module WhileAndUntil {
 
   // Definition 44
   ghost function ProbUntil<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
-    requires ProbUntilTerminates(proposal, accept)
-    ensures
-      var reject := (a: A) => !accept(a);
-      var body := (a: A) => proposal;
-      forall s ::
-        proposal(s).Satisfies((x: (A, RandomNumberGenerator.RNG)) =>
-        f(s) == ProbWhile(reject, body, x.0)(x.1))
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
     Monad.Bind(proposal, (a: A) => ProbWhile(reject, body, a))
   }
 
-  method ProbUntilImperative<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: RandomNumberGenerator.RNG) returns (t: Partials.Partial<(A, RandomNumberGenerator.RNG)>)
-    requires ProbUntilTerminates(proposal, accept)
+  method ProbUntilImperative<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: RandomNumberGenerator.RNG) returns (t: Monad.Result<A>)
     ensures t == ProbUntil(proposal, accept)(s)
     decreases *
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
     match proposal(s) {
-      case Diverging => t := Partials.Diverging;
-      case Terminating((init, s')) => t := ProbWhileImperative(reject, body, init, s');
+      case Diverging => t := Monad.Diverging;
+      case Terminating(init, s') => t := ProbWhileImperative(reject, body, init, s');
     }
   }
 
   function WhileLoopExitsAfterOneIteration<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool, init: A): (RandomNumberGenerator.RNG -> bool) {
     (s: RandomNumberGenerator.RNG) =>
-      !body(init)(s).Satisfies((x: (A, RandomNumberGenerator.RNG)) => condition(x.0))
+      !body(init)(s).ValueSatisfies(condition)
   }
 
   function ProposalIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (RandomNumberGenerator.RNG -> bool) {
     (s: RandomNumberGenerator.RNG) =>
-      proposal(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => accept(res.0))
+      proposal(s).ValueSatisfies(accept)
   }
 
   ghost function UntilLoopResultIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (RandomNumberGenerator.RNG -> bool)
-    requires ProbUntilTerminates(proposal, accept)
   {
     (s: RandomNumberGenerator.RNG) =>
-      ProbUntil(proposal, accept)(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => accept(res.0))
+      ProbUntil(proposal, accept)(s).ValueSatisfies(accept)
   }
 
   ghost function UntilLoopResultHasProperty<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<RandomNumberGenerator.RNG>
-    requires ProbUntilTerminates(proposal, accept)
   {
-    iset s | ProbUntil(proposal, accept)(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => property(res.0))
+    iset s | ProbUntil(proposal, accept)(s).ValueSatisfies(property)
   }
 
   ghost function ProposalIsAcceptedAndHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<RandomNumberGenerator.RNG>
   {
     iset s |
-      && proposal(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => property(res.0))
-      && proposal(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => accept(res.0))
+      && proposal(s).ValueSatisfies(property)
+      && proposal(s).ValueSatisfies(accept)
   }
 
   ghost function ProposalAcceptedEvent<A>(proposal: Monad.Hurd<A>, accept: A -> bool): iset<RandomNumberGenerator.RNG>
   {
-    iset s | proposal(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => accept(res.0))
+    iset s | proposal(s).ValueSatisfies(accept)
   }
 
 
@@ -135,12 +121,12 @@ module WhileAndUntil {
 
   lemma EnsureProbUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
     requires Independence.IsIndepFn(proposal)
-    requires Quantifier.ExistsStar((s: RandomNumberGenerator.RNG) => proposal(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => accept(res.0)))
+    requires Quantifier.ExistsStar((s: RandomNumberGenerator.RNG) => proposal(s).ValueSatisfies(accept))
     ensures ProbUntilTerminates(proposal, accept)
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    var proposalIsAccepted := (s: RandomNumberGenerator.RNG) => proposal(s).Satisfies((res: (A, RandomNumberGenerator.RNG)) => accept(res.0));
+    var proposalIsAccepted := (s: RandomNumberGenerator.RNG) => proposal(s).ValueSatisfies(accept);
     assert ProbUntilTerminates(proposal, accept) by {
       forall a: A ensures Independence.IsIndepFn(body(a)) {
         assert body(a) == proposal;

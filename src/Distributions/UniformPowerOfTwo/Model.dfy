@@ -37,7 +37,7 @@ module UniformPowerOfTwo.Model {
   {
     (s: RandomNumberGenerator.RNG) =>
       if n == 1 then
-        Partials.Terminating((u, s))
+        Monad.Terminating(u, s)
       else
         SampleTailRecursive(n / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s))
   }
@@ -119,7 +119,7 @@ module UniformPowerOfTwo.Model {
     if l == 0 {
       match Sample(Helper.Power(2, m))(s)
       case Diverging => {}
-      case Terminating((u, s')) =>
+      case Terminating(u, s') =>
         calc {
           Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
           (SampleTailRecursive(1, u)(s'));

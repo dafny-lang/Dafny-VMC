@@ -5,6 +5,7 @@
 
 module UniformPowerOfTwo.Correctness {
   import Helper
+  import Partials
   import Monad
   import Independence
   import RandomNumberGenerator
@@ -20,13 +21,13 @@ module UniformPowerOfTwo.Correctness {
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
   {
-    RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).Satisfies(val => val == m)) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
+    RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m)) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
-  function Sample1(n: nat): RandomNumberGenerator.RNG -> RandomNumberGenerator.RNG
+  function Sample1(n: nat): RandomNumberGenerator.RNG -> Partials.Partial<RandomNumberGenerator.RNG>
     requires n >= 1
   {
-    (s: RandomNumberGenerator.RNG) => Model.Sample(n)(s).1
+    (s: RandomNumberGenerator.RNG) => Model.Sample(n)(s).Rng()
   }
 
   /*******
@@ -39,18 +40,18 @@ module UniformPowerOfTwo.Correctness {
   lemma UnifCorrectness2(n: nat, m: nat)
     requires n >= 1
     ensures
-      var e := iset s | Model.Sample(n)(s).0 == m;
+      var e := iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m);
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == if m < Helper.Power(2, Helper.Log2Floor(n)) then 1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real) else 0.0
   {
-    var e := iset s | Model.Sample(n)(s).0 == m;
+    var e := iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m);
     var k := Helper.Log2Floor(n);
 
     assert e in RandomNumberGenerator.event_space by {
       assert iset{m} in MeasureTheory.natEventSpace;
-      var preimage := MeasureTheory.PreImage((s: RandomNumberGenerator.RNG) => Model.Sample(n)(s).0, iset{m});
+      var preimage := MeasureTheory.PreImage((s: RandomNumberGenerator.RNG) => Model.Sample(n)(s).Value(), iset{Partials.Terminating(m)});
       assert preimage in RandomNumberGenerator.event_space by {
-        assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => Model.Sample(n)(s).0) by {
+        assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialNatEventSpace, s => Model.Sample(n)(s).Value()) by {
           SampleIsIndepFn(n);
           Independence.IsIndepFnImpliesFstMeasurableNat(Model.Sample(n));
         }
@@ -67,18 +68,18 @@ module UniformPowerOfTwo.Correctness {
     requires n >= 1
     requires m <= Helper.Power(2, Helper.Log2Floor(n))
     ensures
-      var e := iset s | Model.Sample(n)(s).0 < m;
+      var e := iset s | Model.Sample(n)(s).ValueSatisfies(v => v < m);
       && e in RandomNumberGenerator.event_space
       && RandomNumberGenerator.mu(e) == (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real)
   {
-    var e := iset s | Model.Sample(n)(s).0 < m;
+    var e := iset s | Model.Sample(n)(s).ValueSatisfies(v => v < m);
 
     if m == 0 {
       assert e == iset{};
       RandomNumberGenerator.RNGHasMeasure();
     } else {
-      var e1 := iset s | Model.Sample(n)(s).0 < m-1;
-      var e2 := iset s | Model.Sample(n)(s).0 == m-1;
+      var e1 := iset s | Model.Sample(n)(s).ValueSatisfies(v => v < m-1);
+      var e2 := iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m-1);
       assert e1 in RandomNumberGenerator.event_space by {
         UnifCorrectness2Inequality(n, m-1);
       }
@@ -117,9 +118,9 @@ module UniformPowerOfTwo.Correctness {
       assert n >= 1 by { Helper.PowerGreater0(2, k); }
       if k == 0 {
         if m == 0 {
-          assert (iset s | Model.Sample(1)(s).0 == m) == (iset s);
+          assert (iset s | Model.Sample(1)(s).ValueSatisfies(v => v == m)) == (iset s);
         } else {
-          assert (iset s | Model.Sample(1)(s).0 == m) == iset{};
+          assert (iset s | Model.Sample(1)(s).ValueSatisfies(v => v == m)) == iset{};
         }
         RandomNumberGenerator.RNGHasMeasure();
         assert UnifIsCorrect(n, k, m);
@@ -130,9 +131,9 @@ module UniformPowerOfTwo.Correctness {
         }
         if m < Helper.Power(2, k) {
           calc {
-            RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
+            RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m));
           == { SampleProbRecursiveHalf(n, m); }
-            RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+            RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).ValueSatisfies(v => v == u)) / 2.0;
           == { reveal RecursiveCorrect; }
             (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
           == { Helper.PowerOfTwoLemma(k - 1); }
@@ -141,9 +142,9 @@ module UniformPowerOfTwo.Correctness {
           assert UnifIsCorrect(n, k, m);
         } else {
           calc {
-            RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
+            RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m));
           == { SampleProbRecursiveHalf(n, m); }
-            RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+            RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).ValueSatisfies(v => v == u)) / 2.0;
           == { reveal RecursiveCorrect; }
             0.0 / 2.0;
           ==
@@ -182,28 +183,28 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleIsMeasurePreserving(n: nat)
     requires n >= 1
-    ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, Sample1(n))
+    ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.partial_event_space, RandomNumberGenerator.partial_mu, Sample1(n))
   {
     var f := Sample1(n);
-    assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, f) by {
+    assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.partial_event_space, f) by {
       SampleIsIndepFn(n);
       Independence.IsIndepFnImpliesSndMeasurable(Model.Sample(n));
       assert Independence.IsIndepFn(Model.Sample(n));
     }
     if n == 1 {
-      forall e | e in RandomNumberGenerator.event_space ensures RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.mu(e) {
-        forall s: RandomNumberGenerator.RNG ensures f(s) == s {
-          assert f(s) == s;
+      forall e | e in RandomNumberGenerator.partial_event_space ensures RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.partial_mu(e) {
+        forall s: RandomNumberGenerator.RNG ensures f(s) == Partials.Terminating(s) {
+          assert f(s) == Partials.Terminating(s);
         }
-        MeasureTheory.PreImageIdentity(f, e);
       }
-      assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, f);
+      assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.partial_event_space, RandomNumberGenerator.partial_mu, f);
     } else {
       var g := Sample1(n / 2);
-      forall e | e in RandomNumberGenerator.event_space ensures RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.mu(e) {
-        var e' := (iset s | Monad.Tail(s) in e);
-        assert e' in RandomNumberGenerator.event_space by {
-          assert e' == MeasureTheory.PreImage(Monad.Tail, e);
+      var mapTail := (s: Partials.Partial<RandomNumberGenerator.RNG>) => s.Map(Monad.Tail);
+      forall e | e in RandomNumberGenerator.partial_event_space ensures RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.partial_mu(e) {
+        var e' := iset s: Partials.Partial<RandomNumberGenerator.RNG> | mapTail(s) in e;
+        assert e' in RandomNumberGenerator.partial_event_space by {
+          assert e' == MeasureTheory.PreImage(mapTail, e);
           Monad.TailIsMeasurePreserving();
           assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, Monad.Tail);
         }
@@ -212,84 +213,88 @@ module UniformPowerOfTwo.Correctness {
             forall s ensures f(s) in e <==> g(s) in e' {
               calc {
                 f(s) in e;
-              <==> { assert f(s) == Model.Sample(n)(s).1; }
-                Model.Sample(n)(s).1 in e;
+              <==> { assert f(s) == Model.Sample(n)(s).Rng(); }
+                Model.Sample(n)(s).Rng() in e;
               <==> { SampleTailDecompose(n, s); }
-                Monad.Tail(Model.Sample(n / 2)(s).1) in e;
+                Model.Sample(n / 2)(s).Rng().Map(Monad.Tail) in e;
               <==>
-                Model.Sample(n / 2)(s).1 in e';
-              <==> { assert Model.Sample(n / 2)(s).1 == g(s); }
+                Model.Sample(n / 2)(s).Rng() in e';
+              <==> { assert Model.Sample(n / 2)(s).Rng() == g(s); }
                 g(s) in e';
               }
             }
           }
           MeasureTheory.PreImagesEqual(f, e, g, e');
         }
-        assert RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.mu(e) by {
+        assert RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e)) == RandomNumberGenerator.partial_mu(e) by {
           calc {
             RandomNumberGenerator.mu(MeasureTheory.PreImage(f, e));
           ==
             RandomNumberGenerator.mu(MeasureTheory.PreImage(g, e'));
-          == { SampleIsMeasurePreserving(n / 2); assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, g); assert e' in RandomNumberGenerator.event_space; }
-            RandomNumberGenerator.mu(e');
-          == { assert e' == MeasureTheory.PreImage(Monad.Tail, e); }
-            RandomNumberGenerator.mu(MeasureTheory.PreImage(Monad.Tail, e));
+          == { SampleIsMeasurePreserving(n / 2); assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.partial_event_space, RandomNumberGenerator.partial_mu, g); assert e' in RandomNumberGenerator.partial_event_space; }
+            RandomNumberGenerator.partial_mu(e');
+          == { assert e' == MeasureTheory.PreImage(mapTail, e); }
+            RandomNumberGenerator.partial_mu(MeasureTheory.PreImage(mapTail, e));
           == { Monad.TailIsMeasurePreserving(); }
-            RandomNumberGenerator.mu(e);
+            RandomNumberGenerator.partial_mu(e);
           }
         }
       }
-      assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, f);
+      assert MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.partial_event_space, RandomNumberGenerator.partial_mu, f);
     }
   }
 
   lemma SampleTailDecompose(n: nat, s: RandomNumberGenerator.RNG)
     requires n >= 2
-    ensures Model.Sample(n)(s).1 == Monad.Tail(Model.Sample(n / 2)(s).1)
+    ensures Model.Sample(n)(s).Rng() == Model.Sample(n / 2)(s).Rng().Map(Monad.Tail)
   {
-    var (a, s') := Model.Sample(n / 2)(s);
-    var (b, s'') := Monad.Deconstruct(s');
-    calc {
-      Model.Sample(n)(s).1;
-    ==
-      Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).1;
-    ==
-      Model.UnifStep(a)(s').1;
-    ==
-      Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').1;
-    ==
-      Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').1;
-    ==
-      s'';
-    ==
-      Monad.Tail(s');
-    ==
-      Monad.Tail(Model.Sample(n / 2)(s).1);
-    }
+    match Model.Sample(n / 2)(s)
+    case Diverging => {}
+    case Terminating(a, s') =>
+      match Monad.Deconstruct(s')
+      case Diverging => {}
+      case Terminating(b, s'') =>
+        calc {
+          Model.Sample(n)(s).Rng();
+        ==
+          Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).Rng();
+        ==
+          Model.UnifStep(a)(s').Rng();
+        ==
+          Monad.Bind(Monad.Deconstruct, (b: bool) => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').Rng();
+        ==
+          Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').Rng();
+        ==
+          Partials.Terminating(s'');
+        ==
+          Partials.Terminating(Monad.Tail(s'));
+        ==
+          Model.Sample(n / 2)(s).Rng().Map(Monad.Tail);
+        }
   }
 
   lemma SampleSetEquality(n: nat, m: nat)
     requires n >= 2
     ensures
-      var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-      var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-      (iset s | Model.Sample(n)(s).0 == m) == (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m)
+      var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).rng).val;
+      var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).val;
+      (iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m)) == (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m)
   {
-    var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
-    var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    forall s ensures Model.Sample(n)(s).0 == m <==> (2 * a_of(s) + Helper.boolToNat(b_of(s)) == m) {
-      var (a, s') := Model.Sample(n / 2)(s);
-      var (b, s'') := Monad.Deconstruct(s');
+    var b_of := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).rng).val;
+    var a_of := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).val;
+    forall s ensures Model.Sample(n)(s).ValueSatisfies(v => v == m) <==> (2 * a_of(s) + Helper.boolToNat(b_of(s)) == m) {
+      var (a, s') := Model.Sample(n / 2)(s).Extract();
+      var (b, s'') := Monad.Deconstruct(s').Extract();
       calc {
-        Model.Sample(n)(s).0;
+        Model.Sample(n)(s).val;
       ==
-        Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).0;
+        Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).val;
       ==
-        Model.UnifStep(a)(s').0;
+        Model.UnifStep(a)(s').val;
       ==
-        Monad.Bind(Monad.Deconstruct, b => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').0;
+        Monad.Bind(Monad.Deconstruct, b => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').val;
       ==
-        Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').0;
+        Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').val;
       ==
         if b then 2*a + 1 else 2*a;
       }
@@ -298,16 +303,16 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleProbRecursiveHalf(n: nat, m: nat)
     requires n >= 2
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m) == RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
+    ensures RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m)) == RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).ValueSatisfies(v => v == m / 2)) / 2.0
   {
-    var a_of: RandomNumberGenerator.RNG -> nat := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).0;
-    var b_of: RandomNumberGenerator.RNG -> bool := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).1).0;
+    var a_of: RandomNumberGenerator.RNG -> nat := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).val;
+    var b_of: RandomNumberGenerator.RNG -> bool := (s: RandomNumberGenerator.RNG) => Monad.Deconstruct(Model.Sample(n / 2)(s).rng).val;
     var A: iset<nat> := (iset x: nat | x == m / 2);
-    var E: iset<RandomNumberGenerator.RNG> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Deconstruct(s).0));
-    var f := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).1;
+    var E: iset<RandomNumberGenerator.RNG> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Deconstruct(s).val));
+    var f := (s: RandomNumberGenerator.RNG) => Model.Sample(n / 2)(s).rng;
 
-    var e1 := (iset s | Model.Sample(n / 2)(s).1 in E);
-    var e2 := (iset s | Model.Sample(n / 2)(s).0 in A);
+    var e1 := (iset s | Model.Sample(n / 2)(s).rng in E);
+    var e2 := (iset s | Model.Sample(n / 2)(s).val in A);
     var e3 := (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
@@ -326,18 +331,18 @@ module UniformPowerOfTwo.Correctness {
     }
 
     assert Eq2: (iset s | a_of(s) == m / 2) == e2 by {
-      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).0 in A {
+      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).val in A {
       }
     }
 
-    assert Eq3: (iset s | a_of(s) == m / 2) == (iset s | Model.Sample(n / 2)(s).0 == m / 2) by {
-      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).0 == m / 2 {
-        assert a_of(s) == Model.Sample(n / 2)(s).0;
+    assert Eq3: (iset s | a_of(s) == m / 2) == (iset s | Model.Sample(n / 2)(s).ValueSatisfies(v => v == m / 2)) by {
+      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).ValueSatisfies(v => v == m / 2) {
+        assert a_of(s) == Model.Sample(n / 2)(s).val;
       }
     }
 
     assert Eq4: e1 == MeasureTheory.PreImage(f, E) by {
-      forall s ensures Model.Sample(n / 2)(s).1 in E <==> f(s) in E {
+      forall s ensures Model.Sample(n / 2)(s).rng in E <==> f(s) in E {
       }
     }
 
@@ -373,7 +378,7 @@ module UniformPowerOfTwo.Correctness {
     }
 
     calc {
-      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).0 == m);
+      RandomNumberGenerator.mu(iset s | Model.Sample(n)(s).ValueSatisfies(v => v == m));
     == { SampleSetEquality(n, m); }
       RandomNumberGenerator.mu(e3);
     == { reveal SplitEvent; }
@@ -387,7 +392,7 @@ module UniformPowerOfTwo.Correctness {
     == { reveal Eq2; }
       RandomNumberGenerator.mu(iset s | a_of(s) == m / 2) / 2.0;
     == { reveal Eq3; }
-      RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0;
+      RandomNumberGenerator.mu(iset s | Model.Sample(n / 2)(s).ValueSatisfies(v => v == m / 2)) / 2.0;
     }
   }
 }

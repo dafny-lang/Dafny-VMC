@@ -25,10 +25,20 @@ module RandomNumberGenerator {
 
   ghost const mu: iset<RNG> -> real
 
+  ghost function partial_mu(event: iset<Partials.Partial<RNG>>): real {
+    mu(iset s | Partials.Terminating(s) in event)
+  }
+
   /*******
    Lemmas
   *******/
 
   lemma {:axiom} RNGHasMeasure()
     ensures MeasureTheory.IsProbability(event_space, sample_space, mu)
+
+  lemma PartialRngHasMeasure()
+    ensures MeasureTheory.IsProbability(partial_event_space, partial_sample_space, partial_mu)
+  {
+    // todo
+  }
 }

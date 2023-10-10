@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module UniformPowerOfTwo.Implementation {
-  import Partials
+  import Monad
   import Model
   import Interface
 
@@ -12,7 +12,7 @@ module UniformPowerOfTwo.Implementation {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
       modifies this
-      ensures Model.Sample(n)(old(s)) == Partials.Terminating((u, s))
+      ensures Model.Sample(n)(old(s)) == Monad.Terminating(u, s)
     {
       u := 0;
       var n' := n;

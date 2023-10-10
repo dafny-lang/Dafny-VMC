@@ -5,6 +5,7 @@
 
 module BernoulliExpNeg.Implementation {
   import Rationals
+  import Monad
   import Interface
   import Model
 
@@ -15,7 +16,7 @@ module BernoulliExpNeg.Implementation {
       modifies this
       requires gamma.numer >= 0
       decreases *
-      ensures (Partial.Terminating(c), s) == Model.Sample(gamma)(old(s))
+      ensures Model.Sample(gamma)(old(s)) == Monad.Terminating(c, s)
     {
       var gamma' := gamma;
       var b := true;
@@ -31,14 +32,14 @@ module BernoulliExpNeg.Implementation {
       } else {
         c := false;
       }
-      assume {:axiom} (Partial.Terminating(c), s) == Model.Sample(gamma)(old(s)); // add later
+      assume {:axiom} Monad.Terminating(c, s) == Model.Sample(gamma)(old(s)); // add later
     }
 
     method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       requires 0 <= gamma.numer <= gamma.denom
       decreases *
-      ensures (Partial.Terminating(c), s) == Model.SampleGammaLe1(gamma)(old(s))
+      ensures Monad.Terminating(c, s) == Model.SampleGammaLe1(gamma)(old(s))
     {
       var k := 0;
       var a := true;
@@ -49,7 +50,7 @@ module BernoulliExpNeg.Implementation {
         a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
       }
       c := k % 2 == 1;
-      assume {:axiom} (Partial.Terminating(c), s) == Model.SampleGammaLe1(gamma)(old(s)); // add later
+      assume {:axiom} Monad.Terminating(c, s) == Model.SampleGammaLe1(gamma)(old(s)); // add later
     }
 
   }

@@ -12,12 +12,66 @@ module Monad {
    Definitions
   ************/
 
-  type Hurd<A> = RandomNumberGenerator.RNG -> Partials.Partial<(A, RandomNumberGenerator.RNG)>
+  // This is not just defined as Partials.Partial<(A, RandomNumberGenerator.RNG)> for ergonomics (methods etc)
+  datatype Result<T> = Diverging | Terminating(val: T, rng: RandomNumberGenerator.RNG) {
+    predicate IsFailure() {
+      Diverging?
+    }
+
+    function PropagateFailure<U>(): Result<U> {
+      Diverging
+    }
+
+    function Extract(): (T, RandomNumberGenerator.RNG)
+      requires !IsFailure()
+    {
+      (this.val, this.rng)
+    }
+
+    function Map<U>(f: T -> U): Result<U> {
+      match this
+      case Terminating(val, rng) => Terminating(f(val), rng)
+      case Diverging => Diverging
+    }
+
+    function ToPartial(): Partials.Partial<(T, RandomNumberGenerator.RNG)> {
+      match this
+      case Diverging => Partials.Diverging
+      case Terminating(val, rng) => Partials.Terminating((val, rng))
+    }
+
+    function Value(): Partials.Partial<T> {
+      match this
+      case Diverging => Partials.Diverging
+      case Terminating(val, _) => Partials.Terminating(val)
+    }
+
+    function Rng(): Partials.Partial<RandomNumberGenerator.RNG> {
+      match this
+      case Diverging => Partials.Diverging
+      case Terminating(_, rng) => Partials.Terminating(rng)
+    }
+
+    function Satisfies(property: (T, RandomNumberGenerator.RNG) -> bool): bool {
+      match this
+      case Diverging => false
+      case Terminating(val, rng) => property(val, rng)
+    }
+
+    function ValueSatisfies(property: T -> bool): bool {
+      match this
+      case Diverging => false
+      case Terminating(val, _) => property(val)
+    }
+  }
+
+  type Hurd<A> = RandomNumberGenerator.RNG -> Result<A>
+
 
   ghost function rngsWithResult<A>(f: Hurd<A>, valueProperty: A -> bool, resultRngProperty: RandomNumberGenerator.RNG -> bool): iset<RandomNumberGenerator.RNG> {
     iset s | match f(s)
       case Diverging => false
-      case Terminating((a, s')) => valueProperty(a) && resultRngProperty(s')
+      case Terminating(a, s') => valueProperty(a) && resultRngProperty(s')
   }
 
   ghost function rngsWithResultValue<A>(f: Hurd<A>, resultValueProperty: A -> bool): iset<RandomNumberGenerator.RNG> {
@@ -53,8 +107,8 @@ module Monad {
   }
 
   // Equation (2.42)
-  function Deconstruct(s: RandomNumberGenerator.RNG): Partials.Partial<(bool, RandomNumberGenerator.RNG)> {
-    Partials.Terminating((Head(s), Tail(s)))
+  function Deconstruct(s: RandomNumberGenerator.RNG): Result<bool> {
+    Terminating(Head(s), Tail(s))
   }
 
   // Equation (2.41)
@@ -80,11 +134,11 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: RandomNumberGenerator.RNG) => Partials.Terminating((a, s))
+    (s: RandomNumberGenerator.RNG) => Terminating(a, s)
   }
 
   function Diverge<A>(): Hurd<A> {
-    (s: RandomNumberGenerator.RNG) => Partials.Diverging
+    (s: RandomNumberGenerator.RNG) => Diverging
   }
 
   function Map<A,B>(f: A -> B, m: Hurd<A>): Hurd<B> {
@@ -108,11 +162,11 @@ module Monad {
   {
     match f(s)
     case Diverging => {}
-    case Terminating((a, s')) =>
+    case Terminating(a, s') =>
       match g(a)(s')
       case Diverging => {}
-      case Terminating((a', s'')) => {
-        assert Bind(f, g)(s) == Partials.Terminating((a', s''));
+      case Terminating(a', s'') => {
+        assert Bind(f, g)(s) == Terminating(a', s'');
         calc {
           Bind(Bind(f, g), h)(s);
           h(a')(s'');

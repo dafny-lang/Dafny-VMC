@@ -33,15 +33,15 @@ module Independence {
 
   lemma {:axiom} IsIndepFnImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
     requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialBoolEventSpace, s => f(s).Map((x: (bool, RandomNumberGenerator.RNG)) => x.0))
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialBoolEventSpace, s => f(s).Value())
 
   lemma {:axiom} IsIndepFnImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
     requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialNatEventSpace, s => f(s).Map((x: (nat, RandomNumberGenerator.RNG)) => x.0))
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.partialNatEventSpace, s => f(s).Value())
 
   lemma {:axiom} IsIndepFnImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.partial_event_space, s => f(s).Map((x: (A, RandomNumberGenerator.RNG)) => x.1))
+    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.partial_event_space, s => f(s).Rng())
 
   lemma {:axiom} IsIndepFnImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndepFn(f)

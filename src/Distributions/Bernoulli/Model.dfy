@@ -8,13 +8,13 @@ module Bernoulli.Model {
   import Monad
 
   // Footnote 5, p. 82
-  ghost function Sample(numer: nat, denom: nat): (f: Partial.Hurd<bool>)
+  ghost function Sample(numer: nat, denom: nat): (f: Monad.Hurd<bool>)
     requires denom != 0
     requires numer <= denom
-    ensures forall s :: f(s).0 == Uniform.Model.Sample(denom)(s).0.Map(x => x < numer)
-    ensures forall s :: f(s).1 == Uniform.Model.Sample(denom)(s).1
+    ensures forall s :: f(s).Value() == Uniform.Model.Sample(denom)(s).Value().Map(x => x < numer)
+    ensures forall s :: f(s).Rng() == Uniform.Model.Sample(denom)(s).Rng()
   {
-    Partial.Map((k: nat) => k < numer, Uniform.Model.Sample(denom))
+    Monad.Map((k: nat) => k < numer, Uniform.Model.Sample(denom))
   }
 
 }
