@@ -18,7 +18,7 @@ public final class DRandomUniform {
   }
 
   public static BigInteger Uniform(BigInteger n) {
-    // `intValueExact` will throw an `ArithmeticException` if `n` does not fit in an `int`.
+    // `n.intValueExact` will throw an `ArithmeticException` if `n` does not fit in an `int`.
     // see https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html#intValueExact--
     return BigInteger.valueOf(RNG.get().nextInt(n.intValueExact()));
   }
