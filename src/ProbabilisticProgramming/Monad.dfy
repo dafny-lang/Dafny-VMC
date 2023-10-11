@@ -70,8 +70,8 @@ module Monad {
 
   ghost function rngsWithResult<A>(f: Hurd<A>, valueProperty: A -> bool, resultRngProperty: RandomNumberGenerator.RNG -> bool): iset<RandomNumberGenerator.RNG> {
     iset s | match f(s)
-      case Diverging => false
-      case Terminating(a, s') => valueProperty(a) && resultRngProperty(s')
+             case Diverging => false
+             case Terminating(a, s') => valueProperty(a) && resultRngProperty(s')
   }
 
   ghost function rngsWithResultValue<A>(f: Hurd<A>, resultValueProperty: A -> bool): iset<RandomNumberGenerator.RNG> {

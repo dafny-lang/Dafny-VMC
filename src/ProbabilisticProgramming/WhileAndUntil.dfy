@@ -19,10 +19,10 @@ module WhileAndUntil {
     if fuel == 0 then
       Monad.Diverge()
     else
-      if condition(init) then
-        Monad.Bind(body(init), (a: A) => ProbWhileCut(condition, body, a, fuel - 1))
-      else
-        Monad.Return(init)
+    if condition(init) then
+      Monad.Bind(body(init), (a: A) => ProbWhileCut(condition, body, a, fuel - 1))
+    else
+      Monad.Return(init)
   }
 
   // Definition 39 / True iff mu(iset s | ProbWhile(condition, body, a)(s) terminates) == 1
@@ -99,8 +99,8 @@ module WhileAndUntil {
   ghost function ProposalIsAcceptedAndHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<RandomNumberGenerator.RNG>
   {
     iset s |
-      && proposal(s).ValueSatisfies(property)
-      && proposal(s).ValueSatisfies(accept)
+    && proposal(s).ValueSatisfies(property)
+    && proposal(s).ValueSatisfies(accept)
   }
 
   ghost function ProposalAcceptedEvent<A>(proposal: Monad.Hurd<A>, accept: A -> bool): iset<RandomNumberGenerator.RNG>
