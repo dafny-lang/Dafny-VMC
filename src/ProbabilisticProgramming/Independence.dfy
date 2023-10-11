@@ -19,8 +19,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<RandomNumberGenerator.RNG>) {
-    var e1 := Monad.rngsWithResultValue(f, v => v in A);
-    var e2 := Monad.rngsWithResultRng(f, s => s in E);
+    var e1 := iset s: RandomNumberGenerator.RNG | f(s).ValueSatisfies(x => x in A);
+    var e2 := iset s: RandomNumberGenerator.RNG | f(s).Rng().Satisfies(s => s in E);
     MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
   }
 

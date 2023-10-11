@@ -67,21 +67,6 @@ module Monad {
 
   type Hurd<A> = RandomNumberGenerator.RNG -> Result<A>
 
-
-  ghost function rngsWithResult<A>(f: Hurd<A>, valueProperty: A -> bool, resultRngProperty: RandomNumberGenerator.RNG -> bool): iset<RandomNumberGenerator.RNG> {
-    iset s | match f(s)
-             case Diverging => false
-             case Terminating(a, s') => valueProperty(a) && resultRngProperty(s')
-  }
-
-  ghost function rngsWithResultValue<A>(f: Hurd<A>, resultValueProperty: A -> bool): iset<RandomNumberGenerator.RNG> {
-    rngsWithResult(f, resultValueProperty, s => true)
-  }
-
-  ghost function rngsWithResultRng<A>(f: Hurd<A>, resultRngProperty: RandomNumberGenerator.RNG -> bool): iset<RandomNumberGenerator.RNG> {
-    rngsWithResult(f, a => true, resultRngProperty)
-  }
-
   // Equation (2.38)
   function Tail(s: RandomNumberGenerator.RNG): (s': RandomNumberGenerator.RNG) {
     TailIsRNG(s);

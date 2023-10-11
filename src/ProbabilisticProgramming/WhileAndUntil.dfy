@@ -41,14 +41,6 @@ module WhileAndUntil {
         Monad.Diverging
   }
 
-  method ProbWhileImperative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: Monad.Result<A>)
-    ensures ProbWhile(condition, body, init)(s) == t
-    decreases *
-
-  method ProbWhileImperativeAlternative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) returns (t: Monad.Result<A>)
-    ensures ProbWhile(condition, body, init)(s) == t
-    decreases *
-
   ghost predicate ProbUntilTerminatesAlmostSurely<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool) {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
@@ -61,18 +53,6 @@ module WhileAndUntil {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
     Monad.Bind(proposal, (a: A) => ProbWhile(reject, body, a))
-  }
-
-  method ProbUntilImperative<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: RandomNumberGenerator.RNG) returns (t: Monad.Result<A>)
-    ensures t == ProbUntil(proposal, accept)(s)
-    decreases *
-  {
-    var reject := (a: A) => !accept(a);
-    var body := (a: A) => proposal;
-    match proposal(s) {
-      case Diverging => t := Monad.Diverging;
-      case Terminating(init, s') => t := ProbWhileImperative(reject, body, init, s');
-    }
   }
 
   function WhileLoopExitsAfterOneIteration<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool, init: A): (RandomNumberGenerator.RNG -> bool) {
