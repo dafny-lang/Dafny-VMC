@@ -1,34 +1,32 @@
-src/Distributions/BernoulliExpNeg/Correctness.dfy(13,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(17,17): SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/BernoulliExpNeg/Implementation.dfy(34,6): BernoulliExpNegSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Implementation.dfy(52,6): BernoulliExpNegSampleCaseLe1: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(30,4): GammaReductionLoop: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(60,4): GammaLe1Loop: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Coin/Interface.dfy(20,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Uniform/Implementation.dfy(43,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(14,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(18,17): SampleIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Implementation.dfy(35,6): BernoulliExpNegSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Implementation.dfy(53,6): BernoulliExpNegSampleCaseLe1: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Implementation.dfy(44,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
 src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(2,26): Exp: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(4,17): FunctionalEquation: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(7,17): Increasing: Declaration has explicit `{:axiom}` attribute. 
-src/Math/MeasureTheory.dfy(150,17): CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
-src/Math/MeasureTheory.dfy(25,4): CountableSum: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Independence.dfy(28,27): IsIndepFn: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(34,17): IsIndepFnImpliesFstMeasurableBool: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(38,17): IsIndepFnImpliesFstMeasurableNat: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(42,17): IsIndepFnImpliesSndMeasurable: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(46,17): IsIndepFnImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(51,17): DeconstructIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(55,17): ReturnIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Independence.dfy(59,17): IndepFnIsCompositional: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(136,17): TailIsRNG: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(140,17): HeadIsMeasurable: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(147,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(153,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/RandomNumberGenerator.dfy(13,21): IsRNG: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/RandomNumberGenerator.dfy(27,17): RNGHasMeasure: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(165,17): EnsureProbWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(171,17): ProbUntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(183,17): ProbUntilAsBind: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(197,4): EnsureProbUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(207,8): ProbWhileIsIndepFn: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(39,4): ProbWhile: Definition has `assume {:axiom}` statement in body. 
+src/Math/MeasureTheory.dfy(164,17): CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
+src/Math/MeasureTheory.dfy(27,4): CountableSum: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Independence.dfy(34,27): IsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(40,17): IsIndepFnImpliesFstMeasurableBool: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(44,17): IsIndepFnImpliesFstMeasurableNat: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(48,17): IsIndepFnImpliesSndMeasurable: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(52,17): IsIndepFnImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(57,17): DeconstructIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(61,17): ReturnIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(65,17): IndepFnIsCompositional: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(195,17): TailIsRNG: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(199,17): HeadIsMeasurable: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(206,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(212,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/RandomNumberGenerator.dfy(14,21): IsRNG: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/RandomNumberGenerator.dfy(36,17): RNGHasMeasure: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(117,17): ProbWhileUnroll: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(143,17): EnsureProbWhileTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(149,17): ProbUntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(161,17): ProbUntilAsBind: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(175,4): EnsureProbUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(185,8): ProbWhileIsIndepFn: Definition has `assume {:axiom}` statement in body. 

@@ -15,10 +15,6 @@ module BernoulliExpNeg.Correctness {
     requires 0 <= gamma.numer
     ensures RandomNumberGenerator.mu(iset s | Model.Sample(gamma)(s).Value() == Partials.Terminating(true)) == Exponential.Exp(-Rationals.ToReal(gamma))
 
-  lemma {:axiom} Termination(gamma: Rationals.Rational)
-    requires 0 <= gamma.numer
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(gamma)(s).Diverging?) == 0.0
-
   lemma {:axiom} SampleIsIndepFn(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
     ensures Independence.IsIndepFn(Model.Sample(gamma))

@@ -51,7 +51,6 @@ module BernoulliExpNeg.Model {
   ghost function GammaLe1Loop(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
     requires 0 <= gamma.numer <= gamma.denom
   {
-    assume {:axiom} false; // assume termination
     Monad.Bind(
       WhileAndUntil.ProbWhile(
         (ak: (bool, nat)) => ak.0,
