@@ -12,7 +12,7 @@ public final class DRandomUniform {
 
   private static final SecureRandom createSecureRandom() {
     final SecureRandom rng = new SecureRandom();
-    // Requires for proper initialization
+    // Required for proper initialization
     rng.nextBoolean(); 
     return rng;
   }
