@@ -18,15 +18,15 @@ src/ProbabilisticProgramming/Independence.dfy(52,17): IsIndepFnImpliesIsIndepFun
 src/ProbabilisticProgramming/Independence.dfy(57,17): DeconstructIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(61,17): ReturnIsIndepFn: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(65,17): IndepFnIsCompositional: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(195,17): TailIsRNG: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(199,17): HeadIsMeasurable: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(206,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(212,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(180,17): TailIsRNG: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(184,17): HeadIsMeasurable: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(191,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(197,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomNumberGenerator.dfy(14,21): IsRNG: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomNumberGenerator.dfy(36,17): RNGHasMeasure: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(117,17): ProbWhileUnroll: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(143,17): EnsureProbWhileTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(149,17): ProbUntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(161,17): ProbUntilAsBind: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(175,4): EnsureProbUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/WhileAndUntil.dfy(185,8): ProbWhileIsIndepFn: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(123,17): EnsureProbWhileTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(129,17): ProbUntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(141,17): ProbUntilAsBind: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(155,4): EnsureProbUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(165,8): ProbWhileIsIndepFn: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/WhileAndUntil.dfy(97,17): ProbWhileUnroll: Declaration has explicit `{:axiom}` attribute. 
