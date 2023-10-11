@@ -7,10 +7,15 @@ module Independence {
   import Monad
   import RandomNumberGenerator
   import MeasureTheory
+  import Quantifier
 
   /************
    Definitions
   ************/
+
+  ghost predicate TerminatesAlmostSurely<A>(f: Monad.Hurd<A>) {
+    Quantifier.ForAllStar((s: RandomNumberGenerator.RNG) => f(s).Terminating?)
+  }
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<RandomNumberGenerator.RNG>) {
@@ -21,7 +26,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunction<A(!new)>(f: Monad.Hurd<A>) {
-    forall A: iset<A>, E: iset<RandomNumberGenerator.RNG> | E in RandomNumberGenerator.event_space :: IsIndepFunctionCondition(f, A, E)
+    && TerminatesAlmostSurely(f)
+    && forall A: iset<A>, E: iset<RandomNumberGenerator.RNG> | E in RandomNumberGenerator.event_space :: IsIndepFunctionCondition(f, A, E)
   }
 
   // Definition 35
@@ -55,19 +61,8 @@ module Independence {
   lemma {:axiom} ReturnIsIndepFn<T>(x: T)
     ensures IsIndepFn(Monad.Return(x))
 
-  lemma PartialReturnIsIndepFn<T>(x: T)
-    ensures IsIndepFn(Monad.Return(x))
-  {
-    ReturnIsIndepFn(x);
-  }
-
   // Equation (3.19)
   lemma {:axiom} IndepFnIsCompositional<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
-    requires IsIndepFn(f)
-    requires forall a :: IsIndepFn(g(a))
-    ensures IsIndepFn(Monad.Bind(f, g))
-
-  lemma IndepFnIsCompositionalPartial<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
     requires IsIndepFn(f)
     requires forall a :: IsIndepFn(g(a))
     ensures IsIndepFn(Monad.Bind(f, g))

@@ -35,7 +35,7 @@ module Bernoulli.Correctness {
       }
     }
 
-    Independence.IndepFnIsCompositionalPartial(f, g);
+    Independence.IndepFnIsCompositional(f, g);
   }
 
 

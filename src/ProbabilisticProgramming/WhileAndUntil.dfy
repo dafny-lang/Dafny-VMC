@@ -15,34 +15,28 @@ module WhileAndUntil {
   ************/
 
   // Definition 37
-  function ProbWhileCut<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, fuel: nat, init: A): Monad.Hurd<A> {
+  function ProbWhileCut<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, fuel: nat): Monad.Hurd<A> {
     if fuel == 0 then
       Monad.Diverge()
-    else (
-           if condition(init) then
-             Monad.Bind(body(init), (a: A) => ProbWhileCut(condition, body, fuel - 1, a))
-           else
-             Monad.Return(init)
-         )
-  }
-
-  ghost predicate ProbWhileTerminatesOn<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG) {
-    exists fuel: nat :: ProbWhileCut(condition, body, fuel, init)(s).Terminating?
+    else
+      if condition(init) then
+        Monad.Bind(body(init), (a: A) => ProbWhileCut(condition, body, a, fuel - 1))
+      else
+        Monad.Return(init)
   }
 
   // Definition 39 / True iff mu(iset s | ProbWhile(condition, body, a)(s) terminates) == 1
-  ghost predicate ProbWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
-    forall init :: Quantifier.ForAllStar((s: RandomNumberGenerator.RNG) => ProbWhileTerminatesOn(condition, body, init, s))
+  ghost predicate ProbWhileTerminatesAlmostSurely<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
+    forall init :: Independence.TerminatesAlmostSurely(ProbWhile(condition, body, init))
   }
 
-  // Theorem 38
   ghost function ProbWhile<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
   {
     (s: RandomNumberGenerator.RNG) =>
-      if ProbWhileTerminatesOn(condition, body, init, s)
+      if exists fuelBound: nat :: ProbWhileCut(condition, body, init, fuelBound)(s).Terminating?
       then
-        var fuel :| ProbWhileCut(condition, body, fuel, init)(s).Terminating?;
-        ProbWhileCut(condition, body, fuel, init)(s)
+        var fuelBound: nat :| ProbWhileCut(condition, body, init, fuelBound)(s).Terminating?;
+        ProbWhileCut(condition, body, init, fuelBound)(s)
       else
         Monad.Diverging
   }
@@ -55,10 +49,10 @@ module WhileAndUntil {
     ensures ProbWhile(condition, body, init)(s) == t
     decreases *
 
-  ghost predicate ProbUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool) {
+  ghost predicate ProbUntilTerminatesAlmostSurely<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool) {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    ProbWhileTerminates(reject, body)
+    ProbWhileTerminatesAlmostSurely(reject, body)
   }
 
   // Definition 44
@@ -119,15 +113,19 @@ module WhileAndUntil {
    Lemmas
   *******/
 
-  lemma EnsureProbUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
+  // Theorem 38
+  lemma {:axiom} ProbWhileUnroll<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: RandomNumberGenerator.RNG)
+    ensures ProbWhile(condition, body, init) == if condition(init) then Monad.Bind(body(init), next => ProbWhile(condition, body, next)) else Monad.Return(init)
+
+  lemma EnsureProbUntilTerminatesAlmostSurely<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
     requires Independence.IsIndepFn(proposal)
     requires Quantifier.ExistsStar((s: RandomNumberGenerator.RNG) => proposal(s).ValueSatisfies(accept))
-    ensures ProbUntilTerminates(proposal, accept)
+    ensures ProbUntilTerminatesAlmostSurely(proposal, accept)
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
     var proposalIsAccepted := (s: RandomNumberGenerator.RNG) => proposal(s).ValueSatisfies(accept);
-    assert ProbUntilTerminates(proposal, accept) by {
+    assert ProbUntilTerminatesAlmostSurely(proposal, accept) by {
       forall a: A ensures Independence.IsIndepFn(body(a)) {
         assert body(a) == proposal;
       }
@@ -135,23 +133,23 @@ module WhileAndUntil {
         assert Quantifier.ExistsStar(proposalIsAccepted);
         assert (iset s | proposalIsAccepted(s)) == (iset s | WhileLoopExitsAfterOneIteration(body, reject, a)(s));
       }
-      assert ProbWhileTerminates(reject, body) by {
-        EnsureProbWhileTerminates(reject, body);
+      assert ProbWhileTerminatesAlmostSurely(reject, body) by {
+        EnsureProbWhileTerminatesAlmostSurely(reject, body);
       }
     }
   }
 
   // (Equation 3.30) / Sufficient conditions for while-loop termination
-  lemma {:axiom} EnsureProbWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>)
+  lemma {:axiom} EnsureProbWhileTerminatesAlmostSurely<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>)
     requires forall a :: Independence.IsIndepFn(body(a))
     requires forall a :: Quantifier.ExistsStar(WhileLoopExitsAfterOneIteration(body, condition, a))
-    ensures ProbWhileTerminates(condition, body)
+    ensures ProbWhileTerminatesAlmostSurely(condition, body)
 
   // Theorem 45 (wrong!) / PROB_BERN_UNTIL (correct!)
   lemma {:axiom} ProbUntilProbabilityFraction<A>(proposal: Monad.Hurd<A>, accept: A -> bool, d: A -> bool)
     requires Independence.IsIndepFn(proposal)
     requires Quantifier.ExistsStar(ProposalIsAccepted(proposal, accept))
-    ensures ProbUntilTerminates(proposal, accept)
+    ensures ProbUntilTerminatesAlmostSurely(proposal, accept)
     ensures
       && UntilLoopResultHasProperty(proposal, accept, d) in RandomNumberGenerator.event_space
       && ProposalIsAcceptedAndHasProperty(proposal, accept, d) in RandomNumberGenerator.event_space
@@ -163,23 +161,23 @@ module WhileAndUntil {
   lemma {:axiom} ProbUntilAsBind<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, s: RandomNumberGenerator.RNG)
     requires Independence.IsIndepFn(proposal)
     requires Quantifier.ExistsStar(ProposalIsAccepted(proposal, accept))
-    ensures ProbUntilTerminates(proposal, accept)
+    ensures ProbUntilTerminatesAlmostSurely(proposal, accept)
     ensures ProbUntil(proposal, accept) == Monad.Bind(proposal, (x: A) => if accept(x) then Monad.Return(x) else ProbUntil(proposal, accept))
 
   // Equation (3.40)
   lemma EnsureProbUntilTerminatesAndForAll<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
     requires Independence.IsIndepFn(proposal)
     requires Quantifier.ExistsStar(ProposalIsAccepted(proposal, accept))
-    ensures ProbUntilTerminates(proposal, accept)
+    ensures ProbUntilTerminatesAlmostSurely(proposal, accept)
     ensures Quantifier.ForAllStar(UntilLoopResultIsAccepted(proposal, accept))
   {
-    EnsureProbUntilTerminates(proposal, accept);
+    EnsureProbUntilTerminatesAlmostSurely(proposal, accept);
     assume {:axiom} Quantifier.ForAllStar(UntilLoopResultIsAccepted(proposal, accept)); // add later
   }
 
   lemma ProbWhileIsIndepFn<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
     requires forall a: A :: Independence.IsIndepFn(body(a))
-    requires ProbWhileTerminates(condition, body)
+    requires ProbWhileTerminatesAlmostSurely(condition, body)
     ensures Independence.IsIndepFn(ProbWhile(condition, body, init))
   {
     if condition(init) {
@@ -189,13 +187,13 @@ module WhileAndUntil {
       }
       Independence.IndepFnIsCompositional(body(init), a => ProbWhile(condition, body, a));
     } else {
-      Independence.PartialReturnIsIndepFn(init);
+      Independence.ReturnIsIndepFn(init);
     }
   }
 
   lemma ProbUntilIsIndepFn<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
     requires Independence.IsIndepFn(proposal)
-    requires ProbUntilTerminates(proposal, accept)
+    requires ProbUntilTerminatesAlmostSurely(proposal, accept)
     ensures Independence.IsIndepFn(ProbUntil(proposal, accept))
   {
     var reject := (a: A) => !accept(a);

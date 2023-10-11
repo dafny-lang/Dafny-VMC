@@ -157,7 +157,7 @@ module Uniform.Correctness {
     assert Independence.IsIndepFn(Model.Proposal(n)) by {
       UniformPowerOfTwo.Correctness.SampleIsIndepFn(2 * n);
     }
-    assert WhileAndUntil.ProbUntilTerminates(Model.Proposal(n), Model.Accept(n)) by {
+    assert WhileAndUntil.ProbUntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
       SampleTerminates(n);
     }
     WhileAndUntil.ProbUntilIsIndepFn(Model.Proposal(n), Model.Accept(n));
@@ -169,7 +169,7 @@ module Uniform.Correctness {
     ensures
       && Independence.IsIndepFn(Model.Proposal(n))
       && Quantifier.ExistsStar(WhileAndUntil.ProposalIsAccepted(Model.Proposal(n), Model.Accept(n)))
-      && WhileAndUntil.ProbUntilTerminates(Model.Proposal(n), Model.Accept(n))
+      && WhileAndUntil.ProbUntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n))
   {
     assert Independence.IsIndepFn(Model.Proposal(n)) by {
       UniformPowerOfTwo.Correctness.SampleIsIndepFn(2 * n);
@@ -201,8 +201,8 @@ module Uniform.Correctness {
         }
       }
     }
-    assert WhileAndUntil.ProbUntilTerminates(Model.Proposal(n), Model.Accept(n)) by {
-      WhileAndUntil.EnsureProbUntilTerminates(Model.Proposal(n), Model.Accept(n));
+    assert WhileAndUntil.ProbUntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
+      WhileAndUntil.EnsureProbUntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n));
     }
   }
 }
