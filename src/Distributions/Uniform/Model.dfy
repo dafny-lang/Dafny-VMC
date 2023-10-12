@@ -14,7 +14,7 @@ module Uniform.Model {
   import UniformPowerOfTwo
 
   // Definition 49
-  function Sample(n: nat): Monad.Hurd<nat>
+  ghost function Sample(n: nat): Monad.Hurd<nat>
     requires n > 0
   {
     SampleTerminates(n);
@@ -33,7 +33,7 @@ module Uniform.Model {
     (m: nat) => m < n
   }
 
-  function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
+  ghost function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
   {
     (s: Rand.Bitstream) =>
@@ -46,7 +46,7 @@ module Uniform.Model {
     ensures
       && Independence.IsIndep(Proposal(n))
       && Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n)))
-      && Loops.UntilTerminates(Proposal(n), Accept(n))
+      && Loops.UntilTerminatesAlmostSurely(Proposal(n), Accept(n))
   {
     assert Independence.IsIndep(Proposal(n)) by {
       UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
@@ -78,8 +78,16 @@ module Uniform.Model {
         }
       }
     }
-    assert Loops.UntilTerminates(Proposal(n), Accept(n)) by {
+    assert Loops.UntilTerminatesAlmostSurely(Proposal(n), Accept(n)) by {
       Loops.EnsureUntilTerminates(Proposal(n), Accept(n));
     }
+  }
+
+  lemma SampleUnroll(n: nat, s: Rand.Bitstream)
+    requires n > 0
+    ensures Sample(n)(s) == Monad.Bind(Proposal(n), (x: nat) => if Accept(n)(x) then Monad.Return(x) else Sample(n))(s)
+  {
+    SampleTerminates(n);
+    Loops.UntilUnroll(Proposal(n), Accept(n), s);
   }
 }

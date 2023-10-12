@@ -10,7 +10,7 @@ module BernoulliExpNeg.Model {
   import Loops
   import BernoulliModel = Bernoulli.Model
 
-  function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
+  ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires gamma.denom != 0
     requires gamma.numer >= 0
   {
@@ -24,7 +24,7 @@ module BernoulliExpNeg.Model {
     )
   }
 
-  function GammaReductionLoop(gamma: Rationals.Rational): Monad.Hurd<(bool, Rationals.Rational)>
+  ghost function GammaReductionLoop(gamma: Rationals.Rational): Monad.Hurd<(bool, Rationals.Rational)>
     requires gamma.numer >= 0
   {
     assume {:axiom} false; // assume termination
@@ -35,7 +35,7 @@ module BernoulliExpNeg.Model {
     )
   }
 
-  function GammaReductionLoopIter(bgamma: (bool, Rationals.Rational)): Monad.Hurd<(bool, Rationals.Rational)>
+  ghost function GammaReductionLoopIter(bgamma: (bool, Rationals.Rational)): Monad.Hurd<(bool, Rationals.Rational)>
     requires bgamma.1.numer >= 0
   {
     Monad.Bind(
@@ -44,7 +44,7 @@ module BernoulliExpNeg.Model {
     )
   }
 
-  function SampleGammaLe1(gamma: Rationals.Rational): Monad.Hurd<bool>
+  ghost function SampleGammaLe1(gamma: Rationals.Rational): Monad.Hurd<bool>
   {
     if 0 <= gamma.numer <= gamma.denom
     then Monad.Bind(
@@ -54,7 +54,7 @@ module BernoulliExpNeg.Model {
     else Monad.Return(false) // to keep this function total, we return a dummy value here
   }
 
-  function GammaLe1Loop(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
+  ghost function GammaLe1Loop(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
     requires 0 <= gamma.numer <= gamma.denom
   {
     assume {:axiom} false; // assume termination
@@ -65,7 +65,7 @@ module BernoulliExpNeg.Model {
     )
   }
 
-  function GammaLe1LoopIter(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
+  ghost function GammaLe1LoopIter(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
     requires 0 <= gamma.numer <= gamma.denom
   {
     Monad.Bind(

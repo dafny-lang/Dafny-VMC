@@ -162,7 +162,7 @@ module Uniform.Correctness {
     assert Independence.IsIndep(Model.Proposal(n)) by {
       UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
     }
-    assert Loops.UntilTerminates(Model.Proposal(n), Model.Accept(n)) by {
+    assert Loops.UntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
       Model.SampleTerminates(n);
     }
     Loops.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
