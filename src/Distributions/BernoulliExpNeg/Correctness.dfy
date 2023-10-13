@@ -6,15 +6,15 @@
 module BernoulliExpNeg.Correctness {
   import Rationals
   import Exponential
-  import RandomNumberGenerator
+  import Random
   import Independence
   import Model
 
   lemma {:axiom} Correctness(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
-    ensures RandomNumberGenerator.mu(iset s | Model.Sample(gamma)(s).0) == Exponential.Exp(-Rationals.ToReal(gamma))
+    ensures Random.Prob(iset s | Model.Sample(gamma)(s).0) == Exponential.Exp(-Rationals.ToReal(gamma))
 
-  lemma {:axiom} SampleIsIndepFn(gamma: Rationals.Rational)
+  lemma {:axiom} SampleIsIndep(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
-    ensures Independence.IsIndepFn(Model.Sample(gamma))
+    ensures Independence.IsIndep(Model.Sample(gamma))
 }

@@ -5,64 +5,64 @@
 
 module Independence {
   import Monad
-  import RandomNumberGenerator
-  import MeasureTheory
+  import Random
+  import Measures
 
   /************
    Definitions
   ************/
 
   // Definition 33
-  ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<RandomNumberGenerator.RNG>) {
+  ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Random.Bitstream>) {
     var e1 := iset s | f(s).1 in E;
     var e2 := iset s | f(s).0 in A;
-    MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
+    Measures.AreIndepEvents(Random.eventSpace, Random.Prob, e1, e2)
   }
 
   // Definition 33
   ghost predicate IsIndepFunction<A(!new)>(f: Monad.Hurd<A>) {
-    forall A: iset<A>, E: iset<RandomNumberGenerator.RNG> | E in RandomNumberGenerator.event_space :: IsIndepFunctionCondition(f, A, E)
+    forall A: iset<A>, E: iset<Random.Bitstream> | E in Random.eventSpace :: IsIndepFunctionCondition(f, A, E)
   }
 
   // Definition 35
-  ghost predicate {:axiom} IsIndepFn<A(!new)>(f: Monad.Hurd<A>)
+  ghost predicate {:axiom} IsIndep<A(!new)>(f: Monad.Hurd<A>)
 
   /*******
    Lemmas
   *******/
 
-  lemma {:axiom} IsIndepFnImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
-    requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.boolEventSpace, s => f(s).0)
+  lemma {:axiom} IsIndepImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
+    requires IsIndep(f)
+    ensures Measures.IsMeasurable(Random.eventSpace, Measures.boolEventSpace, s => f(s).0)
 
-  lemma {:axiom} IsIndepFnImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
-    requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => f(s).0)
+  lemma {:axiom} IsIndepImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
+    requires IsIndep(f)
+    ensures Measures.IsMeasurable(Random.eventSpace, Measures.natEventSpace, s => f(s).0)
 
-  lemma {:axiom} IsIndepFnImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
-    requires IsIndepFn(f)
-    ensures MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, RandomNumberGenerator.event_space, s => f(s).1)
+  lemma {:axiom} IsIndepImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
+    requires IsIndep(f)
+    ensures Measures.IsMeasurable(Random.eventSpace, Random.eventSpace, s => f(s).1)
 
-  lemma {:axiom} IsIndepFnImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
-    requires IsIndepFn(f)
+  lemma {:axiom} IsIndepImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
+    requires IsIndep(f)
     ensures IsIndepFunction(f)
 
   // Equation (3.17)
-  lemma {:axiom} DeconstructIsIndepFn()
-    ensures IsIndepFn(Monad.Deconstruct)
+  lemma {:axiom} CoinIsIndep()
+    ensures IsIndep(Monad.Coin)
 
   // Equation (3.18)
-  lemma {:axiom} ReturnIsIndepFn<T>(x: T)
-    ensures IsIndepFn(Monad.Return(x))
+  lemma {:axiom} ReturnIsIndep<T>(x: T)
+    ensures IsIndep(Monad.Return(x))
 
   // Equation (3.19)
   lemma {:axiom} IndepFnIsCompositional<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
-    requires IsIndepFn(f)
-    requires forall a :: IsIndepFn(g(a))
-    ensures IsIndepFn(Monad.Bind(f, g))
+    requires IsIndep(f)
+    requires forall a :: IsIndep(g(a))
+    ensures IsIndep(Monad.Bind(f, g))
 
-  lemma AreIndepEventsConjunctElimination(e1: iset<RandomNumberGenerator.RNG>, e2: iset<RandomNumberGenerator.RNG>)
-    requires MeasureTheory.AreIndepEvents(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, e1, e2)
-    ensures RandomNumberGenerator.mu(e1 * e2) == RandomNumberGenerator.mu(e1) * RandomNumberGenerator.mu(e2)
+  lemma AreIndepEventsConjunctElimination(e1: iset<Random.Bitstream>, e2: iset<Random.Bitstream>)
+    requires Measures.AreIndepEvents(Random.eventSpace, Random.Prob, e1, e2)
+    ensures Random.Prob(e1 * e2) == Random.Prob(e1) * Random.Prob(e2)
   {}
 }

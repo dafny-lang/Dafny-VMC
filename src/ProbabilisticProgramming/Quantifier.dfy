@@ -4,21 +4,21 @@
  *******************************************************************************/
 
 module Quantifier {
-  import RandomNumberGenerator
+  import Random
 
   /************
-   Definitions  
+   Definitions
   ************/
 
-  ghost predicate ForAllStar(p: RandomNumberGenerator.RNG -> bool) {
+  ghost predicate AlmostSurely(p: Random.Bitstream -> bool) {
     var e := iset s | p(s);
-    && e in RandomNumberGenerator.event_space
-    && RandomNumberGenerator.mu(e) == 1.0
+    && e in Random.eventSpace
+    && Random.Prob(e) == 1.0
   }
 
-  ghost predicate ExistsStar(p: RandomNumberGenerator.RNG -> bool) {
+  ghost predicate WithPosProb(p: Random.Bitstream -> bool) {
     var e := iset s | p(s);
-    && e in RandomNumberGenerator.event_space
-    && RandomNumberGenerator.mu(e) != 0.0
+    && e in Random.eventSpace
+    && Random.Prob(e) != 0.0
   }
 }

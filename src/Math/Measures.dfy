@@ -3,18 +3,18 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module MeasureTheory {
+module Measures {
   /************
    Definitions
   ************/
 
   type Probability = x: real | 0.0 <= x <= 1.0
 
-  ghost predicate IsSigmaAlgebra<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>) {
-    && (forall e | e in event_space :: e <= sample_space)
-    && (iset{}) in event_space
-    && (forall e | e in event_space :: (sample_space - e) in event_space)
-    && (forall f: nat -> iset<T> | (forall n :: f(n) in event_space) :: (CountableUnion(f) in event_space))
+  ghost predicate IsSigmaAlgebra<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>) {
+    && (forall e | e in eventSpace :: e <= sampleSpace)
+    && (iset{}) in eventSpace
+    && (forall e | e in eventSpace :: (sampleSpace - e) in eventSpace)
+    && (forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) :: (CountableUnion(f) in eventSpace))
   }
 
   ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
@@ -36,26 +36,26 @@ module MeasureTheory {
   ghost const natEventSpace: iset<iset<nat>> := iset _: iset<nat>
 
   // Definition 5
-  ghost predicate IsPositive<T(!new)>(event_space: iset<iset<T>>, mu: iset<T> -> real) {
-    && mu(iset{}) == 0.0
-    && forall e | e in event_space :: 0.0 <= mu(e)
+  ghost predicate IsPositive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    && Prob(iset{}) == 0.0
+    && forall e | e in eventSpace :: 0.0 <= Prob(e)
   }
 
   // Definition 5
-  ghost predicate IsAdditive<T(!new)>(event_space: iset<iset<T>>, mu: iset<T> -> real) {
-    forall e1, e2 | e1 in event_space && e2 in event_space && e1 * e2 == iset{} :: mu(e1) + mu(e2) == mu(e1 + e2)
+  ghost predicate IsAdditive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    forall e1, e2 | e1 in eventSpace && e2 in eventSpace && e1 * e2 == iset{} :: Prob(e1) + Prob(e2) == Prob(e1 + e2)
   }
 
   // Definition 5
-  ghost predicate IsCountablyAdditive<T(!new)>(event_space: iset<iset<T>>, mu: iset<T> -> real) {
-    forall f: nat -> iset<T> | (forall n :: f(n) in event_space) && (forall m, n | m != n :: f(m) * f(n) == iset{}) && (CountableUnion(f) in event_space) :: (CountableSum((n: nat) => mu(f(n))) == mu(CountableUnion(f)))
+  ghost predicate IsCountablyAdditive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) && (forall m, n | m != n :: f(m) * f(n) == iset{}) && (CountableUnion(f) in eventSpace) :: (CountableSum((n: nat) => Prob(f(n))) == Prob(CountableUnion(f)))
   }
 
   // Definition 6
-  ghost predicate IsMeasure<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, mu: iset<T> -> real) {
-    && IsSigmaAlgebra(event_space, sample_space)
-    && IsPositive(event_space, mu)
-    && IsCountablyAdditive(event_space, mu)
+  ghost predicate IsMeasure<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real) {
+    && IsSigmaAlgebra(eventSpace, sampleSpace)
+    && IsPositive(eventSpace, Prob)
+    && IsCountablyAdditive(eventSpace, Prob)
   }
 
   ghost function PreImage<S(!new),T>(f: S -> T, e: iset<T>): iset<S> {
@@ -74,16 +74,16 @@ module MeasureTheory {
   }
 
   // Definition 12
-  ghost predicate IsProbability<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, mu: iset<T> -> real) {
-    && IsMeasure(event_space, sample_space, mu)
-    && mu(sample_space) == 1.0
+  ghost predicate IsProbability<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real) {
+    && IsMeasure(eventSpace, sampleSpace, Prob)
+    && Prob(sampleSpace) == 1.0
   }
 
   // Definition 13
-  predicate AreIndepEvents<T>(event_space: iset<iset<T>>, mu: iset<T> -> real, e1: iset<T>, e2: iset<T>) {
-    && (e1 in event_space)
-    && (e2 in event_space)
-    && (mu(e1 * e2) == mu(e1) * mu(e2))
+  predicate AreIndepEvents<T>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real, e1: iset<T>, e2: iset<T>) {
+    && (e1 in eventSpace)
+    && (e2 in eventSpace)
+    && (Prob(e1 * e2) == Prob(e1) * Prob(e2))
   }
 
   /*******
@@ -115,35 +115,35 @@ module MeasureTheory {
   {}
 
   // Equation (2.18)
-  lemma PosCountAddImpliesAdd<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, mu: iset<T> -> real)
-    requires IsSigmaAlgebra(event_space, sample_space)
-    requires IsPositive(event_space, mu)
-    requires IsCountablyAdditive(event_space, mu)
-    ensures IsAdditive(event_space, mu)
+  lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real)
+    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+    requires IsPositive(eventSpace, Prob)
+    requires IsCountablyAdditive(eventSpace, Prob)
+    ensures IsAdditive(eventSpace, Prob)
   {
-    forall e1, e2 | e1 in event_space && e2 in event_space && e1 * e2 == iset{} ensures mu(e1) + mu(e2) == mu(e1 + e2) {
+    forall e1, e2 | e1 in eventSpace && e2 in eventSpace && e1 * e2 == iset{} ensures Prob(e1) + Prob(e2) == Prob(e1 + e2) {
       var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
       assert CountableUnion(f) == e1 + e2;
-      assert CountableSum((n: nat) => mu(f(n))) == mu(e1) + mu(e2) by {
-        assert CountableSum((n: nat) => mu(f(n)), 2) == 0.0 by {
-          CountableSumOfZeroesIsZero((n: nat) => mu(f(n)), 2);
+      assert CountableSum((n: nat) => Prob(f(n))) == Prob(e1) + Prob(e2) by {
+        assert CountableSum((n: nat) => Prob(f(n)), 2) == 0.0 by {
+          CountableSumOfZeroesIsZero((n: nat) => Prob(f(n)), 2);
         }
         calc {
-          CountableSum((n: nat) => mu(f(n)))
+          CountableSum((n: nat) => Prob(f(n)))
        ==
-          mu(f(0)) + CountableSum((n: nat) => mu(f(n)), 1)
+          Prob(f(0)) + CountableSum((n: nat) => Prob(f(n)), 1)
        ==
-          mu(f(0)) + mu(f(1)) + CountableSum((n: nat) => mu(f(n)), 2)
+          Prob(f(0)) + Prob(f(1)) + CountableSum((n: nat) => Prob(f(n)), 2)
        ==
-          mu(e1) + mu(e2) + CountableSum((n: nat) => mu(f(n)), 2)
+          Prob(e1) + Prob(e2) + CountableSum((n: nat) => Prob(f(n)), 2)
        ==
-          mu(e1) + mu(e2);
+          Prob(e1) + Prob(e2);
         }
       }
-      assert mu(CountableUnion(f)) == CountableSum((n: nat) => mu(f(n))) by {
-        assert IsCountablyAdditive(event_space, mu);
+      assert Prob(CountableUnion(f)) == CountableSum((n: nat) => Prob(f(n))) by {
+        assert IsCountablyAdditive(eventSpace, Prob);
       }
-      assert mu(e1 + e2) == mu(e1) + mu(e2);
+      assert Prob(e1 + e2) == Prob(e1) + Prob(e2);
     }
   }
 
@@ -155,11 +155,11 @@ module MeasureTheory {
     ensures CountableUnion(f, i) == f(i) + CountableUnion(f, i + 1)
   {}
 
-  lemma BinaryUnion<T(!new)>(event_space: iset<iset<T>>, sample_space: iset<T>, e1: iset<T>, e2: iset<T>)
-    requires IsSigmaAlgebra(event_space, sample_space)
-    requires e1 in event_space
-    requires e2 in event_space
-    ensures e1 + e2 in event_space
+  lemma BinaryUnion<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, e1: iset<T>, e2: iset<T>)
+    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+    requires e1 in eventSpace
+    requires e2 in eventSpace
+    ensures e1 + e2 in eventSpace
   {
     var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
     assert CountableUnion(f) == e1 + e2 by {

@@ -4,22 +4,21 @@
  *******************************************************************************/
 
 module Monad {
-  import RandomNumberGenerator
-  import MeasureTheory
+  import Random
+  import Measures
 
   /************
    Definitions
   ************/
 
-  type Hurd<A> = RandomNumberGenerator.RNG -> (A, RandomNumberGenerator.RNG)
+  type Hurd<A> = Random.Bitstream -> (A, Random.Bitstream)
 
   // Equation (2.38)
-  function Tail(s: RandomNumberGenerator.RNG): (s': RandomNumberGenerator.RNG) {
-    TailIsRNG(s);
+  function Tail(s: Random.Bitstream): (s': Random.Bitstream) {
     (n: nat) => s(n+1)
   }
 
-  function IterateTail(s: RandomNumberGenerator.RNG, n: nat): (t: RandomNumberGenerator.RNG)
+  function IterateTail(s: Random.Bitstream, n: nat): (t: Random.Bitstream)
     ensures t(0) == s(n)
   {
     if n == 0 then
@@ -28,22 +27,20 @@ module Monad {
       IterateTail(Tail(s), n - 1)
   }
 
-  lemma TailOfIterateTail(s: RandomNumberGenerator.RNG, n: nat)
+  lemma TailOfIterateTail(s: Random.Bitstream, n: nat)
     ensures Tail(IterateTail(s, n)) == IterateTail(s, n + 1)
   {}
 
   // Equation (2.37)
-  function Head(s: RandomNumberGenerator.RNG): bool {
+  function Head(s: Random.Bitstream): bool {
     s(0)
   }
 
   // Equation (2.42)
-  function Deconstruct(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
-    (Head(s), Tail(s))
-  }
+  const Coin: Hurd<bool> := s => (Head(s), Tail(s))
 
   // Equation (2.41)
-  function Drop(n: nat, s: RandomNumberGenerator.RNG): (s': RandomNumberGenerator.RNG)
+  function Drop(n: nat, s: Random.Bitstream): (s': Random.Bitstream)
     ensures Head(s') == s(n)
   {
     if n == 0 then
@@ -54,7 +51,7 @@ module Monad {
 
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
-    (s: RandomNumberGenerator.RNG) =>
+    (s: Random.Bitstream) =>
       var (a, s') := f(s);
       g(a)(s')
   }
@@ -65,7 +62,7 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: RandomNumberGenerator.RNG) => (a, s)
+    (s: Random.Bitstream) => (a, s)
   }
 
   function Map<A,B>(f: A -> B, m: Hurd<A>): Hurd<B> {
@@ -73,7 +70,7 @@ module Monad {
   }
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
-    (s: RandomNumberGenerator.RNG) =>
+    (s: Random.Bitstream) =>
       var (f, s') := ff(s);
       f(s')
   }
@@ -82,11 +79,11 @@ module Monad {
    Lemmas
   *******/
 
-  lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: RandomNumberGenerator.RNG)
+  lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: Random.Bitstream)
     ensures Bind(Return(a), g)(s) == g(a)(s)
   {}
 
-  lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: RandomNumberGenerator.RNG)
+  lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: Random.Bitstream)
     ensures Bind(Bind(f, g), h)(s) == Bind(f, (a: A) => Bind(g(a), h))(s)
   {
     var (a, s') := f(s);
@@ -100,13 +97,13 @@ module Monad {
     }
   }
 
-  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: RandomNumberGenerator.RNG)
+  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: Random.Bitstream)
     ensures Composition(Composition(f, g), h)(a)(s) == Composition(f, Composition(g, h))(a)(s)
   {
     BindIsAssociative(f(a), g, h, s);
   }
 
-  lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: RandomNumberGenerator.RNG)
+  lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: Random.Bitstream)
     ensures Join(Map(Return, f))(s) == Join(Return(f))(s)
   {
     var (a, t) := f(s);
@@ -119,7 +116,7 @@ module Monad {
     }
   }
 
-  lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: RandomNumberGenerator.RNG)
+  lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: Random.Bitstream)
     ensures Join(Map(Join, fff))(s) == Join(Join(fff))(s)
   {
     var (ff, t) := fff(s);
@@ -133,24 +130,21 @@ module Monad {
     }
   }
 
-  lemma {:axiom} TailIsRNG(s: RandomNumberGenerator.RNG)
-    ensures RandomNumberGenerator.IsRNG((n: nat) => s(n+1))
-
   // Equation (2.68) && (2.77)
-  lemma {:axiom} HeadIsMeasurable(b: bool)
+  lemma {:axiom} CoinHasProbOneHalf(b: bool)
     ensures
       var e := (iset s | Head(s) == b);
-      && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == 0.5
+      && e in Random.eventSpace
+      && Random.Prob(e) == 0.5
 
   // Equation (2.82)
-  lemma {:axiom} MeasureHeadDrop(n: nat, s: RandomNumberGenerator.RNG)
+  lemma {:axiom} MeasureHeadDrop(n: nat, s: Random.Bitstream)
     ensures
-      && (iset s | Head(Drop(n, s))) in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(iset s | Head(Drop(n, s))) == 0.5
+      && (iset s | Head(Drop(n, s))) in Random.eventSpace
+      && Random.Prob(iset s | Head(Drop(n, s))) == 0.5
 
   // Equation (2.78)
   lemma {:axiom} TailIsMeasurePreserving()
-    ensures MeasureTheory.IsMeasurePreserving(RandomNumberGenerator.event_space, RandomNumberGenerator.mu, RandomNumberGenerator.event_space, RandomNumberGenerator.mu, Tail)
+    ensures Measures.IsMeasurePreserving(Random.eventSpace, Random.Prob, Random.eventSpace, Random.Prob, Tail)
 }
 
