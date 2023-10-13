@@ -10,7 +10,9 @@ module Random {
    Definitions
   ************/
 
-  type Bitstream = nat -> bool
+  type Bitstream = s: nat -> bool | IsBitstream(s) witness *
+
+  ghost predicate IsBitstream(stream: nat -> bool)
 
   ghost const sampleSpace: iset<Bitstream> := iset s: Bitstream
 
