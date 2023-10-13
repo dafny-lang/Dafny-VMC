@@ -10,9 +10,7 @@ module Rand {
    Definitions
   ************/
 
-  type Bitstream = s: nat -> bool | IsBitstream(s) witness *
-
-  ghost predicate {:axiom} IsBitstream(stream: nat -> bool)
+  type Bitstream = nat -> bool
 
   ghost const sampleSpace: iset<Bitstream> := iset s: Bitstream
 

@@ -15,7 +15,6 @@ module Monad {
 
   // Equation (2.38)
   function Tail(s: Rand.Bitstream): (s': Rand.Bitstream) {
-    TailIsBitstream(s);
     (n: nat) => s(n+1)
   }
 
@@ -130,9 +129,6 @@ module Monad {
       Join(Join(fff))(s);
     }
   }
-
-  lemma {:axiom} TailIsBitstream(s: Rand.Bitstream)
-    ensures Rand.IsBitstream((n: nat) => s(n+1))
 
   // Equation (2.68) && (2.77)
   lemma {:axiom} CoinHasProbOneHalf(b: bool)
