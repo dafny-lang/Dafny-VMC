@@ -33,7 +33,7 @@ module Uniform.Correctness {
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
     ensures SampleEquals(n, i) in Random.eventSpace
-    ensures Random.Prob(SampleEquals(n, i)) == 1.0 / (n as real)
+    ensures Random.prob(SampleEquals(n, i)) == 1.0 / (n as real)
   {
     var equalsI := (x: nat) => x == i;
 
@@ -46,7 +46,7 @@ module Uniform.Correctness {
     var eventProposalAcceptedAndEqualsI := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
     var proposalAccepted := Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
 
-    assert Fraction: Random.Prob(eventResultEqualsI) == Random.Prob(eventProposalAcceptedAndEqualsI) / Random.Prob(proposalAccepted);
+    assert Fraction: Random.prob(eventResultEqualsI) == Random.prob(eventProposalAcceptedAndEqualsI) / Random.prob(proposalAccepted);
 
     assert Eq: eventResultEqualsI == SampleEquals(n, i) by {
       forall s ensures s in eventResultEqualsI <==> s in SampleEquals(n, i) {
@@ -58,15 +58,15 @@ module Uniform.Correctness {
       reveal Eq;
     }
 
-    assert Random.Prob(SampleEquals(n, i)) == 1.0 / (n as real) by {
+    assert Random.prob(SampleEquals(n, i)) == 1.0 / (n as real) by {
       calc {
-        Random.Prob(SampleEquals(n, i));
+        Random.prob(SampleEquals(n, i));
         { reveal Eq; }
-        Random.Prob(eventResultEqualsI);
+        Random.prob(eventResultEqualsI);
         { reveal Fraction; }
-        Random.Prob(eventProposalAcceptedAndEqualsI) / Random.Prob(proposalAccepted);
+        Random.prob(eventProposalAcceptedAndEqualsI) / Random.prob(proposalAccepted);
         { ProbabilityProposalAcceptedAndEqualsI(n, i); }
-        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / Random.Prob(proposalAccepted);
+        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / Random.prob(proposalAccepted);
         { ProbabilityProposalAccepted(n); }
         (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real));
         { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2Floor(2 * n)) as real); }
@@ -79,7 +79,7 @@ module Uniform.Correctness {
     requires 0 <= i < n
     ensures
       var e := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
-      Random.Prob(e) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Random.prob(e) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
   {
     var e := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
     assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
@@ -102,7 +102,7 @@ module Uniform.Correctness {
   lemma ProbabilityProposalAccepted(n: nat)
     requires n >= 1
     ensures
-      Random.Prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Random.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
   {
     var e := Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
     assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by { Helper.NLtPower2Log2FloorOf2N(n); }
@@ -115,11 +115,11 @@ module Uniform.Correctness {
         }
       }
     }
-    assert Random.Prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+    assert Random.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
       calc {
-        Random.Prob(e);
+        Random.prob(e);
         { reveal Equal; }
-        Random.Prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
+        Random.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
         { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
         (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
       }
@@ -132,14 +132,14 @@ module Uniform.Correctness {
     ensures
       var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
       && e in Random.eventSpace
-      && Random.Prob(e) == (1.0 / ((b-a) as real))
+      && Random.prob(e) == (1.0 / ((b-a) as real))
   {
     assert 0 <= i - a < b - a by {
       assert a <= i < b;
     }
     var e' := SampleEquals(b - a, i - a);
     assert e' in Random.eventSpace by { UniformFullCorrectness(b - a, i - a); }
-    assert Random.Prob(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
+    assert Random.prob(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
     var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
     assert e == e' by {
       forall s ensures Model.IntervalSample(a, b)(s).0 == i <==> Model.Sample(b-a)(s).0 == i - a {

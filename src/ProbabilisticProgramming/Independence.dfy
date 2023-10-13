@@ -16,7 +16,7 @@ module Independence {
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Random.Bitstream>) {
     var e1 := iset s | f(s).1 in E;
     var e2 := iset s | f(s).0 in A;
-    Measures.AreIndepEvents(Random.eventSpace, Random.Prob, e1, e2)
+    Measures.AreIndepEvents(Random.eventSpace, Random.prob, e1, e2)
   }
 
   // Definition 33
@@ -62,7 +62,7 @@ module Independence {
     ensures IsIndep(Monad.Bind(f, g))
 
   lemma AreIndepEventsConjunctElimination(e1: iset<Random.Bitstream>, e2: iset<Random.Bitstream>)
-    requires Measures.AreIndepEvents(Random.eventSpace, Random.Prob, e1, e2)
-    ensures Random.Prob(e1 * e2) == Random.Prob(e1) * Random.Prob(e2)
+    requires Measures.AreIndepEvents(Random.eventSpace, Random.prob, e1, e2)
+    ensures Random.prob(e1 * e2) == Random.prob(e1) * Random.prob(e2)
   {}
 }

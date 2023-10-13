@@ -20,7 +20,7 @@ module UniformPowerOfTwo.Correctness {
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
   {
-    Random.Prob(iset s | Model.Sample(n)(s).0 == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
+    Random.prob(iset s | Model.Sample(n)(s).0 == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
   function Sample1(n: nat): Random.Bitstream -> Random.Bitstream
@@ -41,7 +41,7 @@ module UniformPowerOfTwo.Correctness {
     ensures
       var e := iset s | Model.Sample(n)(s).0 == m;
       && e in Random.eventSpace
-      && Random.Prob(e) == if m < Helper.Power(2, Helper.Log2Floor(n)) then 1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real) else 0.0
+      && Random.prob(e) == if m < Helper.Power(2, Helper.Log2Floor(n)) then 1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real) else 0.0
   {
     var e := iset s | Model.Sample(n)(s).0 == m;
     var k := Helper.Log2Floor(n);
@@ -69,7 +69,7 @@ module UniformPowerOfTwo.Correctness {
     ensures
       var e := iset s | Model.Sample(n)(s).0 < m;
       && e in Random.eventSpace
-      && Random.Prob(e) == (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real)
+      && Random.prob(e) == (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real)
   {
     var e := iset s | Model.Sample(n)(s).0 < m;
 
@@ -91,11 +91,11 @@ module UniformPowerOfTwo.Correctness {
         Measures.BinaryUnion(Random.eventSpace, Random.sampleSpace, e1, e2);
       }
       calc {
-        Random.Prob(e);
+        Random.prob(e);
         { assert e == e1 + e2; }
-        Random.Prob(e1 + e2);
-        { assert e1 * e2 == iset{}; Random.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Random.eventSpace, Random.sampleSpace, Random.Prob); assert Measures.IsAdditive(Random.eventSpace, Random.Prob); }
-        Random.Prob(e1) + Random.Prob(e2);
+        Random.prob(e1 + e2);
+        { assert e1 * e2 == iset{}; Random.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Random.eventSpace, Random.sampleSpace, Random.prob); assert Measures.IsAdditive(Random.eventSpace, Random.prob); }
+        Random.prob(e1) + Random.prob(e2);
         { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
         (1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real));
         { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Helper.Log2Floor(n)) as real); }
@@ -130,9 +130,9 @@ module UniformPowerOfTwo.Correctness {
         }
         if m < Helper.Power(2, k) {
           calc {
-            Random.Prob(iset s | Model.Sample(n)(s).0 == m);
+            Random.prob(iset s | Model.Sample(n)(s).0 == m);
           == { SampleRecursiveHalf(n, m); }
-            Random.Prob(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+            Random.prob(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
           == { reveal RecursiveCorrect; }
             (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
           == { Helper.PowerOfTwoLemma(k - 1); }
@@ -141,9 +141,9 @@ module UniformPowerOfTwo.Correctness {
           assert UnifIsCorrect(n, k, m);
         } else {
           calc {
-            Random.Prob(iset s | Model.Sample(n)(s).0 == m);
+            Random.prob(iset s | Model.Sample(n)(s).0 == m);
           == { SampleRecursiveHalf(n, m); }
-            Random.Prob(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
+            Random.prob(iset s | Model.Sample(n / 2)(s).0 == u) / 2.0;
           == { reveal RecursiveCorrect; }
             0.0 / 2.0;
           ==
@@ -182,7 +182,7 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleIsMeasurePreserving(n: nat)
     requires n >= 1
-    ensures Measures.IsMeasurePreserving(Random.eventSpace, Random.Prob, Random.eventSpace, Random.Prob, Sample1(n))
+    ensures Measures.IsMeasurePreserving(Random.eventSpace, Random.prob, Random.eventSpace, Random.prob, Sample1(n))
   {
     var f := Sample1(n);
     assert Measures.IsMeasurable(Random.eventSpace, Random.eventSpace, f) by {
@@ -191,16 +191,16 @@ module UniformPowerOfTwo.Correctness {
       assert Independence.IsIndep(Model.Sample(n));
     }
     if n == 1 {
-      forall e | e in Random.eventSpace ensures Random.Prob(Measures.PreImage(f, e)) == Random.Prob(e) {
+      forall e | e in Random.eventSpace ensures Random.prob(Measures.PreImage(f, e)) == Random.prob(e) {
         forall s: Random.Bitstream ensures f(s) == s {
           assert f(s) == s;
         }
         Measures.PreImageIdentity(f, e);
       }
-      assert Measures.IsMeasurePreserving(Random.eventSpace, Random.Prob, Random.eventSpace, Random.Prob, f);
+      assert Measures.IsMeasurePreserving(Random.eventSpace, Random.prob, Random.eventSpace, Random.prob, f);
     } else {
       var g := Sample1(n / 2);
-      forall e | e in Random.eventSpace ensures Random.Prob(Measures.PreImage(f, e)) == Random.Prob(e) {
+      forall e | e in Random.eventSpace ensures Random.prob(Measures.PreImage(f, e)) == Random.prob(e) {
         var e' := (iset s | Monad.Tail(s) in e);
         assert e' in Random.eventSpace by {
           assert e' == Measures.PreImage(Monad.Tail, e);
@@ -225,21 +225,21 @@ module UniformPowerOfTwo.Correctness {
           }
           Measures.PreImagesEqual(f, e, g, e');
         }
-        assert Random.Prob(Measures.PreImage(f, e)) == Random.Prob(e) by {
+        assert Random.prob(Measures.PreImage(f, e)) == Random.prob(e) by {
           calc {
-            Random.Prob(Measures.PreImage(f, e));
+            Random.prob(Measures.PreImage(f, e));
           ==
-            Random.Prob(Measures.PreImage(g, e'));
-          == { SampleIsMeasurePreserving(n / 2); assert Measures.IsMeasurePreserving(Random.eventSpace, Random.Prob, Random.eventSpace, Random.Prob, g); assert e' in Random.eventSpace; }
-            Random.Prob(e');
+            Random.prob(Measures.PreImage(g, e'));
+          == { SampleIsMeasurePreserving(n / 2); assert Measures.IsMeasurePreserving(Random.eventSpace, Random.prob, Random.eventSpace, Random.prob, g); assert e' in Random.eventSpace; }
+            Random.prob(e');
           == { assert e' == Measures.PreImage(Monad.Tail, e); }
-            Random.Prob(Measures.PreImage(Monad.Tail, e));
+            Random.prob(Measures.PreImage(Monad.Tail, e));
           == { Monad.TailIsMeasurePreserving(); }
-            Random.Prob(e);
+            Random.prob(e);
           }
         }
       }
-      assert Measures.IsMeasurePreserving(Random.eventSpace, Random.Prob, Random.eventSpace, Random.Prob, f);
+      assert Measures.IsMeasurePreserving(Random.eventSpace, Random.prob, Random.eventSpace, Random.prob, f);
     }
   }
 
@@ -298,7 +298,7 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleRecursiveHalf(n: nat, m: nat)
     requires n >= 2
-    ensures Random.Prob(iset s | Model.Sample(n)(s).0 == m) == Random.Prob(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
+    ensures Random.prob(iset s | Model.Sample(n)(s).0 == m) == Random.prob(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
   {
     var aOf: Random.Bitstream -> nat := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
     var bOf: Random.Bitstream -> bool := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
@@ -341,13 +341,13 @@ module UniformPowerOfTwo.Correctness {
       }
     }
 
-    assert E in Random.eventSpace && Random.Prob(E) == 0.5 by {
+    assert E in Random.eventSpace && Random.prob(E) == 0.5 by {
       assert E == (iset s | Monad.Head(s) == (m % 2 == 1));
       Monad.CoinHasProbOneHalf(m % 2 == 1);
     }
 
-    assert Indep: Random.Prob(e1 * e2) == Random.Prob(e1) * Random.Prob(e2) by {
-      assert Measures.AreIndepEvents(Random.eventSpace, Random.Prob, e1, e2) by {
+    assert Indep: Random.prob(e1 * e2) == Random.prob(e1) * Random.prob(e2) by {
+      assert Measures.AreIndepEvents(Random.eventSpace, Random.prob, e1, e2) by {
         assert Independence.IsIndepFunction(Model.Sample(n / 2)) by {
           assert Independence.IsIndep(Model.Sample(n / 2)) by {
             SampleIsIndep(n / 2);
@@ -360,34 +360,34 @@ module UniformPowerOfTwo.Correctness {
       Independence.AreIndepEventsConjunctElimination(e1, e2);
     }
 
-    assert ProbE1: Random.Prob(e1) == 0.5 by {
+    assert ProbE1: Random.prob(e1) == 0.5 by {
       calc {
         0.5;
       ==
-        Random.Prob(E);
+        Random.prob(E);
       == { SampleIsMeasurePreserving(n / 2); }
-        Random.Prob(Measures.PreImage(f, E));
+        Random.prob(Measures.PreImage(f, E));
       == { reveal Eq4; }
-        Random.Prob(e1);
+        Random.prob(e1);
       }
     }
 
     calc {
-      Random.Prob(iset s | Model.Sample(n)(s).0 == m);
+      Random.prob(iset s | Model.Sample(n)(s).0 == m);
     == { SampleSetEquality(n, m); }
-      Random.Prob(e3);
+      Random.prob(e3);
     == { reveal SplitEvent; }
-      Random.Prob(e1 * e2);
+      Random.prob(e1 * e2);
     == { reveal Indep; }
-      Random.Prob(e1) * Random.Prob(e2);
-    == { reveal ProbE1; Helper.Congruence(Random.Prob(e1), 0.5, x => x * Random.Prob(e2)); }
-      0.5 * Random.Prob(e2);
+      Random.prob(e1) * Random.prob(e2);
+    == { reveal ProbE1; Helper.Congruence(Random.prob(e1), 0.5, x => x * Random.prob(e2)); }
+      0.5 * Random.prob(e2);
     ==
-      Random.Prob(e2) / 2.0;
+      Random.prob(e2) / 2.0;
     == { reveal Eq2; }
-      Random.Prob(iset s | aOf(s) == m / 2) / 2.0;
+      Random.prob(iset s | aOf(s) == m / 2) / 2.0;
     == { reveal Eq3; }
-      Random.Prob(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0;
+      Random.prob(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0;
     }
   }
 }

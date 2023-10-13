@@ -12,18 +12,18 @@ module Random {
 
   type Bitstream = s: nat -> bool | IsBitstream(s) witness *
 
-  ghost predicate IsBitstream(stream: nat -> bool)
+  ghost predicate {:axiom} IsBitstream(stream: nat -> bool)
 
   ghost const sampleSpace: iset<Bitstream> := iset s: Bitstream
 
   ghost const eventSpace: iset<iset<Bitstream>>
 
-  ghost function Prob(event: iset<Bitstream>): real
+  ghost const prob: iset<Bitstream> -> real
 
   /*******
    Lemmas
   *******/
 
   lemma {:axiom} ProbIsProbabilityMeasure()
-    ensures Measures.IsProbability(eventSpace, sampleSpace, Prob)
+    ensures Measures.IsProbability(eventSpace, sampleSpace, prob)
 }

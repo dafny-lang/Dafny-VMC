@@ -176,8 +176,8 @@ module Loops {
       && UntilLoopResultHasProperty(proposal, accept, d) in Random.eventSpace
       && ProposalIsAcceptedAndHasProperty(proposal, accept, d) in Random.eventSpace
       && ProposalAcceptedEvent(proposal, accept) in Random.eventSpace
-      && Random.Prob(ProposalAcceptedEvent(proposal, accept)) != 0.0
-      && Random.Prob(UntilLoopResultHasProperty(proposal, accept, d)) == Random.Prob(ProposalIsAcceptedAndHasProperty(proposal, accept, d)) / Random.Prob(ProposalAcceptedEvent(proposal, accept))
+      && Random.prob(ProposalAcceptedEvent(proposal, accept)) != 0.0
+      && Random.prob(UntilLoopResultHasProperty(proposal, accept, d)) == Random.prob(ProposalIsAcceptedAndHasProperty(proposal, accept, d)) / Random.prob(ProposalAcceptedEvent(proposal, accept))
 
   // Equation (3.39)
   lemma {:axiom} UntilAsBind<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Random.Bitstream)

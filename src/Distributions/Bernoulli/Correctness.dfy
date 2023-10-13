@@ -44,7 +44,7 @@ module Bernoulli.Correctness {
     ensures
       var e := iset s | Model.Sample(m, n)(s).0;
       && e in Random.eventSpace
-      && Random.Prob(e) == m as real / n as real
+      && Random.prob(e) == m as real / n as real
   {
     var e := iset s | Model.Sample(m, n)(s).0;
 
@@ -59,10 +59,10 @@ module Bernoulli.Correctness {
         }
       }
 
-      assert e in Random.eventSpace && Random.Prob(e) == 0.0 by {
+      assert e in Random.eventSpace && Random.prob(e) == 0.0 by {
         Random.ProbIsProbabilityMeasure();
         assert Measures.IsSigmaAlgebra(Random.eventSpace, Random.sampleSpace);
-        assert Measures.IsPositive(Random.eventSpace, Random.Prob);
+        assert Measures.IsPositive(Random.eventSpace, Random.prob);
       }
     } else {
       var e1 := iset s | Uniform.Model.Sample(n)(s).0 == m-1;
@@ -84,12 +84,12 @@ module Bernoulli.Correctness {
         e1 + e2;
       }
 
-      assert A1: e1 in Random.eventSpace && Random.Prob(e1) == 1.0 / (n as real) by {
+      assert A1: e1 in Random.eventSpace && Random.prob(e1) == 1.0 / (n as real) by {
         Uniform.Correctness.UniformFullCorrectness(n, m-1);
         assert e1 == Uniform.Correctness.SampleEquals(n, m-1);
       }
 
-      assert A2: e2 in Random.eventSpace && Random.Prob(e2) == (m-1) as real / n as real by {
+      assert A2: e2 in Random.eventSpace && Random.prob(e2) == (m-1) as real / n as real by {
         BernoulliCorrectness(m-1, n);
       }
 
@@ -102,11 +102,11 @@ module Bernoulli.Correctness {
       }
 
       calc {
-        Random.Prob(e);
+        Random.prob(e);
         { assert e == e1 + e2; }
-        Random.Prob(e1 + e2);
-        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Random.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Random.eventSpace, Random.sampleSpace, Random.Prob); assert Measures.IsAdditive(Random.eventSpace, Random.Prob); }
-        Random.Prob(e1) + Random.Prob(e2);
+        Random.prob(e1 + e2);
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Random.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Random.eventSpace, Random.sampleSpace, Random.prob); assert Measures.IsAdditive(Random.eventSpace, Random.prob); }
+        Random.prob(e1) + Random.prob(e2);
         { reveal A1; reveal A2; }
         (1.0 / n as real) + ((m-1) as real / n as real);
         { reveal A3; }

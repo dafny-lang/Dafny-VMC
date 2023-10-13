@@ -139,16 +139,16 @@ module Monad {
     ensures
       var e := (iset s | Head(s) == b);
       && e in Random.eventSpace
-      && Random.Prob(e) == 0.5
+      && Random.prob(e) == 0.5
 
   // Equation (2.82)
   lemma {:axiom} MeasureHeadDrop(n: nat, s: Random.Bitstream)
     ensures
       && (iset s | Head(Drop(n, s))) in Random.eventSpace
-      && Random.Prob(iset s | Head(Drop(n, s))) == 0.5
+      && Random.prob(iset s | Head(Drop(n, s))) == 0.5
 
   // Equation (2.78)
   lemma {:axiom} TailIsMeasurePreserving()
-    ensures Measures.IsMeasurePreserving(Random.eventSpace, Random.Prob, Random.eventSpace, Random.Prob, Tail)
+    ensures Measures.IsMeasurePreserving(Random.eventSpace, Random.prob, Random.eventSpace, Random.prob, Tail)
 }
 

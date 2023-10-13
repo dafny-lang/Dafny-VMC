@@ -64,13 +64,13 @@ module Uniform.Model {
       }
     }
     assert Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n))) by {
-      assert Random.Prob(e) > 0.0 by {
+      assert Random.prob(e) > 0.0 by {
         assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
         assert n <= Helper.Power(2, Helper.Log2Floor(2 * n)) by {
           Helper.NLtPower2Log2FloorOf2N(n);
         }
         calc {
-          Random.Prob(e);
+          Random.prob(e);
         == { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
           n as real / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
         >
