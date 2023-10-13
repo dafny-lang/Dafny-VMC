@@ -271,13 +271,13 @@ module UniformPowerOfTwo.Correctness {
   lemma SampleSetEquality(n: nat, m: nat)
     requires n >= 2
     ensures
-      var b_of := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
-      var a_of := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
-      (iset s | Model.Sample(n)(s).0 == m) == (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m)
+      var bOf := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
+      var aOf := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
+      (iset s | Model.Sample(n)(s).0 == m) == (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m)
   {
-    var b_of := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
-    var a_of := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
-    forall s ensures Model.Sample(n)(s).0 == m <==> (2 * a_of(s) + Helper.boolToNat(b_of(s)) == m) {
+    var bOf := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
+    var aOf := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
+    forall s ensures Model.Sample(n)(s).0 == m <==> (2 * aOf(s) + Helper.boolToNat(bOf(s)) == m) {
       var (a, s') := Model.Sample(n / 2)(s);
       var (b, s'') := Monad.Coin(s');
       calc {
@@ -300,20 +300,20 @@ module UniformPowerOfTwo.Correctness {
     requires n >= 2
     ensures Random.Prob(iset s | Model.Sample(n)(s).0 == m) == Random.Prob(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0
   {
-    var a_of: Random.Bitstream -> nat := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
-    var b_of: Random.Bitstream -> bool := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
+    var aOf: Random.Bitstream -> nat := (s: Random.Bitstream) => Model.Sample(n / 2)(s).0;
+    var bOf: Random.Bitstream -> bool := (s: Random.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
     var A: iset<nat> := (iset x: nat | x == m / 2);
     var E: iset<Random.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin(s).0));
     var f := (s: Random.Bitstream) => Model.Sample(n / 2)(s).1;
 
     var e1 := (iset s | Model.Sample(n / 2)(s).1 in E);
     var e2 := (iset s | Model.Sample(n / 2)(s).0 in A);
-    var e3 := (iset s | 2*a_of(s) + Helper.boolToNat(b_of(s)) == m);
+    var e3 := (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
       forall s ensures s in e3 <==> s in e1 && s in e2 {
-        var a: nat := a_of(s);
-        var b: nat := Helper.boolToNat(b_of(s));
+        var a: nat := aOf(s);
+        var b: nat := Helper.boolToNat(bOf(s));
         assert b < 2;
         calc {
           s in e3;
@@ -325,14 +325,14 @@ module UniformPowerOfTwo.Correctness {
       }
     }
 
-    assert Eq2: (iset s | a_of(s) == m / 2) == e2 by {
-      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).0 in A {
+    assert Eq2: (iset s | aOf(s) == m / 2) == e2 by {
+      forall s ensures aOf(s) == m / 2 <==> Model.Sample(n / 2)(s).0 in A {
       }
     }
 
-    assert Eq3: (iset s | a_of(s) == m / 2) == (iset s | Model.Sample(n / 2)(s).0 == m / 2) by {
-      forall s ensures a_of(s) == m / 2 <==> Model.Sample(n / 2)(s).0 == m / 2 {
-        assert a_of(s) == Model.Sample(n / 2)(s).0;
+    assert Eq3: (iset s | aOf(s) == m / 2) == (iset s | Model.Sample(n / 2)(s).0 == m / 2) by {
+      forall s ensures aOf(s) == m / 2 <==> Model.Sample(n / 2)(s).0 == m / 2 {
+        assert aOf(s) == Model.Sample(n / 2)(s).0;
       }
     }
 
@@ -385,7 +385,7 @@ module UniformPowerOfTwo.Correctness {
     ==
       Random.Prob(e2) / 2.0;
     == { reveal Eq2; }
-      Random.Prob(iset s | a_of(s) == m / 2) / 2.0;
+      Random.Prob(iset s | aOf(s) == m / 2) / 2.0;
     == { reveal Eq3; }
       Random.Prob(iset s | Model.Sample(n / 2)(s).0 == m / 2) / 2.0;
     }

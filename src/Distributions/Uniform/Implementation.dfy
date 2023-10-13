@@ -16,14 +16,14 @@ module Uniform.Implementation {
       ensures u < n
       ensures Model.Sample(n)(old(s)) == (u, s)
     {
-      ghost var prev_s := s;
+      ghost var prevS := s;
       u := UniformPowerOfTwoSample(2 * n);
       while u >= n
         decreases *
-        invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prev_s)
-        invariant (u, s) == Model.Proposal(n)(prev_s)
+        invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prevS)
+        invariant (u, s) == Model.Proposal(n)(prevS)
       {
-        prev_s := s;
+        prevS := s;
         u := UniformPowerOfTwoSample(2 * n);
       }
     }

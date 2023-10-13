@@ -63,14 +63,14 @@ module Measures {
   }
 
   // Definition 9
-  ghost predicate IsMeasurable<S(!new),T>(event_space_s: iset<iset<S>>, event_space_t: iset<iset<T>>, f: S -> T) {
-    forall e | e in event_space_t :: PreImage(f, e) in event_space_s
+  ghost predicate IsMeasurable<S(!new),T>(eventSpaceS: iset<iset<S>>, eventSpaceT: iset<iset<T>>, f: S -> T) {
+    forall e | e in eventSpaceT :: PreImage(f, e) in eventSpaceS
   }
 
   // Definition 10
-  ghost predicate IsMeasurePreserving<S(!new),T>(event_space_s: iset<iset<S>>, mu_s: iset<S> -> real, event_space_t: iset<iset<T>>, mu_t: iset<T> -> real, f: S -> T) {
-    && IsMeasurable(event_space_s, event_space_t, f)
-    && forall e | e in event_space_t :: mu_s(PreImage(f, e)) == mu_t(e)
+  ghost predicate IsMeasurePreserving<S(!new),T>(eventSpaceS: iset<iset<S>>, measureS: iset<S> -> real, eventSpaceT: iset<iset<T>>, measureT: iset<T> -> real, f: S -> T) {
+    && IsMeasurable(eventSpaceS, eventSpaceT, f)
+    && forall e | e in eventSpaceT :: measureS(PreImage(f, e)) == measureT(e)
   }
 
   // Definition 12
