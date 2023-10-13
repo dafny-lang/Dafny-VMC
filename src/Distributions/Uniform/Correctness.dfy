@@ -78,25 +78,31 @@ module Uniform.Correctness {
   lemma ProbabilityProposalAcceptedAndEqualsI(n: nat, i: nat)
     requires 0 <= i < n
     ensures
-      var e := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
-      Rand.prob(e) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i)) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
   {
     var e := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
-    assert i < Helper.Power(2, Helper.Log2Floor(2 * n)) by {
+    var nextPowerOfTwo := Helper.Power(2, Helper.Log2Floor(2 * n));
+    assert iBound: i < nextPowerOfTwo by {
       calc {
         i;
       <
         n;
-      < { Helper.Power2OfLog2Floor(n); }
-        Helper.Power(2, Helper.Log2Floor(n) + 1);
-      == { Helper.Log2FloorDef(n); }
-        Helper.Power(2, Helper.Log2Floor(2 * n));
+      < { Helper.NLtPower2Log2FloorOf2N(n); }
+        nextPowerOfTwo;
       }
     }
-    assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i) by {
-      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i {}
+    assert setEq: Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i) == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i) by {
+      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i {
+        assert s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i;
+      }
     }
-    UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i);
+    calc {
+      Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i));
+      { reveal setEq; }
+      Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i);
+      { reveal iBound; UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i); }
+      1.0 / (nextPowerOfTwo as real);
+    }
   }
 
   lemma ProbabilityProposalAccepted(n: nat)
