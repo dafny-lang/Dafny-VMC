@@ -4,10 +4,10 @@
  *******************************************************************************/
 
 module Bernoulli.Correctness {
-  import MeasureTheory
+  import Measures
   import Helper
   import Uniform
-  import RandomNumberGenerator
+  import Rand
   import Independence
   import Monad
   import Model
@@ -16,21 +16,21 @@ module Bernoulli.Correctness {
    Lemmas
   *******/
 
-  lemma SampleIsIndepFn(m: nat, n: nat)
+  lemma SampleIsIndep(m: nat, n: nat)
     requires n != 0
     requires m <= n
-    ensures Independence.IsIndepFn(Model.Sample(m, n))
+    ensures Independence.IsIndep(Model.Sample(m, n))
   {
     var f := Uniform.Model.Sample(n);
     var g := (k: nat) => Monad.Return(k < m);
 
-    assert Independence.IsIndepFn(f) by {
-      Uniform.Correctness.SampleIsIndepFn(n);
+    assert Independence.IsIndep(f) by {
+      Uniform.Correctness.SampleIsIndep(n);
     }
 
-    assert forall k: nat :: Independence.IsIndepFn(g(k)) by {
-      forall k: nat ensures Independence.IsIndepFn(g(k)) {
-        Independence.ReturnIsIndepFn(k < m);
+    assert forall k: nat :: Independence.IsIndep(g(k)) by {
+      forall k: nat ensures Independence.IsIndep(g(k)) {
+        Independence.ReturnIsIndep(k < m);
       }
     }
 
@@ -43,8 +43,8 @@ module Bernoulli.Correctness {
     requires m <= n
     ensures
       var e := iset s | Model.Sample(m, n)(s).0;
-      && e in RandomNumberGenerator.event_space
-      && RandomNumberGenerator.mu(e) == m as real / n as real
+      && e in Rand.eventSpace
+      && Rand.prob(e) == m as real / n as real
   {
     var e := iset s | Model.Sample(m, n)(s).0;
 
@@ -59,10 +59,10 @@ module Bernoulli.Correctness {
         }
       }
 
-      assert e in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e) == 0.0 by {
-        RandomNumberGenerator.RNGHasMeasure();
-        assert MeasureTheory.IsSigmaAlgebra(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space);
-        assert MeasureTheory.IsPositive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu);
+      assert e in Rand.eventSpace && Rand.prob(e) == 0.0 by {
+        Rand.ProbIsProbabilityMeasure();
+        assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace);
+        assert Measures.IsPositive(Rand.eventSpace, Rand.prob);
       }
     } else {
       var e1 := iset s | Uniform.Model.Sample(n)(s).0 == m-1;
@@ -84,12 +84,12 @@ module Bernoulli.Correctness {
         e1 + e2;
       }
 
-      assert A1: e1 in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e1) == 1.0 / (n as real) by {
+      assert A1: e1 in Rand.eventSpace && Rand.prob(e1) == 1.0 / (n as real) by {
         Uniform.Correctness.UniformFullCorrectness(n, m-1);
         assert e1 == Uniform.Correctness.SampleEquals(n, m-1);
       }
 
-      assert A2: e2 in RandomNumberGenerator.event_space && RandomNumberGenerator.mu(e2) == (m-1) as real / n as real by {
+      assert A2: e2 in Rand.eventSpace && Rand.prob(e2) == (m-1) as real / n as real by {
         BernoulliCorrectness(m-1, n);
       }
 
@@ -102,11 +102,11 @@ module Bernoulli.Correctness {
       }
 
       calc {
-        RandomNumberGenerator.mu(e);
+        Rand.prob(e);
         { assert e == e1 + e2; }
-        RandomNumberGenerator.mu(e1 + e2);
-        { reveal A1; reveal A2; assert e1 * e2 == iset{}; RandomNumberGenerator.RNGHasMeasure(); MeasureTheory.PosCountAddImpliesAdd(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, RandomNumberGenerator.mu); assert MeasureTheory.IsAdditive(RandomNumberGenerator.event_space, RandomNumberGenerator.mu); }
-        RandomNumberGenerator.mu(e1) + RandomNumberGenerator.mu(e2);
+        Rand.prob(e1 + e2);
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.sampleSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
+        Rand.prob(e1) + Rand.prob(e2);
         { reveal A1; reveal A2; }
         (1.0 / n as real) + ((m-1) as real / n as real);
         { reveal A3; }
@@ -116,11 +116,11 @@ module Bernoulli.Correctness {
         m as real / n as real;
       }
 
-      assert e in RandomNumberGenerator.event_space by {
-        RandomNumberGenerator.RNGHasMeasure();
+      assert e in Rand.eventSpace by {
+        Rand.ProbIsProbabilityMeasure();
         reveal A1;
         reveal A2;
-        MeasureTheory.BinaryUnion(RandomNumberGenerator.event_space, RandomNumberGenerator.sample_space, e1, e2);
+        Measures.BinaryUnion(Rand.eventSpace, Rand.sampleSpace, e1, e2);
       }
     }
   }

@@ -4,13 +4,13 @@
  *******************************************************************************/
 
 module Coin.Interface {
-  import RandomNumberGenerator
+  import Rand
   import Model
 
   method {:extern "DRandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
 
   trait {:termination false} Trait {
-    ghost var s: RandomNumberGenerator.RNG
+    ghost var s: Rand.Bitstream
 
     method CoinSample() returns (b: bool)
       modifies this
