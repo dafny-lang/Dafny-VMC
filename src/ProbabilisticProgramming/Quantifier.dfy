@@ -4,21 +4,21 @@
  *******************************************************************************/
 
 module Quantifier {
-  import Random
+  import Rand
 
   /************
    Definitions
   ************/
 
-  ghost predicate AlmostSurely(p: Random.Bitstream -> bool) {
+  ghost predicate AlmostSurely(p: Rand.Bitstream -> bool) {
     var e := iset s | p(s);
-    && e in Random.eventSpace
-    && Random.prob(e) == 1.0
+    && e in Rand.eventSpace
+    && Rand.prob(e) == 1.0
   }
 
-  ghost predicate WithPosProb(p: Random.Bitstream -> bool) {
+  ghost predicate WithPosProb(p: Rand.Bitstream -> bool) {
     var e := iset s | p(s);
-    && e in Random.eventSpace
-    && Random.prob(e) != 0.0
+    && e in Rand.eventSpace
+    && Rand.prob(e) != 0.0
   }
 }

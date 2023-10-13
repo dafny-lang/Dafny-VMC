@@ -7,7 +7,7 @@ module Loops {
   import Monad
   import Quantifier
   import Independence
-  import Random
+  import Rand
 
   /************
    Definitions
@@ -28,7 +28,7 @@ module Loops {
   // Definition 39 / True iff Prob(iset s | While(condition, body, a)(s) terminates) == 1
   ghost predicate WhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
     var p := (a: A) =>
-               (s: Random.Bitstream) => exists n :: !condition(WhileCut(condition, body, n, a)(s).0);
+               (s: Rand.Bitstream) => exists n :: !condition(WhileCut(condition, body, n, a)(s).0);
     forall a :: Quantifier.AlmostSurely(p(a))
   }
 
@@ -43,7 +43,7 @@ module Loops {
       Monad.Return(init)
   }
 
-  method WhileImperative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Random.Bitstream) returns (t: (A, Random.Bitstream))
+  method WhileImperative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream) returns (t: (A, Rand.Bitstream))
     requires WhileTerminates(condition, body)
     ensures While(condition, body, init)(s) == t
     decreases *
@@ -56,7 +56,7 @@ module Loops {
     return (init, s);
   }
 
-  method WhileImperativeAlternative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Random.Bitstream) returns (t: (A, Random.Bitstream))
+  method WhileImperativeAlternative<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream) returns (t: (A, Rand.Bitstream))
     requires WhileTerminates(condition, body)
     ensures While(condition, body, init)(s) == t
     decreases *
@@ -91,7 +91,7 @@ module Loops {
     Monad.Bind(proposal, (a: A) => While(reject, body, a))
   }
 
-  method UntilImperative<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Random.Bitstream) returns (t: (A, Random.Bitstream))
+  method UntilImperative<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Rand.Bitstream) returns (t: (A, Rand.Bitstream))
     requires UntilTerminates(proposal, accept)
     ensures t == Until(proposal, accept)(s)
     decreases *
@@ -101,35 +101,35 @@ module Loops {
     t := WhileImperative(reject, body, proposal(s).0, proposal(s).1);
   }
 
-  function WhileLoopExitsAfterOneIteration<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool, init: A): (Random.Bitstream -> bool) {
-    (s: Random.Bitstream) =>
+  function WhileLoopExitsAfterOneIteration<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool, init: A): (Rand.Bitstream -> bool) {
+    (s: Rand.Bitstream) =>
       !condition(body(init)(s).0)
   }
 
-  function ProposalIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (Random.Bitstream -> bool) {
-    (s: Random.Bitstream) =>
+  function ProposalIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool) {
+    (s: Rand.Bitstream) =>
       accept(proposal(s).0)
   }
 
-  function UntilLoopResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (Random.Bitstream -> bool)
+  function UntilLoopResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool)
     requires UntilTerminates(proposal, accept)
   {
-    (s: Random.Bitstream) =>
+    (s: Rand.Bitstream) =>
       accept(Until(proposal, accept)(s).0)
   }
 
-  ghost function UntilLoopResultHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Random.Bitstream>
+  ghost function UntilLoopResultHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
     requires UntilTerminates(proposal, accept)
   {
     iset s | property(Until(proposal, accept)(s).0)
   }
 
-  ghost function ProposalIsAcceptedAndHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Random.Bitstream>
+  ghost function ProposalIsAcceptedAndHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
   {
     iset s | property(proposal(s).0) && accept(proposal(s).0)
   }
 
-  ghost function ProposalAcceptedEvent<A>(proposal: Monad.Hurd<A>, accept: A -> bool): iset<Random.Bitstream>
+  ghost function ProposalAcceptedEvent<A>(proposal: Monad.Hurd<A>, accept: A -> bool): iset<Rand.Bitstream>
   {
     iset s | accept(proposal(s).0)
   }
@@ -141,12 +141,12 @@ module Loops {
 
   lemma EnsureUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
     requires Independence.IsIndep(proposal)
-    requires Quantifier.WithPosProb((s: Random.Bitstream) => accept(proposal(s).0))
+    requires Quantifier.WithPosProb((s: Rand.Bitstream) => accept(proposal(s).0))
     ensures UntilTerminates(proposal, accept)
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    var proposalIsAccepted := (s: Random.Bitstream) => accept(proposal(s).0);
+    var proposalIsAccepted := (s: Rand.Bitstream) => accept(proposal(s).0);
     assert UntilTerminates(proposal, accept) by {
       forall a: A ensures Independence.IsIndep(body(a)) {
         assert body(a) == proposal;
@@ -173,14 +173,14 @@ module Loops {
     requires Quantifier.WithPosProb(ProposalIsAccepted(proposal, accept))
     ensures UntilTerminates(proposal, accept)
     ensures
-      && UntilLoopResultHasProperty(proposal, accept, d) in Random.eventSpace
-      && ProposalIsAcceptedAndHasProperty(proposal, accept, d) in Random.eventSpace
-      && ProposalAcceptedEvent(proposal, accept) in Random.eventSpace
-      && Random.prob(ProposalAcceptedEvent(proposal, accept)) != 0.0
-      && Random.prob(UntilLoopResultHasProperty(proposal, accept, d)) == Random.prob(ProposalIsAcceptedAndHasProperty(proposal, accept, d)) / Random.prob(ProposalAcceptedEvent(proposal, accept))
+      && UntilLoopResultHasProperty(proposal, accept, d) in Rand.eventSpace
+      && ProposalIsAcceptedAndHasProperty(proposal, accept, d) in Rand.eventSpace
+      && ProposalAcceptedEvent(proposal, accept) in Rand.eventSpace
+      && Rand.prob(ProposalAcceptedEvent(proposal, accept)) != 0.0
+      && Rand.prob(UntilLoopResultHasProperty(proposal, accept, d)) == Rand.prob(ProposalIsAcceptedAndHasProperty(proposal, accept, d)) / Rand.prob(ProposalAcceptedEvent(proposal, accept))
 
   // Equation (3.39)
-  lemma {:axiom} UntilAsBind<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Random.Bitstream)
+  lemma {:axiom} UntilAsBind<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Rand.Bitstream)
     requires Independence.IsIndep(proposal)
     requires Quantifier.WithPosProb(ProposalIsAccepted(proposal, accept))
     ensures UntilTerminates(proposal, accept)

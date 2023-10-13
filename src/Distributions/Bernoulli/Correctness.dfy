@@ -7,7 +7,7 @@ module Bernoulli.Correctness {
   import Measures
   import Helper
   import Uniform
-  import Random
+  import Rand
   import Independence
   import Monad
   import Model
@@ -43,8 +43,8 @@ module Bernoulli.Correctness {
     requires m <= n
     ensures
       var e := iset s | Model.Sample(m, n)(s).0;
-      && e in Random.eventSpace
-      && Random.prob(e) == m as real / n as real
+      && e in Rand.eventSpace
+      && Rand.prob(e) == m as real / n as real
   {
     var e := iset s | Model.Sample(m, n)(s).0;
 
@@ -59,10 +59,10 @@ module Bernoulli.Correctness {
         }
       }
 
-      assert e in Random.eventSpace && Random.prob(e) == 0.0 by {
-        Random.ProbIsProbabilityMeasure();
-        assert Measures.IsSigmaAlgebra(Random.eventSpace, Random.sampleSpace);
-        assert Measures.IsPositive(Random.eventSpace, Random.prob);
+      assert e in Rand.eventSpace && Rand.prob(e) == 0.0 by {
+        Rand.ProbIsProbabilityMeasure();
+        assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace);
+        assert Measures.IsPositive(Rand.eventSpace, Rand.prob);
       }
     } else {
       var e1 := iset s | Uniform.Model.Sample(n)(s).0 == m-1;
@@ -84,12 +84,12 @@ module Bernoulli.Correctness {
         e1 + e2;
       }
 
-      assert A1: e1 in Random.eventSpace && Random.prob(e1) == 1.0 / (n as real) by {
+      assert A1: e1 in Rand.eventSpace && Rand.prob(e1) == 1.0 / (n as real) by {
         Uniform.Correctness.UniformFullCorrectness(n, m-1);
         assert e1 == Uniform.Correctness.SampleEquals(n, m-1);
       }
 
-      assert A2: e2 in Random.eventSpace && Random.prob(e2) == (m-1) as real / n as real by {
+      assert A2: e2 in Rand.eventSpace && Rand.prob(e2) == (m-1) as real / n as real by {
         BernoulliCorrectness(m-1, n);
       }
 
@@ -102,11 +102,11 @@ module Bernoulli.Correctness {
       }
 
       calc {
-        Random.prob(e);
+        Rand.prob(e);
         { assert e == e1 + e2; }
-        Random.prob(e1 + e2);
-        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Random.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Random.eventSpace, Random.sampleSpace, Random.prob); assert Measures.IsAdditive(Random.eventSpace, Random.prob); }
-        Random.prob(e1) + Random.prob(e2);
+        Rand.prob(e1 + e2);
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.sampleSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
+        Rand.prob(e1) + Rand.prob(e2);
         { reveal A1; reveal A2; }
         (1.0 / n as real) + ((m-1) as real / n as real);
         { reveal A3; }
@@ -116,11 +116,11 @@ module Bernoulli.Correctness {
         m as real / n as real;
       }
 
-      assert e in Random.eventSpace by {
-        Random.ProbIsProbabilityMeasure();
+      assert e in Rand.eventSpace by {
+        Rand.ProbIsProbabilityMeasure();
         reveal A1;
         reveal A2;
-        Measures.BinaryUnion(Random.eventSpace, Random.sampleSpace, e1, e2);
+        Measures.BinaryUnion(Rand.eventSpace, Rand.sampleSpace, e1, e2);
       }
     }
   }

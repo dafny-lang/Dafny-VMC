@@ -4,10 +4,10 @@
  *******************************************************************************/
 
 module Coin.Model {
-  import Random
+  import Rand
   import Monad
 
-  function Sample(s: Random.Bitstream): (bool, Random.Bitstream) {
+  function Sample(s: Rand.Bitstream): (bool, Rand.Bitstream) {
     Monad.Coin(s)
   }
 }

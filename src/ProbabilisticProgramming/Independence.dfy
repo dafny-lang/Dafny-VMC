@@ -5,7 +5,7 @@
 
 module Independence {
   import Monad
-  import Random
+  import Rand
   import Measures
 
   /************
@@ -13,15 +13,15 @@ module Independence {
   ************/
 
   // Definition 33
-  ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Random.Bitstream>) {
+  ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Rand.Bitstream>) {
     var e1 := iset s | f(s).1 in E;
     var e2 := iset s | f(s).0 in A;
-    Measures.AreIndepEvents(Random.eventSpace, Random.prob, e1, e2)
+    Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
   }
 
   // Definition 33
   ghost predicate IsIndepFunction<A(!new)>(f: Monad.Hurd<A>) {
-    forall A: iset<A>, E: iset<Random.Bitstream> | E in Random.eventSpace :: IsIndepFunctionCondition(f, A, E)
+    forall A: iset<A>, E: iset<Rand.Bitstream> | E in Rand.eventSpace :: IsIndepFunctionCondition(f, A, E)
   }
 
   // Definition 35
@@ -33,15 +33,15 @@ module Independence {
 
   lemma {:axiom} IsIndepImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Random.eventSpace, Measures.boolEventSpace, s => f(s).0)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Measures.boolEventSpace, s => f(s).0)
 
   lemma {:axiom} IsIndepImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Random.eventSpace, Measures.natEventSpace, s => f(s).0)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => f(s).0)
 
   lemma {:axiom} IsIndepImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Random.eventSpace, Random.eventSpace, s => f(s).1)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, s => f(s).1)
 
   lemma {:axiom} IsIndepImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndep(f)
@@ -61,8 +61,8 @@ module Independence {
     requires forall a :: IsIndep(g(a))
     ensures IsIndep(Monad.Bind(f, g))
 
-  lemma AreIndepEventsConjunctElimination(e1: iset<Random.Bitstream>, e2: iset<Random.Bitstream>)
-    requires Measures.AreIndepEvents(Random.eventSpace, Random.prob, e1, e2)
-    ensures Random.prob(e1 * e2) == Random.prob(e1) * Random.prob(e2)
+  lemma AreIndepEventsConjunctElimination(e1: iset<Rand.Bitstream>, e2: iset<Rand.Bitstream>)
+    requires Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
+    ensures Rand.prob(e1 * e2) == Rand.prob(e1) * Rand.prob(e2)
   {}
 }

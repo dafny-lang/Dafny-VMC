@@ -4,22 +4,22 @@
  *******************************************************************************/
 
 module Monad {
-  import Random
+  import Rand
   import Measures
 
   /************
    Definitions
   ************/
 
-  type Hurd<A> = Random.Bitstream -> (A, Random.Bitstream)
+  type Hurd<A> = Rand.Bitstream -> (A, Rand.Bitstream)
 
   // Equation (2.38)
-  function Tail(s: Random.Bitstream): (s': Random.Bitstream) {
+  function Tail(s: Rand.Bitstream): (s': Rand.Bitstream) {
     TailIsBitstream(s);
     (n: nat) => s(n+1)
   }
 
-  function IterateTail(s: Random.Bitstream, n: nat): (t: Random.Bitstream)
+  function IterateTail(s: Rand.Bitstream, n: nat): (t: Rand.Bitstream)
     ensures t(0) == s(n)
   {
     if n == 0 then
@@ -28,12 +28,12 @@ module Monad {
       IterateTail(Tail(s), n - 1)
   }
 
-  lemma TailOfIterateTail(s: Random.Bitstream, n: nat)
+  lemma TailOfIterateTail(s: Rand.Bitstream, n: nat)
     ensures Tail(IterateTail(s, n)) == IterateTail(s, n + 1)
   {}
 
   // Equation (2.37)
-  function Head(s: Random.Bitstream): bool {
+  function Head(s: Rand.Bitstream): bool {
     s(0)
   }
 
@@ -41,7 +41,7 @@ module Monad {
   const Coin: Hurd<bool> := s => (Head(s), Tail(s))
 
   // Equation (2.41)
-  function Drop(n: nat, s: Random.Bitstream): (s': Random.Bitstream)
+  function Drop(n: nat, s: Rand.Bitstream): (s': Rand.Bitstream)
     ensures Head(s') == s(n)
   {
     if n == 0 then
@@ -52,7 +52,7 @@ module Monad {
 
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
-    (s: Random.Bitstream) =>
+    (s: Rand.Bitstream) =>
       var (a, s') := f(s);
       g(a)(s')
   }
@@ -63,7 +63,7 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: Random.Bitstream) => (a, s)
+    (s: Rand.Bitstream) => (a, s)
   }
 
   function Map<A,B>(f: A -> B, m: Hurd<A>): Hurd<B> {
@@ -71,7 +71,7 @@ module Monad {
   }
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
-    (s: Random.Bitstream) =>
+    (s: Rand.Bitstream) =>
       var (f, s') := ff(s);
       f(s')
   }
@@ -80,11 +80,11 @@ module Monad {
    Lemmas
   *******/
 
-  lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: Random.Bitstream)
+  lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: Rand.Bitstream)
     ensures Bind(Return(a), g)(s) == g(a)(s)
   {}
 
-  lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: Random.Bitstream)
+  lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: Rand.Bitstream)
     ensures Bind(Bind(f, g), h)(s) == Bind(f, (a: A) => Bind(g(a), h))(s)
   {
     var (a, s') := f(s);
@@ -98,13 +98,13 @@ module Monad {
     }
   }
 
-  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: Random.Bitstream)
+  lemma CompositionIsAssociative<A,B,C,D>(f: A -> Hurd<B>, g: B -> Hurd<C>, h: C -> Hurd<D>, a: A, s: Rand.Bitstream)
     ensures Composition(Composition(f, g), h)(a)(s) == Composition(f, Composition(g, h))(a)(s)
   {
     BindIsAssociative(f(a), g, h, s);
   }
 
-  lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: Random.Bitstream)
+  lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: Rand.Bitstream)
     ensures Join(Map(Return, f))(s) == Join(Return(f))(s)
   {
     var (a, t) := f(s);
@@ -117,7 +117,7 @@ module Monad {
     }
   }
 
-  lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: Random.Bitstream)
+  lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: Rand.Bitstream)
     ensures Join(Map(Join, fff))(s) == Join(Join(fff))(s)
   {
     var (ff, t) := fff(s);
@@ -131,24 +131,24 @@ module Monad {
     }
   }
 
-  lemma {:axiom} TailIsBitstream(s: Random.Bitstream)
-    ensures Random.IsBitstream((n: nat) => s(n+1))
+  lemma {:axiom} TailIsBitstream(s: Rand.Bitstream)
+    ensures Rand.IsBitstream((n: nat) => s(n+1))
 
   // Equation (2.68) && (2.77)
   lemma {:axiom} CoinHasProbOneHalf(b: bool)
     ensures
       var e := (iset s | Head(s) == b);
-      && e in Random.eventSpace
-      && Random.prob(e) == 0.5
+      && e in Rand.eventSpace
+      && Rand.prob(e) == 0.5
 
   // Equation (2.82)
-  lemma {:axiom} MeasureHeadDrop(n: nat, s: Random.Bitstream)
+  lemma {:axiom} MeasureHeadDrop(n: nat, s: Rand.Bitstream)
     ensures
-      && (iset s | Head(Drop(n, s))) in Random.eventSpace
-      && Random.prob(iset s | Head(Drop(n, s))) == 0.5
+      && (iset s | Head(Drop(n, s))) in Rand.eventSpace
+      && Rand.prob(iset s | Head(Drop(n, s))) == 0.5
 
   // Equation (2.78)
   lemma {:axiom} TailIsMeasurePreserving()
-    ensures Measures.IsMeasurePreserving(Random.eventSpace, Random.prob, Random.eventSpace, Random.prob, Tail)
+    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, Tail)
 }
 

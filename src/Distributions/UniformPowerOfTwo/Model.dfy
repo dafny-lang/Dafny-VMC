@@ -5,7 +5,7 @@
 
 module UniformPowerOfTwo.Model {
   import Helper
-  import Random
+  import Rand
   import Quantifier
   import Monad
   import Independence
@@ -34,7 +34,7 @@ module UniformPowerOfTwo.Model {
   function SampleTailRecursive(n: nat, u: nat := 0): Monad.Hurd<nat>
     requires n >= 1
   {
-    (s: Random.Bitstream) =>
+    (s: Rand.Bitstream) =>
       if n == 1 then
         (u, s)
       else
@@ -42,7 +42,7 @@ module UniformPowerOfTwo.Model {
   }
 
   // Equivalence of Sample and its tail-recursive version
-  lemma SampleCorrespondence(n: nat, s: Random.Bitstream)
+  lemma SampleCorrespondence(n: nat, s: Rand.Bitstream)
     requires n >= 1
     ensures SampleTailRecursive(n)(s) == Sample(n)(s)
   {
@@ -65,7 +65,7 @@ module UniformPowerOfTwo.Model {
   }
 
   // All numbers between consecutive powers of 2 behave the same as arguments to SampleTailRecursive
-  lemma SampleTailRecursiveEqualIfSameLog2Floor(m: nat, n: nat, k: nat, u: nat, s: Random.Bitstream)
+  lemma SampleTailRecursiveEqualIfSameLog2Floor(m: nat, n: nat, k: nat, u: nat, s: Rand.Bitstream)
     requires m >= 1
     requires n >= 1
     requires Helper.Power(2, k) <= m < Helper.Power(2, k + 1)
@@ -88,7 +88,7 @@ module UniformPowerOfTwo.Model {
   }
 
   // All numbers between consecutive powers of 2 behave the same as arguments to Sample
-  lemma SampleEqualIfSameLog2Floor(m: nat, n: nat, k: nat, s: Random.Bitstream)
+  lemma SampleEqualIfSameLog2Floor(m: nat, n: nat, k: nat, s: Rand.Bitstream)
     requires m >= 1
     requires n >= 1
     requires Helper.Power(2, k) <= m < Helper.Power(2, k + 1)
@@ -111,7 +111,7 @@ module UniformPowerOfTwo.Model {
   }
 
   // The induction invariant for the equivalence proof (generalized version of SampleCorrespondence)
-  lemma RelateWithTailRecursive(l: nat, m: nat, s: Random.Bitstream)
+  lemma RelateWithTailRecursive(l: nat, m: nat, s: Rand.Bitstream)
     decreases l
     ensures Monad.Bind(Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s) == Sample(Helper.Power(2, m + l))(s)
   {

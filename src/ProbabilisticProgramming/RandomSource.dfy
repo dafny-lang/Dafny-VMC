@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module Random {
+module Rand {
   import Measures
 
   /************
