@@ -121,16 +121,16 @@ module Rationals {
     var floor := r.numer / r.denom;
     var multiple := floor * r.denom;
     assert r.numer == multiple + r.numer % r.denom;
-    var next_multiple := multiple + r.denom;
+    var nextMultiple := multiple + r.denom;
     assert Floor(r) as real <= ToReal(r);
     assert ToReal(r) < Floor(r) as real + 1.0 by {
-      assert r.numer < next_multiple;
+      assert r.numer < nextMultiple;
       calc {
         ToReal(r);
       ==
         r.numer as real / r.denom as real;
-      < { DivStrictlyMonotonic(r.denom as real, r.numer as real, next_multiple as real); }
-        next_multiple as real / r.denom as real;
+      < { DivStrictlyMonotonic(r.denom as real, r.numer as real, nextMultiple as real); }
+        nextMultiple as real / r.denom as real;
       ==
         (floor + 1) as real;
       ==

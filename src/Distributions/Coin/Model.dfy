@@ -4,10 +4,10 @@
  *******************************************************************************/
 
 module Coin.Model {
-  import RandomNumberGenerator
+  import Rand
   import Monad
 
-  function Sample(s: RandomNumberGenerator.RNG): (bool, RandomNumberGenerator.RNG) {
-    Monad.Deconstruct(s)
+  function Sample(s: Rand.Bitstream): (bool, Rand.Bitstream) {
+    Monad.Coin(s)
   }
 }

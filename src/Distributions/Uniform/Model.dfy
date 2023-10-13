@@ -4,13 +4,13 @@
  *******************************************************************************/
 
 module Uniform.Model {
-  import MeasureTheory
+  import Measures
   import Helper
-  import RandomNumberGenerator
+  import Rand
   import Quantifier
   import Monad
   import Independence
-  import WhileAndUntil
+  import Loops
   import UniformPowerOfTwo
 
   // Definition 49
@@ -18,7 +18,7 @@ module Uniform.Model {
     requires n > 0
   {
     SampleTerminates(n);
-    WhileAndUntil.ProbUntil(Proposal(n), Accept(n))
+    Loops.Until(Proposal(n), Accept(n))
   }
 
   function Proposal(n: nat): Monad.Hurd<nat>
@@ -36,7 +36,7 @@ module Uniform.Model {
   function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
   {
-    (s: RandomNumberGenerator.RNG) =>
+    (s: Rand.Bitstream) =>
       var (x, s') := Sample(b - a)(s);
       (a + x, s')
   }
@@ -44,33 +44,33 @@ module Uniform.Model {
   lemma SampleTerminates(n: nat)
     requires n > 0
     ensures
-      && Independence.IsIndepFn(Proposal(n))
-      && Quantifier.ExistsStar(WhileAndUntil.ProposalIsAccepted(Proposal(n), Accept(n)))
-      && WhileAndUntil.ProbUntilTerminates(Proposal(n), Accept(n))
+      && Independence.IsIndep(Proposal(n))
+      && Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n)))
+      && Loops.UntilTerminates(Proposal(n), Accept(n))
   {
-    assert Independence.IsIndepFn(Proposal(n)) by {
-      UniformPowerOfTwo.Correctness.SampleIsIndepFn(2 * n);
+    assert Independence.IsIndep(Proposal(n)) by {
+      UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
     }
-    var e := iset s | WhileAndUntil.ProposalIsAccepted(Proposal(n), Accept(n))(s);
-    assert e in RandomNumberGenerator.event_space by {
-      assert e == MeasureTheory.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0, (iset m: nat | m < n));
-      assert MeasureTheory.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0, (iset m: nat | m < n)) in RandomNumberGenerator.event_space by {
-        assert Independence.IsIndepFn(UniformPowerOfTwo.Model.Sample(2 * n)) by {
-          UniformPowerOfTwo.Correctness.SampleIsIndepFn(2 * n);
+    var e := iset s | Loops.ProposalIsAccepted(Proposal(n), Accept(n))(s);
+    assert e in Rand.eventSpace by {
+      assert e == Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0, (iset m: nat | m < n));
+      assert Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0, (iset m: nat | m < n)) in Rand.eventSpace by {
+        assert Independence.IsIndep(UniformPowerOfTwo.Model.Sample(2 * n)) by {
+          UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
         }
-        assert MeasureTheory.IsMeasurable(RandomNumberGenerator.event_space, MeasureTheory.natEventSpace, s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0) by {
-          Independence.IsIndepFnImpliesFstMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
+        assert Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0) by {
+          Independence.IsIndepImpliesFstMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
         }
       }
     }
-    assert Quantifier.ExistsStar(WhileAndUntil.ProposalIsAccepted(Proposal(n), Accept(n))) by {
-      assert RandomNumberGenerator.mu(e) > 0.0 by {
+    assert Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n))) by {
+      assert Rand.prob(e) > 0.0 by {
         assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
         assert n <= Helper.Power(2, Helper.Log2Floor(2 * n)) by {
           Helper.NLtPower2Log2FloorOf2N(n);
         }
         calc {
-          RandomNumberGenerator.mu(e);
+          Rand.prob(e);
         == { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
           n as real / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
         >
@@ -78,8 +78,8 @@ module Uniform.Model {
         }
       }
     }
-    assert WhileAndUntil.ProbUntilTerminates(Proposal(n), Accept(n)) by {
-      WhileAndUntil.EnsureProbUntilTerminates(Proposal(n), Accept(n));
+    assert Loops.UntilTerminates(Proposal(n), Accept(n)) by {
+      Loops.EnsureUntilTerminates(Proposal(n), Accept(n));
     }
   }
 }

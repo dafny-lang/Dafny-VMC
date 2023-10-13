@@ -229,20 +229,20 @@ module Limits {
     }
   }
 
-  lemma LimitOfMultiplicationWithZeroSequence(sequence: nat -> real, bound: real, zero_seq: nat -> real)
+  lemma LimitOfMultiplicationWithZeroSequence(sequence: nat -> real, bound: real, zeroSeq: nat -> real)
     requires Sequences.IsBounded(sequence, bound)
-    requires ConvergesTo(zero_seq, 0.0)
-    ensures ConvergesTo(Sequences.Mul(sequence, zero_seq), 0.0)
+    requires ConvergesTo(zeroSeq, 0.0)
+    ensures ConvergesTo(Sequences.Mul(sequence, zeroSeq), 0.0)
   {
-    var productSequence := Sequences.Mul(sequence, zero_seq);
+    var productSequence := Sequences.Mul(sequence, zeroSeq);
     forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(productSequence, 0.0, epsilon) {
       var epsilon' := epsilon / RealArith.Max(bound, 1.0);
-      assert ExistsCloseSuffix(zero_seq, 0.0, epsilon');
-      var N :| SuffixIsClose(zero_seq, 0.0, epsilon', N);
+      assert ExistsCloseSuffix(zeroSeq, 0.0, epsilon');
+      var N :| SuffixIsClose(zeroSeq, 0.0, epsilon', N);
       assert SuffixIsClose(productSequence, 0.0, epsilon, N) by {
         forall n: nat | n >= N ensures RealArith.Dist(productSequence(n), 0.0) < epsilon {
           var s := sequence(n);
-          var z := zero_seq(n);
+          var z := zeroSeq(n);
           calc {
             RealArith.Dist(productSequence(n), 0.0);
           ==
@@ -365,8 +365,8 @@ module Limits {
     ensures ConvergesTo(Sequences.OneOverNPlus1, 0.0)
   {
     forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(Sequences.OneOverNPlus1, 0.0, epsilon) {
-      var epsilon_inv := 1.0 / epsilon;
-      var N := epsilon_inv.Floor;
+      var epsilonInv := 1.0 / epsilon;
+      var N := epsilonInv.Floor;
       assert SuffixIsClose(Sequences.OneOverNPlus1, 0.0, epsilon, N) by {
         forall n: nat ensures n >= N ==> RealArith.Dist(Sequences.OneOverNPlus1(n), 0.0) < epsilon {
           assert Sequences.OneOverNPlus1(n) > 0.0;
@@ -378,8 +378,8 @@ module Limits {
               Sequences.OneOverNPlus1(N);
             ==
               1.0 / (N + 1) as real;
-            < { RealArith.DivisionIsAntiMonotonicStrict(1.0, (N + 1) as real, epsilon_inv); }
-              1.0 / epsilon_inv;
+            < { RealArith.DivisionIsAntiMonotonicStrict(1.0, (N + 1) as real, epsilonInv); }
+              1.0 / epsilonInv;
             ==
               epsilon;
             }

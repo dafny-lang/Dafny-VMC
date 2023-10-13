@@ -7,7 +7,7 @@ module BernoulliExpNeg.Model {
   import Rationals
   import Uniform
   import Monad
-  import WhileAndUntil
+  import Loops
   import BernoulliModel = Bernoulli.Model
 
   function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
@@ -28,7 +28,7 @@ module BernoulliExpNeg.Model {
     requires gamma.numer >= 0
   {
     assume {:axiom} false; // assume termination
-    WhileAndUntil.ProbWhile(
+    Loops.While(
       (bgamma: (bool, Rationals.Rational)) => bgamma.0 && bgamma.1.denom <= bgamma.1.numer,
       GammaReductionLoopIter,
       (true, gamma)
@@ -58,7 +58,7 @@ module BernoulliExpNeg.Model {
     requires 0 <= gamma.numer <= gamma.denom
   {
     assume {:axiom} false; // assume termination
-    WhileAndUntil.ProbWhile(
+    Loops.While(
       (ak: (bool, nat)) => ak.0,
       (ak: (bool, nat)) => GammaLe1LoopIter(gamma, ak),
       ak
