@@ -5,7 +5,8 @@
 
 // Fundamental properties of the real numbers.
 // * States the completeness of the reals in terms of a variation of Dedekind cuts.
-//   See: https://en.wikipedia.org/wiki/Completeness_of_the_real_numbers
+//     Dafny should include such an axiom, but doesn't.
+//     See: https://en.wikipedia.org/wiki/Completeness_of_the_real_numbers
 // * Proves existence and uniqueness of infima and suprema
 module Reals {
   import RealArith
@@ -116,11 +117,11 @@ module Sqrt2Proof {
       if x >= y {
         calc {
           2.0;
-          <
+        <
           Square(y);
-          <= { RealArith.MulMonotonic(y, y, x); RealArith.MulMonotonic(x, y, x); }
+        <= { RealArith.MulMonotonic(y, y, x); RealArith.MulMonotonic(x, y, x); }
           Square(x);
-          <
+        <
           2.0;
         }
       }
@@ -140,7 +141,7 @@ module Sqrt2Proof {
             sqrt2 * sqrt2 - 2.0 * sqrt2 * eps + eps * eps;
             sqrt2 * sqrt2 - (sqrt2 * sqrt2 - 2.0) + eps * eps;
             2.0 + eps * eps;
-            >
+          >
             2.0;
           }
         }
@@ -159,7 +160,7 @@ module Sqrt2Proof {
             y * y;
             sqrt2 * sqrt2 + 2.0 * sqrt2 * eps + eps * eps;
             sqrt2 * sqrt2 + (2.0 * sqrt2 + eps) * eps;
-            < { RealArith.MulMonotonicStrict(eps, 2.0 * sqrt2 + eps, 2.0 * sqrt2 + 1.0); }
+          < { RealArith.MulMonotonicStrict(eps, 2.0 * sqrt2 + eps, 2.0 * sqrt2 + 1.0); }
             sqrt2 * sqrt2 + (2.0 * sqrt2 + 1.0) * eps;
             sqrt2 * sqrt2 + (2.0 - sqrt2 * sqrt2);
             2.0;
