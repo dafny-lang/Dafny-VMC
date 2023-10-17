@@ -19,7 +19,7 @@ module Loops {
       Monad.Return(init)
     else (
            if condition(init) then
-             Monad.Bind(body(init), (a: A) => WhileCut(condition, body, a, fuel - 1))
+             Monad.Bind(body(init), (init': A) => WhileCut(condition, body, init', fuel - 1))
            else
              Monad.Return(init)
          )
@@ -35,9 +35,9 @@ module Loops {
 
   // Definition 39 / True iff Prob(iset s | While(condition, body, a)(s) terminates) == 1
   ghost predicate WhileTerminatesAlmostSurely<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
-    var p := (a: A) =>
-               (s: Rand.Bitstream) => exists n :: !condition(WhileCut(condition, body, a, n)(s).0);
-    forall a :: Quantifier.AlmostSurely(p(a))
+    var p := (init: A) =>
+               (s: Rand.Bitstream) => WhileCutTerminates(condition, body, init, s);
+    forall init :: Quantifier.AlmostSurely(p(init))
   }
 
   // Equation (3.25)
