@@ -19,12 +19,40 @@ module Reals {
     forall x <- s :: x <= upper
   }
 
-  lemma {:axiom} DedekindCompleteness(lower: iset<real>, upper: iset<real>) returns (between: real)
+  ghost predicate IsInfimum(s: iset<real>, candidate: real) {
+    && IsLowerBound(s, candidate)
+    && forall other: real :: IsLowerBound(s, other) ==> other <= candidate
+  }
+
+  ghost predicate IsSupremum(s: iset<real>, candidate: real) {
+    && IsUpperBound(s, candidate)
+    && forall other: real :: IsUpperBound(s, other) ==> candidate <= other
+  }
+
+  // The least upper bound property is one way to characterize the completeness of the reals.
+  // See, e.g.: https://en.wikipedia.org/wiki/Least-upper-bound_property
+  // or: https://en.wikipedia.org/wiki/Completeness_of_the_real_numbers
+  lemma {:axiom} LeastUpperBoundProperty(s: iset<real>, upperBound: real) returns (supremum: real)
+    requires s != iset{}
+    requires IsUpperBound(s, upperBound)
+    ensures IsSupremum(s, supremum)
+
+  // A slight variation of the Dedekind completeness property.
+  lemma DedekindCompleteness(lower: iset<real>, upper: iset<real>) returns (between: real)
     requires lower != iset{}
     requires upper != iset{}
     requires forall x <- lower, y <- upper :: x <= y
     ensures IsUpperBound(lower, between)
     ensures IsLowerBound(upper, between)
+  {
+    var upperBound :| upperBound in upper;
+    between := LeastUpperBoundProperty(lower, upperBound);
+    assert IsLowerBound(upper, between) by {
+      forall y <- upper ensures between <= y {
+        assert IsUpperBound(lower, y);
+      }
+    }
+  }
 
   lemma Completeness(lower: iset<real>, upper: iset<real>)
     requires lower != iset{}
@@ -36,11 +64,6 @@ module Reals {
       var between := DedekindCompleteness(lower, upper);
       assert (forall x <- lower :: x <= between) && (forall x <- upper :: between <= x);
     }
-  }
-
-  ghost predicate IsInfimum(s: iset<real>, candidate: real) {
-    && IsLowerBound(s, candidate)
-    && forall other: real :: IsLowerBound(s, other) ==> other <= candidate
   }
 
   ghost function Infimum(s: iset<real>, lowerBound: real): (infimum: real)
@@ -67,11 +90,6 @@ module Reals {
     requires IsInfimum(s, infimum2)
     ensures infimum1 == infimum2
   {}
-
-  ghost predicate IsSupremum(s: iset<real>, candidate: real) {
-    && IsUpperBound(s, candidate)
-    && forall other: real :: IsUpperBound(s, other) ==> candidate <= other
-  }
 
   ghost function Supremum(s: iset<real>, upperBound: real): (supremum: real)
     requires s != iset{}
