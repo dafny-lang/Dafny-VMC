@@ -11,8 +11,8 @@ module Bernoulli.Model {
   ghost function Sample(numer: nat, denom: nat): (f: Monad.Hurd<bool>)
     requires denom != 0
     requires numer <= denom
-    ensures forall s :: f(s).0 == (Uniform.Model.Sample(denom)(s).0 < numer)
-    ensures forall s :: f(s).1 == Uniform.Model.Sample(denom)(s).1
+    ensures forall s :: f(s).value == (Uniform.Model.Sample(denom)(s).value < numer)
+    ensures forall s :: f(s).rest == Uniform.Model.Sample(denom)(s).rest
   {
     Monad.Bind(Uniform.Model.Sample(denom), (k: nat) => Monad.Return(k < numer))
   }

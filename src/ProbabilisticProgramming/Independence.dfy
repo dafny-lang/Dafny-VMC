@@ -14,8 +14,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Rand.Bitstream>) {
-    var e1 := iset s | f(s).1 in E;
-    var e2 := iset s | f(s).0 in A;
+    var e1 := iset s | f(s).rest in E;
+    var e2 := iset s | f(s).value in A;
     Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
   }
 
@@ -31,17 +31,17 @@ module Independence {
    Lemmas
   *******/
 
-  lemma {:axiom} IsIndepImpliesFstMeasurableBool(f: Monad.Hurd<bool>)
+  lemma {:axiom} IsIndepImpliesValueMeasurableBool(f: Monad.Hurd<bool>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Rand.eventSpace, Measures.boolEventSpace, s => f(s).0)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Measures.boolEventSpace, s => f(s).value)
 
-  lemma {:axiom} IsIndepImpliesFstMeasurableNat(f: Monad.Hurd<nat>)
+  lemma {:axiom} IsIndepImpliesValueMeasurableNat(f: Monad.Hurd<nat>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => f(s).0)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => f(s).value)
 
-  lemma {:axiom} IsIndepImpliesSndMeasurable<A(!new)>(f: Monad.Hurd<A>)
+  lemma {:axiom} IsIndepImpliesRestMeasurable<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, s => f(s).1)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, s => f(s).rest)
 
   lemma {:axiom} IsIndepImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
     requires IsIndep(f)

@@ -53,19 +53,19 @@ module Uniform.Model {
     }
     var e := iset s | Loops.ProposalIsAccepted(Proposal(n), Accept(n))(s);
     assert e in Rand.eventSpace by {
-      assert e == Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0, (iset m: nat | m < n));
-      assert Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0, (iset m: nat | m < n)) in Rand.eventSpace by {
+      assert e == Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).value, (iset m: nat | m < n));
+      assert Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).value, (iset m: nat | m < n)) in Rand.eventSpace by {
         assert Independence.IsIndep(UniformPowerOfTwo.Model.Sample(2 * n)) by {
           UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
         }
-        assert Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => UniformPowerOfTwo.Model.Sample(2 * n)(s).0) by {
-          Independence.IsIndepImpliesFstMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
+        assert Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => UniformPowerOfTwo.Model.Sample(2 * n)(s).value) by {
+          Independence.IsIndepImpliesValueMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
         }
       }
     }
     assert Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n))) by {
       assert Rand.prob(e) > 0.0 by {
-        assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
+        assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n);
         assert n <= Helper.Power(2, Helper.Log2Floor(2 * n)) by {
           Helper.NLtPower2Log2FloorOf2N(n);
         }

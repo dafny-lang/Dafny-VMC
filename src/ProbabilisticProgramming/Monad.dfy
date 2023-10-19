@@ -11,9 +11,13 @@ module Monad {
    Definitions
   ************/
 
-  datatype Result<A> = Result(0: A, 1: Rand.Bitstream)
-
+  // The type (monad) of probabilistic computations (cf. Joe Hurd's PhD thesis).
+  // For a given stream of bits (coin flips), it yields the result of the computation.
   type Hurd<A> = Rand.Bitstream -> Result<A>
+
+  // The result of a probabilistic computation on a bitstream.
+  // It consists of the computed value and the (unconsumed) rest of the bitstream.
+  datatype Result<A> = Result(value: A, rest: Rand.Bitstream)
 
   // Equation (2.38)
   function Tail(s: Rand.Bitstream): (s': Rand.Bitstream) {
