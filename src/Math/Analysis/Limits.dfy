@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module Limits {
+  import RealArith
   import Reals
   import Sequences
 
@@ -12,7 +13,7 @@ module Limits {
   ************/
 
   ghost predicate SuffixIsClose(sequence: nat -> real, limit: real, epsilon: real, suffixStart: nat) {
-    forall n: nat | n >= suffixStart :: Reals.Dist(sequence(n), limit) < epsilon
+    forall n: nat | n >= suffixStart :: RealArith.Dist(sequence(n), limit) < epsilon
   }
 
   ghost predicate ExistsCloseSuffix(sequence: nat -> real, limit: real, epsilon: real) {
@@ -42,22 +43,22 @@ module Limits {
     ensures limit1 == limit2
   {
     if ConvergesTo(sequence, limit1) && ConvergesTo(sequence, limit2) && limit1 != limit2 {
-      var epsilon := Reals.Dist(limit1, limit2) / 2.0;
+      var epsilon := RealArith.Dist(limit1, limit2) / 2.0;
       assert ExistsCloseSuffix(sequence, limit1, epsilon);
       var N1 : nat :| SuffixIsClose(sequence, limit1, epsilon, N1);
       assert ExistsCloseSuffix(sequence, limit2, epsilon);
       var N2 : nat :| SuffixIsClose(sequence, limit2, epsilon, N2);
       var N : nat :| N >= N1 && N >= N2;
       calc {
-        Reals.Dist(limit1, limit2);
-      <= { Reals.TriangleInequality(limit1, sequence(N), limit2); }
-        Reals.Dist(limit1, sequence(N)) + Reals.Dist(sequence(N), limit2);
+        RealArith.Dist(limit1, limit2);
+      <= { RealArith.TriangleInequality(limit1, sequence(N), limit2); }
+        RealArith.Dist(limit1, sequence(N)) + RealArith.Dist(sequence(N), limit2);
       <
         epsilon + epsilon;
       ==
         epsilon * 2.0;
       ==
-        Reals.Dist(limit1, limit2);
+        RealArith.Dist(limit1, limit2);
       }
     }
   }
@@ -69,21 +70,21 @@ module Limits {
   {
     assert ExistsCloseSuffix(sequence, limit, 1.0);
     var N: nat :| SuffixIsClose(sequence, limit, 1.0, N);
-    bound := Reals.Abs(limit) + 1.0;
+    bound := RealArith.Abs(limit) + 1.0;
     for n := 0 to N
-      invariant bound >= Reals.Abs(limit) + 1.0
-      invariant forall i: nat | i < n :: Reals.Abs(sequence(i)) < bound
+      invariant bound >= RealArith.Abs(limit) + 1.0
+      invariant forall i: nat | i < n :: RealArith.Abs(sequence(i)) < bound
     {
-      if Reals.Abs(sequence(n)) >= bound {
-        bound := Reals.Abs(sequence(n)) + 1.0;
+      if RealArith.Abs(sequence(n)) >= bound {
+        bound := RealArith.Abs(sequence(n)) + 1.0;
       }
     }
-    assert forall n: nat | n < N :: Reals.Abs(sequence(n)) < bound;
-    forall n: nat ensures Reals.Abs(sequence(n)) < bound {
+    assert forall n: nat | n < N :: RealArith.Abs(sequence(n)) < bound;
+    forall n: nat ensures RealArith.Abs(sequence(n)) < bound {
       if n < N {
-        assert Reals.Abs(sequence(n)) < bound;
+        assert RealArith.Abs(sequence(n)) < bound;
       } else {
-        assert Reals.Abs(sequence(n)) < Reals.Abs(limit) + 1.0 <= bound;
+        assert RealArith.Abs(sequence(n)) < RealArith.Abs(limit) + 1.0 <= bound;
       }
     }
   }
@@ -110,13 +111,13 @@ module Limits {
       var N2: nat :| SuffixIsClose(sequence2, limit2, epsilon / 2.0, N2);
       var N: nat :| N >= N1 && N >= N2;
       assert SuffixIsClose(sumSequence, sumLimit, epsilon, N) by {
-        forall n: nat | n >= N ensures Reals.Dist(sumSequence(n), sumLimit) < epsilon {
+        forall n: nat | n >= N ensures RealArith.Dist(sumSequence(n), sumLimit) < epsilon {
           calc {
-            Reals.Dist(sumSequence(n), sumLimit);
+            RealArith.Dist(sumSequence(n), sumLimit);
           ==
-            Reals.Dist(sequence1(n) + sequence2(n), limit1 + limit2);
+            RealArith.Dist(sequence1(n) + sequence2(n), limit1 + limit2);
           <=
-            Reals.Dist(sequence1(n), limit1) + Reals.Dist(sequence2(n), limit2);
+            RealArith.Dist(sequence1(n), limit1) + RealArith.Dist(sequence2(n), limit2);
           <
             epsilon / 2.0 + epsilon / 2.0;
           ==
@@ -137,21 +138,21 @@ module Limits {
     var productSequence := Sequences.Mul(sequence1, sequence2);
     var productLimit := limit1 * limit2;
     forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(productSequence, productLimit, epsilon) {
-      var epsilon1 := epsilon / 2.0 / Reals.Max(Reals.Abs(limit2), 1.0);
-      var epsilon2 := epsilon / 2.0 / Reals.Max(bound1, 1.0);
+      var epsilon1 := epsilon / 2.0 / RealArith.Max(RealArith.Abs(limit2), 1.0);
+      var epsilon2 := epsilon / 2.0 / RealArith.Max(bound1, 1.0);
       assert ExistsCloseSuffix(sequence1, limit1, epsilon1);
       var N1: nat :| SuffixIsClose(sequence1, limit1, epsilon1, N1);
       assert ExistsCloseSuffix(sequence2, limit2, epsilon2);
       var N2: nat :| SuffixIsClose(sequence2, limit2, epsilon2, N2);
       var N: nat :| N >= N1 && N >= N2;
       assert SuffixIsClose(productSequence, productLimit, epsilon, N) by {
-        forall n: nat | n >= N ensures Reals.Dist(productSequence(n), productLimit) < epsilon {
+        forall n: nat | n >= N ensures RealArith.Dist(productSequence(n), productLimit) < epsilon {
           var s1 := sequence1(n);
           var s2 := sequence2(n);
           calc {
-            Reals.Dist(productSequence(n), productLimit);
+            RealArith.Dist(productSequence(n), productLimit);
           == { assert productSequence(n) == sequence1(n) * sequence2(n) == s1 * s2; }
-            Reals.Dist(s1 * s2, limit1 * limit2);
+            RealArith.Dist(s1 * s2, limit1 * limit2);
           < { LimitIsMultiplicativeSuffixHelper(s1, limit1, s2, limit2, bound1, epsilon); }
             epsilon;
           }
@@ -163,41 +164,41 @@ module Limits {
   lemma LimitIsMultiplicativeSuffixHelper(s1: real, limit1: real, s2: real, limit2: real, bound1: real, epsilon: real)
     requires epsilon > 0.0
     requires bound1 > 0.0
-    requires Reals.Dist(s1, limit1) < epsilon / 2.0 / Reals.Max(Reals.Abs(limit2), 1.0)
-    requires Reals.Dist(s2, limit2) < epsilon / 2.0 / Reals.Max(bound1, 1.0)
-    requires Reals.Abs(s1) <= bound1
-    ensures Reals.Dist(s1 * s2, limit1 * limit2) < epsilon
+    requires RealArith.Dist(s1, limit1) < epsilon / 2.0 / RealArith.Max(RealArith.Abs(limit2), 1.0)
+    requires RealArith.Dist(s2, limit2) < epsilon / 2.0 / RealArith.Max(bound1, 1.0)
+    requires RealArith.Abs(s1) <= bound1
+    ensures RealArith.Dist(s1 * s2, limit1 * limit2) < epsilon
   {
-    assert FirstSummand: Reals.Abs(limit2) * Reals.Dist(s1, limit1) <= epsilon / 2.0 by {
-      var d1 := Reals.Max(Reals.Abs(limit2), 1.0);
-      var epsilon1 := epsilon / 2.0 / Reals.Max(Reals.Abs(limit2), 1.0);
+    assert FirstSummand: RealArith.Abs(limit2) * RealArith.Dist(s1, limit1) <= epsilon / 2.0 by {
+      var d1 := RealArith.Max(RealArith.Abs(limit2), 1.0);
+      var epsilon1 := epsilon / 2.0 / RealArith.Max(RealArith.Abs(limit2), 1.0);
       calc {
-        Reals.Abs(limit2) * Reals.Dist(s1, limit1);
-      <= { Reals.MultiplicationMonotonic(Reals.Abs(limit2), Reals.Dist(s1, limit1), epsilon1); }
-        Reals.Abs(limit2) * epsilon1;
-      <=  { Reals.MultiplicationMonotonic(epsilon1, Reals.Abs(limit2), d1); }
+        RealArith.Abs(limit2) * RealArith.Dist(s1, limit1);
+      <= { RealArith.MulMonotonic(RealArith.Abs(limit2), RealArith.Dist(s1, limit1), epsilon1); }
+        RealArith.Abs(limit2) * epsilon1;
+      <=  { RealArith.MulMonotonic(epsilon1, RealArith.Abs(limit2), d1); }
         d1 * epsilon1;
       ==
         epsilon / 2.0;
       }
     }
-    assert SecondSummand: bound1 * Reals.Dist(s2, limit2) < epsilon / 2.0 by {
-      var d2 := Reals.Max(bound1, 1.0);
-      var epsilon2 := epsilon / 2.0 / Reals.Max(bound1, 1.0);
+    assert SecondSummand: bound1 * RealArith.Dist(s2, limit2) < epsilon / 2.0 by {
+      var d2 := RealArith.Max(bound1, 1.0);
+      var epsilon2 := epsilon / 2.0 / RealArith.Max(bound1, 1.0);
       calc {
-        bound1 * Reals.Dist(s2, limit2);
-      < { Reals.MultiplicationMonotonicStrict(bound1, Reals.Dist(s2, limit2), epsilon2); }
+        bound1 * RealArith.Dist(s2, limit2);
+      < { RealArith.MulMonotonicStrict(bound1, RealArith.Dist(s2, limit2), epsilon2); }
         bound1 * epsilon2;
-      <= { Reals.MultiplicationMonotonic(epsilon2, bound1, d2); }
+      <= { RealArith.MulMonotonic(epsilon2, bound1, d2); }
         d2 * epsilon2;
       ==
         epsilon / 2.0;
       }
     }
     calc {
-      Reals.Dist(s1 * s2, limit1 * limit2);
+      RealArith.Dist(s1 * s2, limit1 * limit2);
     <= { MultiplicationLimitHelper(s1, limit1, s2, limit2, bound1); }
-      bound1 * Reals.Dist(s2, limit2) + Reals.Abs(limit2) * Reals.Dist(s1, limit1);
+      bound1 * RealArith.Dist(s2, limit2) + RealArith.Abs(limit2) * RealArith.Dist(s1, limit1);
     < { reveal FirstSummand; reveal SecondSummand; }
       epsilon / 2.0 + epsilon / 2.0;
     ==
@@ -206,25 +207,25 @@ module Limits {
   }
 
   lemma MultiplicationLimitHelper(s1: real, limit1: real, s2: real, limit2: real, bound1: real)
-    requires Reals.Abs(s1) <= bound1
-    ensures Reals.Dist(s1 * s2, limit1 * limit2) <= bound1 * Reals.Dist(s2, limit2) + Reals.Abs(limit2) * Reals.Dist(s1, limit1)
+    requires RealArith.Abs(s1) <= bound1
+    ensures RealArith.Dist(s1 * s2, limit1 * limit2) <= bound1 * RealArith.Dist(s2, limit2) + RealArith.Abs(limit2) * RealArith.Dist(s1, limit1)
   {
     calc {
-      Reals.Dist(s1 * s2, limit1 * limit2);
+      RealArith.Dist(s1 * s2, limit1 * limit2);
     ==
-      Reals.Abs(s1 * s2 - limit1 * limit2);
+      RealArith.Abs(s1 * s2 - limit1 * limit2);
     ==
-      Reals.Abs(s1 * (s2 - limit2) + limit2 * (s1 - limit1));
+      RealArith.Abs(s1 * (s2 - limit2) + limit2 * (s1 - limit1));
     <=
-      Reals.Abs(s1 * (s2 - limit2)) + Reals.Abs(limit2 * (s1 - limit1));
-    == { Reals.AbsMul(s1, s2 - limit2); }
-      Reals.Abs(s1) * Reals.Abs(s2 - limit2) + Reals.Abs(limit2 * (s1 - limit1));
-    == { Reals.AbsMul(limit2, s1 - limit1); }
-      Reals.Abs(s1) * Reals.Abs(s2 - limit2) + Reals.Abs(limit2) * Reals.Abs(s1 - limit1);
+      RealArith.Abs(s1 * (s2 - limit2)) + RealArith.Abs(limit2 * (s1 - limit1));
+    == { RealArith.AbsMul(s1, s2 - limit2); }
+      RealArith.Abs(s1) * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2 * (s1 - limit1));
+    == { RealArith.AbsMul(limit2, s1 - limit1); }
+      RealArith.Abs(s1) * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2) * RealArith.Abs(s1 - limit1);
     <=
-      bound1 * Reals.Abs(s2 - limit2) + Reals.Abs(limit2) * Reals.Abs(s1 - limit1);
+      bound1 * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2) * RealArith.Abs(s1 - limit1);
     ==
-      bound1 * Reals.Dist(s2, limit2) + Reals.Abs(limit2) * Reals.Dist(s1, limit1);
+      bound1 * RealArith.Dist(s2, limit2) + RealArith.Abs(limit2) * RealArith.Dist(s1, limit1);
     }
   }
 
@@ -235,25 +236,25 @@ module Limits {
   {
     var productSequence := Sequences.Mul(sequence, zeroSeq);
     forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(productSequence, 0.0, epsilon) {
-      var epsilon' := epsilon / Reals.Max(bound, 1.0);
+      var epsilon' := epsilon / RealArith.Max(bound, 1.0);
       assert ExistsCloseSuffix(zeroSeq, 0.0, epsilon');
       var N :| SuffixIsClose(zeroSeq, 0.0, epsilon', N);
       assert SuffixIsClose(productSequence, 0.0, epsilon, N) by {
-        forall n: nat | n >= N ensures Reals.Dist(productSequence(n), 0.0) < epsilon {
+        forall n: nat | n >= N ensures RealArith.Dist(productSequence(n), 0.0) < epsilon {
           var s := sequence(n);
           var z := zeroSeq(n);
           calc {
-            Reals.Dist(productSequence(n), 0.0);
+            RealArith.Dist(productSequence(n), 0.0);
           ==
-            Reals.Abs(s * z);
-          == { Reals.AbsMul(s, z); }
-            Reals.Abs(s) * Reals.Abs(z);
-          <= { Reals.MultiplicationMonotonic(Reals.Abs(s), Reals.Abs(z), epsilon'); }
-            Reals.Abs(s) * epsilon';
-          < { Reals.MultiplicationMonotonicStrict(epsilon', Reals.Abs(s), bound); }
+            RealArith.Abs(s * z);
+          == { RealArith.AbsMul(s, z); }
+            RealArith.Abs(s) * RealArith.Abs(z);
+          <= { RealArith.MulMonotonic(RealArith.Abs(s), RealArith.Abs(z), epsilon'); }
+            RealArith.Abs(s) * epsilon';
+          < { RealArith.MulMonotonicStrict(epsilon', RealArith.Abs(s), bound); }
             bound * epsilon';
-          <= { Reals.MultiplicationMonotonic(epsilon', bound, Reals.Max(bound, 1.0)); }
-            Reals.Max(bound, 1.0) * epsilon';
+          <= { RealArith.MulMonotonic(epsilon', bound, RealArith.Max(bound, 1.0)); }
+            RealArith.Max(bound, 1.0) * epsilon';
           ==
             epsilon;
           }
@@ -272,23 +273,23 @@ module Limits {
     var invLimit := 1.0 / limit;
     forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(invSeq, invLimit, epsilon) {
       var limitSquared := limit * limit;
-      var epsilon' := Reals.Min(Reals.Abs(limit) / 2.0, (epsilon * limitSquared) / 2.0);
+      var epsilon' := RealArith.Min(RealArith.Abs(limit) / 2.0, (epsilon * limitSquared) / 2.0);
       assert ExistsCloseSuffix(sequence, limit, epsilon');
       var N: nat :| SuffixIsClose(sequence, limit, epsilon', N);
       assert SuffixIsClose(invSeq, invLimit, epsilon, N) by {
-        forall n: nat | n >= N ensures Reals.Dist(invSeq(n), invLimit) < epsilon {
+        forall n: nat | n >= N ensures RealArith.Dist(invSeq(n), invLimit) < epsilon {
           var s := sequence(n);
           calc {
-            Reals.Dist(invSeq(n), invLimit);
+            RealArith.Dist(invSeq(n), invLimit);
           == { assert invSeq(n) == 1.0 / s; }
-            Reals.Dist(1.0 / s, 1.0 / limit);
+            RealArith.Dist(1.0 / s, 1.0 / limit);
           == { LimitOfInverseHelper1(s, limit); }
-            Reals.Dist(s, limit) / Reals.Abs(limit) / Reals.Abs(s);
+            RealArith.Dist(s, limit) / RealArith.Abs(limit) / RealArith.Abs(s);
           <= { LimitOfInverseHelper2(s, limit); }
-            2.0 * Reals.Dist(s, limit) / limitSquared;
-          < { Reals.DivisionIsMonotonicStrict(2.0 * Reals.Dist(s, limit), 2.0 * epsilon', limitSquared); }
+            2.0 * RealArith.Dist(s, limit) / limitSquared;
+          < { RealArith.DivisionIsMonotonicStrict(2.0 * RealArith.Dist(s, limit), 2.0 * epsilon', limitSquared); }
             2.0 * epsilon' / limitSquared;
-          <= { Reals.DivisionIsMonotonic(2.0 * epsilon', 2.0 * (epsilon * limitSquared) / 2.0, limitSquared); }
+          <= { RealArith.DivisionIsMonotonic(2.0 * epsilon', 2.0 * (epsilon * limitSquared) / 2.0, limitSquared); }
             2.0 * (epsilon * limitSquared) / 2.0 / limitSquared;
           == { assert 2.0 * (epsilon * limitSquared) / 2.0 == epsilon * limitSquared; }
             (epsilon * limitSquared) / limitSquared;
@@ -303,31 +304,31 @@ module Limits {
   lemma LimitOfInverseHelper1(s: real, limit: real)
     requires s != 0.0
     requires limit != 0.0
-    ensures Reals.Dist(1.0 / s, 1.0 / limit) == Reals.Dist(s, limit) / Reals.Abs(limit) / Reals.Abs(s)
+    ensures RealArith.Dist(1.0 / s, 1.0 / limit) == RealArith.Dist(s, limit) / RealArith.Abs(limit) / RealArith.Abs(s)
   {
     calc {
-      Reals.Dist(1.0 / s, 1.0 / limit);
+      RealArith.Dist(1.0 / s, 1.0 / limit);
     ==
-      Reals.Abs((limit - s) / (limit * s));
-    == { Reals.DivMulEqualsDivDiv((limit - s), limit, s); }
-      Reals.Abs((limit - s) / limit / s);
-    == { Reals.AbsDiv((limit - s) / limit, s); }
-      Reals.Abs((limit - s) / limit) / Reals.Abs(s);
-    == { Reals.AbsDiv((limit - s), Reals.Abs(limit)); }
-      Reals.Abs((limit - s)) / Reals.Abs(limit) / Reals.Abs(s);
+      RealArith.Abs((limit - s) / (limit * s));
+    == { RealArith.DivMulEqualsDivDiv((limit - s), limit, s); }
+      RealArith.Abs((limit - s) / limit / s);
+    == { RealArith.AbsDiv((limit - s) / limit, s); }
+      RealArith.Abs((limit - s) / limit) / RealArith.Abs(s);
+    == { RealArith.AbsDiv((limit - s), RealArith.Abs(limit)); }
+      RealArith.Abs((limit - s)) / RealArith.Abs(limit) / RealArith.Abs(s);
     ==
-      Reals.Dist(s, limit) / Reals.Abs(limit) / Reals.Abs(s);
+      RealArith.Dist(s, limit) / RealArith.Abs(limit) / RealArith.Abs(s);
     }
   }
 
   lemma LimitOfInverseHelper2(s: real, limit: real)
     requires s != 0.0
     requires limit != 0.0
-    requires Reals.Abs(s) >= Reals.Abs(limit) / 2.0
+    requires RealArith.Abs(s) >= RealArith.Abs(limit) / 2.0
     ensures limit * limit != 0.0
-    ensures Reals.Dist(s, limit) / Reals.Abs(limit) / Reals.Abs(s) <= 2.0 * Reals.Dist(s, limit) / (limit * limit)
+    ensures RealArith.Dist(s, limit) / RealArith.Abs(limit) / RealArith.Abs(s) <= 2.0 * RealArith.Dist(s, limit) / (limit * limit)
   {
-    var AbsLimit := Reals.Abs(limit);
+    var AbsLimit := RealArith.Abs(limit);
     assert AbsLimit > 0.0;
     assert AbsLimit * AbsLimit != 0.0 by {
       if AbsLimit * AbsLimit == 0.0 {
@@ -343,19 +344,19 @@ module Limits {
         }
       }
     }
-    assert Reals.Dist(s, limit) / Reals.Abs(limit) / Reals.Abs(s) <= 2.0 * Reals.Dist(s, limit) / (limit * limit) by {
+    assert RealArith.Dist(s, limit) / RealArith.Abs(limit) / RealArith.Abs(s) <= 2.0 * RealArith.Dist(s, limit) / (limit * limit) by {
       calc {
-        Reals.Dist(s, limit) / AbsLimit / Reals.Abs(s);
-      <= { Reals.DivisionIsAntiMonotonic(Reals.Dist(s, limit) / AbsLimit, Reals.Abs(s), AbsLimit / 2.0); }
-        Reals.Dist(s, limit) / AbsLimit / (AbsLimit / 2.0);
-      == { Reals.DivMulEqualsDivDiv2(Reals.Dist(s, limit) / AbsLimit, AbsLimit, 2.0); }
-        Reals.Dist(s, limit) / AbsLimit * 2.0 / AbsLimit;
-      == { Reals.DivMulEqualsMulDiv(Reals.Dist(s, limit), AbsLimit, 2.0); }
-        Reals.Dist(s, limit) * 2.0 / AbsLimit / AbsLimit;
-      == { Reals.DivMulEqualsDivDiv(2.0 * Reals.Dist(s, limit), AbsLimit, AbsLimit); }
-        (2.0 * Reals.Dist(s, limit)) / (AbsLimit * AbsLimit);
+        RealArith.Dist(s, limit) / AbsLimit / RealArith.Abs(s);
+      <= { RealArith.DivisionIsAntiMonotonic(RealArith.Dist(s, limit) / AbsLimit, RealArith.Abs(s), AbsLimit / 2.0); }
+        RealArith.Dist(s, limit) / AbsLimit / (AbsLimit / 2.0);
+      == { RealArith.DivMulEqualsDivDiv2(RealArith.Dist(s, limit) / AbsLimit, AbsLimit, 2.0); }
+        RealArith.Dist(s, limit) / AbsLimit * 2.0 / AbsLimit;
+      == { RealArith.DivMulEqualsMulDiv(RealArith.Dist(s, limit), AbsLimit, 2.0); }
+        RealArith.Dist(s, limit) * 2.0 / AbsLimit / AbsLimit;
+      == { RealArith.DivMulEqualsDivDiv(2.0 * RealArith.Dist(s, limit), AbsLimit, AbsLimit); }
+        (2.0 * RealArith.Dist(s, limit)) / (AbsLimit * AbsLimit);
       == { assert AbsLimit * AbsLimit == limit * limit; }
-        2.0 * Reals.Dist(s, limit) / (limit * limit);
+        2.0 * RealArith.Dist(s, limit) / (limit * limit);
       }
     }
   }
@@ -367,9 +368,9 @@ module Limits {
       var epsilonInv := 1.0 / epsilon;
       var N := epsilonInv.Floor;
       assert SuffixIsClose(Sequences.OneOverNPlus1, 0.0, epsilon, N) by {
-        forall n: nat ensures n >= N ==> Reals.Dist(Sequences.OneOverNPlus1(n), 0.0) < epsilon {
+        forall n: nat ensures n >= N ==> RealArith.Dist(Sequences.OneOverNPlus1(n), 0.0) < epsilon {
           assert Sequences.OneOverNPlus1(n) > 0.0;
-          assert Reals.Dist(Sequences.OneOverNPlus1(n), 0.0) == Sequences.OneOverNPlus1(n);
+          assert RealArith.Dist(Sequences.OneOverNPlus1(n), 0.0) == Sequences.OneOverNPlus1(n);
           if n >= N {
             calc {
               Sequences.OneOverNPlus1(n);
@@ -377,7 +378,7 @@ module Limits {
               Sequences.OneOverNPlus1(N);
             ==
               1.0 / (N + 1) as real;
-            < { Reals.DivisionIsAntiMonotonicStrict(1.0, (N + 1) as real, epsilonInv); }
+            < { RealArith.DivisionIsAntiMonotonicStrict(1.0, (N + 1) as real, epsilonInv); }
               1.0 / epsilonInv;
             ==
               epsilon;

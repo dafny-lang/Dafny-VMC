@@ -4,10 +4,11 @@
  *******************************************************************************/
 
 module Sequences {
+  import RealArith
   import Reals
 
   ghost predicate IsBounded(sequence: nat -> real, bound: real) {
-    forall n: nat :: Reals.Abs(sequence(n)) < bound
+    forall n: nat :: RealArith.Abs(sequence(n)) < bound
   }
 
   function OneOverNPlus1(n: nat): real
@@ -47,7 +48,7 @@ module Sequences {
       mp1 / np1 <= 1.0;
     ==
       (1.0 / np1) * mp1 <= (1.0 / mp1) * mp1;
-    == { Reals.MultiplicationCancelMonotonic(mp1, 1.0 / np1, 1.0 / mp1); }
+    == { RealArith.MultiplicationCancelMonotonic(mp1, 1.0 / np1, 1.0 / mp1); }
       1.0 / np1 <= 1.0 / mp1;
     ==
       OneOverNPlus1(m) >= OneOverNPlus1(n);

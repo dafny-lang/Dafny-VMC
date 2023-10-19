@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module Reals {
+module RealArith {
   function Abs(r: real): real {
     if r >= 0.0 then r else -r
   }
@@ -28,14 +28,18 @@ module Reals {
     ensures Abs(x * y) == Abs(x) * Abs(y)
   {}
 
-  lemma MultiplicationMonotonic(factor:real, x: real, y: real)
-    requires factor >= 0.0
-    ensures x <= y ==> x * factor <= y * factor
+  lemma MulMonotonicStrict(factor: real, x: real, y: real)
+    requires x < y
+    requires factor > 0.0
+    ensures x * factor < y * factor
+    ensures factor * x < factor * y
   {}
 
-  lemma MultiplicationMonotonicStrict(factor:real, x: real, y: real)
-    requires factor > 0.0
-    ensures x < y ==> x * factor < y * factor
+  lemma MulMonotonic(factor: real, x: real, y: real)
+    requires x <= y
+    requires factor >= 0.0
+    ensures x * factor <= y * factor
+    ensures factor * x <= factor * y
   {}
 
   lemma DivMulEqualsMulDiv(a: real, b: real, c: real)
