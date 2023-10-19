@@ -42,33 +42,33 @@ module Loops {
     (s: Rand.Bitstream) =>
       if WhileCutTerminates(condition, body, init, s)
       then
-        var fuel := MinimalFuel(condition, body, init, s);
+        var fuel := LeastFuel(condition, body, init, s);
         WhileCut(condition, body, init, fuel)(s)
       else
         // In HOL, Hurd returns `arb` here, which is not possible in Dafny.
         (init, s)
   }
 
-  ghost function MinimalFuel<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): (fuel: nat)
+  ghost function LeastFuel<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): (fuel: nat)
     requires WhileCutTerminates(condition, body, init, s)
     ensures WhileCutTerminatesWithFuel(condition, body, init, s)(fuel)
     ensures forall fuel': nat :: WhileCutTerminatesWithFuel(condition, body, init, s)(fuel') ==> fuel <= fuel'
   {
     var fuelBound :| WhileCutTerminatesWithFuel(condition, body, init, s)(fuelBound);
-    Minimal(WhileCutTerminatesWithFuel(condition, body, init, s), fuelBound)
+    Least(WhileCutTerminatesWithFuel(condition, body, init, s), fuelBound)
   }
 
-  ghost function Minimal(property: nat -> bool, bound: nat, i: nat := 0): (n: nat)
-    decreases bound - i
-    requires i <= bound
+  ghost function Least(property: nat -> bool, bound: nat, start: nat := 0): (l: nat)
+    decreases bound - start
+    requires start <= bound
     requires property(bound)
-    ensures property(n)
-    ensures i <= n <= bound
-    ensures forall m: nat | i <= m :: property(m) ==> n <= m
+    ensures property(l)
+    ensures start <= l <= bound
+    ensures forall n: nat | start <= n :: property(n) ==> l <= n
   {
-    if i == bound || property(i)
-    then i
-    else Minimal(property, bound, i + 1)
+    if start == bound || property(start)
+    then start
+    else Least(property, bound, start + 1)
   }
 
   ghost predicate UntilTerminatesAlmostSurely<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool) {
@@ -128,18 +128,18 @@ module Loops {
    Lemmas
   *******/
 
-  lemma MinimalFuelUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, fuel': nat)
+  lemma LeastFuelUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, fuel': nat)
     requires WhileCutTerminates(condition, body, init', s')
-    requires MinimalFuel(condition, body, init', s') == fuel'
+    requires LeastFuel(condition, body, init', s') == fuel'
     requires condition(init)
     requires body(init)(s) == (init', s')
     ensures WhileCutTerminates(condition, body, init, s)
-    ensures MinimalFuel(condition, body, init, s) == fuel' + 1
+    ensures LeastFuel(condition, body, init, s) == fuel' + 1
   {
     assert WhileCutTerminates(condition, body, init, s) by {
       WhileCutTerminatesWithFuelUnroll(condition, body, init, s, init', s', fuel');
     }
-    var fuel := MinimalFuel(condition, body, init, s);
+    var fuel := LeastFuel(condition, body, init, s);
     assert fuel == fuel' + 1 by {
       WhileCutTerminatesWithFuelUnroll(condition, body, init, s, init', s', fuel');
       WhileCutTerminatesWithFuelUnroll(condition, body, init, s, init', s', fuel - 1);
@@ -167,14 +167,14 @@ module Loops {
     requires unrolled == While(condition, body, init')(s')
     ensures loop == unrolled
   {
-    var fuel: nat := MinimalFuel(condition, body, init, s);
+    var fuel: nat := LeastFuel(condition, body, init, s);
     assert fuel >= 1;
     var fuel': nat := fuel - 1;
     assert WhileCutTerminatesWithFuel(condition, body, init', s')(fuel');
     assert WhileCutTerminates(condition, body, init', s');
-    var minFuel: nat := MinimalFuel(condition, body, init', s');
+    var minFuel: nat := LeastFuel(condition, body, init', s');
     assert minFuel == fuel' by {
-      MinimalFuelUnroll(condition, body, init, s, init', s', minFuel);
+      LeastFuelUnroll(condition, body, init, s, init', s', minFuel);
     }
     assert loop == unrolled by {
       calc {
@@ -189,7 +189,7 @@ module Loops {
 
   lemma WhileUnrollIfTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: (A, Rand.Bitstream), unrolled: (A, Rand.Bitstream))
     requires WhileCutTerminates(condition, body, init, s)
-    requires fuel == MinimalFuel(condition, body, init, s)
+    requires fuel == LeastFuel(condition, body, init, s)
     requires loop == While(condition, body, init)(s)
     requires unrolled == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
     ensures loop == unrolled
@@ -220,7 +220,7 @@ module Loops {
     var unrolled := (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s);
     assert loop == unrolled by {
       if WhileCutTerminates(condition, body, init, s) {
-        var fuel: nat := MinimalFuel(condition, body, init, s);
+        var fuel: nat := LeastFuel(condition, body, init, s);
         WhileUnrollIfTerminates(condition, body, init, s, fuel, loop, unrolled);
       } else {
         // In this case, equality does not hold in Dafny.
