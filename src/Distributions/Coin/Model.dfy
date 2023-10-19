@@ -7,7 +7,7 @@ module Coin.Model {
   import Rand
   import Monad
 
-  function Sample(s: Rand.Bitstream): (bool, Rand.Bitstream) {
+  function Sample(s: Rand.Bitstream): Monad.Result<bool> {
     Monad.Coin(s)
   }
 }
