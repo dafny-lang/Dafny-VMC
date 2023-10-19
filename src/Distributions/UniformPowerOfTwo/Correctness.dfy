@@ -174,9 +174,9 @@ module UniformPowerOfTwo.Correctness {
         forall b: bool ensures Independence.IsIndep(g(b)) {
           Independence.ReturnIsIndep((if b then 2 * m + 1 else 2 * m) as nat);
         }
-        Independence.IndepFnIsCompositional(Monad.Coin, g);
+        Independence.BindIsIndep(Monad.Coin, g);
       }
-      Independence.IndepFnIsCompositional(Model.Sample(n / 2), Model.UnifStep);
+      Independence.BindIsIndep(Model.Sample(n / 2), Model.UnifStep);
     }
   }
 

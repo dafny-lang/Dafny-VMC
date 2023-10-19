@@ -15,14 +15,10 @@ module Loops {
 
   // Definition 37
   function WhileCut<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, fuel: nat): Monad.Hurd<A> {
-    if fuel == 0 then
+    if fuel == 0 || !condition(init) then
       Monad.Return(init)
-    else (
-           if condition(init) then
-             Monad.Bind(body(init), (init': A) => WhileCut(condition, body, init', fuel - 1))
-           else
-             Monad.Return(init)
-         )
+    else
+      Monad.Bind(body(init), (init': A) => WhileCut(condition, body, init', fuel - 1))
   }
 
   ghost predicate WhileCutTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream) {
@@ -298,6 +294,20 @@ module Loops {
     assume {:axiom} Quantifier.AlmostSurely(UntilLoopResultIsAccepted(proposal, accept)); // add later
   }
 
+  lemma WhileCutIsIndep<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, fuel: nat)
+    requires forall a: A :: Independence.IsIndep(body(a))
+    ensures Independence.IsIndep(WhileCut(condition, body, init, fuel))
+  {
+    if fuel == 0 || !condition(init) {
+      Independence.ReturnIsIndep(init);
+    } else {
+      forall init': A ensures Independence.IsIndep(WhileCut(condition, body, init', fuel - 1)) {
+        WhileCutIsIndep(condition, body, init', fuel - 1);
+      }
+      Independence.BindIsIndep(body(init), init' => WhileCut(condition, body, init', fuel - 1));
+    }
+  }
+
   lemma WhileIsIndep<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
     requires forall a: A :: Independence.IsIndep(body(a))
     requires WhileTerminatesAlmostSurely(condition, body)
@@ -317,6 +327,6 @@ module Loops {
     forall init: A {
       WhileIsIndep(reject, body, init);
     }
-    Independence.IndepFnIsCompositional(proposal, (init: A) => While(reject, body, init));
+    Independence.BindIsIndep(proposal, (init: A) => While(reject, body, init));
   }
 }

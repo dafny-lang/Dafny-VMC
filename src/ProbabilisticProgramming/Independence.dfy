@@ -56,7 +56,7 @@ module Independence {
     ensures IsIndep(Monad.Return(x))
 
   // Equation (3.19)
-  lemma {:axiom} IndepFnIsCompositional<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
+  lemma {:axiom} BindIsIndep<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
     requires IsIndep(f)
     requires forall a :: IsIndep(g(a))
     ensures IsIndep(Monad.Bind(f, g))
