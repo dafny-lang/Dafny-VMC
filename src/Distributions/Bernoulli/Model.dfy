@@ -8,7 +8,7 @@ module Bernoulli.Model {
   import Monad
 
   // Footnote 5, p. 82
-  function Sample(numer: nat, denom: nat): (f: Monad.Hurd<bool>)
+  ghost function Sample(numer: nat, denom: nat): (f: Monad.Hurd<bool>)
     requires denom != 0
     requires numer <= denom
     ensures forall s :: f(s).0 == (Uniform.Model.Sample(denom)(s).0 < numer)

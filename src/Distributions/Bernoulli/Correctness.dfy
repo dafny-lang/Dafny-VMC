@@ -34,7 +34,7 @@ module Bernoulli.Correctness {
       }
     }
 
-    Independence.IndepFnIsCompositional(f, g);
+    Independence.BindIsIndep(f, g);
   }
 
 
@@ -76,12 +76,14 @@ module Bernoulli.Correctness {
         }
       }
 
-      calc {
-        e;
-        iset s | Uniform.Model.Sample(n)(s).0 < m;
-        iset s | Uniform.Model.Sample(n)(s).0 == m-1 || Uniform.Model.Sample(n)(s).0 < m-1;
-        (iset s | Uniform.Model.Sample(n)(s).0 == m-1) + (iset s | Uniform.Model.Sample(n)(s).0 < m-1);
-        e1 + e2;
+      assert e == e1 + e2 by {
+        calc {
+          e;
+          iset s | Uniform.Model.Sample(n)(s).0 < m;
+          iset s | Uniform.Model.Sample(n)(s).0 == m-1 || Uniform.Model.Sample(n)(s).0 < m-1;
+          (iset s | Uniform.Model.Sample(n)(s).0 == m-1) + (iset s | Uniform.Model.Sample(n)(s).0 < m-1);
+          e1 + e2;
+        }
       }
 
       assert A1: e1 in Rand.eventSpace && Rand.prob(e1) == 1.0 / (n as real) by {
@@ -93,26 +95,14 @@ module Bernoulli.Correctness {
         BernoulliCorrectness(m-1, n);
       }
 
-      assert A3: (1.0 / n as real) + ((m-1) as real / n as real) == (1.0 + (m-1) as real) / n as real by {
-        var x := 1.0;
-        var y := (m-1) as real;
-        var z := n as real;
-        Helper.AdditionOfFractions(x, y, z);
-        assert (x / z) + (y / z) == (x + y) / z;
-      }
-
       calc {
         Rand.prob(e);
-        { assert e == e1 + e2; }
         Rand.prob(e1 + e2);
         { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.sampleSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
         Rand.prob(e1) + Rand.prob(e2);
         { reveal A1; reveal A2; }
-        (1.0 / n as real) + ((m-1) as real / n as real);
-        { reveal A3; }
-        (1.0 + (m-1) as real) / n as real;
-        (1.0 + (m as real) - (1 as real)) / n as real;
-        (1.0 + (m as real) - 1.0) / n as real;
+        (1.0 / n as real) + ((m - 1) as real / n as real);
+        { AdditionOfFractions(m, n); }
         m as real / n as real;
       }
 
@@ -124,4 +114,9 @@ module Bernoulli.Correctness {
       }
     }
   }
+
+  lemma AdditionOfFractions(m: nat, n: nat)
+    requires n > 0
+    ensures (1.0 / n as real) + ((m - 1) as real / n as real) == (m as real) / n as real
+  {}
 }

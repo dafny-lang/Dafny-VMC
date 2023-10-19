@@ -23,6 +23,7 @@ module Uniform.Implementation {
         invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prevS)
         invariant (u, s) == Model.Proposal(n)(prevS)
       {
+        Model.SampleUnroll(n, prevS);
         prevS := s;
         u := UniformPowerOfTwoSample(2 * n);
       }
