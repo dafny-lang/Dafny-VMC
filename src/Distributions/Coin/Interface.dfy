@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module Coin.Interface {
+  import Monad
   import Rand
   import Model
 
@@ -14,7 +15,7 @@ module Coin.Interface {
 
     method CoinSample() returns (b: bool)
       modifies this
-      ensures Model.Sample(old(s)) == (b, s)
+      ensures Model.Sample(old(s)) == Monad.Result(b, s)
     {
       b := ExternCoinSample();
       assume {:axiom} false; // assume correctness of extern implementation

@@ -5,6 +5,7 @@
 
 module BernoulliExpNeg.Interface {
   import Rationals
+  import Monad
   import Bernoulli
   import Model
 
@@ -14,7 +15,7 @@ module BernoulliExpNeg.Interface {
       modifies this
       decreases *
       requires gamma.numer >= 0
-      ensures (c, s) == Model.Sample(gamma)(old(s))
+      ensures Monad.Result(c, s) == Model.Sample(gamma)(old(s))
 
   }
 }

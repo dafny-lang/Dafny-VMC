@@ -37,8 +37,8 @@ module Uniform.Model {
     requires a < b
   {
     (s: Rand.Bitstream) =>
-      var (x, s') := Sample(b - a)(s);
-      (a + x, s')
+      var Result(x, s') := Sample(b - a)(s);
+      Monad.Result(a + x, s')
   }
 
   lemma SampleTerminates(n: nat)

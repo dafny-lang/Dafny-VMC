@@ -5,6 +5,7 @@
 
 module Bernoulli.Interface {
   import Rationals
+  import Monad
   import Uniform
   import Model
 
@@ -14,7 +15,7 @@ module Bernoulli.Interface {
       modifies this
       decreases *
       requires 0 <= p.numer <= p.denom
-      ensures Model.Sample(p.numer, p.denom)(old(s)) == (c, s)
+      ensures Model.Sample(p.numer, p.denom)(old(s)) == Monad.Result(c, s)
 
   }
 }

@@ -247,8 +247,8 @@ module UniformPowerOfTwo.Correctness {
     requires n >= 2
     ensures Model.Sample(n)(s).1 == Monad.Tail(Model.Sample(n / 2)(s).1)
   {
-    var (a, s') := Model.Sample(n / 2)(s);
-    var (b, s'') := Monad.Coin(s');
+    var Result(a, s') := Model.Sample(n / 2)(s);
+    var Result(b, s'') := Monad.Coin(s');
     calc {
       Model.Sample(n)(s).1;
     ==
@@ -278,8 +278,8 @@ module UniformPowerOfTwo.Correctness {
     var bOf := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).1).0;
     var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).0;
     forall s ensures Model.Sample(n)(s).0 == m <==> (2 * aOf(s) + Helper.boolToNat(bOf(s)) == m) {
-      var (a, s') := Model.Sample(n / 2)(s);
-      var (b, s'') := Monad.Coin(s');
+      var Result(a, s') := Model.Sample(n / 2)(s);
+      var Result(b, s'') := Monad.Coin(s');
       calc {
         Model.Sample(n)(s).0;
       ==
