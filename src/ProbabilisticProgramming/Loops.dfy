@@ -82,7 +82,7 @@ module Loops {
   }
 
   // Definition of until loops (rejection sampling).
-  // For proofs, use the lemmas `UntilExitsImmediately` and `UntilUnroll`.
+  // For proofs, use the lemma `UntilUnroll`.
   // Definition 44
   ghost function Until<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
     requires UntilTerminatesAlmostSurely(proposal, accept)
