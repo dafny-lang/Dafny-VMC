@@ -38,15 +38,15 @@ module BernoulliExpNeg.Model {
     if !bgamma.0 || bgamma.1.numer < bgamma.1.denom
     then Monad.Return(bgamma)
     else Monad.Bind(
-      GammaReductionLoopIter(bgamma),
-      (bgamma': (bool, Rationals.Rational)) =>
-        var res: Monad.Hurd<(bool, Rationals.Rational)> :=
-          // This if condition should not be needed, but Monad.Bind does not accept functions with preconditions
-          if bgamma'.1.numer < 0 || bgamma'.1.numer >= bgamma.1.numer
-          then Monad.Return((bgamma'.0, Rationals.Rational(0, 1)))
-          else GammaReductionLoop(bgamma'); // return a dummy value because this path should never be taken
-        res
-    )
+        GammaReductionLoopIter(bgamma),
+        (bgamma': (bool, Rationals.Rational)) =>
+          var res: Monad.Hurd<(bool, Rationals.Rational)> :=
+            // This if condition should not be needed, but Monad.Bind does not accept functions with preconditions
+            if bgamma'.1.numer < 0 || bgamma'.1.numer >= bgamma.1.numer
+            then Monad.Return((bgamma'.0, Rationals.Rational(0, 1)))
+            else GammaReductionLoop(bgamma'); // return a dummy value because this path should never be taken
+          res
+      )
   }
 
   ghost function GammaReductionLoopIter(bgamma: (bool, Rationals.Rational)): Monad.Hurd<(bool, Rationals.Rational)>
@@ -59,7 +59,7 @@ module BernoulliExpNeg.Model {
   }
 
   ghost function SampleGammaLe1(gamma: Rationals.Rational): Monad.Hurd<bool>
-  requires 0 <= gamma.numer <= gamma.denom
+    requires 0 <= gamma.numer <= gamma.denom
   {
     Monad.Bind(
       GammaLe1Loop(gamma)((true, 0)),

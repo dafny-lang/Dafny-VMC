@@ -124,9 +124,9 @@ module Helper {
   {
     calc {
       a * b;
-      <=
+    <=
       c * b;
-      <=
+    <=
       c * d;
     }
   }
@@ -146,18 +146,18 @@ module Helper {
     if a != c && d > 0 {
       calc {
         a * b;
-        <= { MulMonotonic(a, b, a, d); }
+      <= { MulMonotonic(a, b, a, d); }
         a * d;
-        <
+      <
         c * d;
       }
     }
     if b != d && c > 0 {
       calc {
         a * b;
-        <=
+      <=
         c * b;
-        < { MulMonotonicStrictRhs(b, c, d); }
+      < { MulMonotonicStrictRhs(b, c, d); }
         c * d;
       }
     }
