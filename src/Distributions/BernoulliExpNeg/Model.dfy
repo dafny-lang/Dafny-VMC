@@ -12,7 +12,7 @@ module BernoulliExpNeg.Model {
   import Loops
   import BernoulliModel = Bernoulli.Model
 
-  ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
+  opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires gamma.denom != 0
     requires gamma.numer >= 0
   {
@@ -87,10 +87,14 @@ module BernoulliExpNeg.Model {
     requires 0 <= gamma.numer <= gamma.denom
   {
     (ak: (bool, nat)) =>
-      var res: Monad.Hurd<(bool, nat)> := Monad.Bind(
-        BernoulliModel.Sample(gamma.numer, (ak.1 + 1) * gamma.denom),
-        (a': bool) => Monad.Return((a', ak.1 + 1)));
-      res
+      var k' := ak.1 + 1;
+      Monad.Bind(
+        BernoulliModel.Sample(gamma.numer, k' * gamma.denom),
+        SetK(k'))
+  }
+
+  ghost function SetK(k: nat): bool -> Monad.Hurd<(bool, nat)> {
+    a => Monad.Return((a, k))
   }
 
   lemma SampleGammaLe1Property(gamma: Rationals.Rational, k: nat, s: Rand.Bitstream)
@@ -99,43 +103,35 @@ module BernoulliExpNeg.Model {
     ensures Monad.Result(k % 2 == 1, s) == SampleGammaLe1(gamma)(s)
   {}
 
-  lemma {:vcs_split_on_every_assert} GammaLe1LoopIterProperty(gamma: Rationals.Rational, a: bool, k: nat, s: Rand.Bitstream, a': bool, k': nat, s': Rand.Bitstream)
+  lemma GammaLe1LoopIterProperty(gamma: Rationals.Rational, a: bool, k: nat, s: Rand.Bitstream, a': bool, k': nat, s': Rand.Bitstream)
     requires 0 <= gamma.numer <= gamma.denom
     requires k' == k + 1
     requires Monad.Result(a' , s') == Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s)
-    ensures Monad.Result((a', k'), s') == GammaLe1LoopIter(gamma)((a,k))(s)
+    ensures Monad.Result((a', k'), s') == GammaLe1LoopIter(gamma)((a, k))(s)
   {
-    var Result(a, s') := Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s);
+    var Result(a', s') := Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s);
     assert GammaLe1LoopIter(gamma)((a, k))(s) == Monad.Result((a', k'), s');
-    assert Monad.Bind(Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom), a => Monad.Return((a, k')))(s) == Monad.Result((a, k'), s');
   }
 
   lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
     ensures Loops.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
 
-  lemma {:vcs_split_on_every_assert} GammaLe1LoopUnroll(gamma: Rationals.Rational, ak: (bool, nat), s: Rand.Bitstream)
+  lemma GammaLe1LoopUnroll(gamma: Rationals.Rational, ak: (bool, nat), s: Rand.Bitstream)
     requires 0 <= gamma.numer <= gamma.denom
     requires ak.0
     ensures GammaLe1Loop(gamma)(ak)(s) == Monad.Bind(GammaLe1LoopIter(gamma)(ak), GammaLe1Loop(gamma))(s)
   {
     GammaLe1LoopTerminatesAlmostSurely(gamma);
-    assert Eq: forall ak': (bool, nat), s: Rand.Bitstream ::
-      GammaLe1Loop(gamma)(ak')(s) == Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak')(s) by {
-        forall ak': (bool, nat), s: Rand.Bitstream ensures GammaLe1Loop(gamma)(ak')(s) == Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak')(s) {
-          reveal GammaLe1Loop();
-        }
-      }
+    var Result(ak', s') := GammaLe1LoopIter(gamma)(ak)(s);
     calc {
       GammaLe1Loop(gamma)(ak)(s);
       { reveal GammaLe1Loop(); }
       Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak)(s);
       { Loops.WhileUnroll(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak, s); }
-      Monad.Bind(
-        GammaLe1LoopIter(gamma)(ak),
-        (ak': (bool, nat)) => Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak'))
-      (s);
-      { reveal Eq; }
+      Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak')(s');
+      { reveal GammaLe1Loop(); }
+      GammaLe1Loop(gamma)(ak')(s');
       Monad.Bind(GammaLe1LoopIter(gamma)(ak), GammaLe1Loop(gamma))(s);
     }
   }

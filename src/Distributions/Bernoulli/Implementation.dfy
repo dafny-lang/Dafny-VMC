@@ -19,6 +19,7 @@ module Bernoulli.Implementation {
     {
       var k := UniformSample(p.denom);
       c := k < p.numer;
+      reveal Model.Sample();
     }
 
   }

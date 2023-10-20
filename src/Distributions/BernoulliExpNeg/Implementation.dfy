@@ -37,6 +37,7 @@ module BernoulliExpNeg.Implementation {
       } else {
         c := false;
       }
+      reveal Model.Sample();
     }
 
     method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
