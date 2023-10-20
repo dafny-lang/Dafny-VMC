@@ -108,10 +108,7 @@ module BernoulliExpNeg.Model {
     requires k' == k + 1
     requires Monad.Result(a' , s') == Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s)
     ensures Monad.Result((a', k'), s') == GammaLe1LoopIter(gamma)((a, k))(s)
-  {
-    var Result(a', s') := Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s);
-    assert GammaLe1LoopIter(gamma)((a, k))(s) == Monad.Result((a', k'), s');
-  }
+  {}
 
   lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
