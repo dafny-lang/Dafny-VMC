@@ -42,18 +42,18 @@ module Bernoulli.Correctness {
     requires n != 0
     requires m <= n
     ensures
-      var e := iset s | Model.Sample(m, n)(s).0;
+      var e := iset s | Model.Sample(m, n)(s).value;
       && e in Rand.eventSpace
       && Rand.prob(e) == m as real / n as real
   {
-    var e := iset s | Model.Sample(m, n)(s).0;
+    var e := iset s | Model.Sample(m, n)(s).value;
 
     if m == 0 {
       assert e == iset{} by {
-        forall s ensures !Model.Sample(m, n)(s).0 {
+        forall s ensures !Model.Sample(m, n)(s).value {
           calc {
-            Model.Sample(m, n)(s).0;
-            Uniform.Model.Sample(n)(s).0 < 0;
+            Model.Sample(m, n)(s).value;
+            Uniform.Model.Sample(n)(s).value < 0;
             false;
           }
         }
@@ -65,13 +65,13 @@ module Bernoulli.Correctness {
         assert Measures.IsPositive(Rand.eventSpace, Rand.prob);
       }
     } else {
-      var e1 := iset s | Uniform.Model.Sample(n)(s).0 == m-1;
-      var e2 := (iset s {:trigger Uniform.Model.Sample(n)(s).0} | Model.Sample(m-1, n)(s).0);
+      var e1 := iset s | Uniform.Model.Sample(n)(s).value == m-1;
+      var e2 := (iset s {:trigger Uniform.Model.Sample(n)(s).value} | Model.Sample(m-1, n)(s).value);
 
-      assert (iset s | Uniform.Model.Sample(n)(s).0 < m-1) == e2 by {
-        assert (iset s | Uniform.Model.Sample(n)(s).0 < m-1) == (iset s {:trigger Uniform.Model.Sample(n)(s).0} | Model.Sample(m-1, n)(s).0) by {
-          forall s ensures Uniform.Model.Sample(n)(s).0 < m-1 <==> Model.Sample(m-1, n)(s).0 {
-            assert Uniform.Model.Sample(n)(s).0 < m-1 <==> Model.Sample(m-1, n)(s).0;
+      assert (iset s | Uniform.Model.Sample(n)(s).value < m-1) == e2 by {
+        assert (iset s | Uniform.Model.Sample(n)(s).value < m-1) == (iset s {:trigger Uniform.Model.Sample(n)(s).value} | Model.Sample(m-1, n)(s).value) by {
+          forall s ensures Uniform.Model.Sample(n)(s).value < m-1 <==> Model.Sample(m-1, n)(s).value {
+            assert Uniform.Model.Sample(n)(s).value < m-1 <==> Model.Sample(m-1, n)(s).value;
           }
         }
       }
@@ -79,9 +79,9 @@ module Bernoulli.Correctness {
       assert e == e1 + e2 by {
         calc {
           e;
-          iset s | Uniform.Model.Sample(n)(s).0 < m;
-          iset s | Uniform.Model.Sample(n)(s).0 == m-1 || Uniform.Model.Sample(n)(s).0 < m-1;
-          (iset s | Uniform.Model.Sample(n)(s).0 == m-1) + (iset s | Uniform.Model.Sample(n)(s).0 < m-1);
+          iset s | Uniform.Model.Sample(n)(s).value < m;
+          iset s | Uniform.Model.Sample(n)(s).value == m-1 || Uniform.Model.Sample(n)(s).value < m-1;
+          (iset s | Uniform.Model.Sample(n)(s).value == m-1) + (iset s | Uniform.Model.Sample(n)(s).value < m-1);
           e1 + e2;
         }
       }

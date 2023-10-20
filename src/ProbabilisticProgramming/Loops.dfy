@@ -26,7 +26,7 @@ module Loops {
   }
 
   ghost function WhileCutTerminatesWithFuel<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): nat -> bool {
-    (fuel: nat) => !condition(WhileCut(condition, body, init, fuel)(s).0)
+    (fuel: nat) => !condition(WhileCut(condition, body, init, fuel)(s).value)
   }
 
   // Definition 39 / True iff Prob(iset s | While(condition, body, a)(s) terminates) == 1
@@ -46,7 +46,7 @@ module Loops {
         WhileCut(condition, body, init, fuel)(s)
       else
         // In HOL, Hurd returns `arb` here, which is not possible in Dafny.
-        (init, s)
+        Monad.Result(init, s)
   }
 
   ghost function LeastFuel<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): (fuel: nat)
@@ -83,7 +83,7 @@ module Loops {
     ensures
       var reject := (a: A) => !accept(a);
       var body := (a: A) => proposal;
-      forall s :: f(s) == While(reject, body, proposal(s).0)(proposal(s).1)
+      forall s :: f(s) == While(reject, body, proposal(s).value)(proposal(s).rest)
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
@@ -92,35 +92,35 @@ module Loops {
 
   function WhileLoopExitsAfterOneIteration<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool, init: A): (Rand.Bitstream -> bool) {
     (s: Rand.Bitstream) =>
-      !condition(body(init)(s).0)
+      !condition(body(init)(s).value)
   }
 
   function ProposalIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool) {
     (s: Rand.Bitstream) =>
-      accept(proposal(s).0)
+      accept(proposal(s).value)
   }
 
   ghost function UntilLoopResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool)
     requires UntilTerminatesAlmostSurely(proposal, accept)
   {
     (s: Rand.Bitstream) =>
-      accept(Until(proposal, accept)(s).0)
+      accept(Until(proposal, accept)(s).value)
   }
 
   ghost function UntilLoopResultHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
     requires UntilTerminatesAlmostSurely(proposal, accept)
   {
-    iset s | property(Until(proposal, accept)(s).0)
+    iset s | property(Until(proposal, accept)(s).value)
   }
 
   ghost function ProposalIsAcceptedAndHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
   {
-    iset s | property(proposal(s).0) && accept(proposal(s).0)
+    iset s | property(proposal(s).value) && accept(proposal(s).value)
   }
 
   ghost function ProposalAcceptedEvent<A>(proposal: Monad.Hurd<A>, accept: A -> bool): iset<Rand.Bitstream>
   {
-    iset s | accept(proposal(s).0)
+    iset s | accept(proposal(s).value)
   }
 
 
@@ -132,7 +132,7 @@ module Loops {
     requires WhileCutTerminates(condition, body, init', s')
     requires LeastFuel(condition, body, init', s') == fuel'
     requires condition(init)
-    requires body(init)(s) == (init', s')
+    requires body(init)(s) == Monad.Result(init', s')
     ensures WhileCutTerminates(condition, body, init, s)
     ensures LeastFuel(condition, body, init, s) == fuel' + 1
   {
@@ -148,21 +148,21 @@ module Loops {
 
   lemma WhileCutUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, fuel: nat)
     requires condition(init)
-    requires body(init)(s) == (init', s')
+    requires body(init)(s) == Monad.Result(init', s')
     ensures WhileCut(condition, body, init, fuel + 1)(s) == WhileCut(condition, body, init', fuel)(s')
   {}
 
 
   lemma WhileCutTerminatesWithFuelUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, fuel: nat)
     requires condition(init)
-    requires body(init)(s) == (init', s')
+    requires body(init)(s) == Monad.Result(init', s')
     ensures WhileCutTerminatesWithFuel(condition, body, init, s)(fuel + 1) == WhileCutTerminatesWithFuel(condition, body, init', s')(fuel)
   {}
 
-  lemma WhileUnrollIfConditionSatisfied<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, loop: (A, Rand.Bitstream), unrolled: (A, Rand.Bitstream))
+  lemma WhileUnrollIfConditionSatisfied<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires WhileCutTerminates(condition, body, init, s)
     requires condition(init)
-    requires body(init)(s) == (init', s')
+    requires body(init)(s) == Monad.Result(init', s')
     requires loop == While(condition, body, init)(s)
     requires unrolled == While(condition, body, init')(s')
     ensures loop == unrolled
@@ -187,7 +187,7 @@ module Loops {
     }
   }
 
-  lemma WhileUnrollIfTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: (A, Rand.Bitstream), unrolled: (A, Rand.Bitstream))
+  lemma WhileUnrollIfTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires WhileCutTerminates(condition, body, init, s)
     requires fuel == LeastFuel(condition, body, init, s)
     requires loop == While(condition, body, init)(s)
@@ -195,7 +195,7 @@ module Loops {
     ensures loop == unrolled
   {
     if condition(init) {
-      var (init', s') := body(init)(s);
+      var Result(init', s') := body(init)(s);
       calc {
         loop;
         { WhileUnrollIfConditionSatisfied(condition, body, init, s, init', s', loop, unrolled); }
@@ -205,7 +205,7 @@ module Loops {
     } else {
       calc {
         loop;
-        (init, s);
+        Monad.Result(init, s);
         unrolled;
       }
     }
@@ -254,12 +254,12 @@ module Loops {
 
   lemma EnsureUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
     requires Independence.IsIndep(proposal)
-    requires Quantifier.WithPosProb((s: Rand.Bitstream) => accept(proposal(s).0))
+    requires Quantifier.WithPosProb((s: Rand.Bitstream) => accept(proposal(s).value))
     ensures UntilTerminatesAlmostSurely(proposal, accept)
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    var proposalIsAccepted := (s: Rand.Bitstream) => accept(proposal(s).0);
+    var proposalIsAccepted := (s: Rand.Bitstream) => accept(proposal(s).value);
     assert UntilTerminatesAlmostSurely(proposal, accept) by {
       forall a: A ensures Independence.IsIndep(body(a)) {
         assert body(a) == proposal;
@@ -300,7 +300,7 @@ module Loops {
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    var (init, s') := proposal(s);
+    var Result(init, s') := proposal(s);
     WhileUnroll(reject, body, init, s');
   }
 

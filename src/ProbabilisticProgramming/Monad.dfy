@@ -11,7 +11,13 @@ module Monad {
    Definitions
   ************/
 
-  type Hurd<A> = Rand.Bitstream -> (A, Rand.Bitstream)
+  // The type (monad) of probabilistic computations (cf. Joe Hurd's PhD thesis).
+  // For a given stream of bits (coin flips), it yields the result of the computation.
+  type Hurd<A> = Rand.Bitstream -> Result<A>
+
+  // The result of a probabilistic computation on a bitstream.
+  // It consists of the computed value and the (unconsumed) rest of the bitstream.
+  datatype Result<A> = Result(value: A, rest: Rand.Bitstream)
 
   // Equation (2.38)
   function Tail(s: Rand.Bitstream): (s': Rand.Bitstream) {
@@ -37,7 +43,7 @@ module Monad {
   }
 
   // Equation (2.42)
-  const Coin: Hurd<bool> := s => (Head(s), Tail(s))
+  const Coin: Hurd<bool> := s => Result(Head(s), Tail(s))
 
   // Equation (2.41)
   function Drop(n: nat, s: Rand.Bitstream): (s': Rand.Bitstream)
@@ -52,7 +58,7 @@ module Monad {
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) =>
-      var (a, s') := f(s);
+      var Result(a, s') := f(s);
       g(a)(s')
   }
 
@@ -62,7 +68,7 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: Rand.Bitstream) => (a, s)
+    (s: Rand.Bitstream) => Result(a, s)
   }
 
   function Map<A,B>(f: A -> B, m: Hurd<A>): Hurd<B> {
@@ -71,7 +77,7 @@ module Monad {
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
     (s: Rand.Bitstream) =>
-      var (f, s') := ff(s);
+      var Result(f, s') := ff(s);
       f(s')
   }
 
@@ -86,9 +92,9 @@ module Monad {
   lemma BindIsAssociative<A,B,C>(f: Hurd<A>, g: A -> Hurd<B>, h: B -> Hurd<C>, s: Rand.Bitstream)
     ensures Bind(Bind(f, g), h)(s) == Bind(f, (a: A) => Bind(g(a), h))(s)
   {
-    var (a, s') := f(s);
-    var (a', s'') := g(a)(s');
-    assert (a', s'') == Bind(f, g)(s);
+    var Result(a, s') := f(s);
+    var Result(a', s'') := g(a)(s');
+    assert Result(a', s'') == Bind(f, g)(s);
     calc {
       Bind(Bind(f, g), h)(s);
       h(a')(s'');
@@ -106,11 +112,11 @@ module Monad {
   lemma UnitalityJoinReturn<A>(f: Hurd<A>, s: Rand.Bitstream)
     ensures Join(Map(Return, f))(s) == Join(Return(f))(s)
   {
-    var (a, t) := f(s);
+    var Result(a, t) := f(s);
     calc {
       Join(Return(f))(s);
     ==
-      (a, t);
+      Result(a, t);
     ==
       Join(Map(Return, f))(s);
     }
@@ -119,8 +125,8 @@ module Monad {
   lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: Rand.Bitstream)
     ensures Join(Map(Join, fff))(s) == Join(Join(fff))(s)
   {
-    var (ff, t) := fff(s);
-    var (f, u) := ff(t);
+    var Result(ff, t) := fff(s);
+    var Result(f, u) := ff(t);
     calc {
       Join(Map(Join, fff))(s);
     ==

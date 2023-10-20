@@ -21,7 +21,7 @@ module Uniform.Correctness {
   ghost function SampleEquals(n: nat, i: nat): iset<Rand.Bitstream>
     requires 0 <= i < n
   {
-    iset s | Model.Sample(n)(s).0 == i
+    iset s | Model.Sample(n)(s).value == i
   }
 
   /*******
@@ -91,15 +91,15 @@ module Uniform.Correctness {
         nextPowerOfTwo;
       }
     }
-    assert setEq: Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i) == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i) by {
-      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i {
-        assert s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i;
+    assert setEq: Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i) == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i) by {
+      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i {
+        assert s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i;
       }
     }
     calc {
       Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i));
       { reveal setEq; }
-      Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 == i);
+      Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i);
       { reveal iBound; UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i); }
       1.0 / (nextPowerOfTwo as real);
     }
@@ -112,12 +112,12 @@ module Uniform.Correctness {
   {
     var e := Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
     assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by { Helper.NLtPower2Log2FloorOf2N(n); }
-    assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n) by {
-      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n {
+    assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n) by {
+      forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n {
         calc {
           s in e;
-          Model.Accept(n)(Model.Proposal(n)(s).0);
-          UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n;
+          Model.Accept(n)(Model.Proposal(n)(s).value);
+          UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n;
         }
       }
     }
@@ -125,7 +125,7 @@ module Uniform.Correctness {
       calc {
         Rand.prob(e);
         { reveal Equal; }
-        Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).0 < n);
+        Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n);
         { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
         (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
       }
@@ -136,7 +136,7 @@ module Uniform.Correctness {
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
     ensures
-      var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
+      var e := iset s | Model.IntervalSample(a, b)(s).value == i;
       && e in Rand.eventSpace
       && Rand.prob(e) == (1.0 / ((b-a) as real))
   {
@@ -146,10 +146,10 @@ module Uniform.Correctness {
     var e' := SampleEquals(b - a, i - a);
     assert e' in Rand.eventSpace by { UniformFullCorrectness(b - a, i - a); }
     assert Rand.prob(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
-    var e := iset s | Model.IntervalSample(a, b)(s).0 == i;
+    var e := iset s | Model.IntervalSample(a, b)(s).value == i;
     assert e == e' by {
-      forall s ensures Model.IntervalSample(a, b)(s).0 == i <==> Model.Sample(b-a)(s).0 == i - a {
-        assert Model.IntervalSample(a, b)(s).0 == a + Model.Sample(b - a)(s).0;
+      forall s ensures Model.IntervalSample(a, b)(s).value == i <==> Model.Sample(b-a)(s).value == i - a {
+        assert Model.IntervalSample(a, b)(s).value == a + Model.Sample(b - a)(s).value;
       }
     }
   }
