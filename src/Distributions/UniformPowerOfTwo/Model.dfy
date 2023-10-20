@@ -21,7 +21,7 @@ module UniformPowerOfTwo.Model {
 
   // Adapted from Definition 48 (see issue #79 for the reason of the modification)
   // The return value u is uniformly distributed between 0 <= u < 2^k where 2^k <= n < 2^(k + 1).
-  function Sample(n: nat): (h: Monad.Hurd<nat>)
+  opaque function Sample(n: nat): (h: Monad.Hurd<nat>)
     requires n >= 1
   {
     if n == 1 then
@@ -47,6 +47,7 @@ module UniformPowerOfTwo.Model {
     ensures SampleTailRecursive(n)(s) == Sample(n)(s)
   {
     if n == 1 {
+      reveal Sample();
       assert SampleTailRecursive(n)(s) == Sample(n)(s);
     } else {
       var k := Helper.Log2Floor(n);
@@ -102,9 +103,11 @@ module UniformPowerOfTwo.Model {
       assert 1 <= n;
       calc {
         Sample(m)(s);
+        { reveal Sample(); }
         Monad.Bind(Sample(m / 2), UnifStep)(s);
         { SampleEqualIfSameLog2Floor(m / 2, n / 2, k - 1, s); }
         Monad.Bind(Sample(n / 2), UnifStep)(s);
+        { reveal Sample(); }
         Sample(n)(s);
       }
     }
@@ -134,7 +137,7 @@ module UniformPowerOfTwo.Model {
         { assert Helper.Power(2, l) / 2 == Helper.Power(2, l - 1); reveal L1GreaterZero; }
         (var Result(u', s') := Monad.Bind(Sample(Helper.Power(2, m)), UnifStep)(s);
          SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
-        { assert Helper.Power(2, m + 1) / 2 == Helper.Power(2, m); }
+        { assert Helper.Power(2, m + 1) / 2 == Helper.Power(2, m); reveal Sample(); }
         (var Result(u', s') := Sample(Helper.Power(2, m + 1))(s);
          SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
         Monad.Bind(Sample(Helper.Power(2, m + 1)), (u: nat) => SampleTailRecursive(Helper.Power(2, l - 1), u))(s);
