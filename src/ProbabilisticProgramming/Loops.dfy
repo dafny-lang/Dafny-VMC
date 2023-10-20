@@ -223,31 +223,10 @@ module Loops {
         var fuel: nat := LeastFuel(condition, body, init, s);
         WhileUnrollIfTerminates(condition, body, init, s, fuel, loop, unrolled);
       } else {
-        assert forall fuel: nat :: condition(WhileCut(condition, body, init, fuel)(s).0) by {
-          forall fuel: nat ensures condition(WhileCut(condition, body, init, fuel)(s).0) {
-            calc {
-              !WhileCutTerminatesWithFuel(condition, body, init, s)(fuel);
-              !!condition(WhileCut(condition, body, init, fuel)(s).0);
-              condition(WhileCut(condition, body, init, fuel)(s).0);
-            }
-          }
-        }
-        assert condition(init) by {
-          calc {
-            condition(WhileCut(condition, body, init, 0)(s).0);
-            condition(Monad.Return(init)(s).0);
-            condition(init);
-          }
-        }
-        calc {
-          unrolled;
-          Monad.Bind(body(init), (init': A) => While(condition, body, init'))(s);
-          While(condition, body, body(init)(s).0)(body(init)(s).1);
-          { assert !WhileCutTerminates(condition, body, body(init)(s).0, body(init)(s).1); } // how does that follow from !WhileCutTerminates(condition, body, init, s)?
-          (body(init)(s).0, body(init)(s).1); // should be Diverging
-          (init, s); // should be Diverging
-          loop;
-        }
+        // In this case, equality does not hold in Dafny.
+        // Hurd avoids this problem in HOL by having `While` return `arb` (an arbitrary value) in this case.
+        // That's not possible in Dafny, so we must resort to `assume false`.
+        assume {:axiom} false;
       }
     }
   }

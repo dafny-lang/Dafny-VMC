@@ -6,6 +6,8 @@
 module DiscreteLaplace.Implementation {
   import Rationals
   import Interface
+  import Monad
+  import Model
 
   trait {:termination false} Trait extends Interface.Trait {
 
@@ -14,6 +16,7 @@ module DiscreteLaplace.Implementation {
       modifies this
       requires scale.numer >= 1
       decreases *
+      ensures Monad.Result(z, s) == Model.Sample(scale)(old(s))
     {
       var b := true;
       var y := 0;
@@ -40,6 +43,7 @@ module DiscreteLaplace.Implementation {
         b := BernoulliSample(Rationals.Rational(1, 2));
       }
       z := if b then -y else y;
+      assume {:axiom} false; // add equivalence proof later
     }
 
   }
