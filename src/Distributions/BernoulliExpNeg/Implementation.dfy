@@ -47,9 +47,7 @@ module BernoulliExpNeg.Implementation {
     {
       var k: nat := 0;
       var a := true;
-      assert CaseLe1LoopInvariant(gamma, old(s), a, k, s) by {
-        reveal CaseLe1LoopInvariant();
-      }
+      EnsureCaseLe1LoopInvariantOnEntry(gamma, s);
       while a
         decreases *
         invariant CaseLe1LoopInvariant(gamma, old(s), a, k, s)
@@ -59,7 +57,7 @@ module BernoulliExpNeg.Implementation {
         k := k + 1;
         Helper.MulMonotonic(1, gamma.denom, k, gamma.denom);
         a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
-        EnsureCaseLe1LoopInvariant(gamma, old(s), prevK, prevS, a, k, s);
+        EnsureCaseLe1LoopInvariantMaintained(gamma, old(s), prevK, prevS, a, k, s);
       }
       c := k % 2 == 1;
       EnsureCaseLe1PostCondition(gamma, old(s), k, s, c);
@@ -72,7 +70,14 @@ module BernoulliExpNeg.Implementation {
     Model.GammaLe1Loop(gamma)((true, 0))(oldS) == Model.GammaLe1Loop(gamma)((a, k))(s)
   }
 
-  lemma EnsureCaseLe1LoopInvariant(gamma: Rationals.Rational, oldS: Rand.Bitstream, k: nat, s: Rand.Bitstream, a': bool, k': nat, s': Rand.Bitstream)
+  lemma EnsureCaseLe1LoopInvariantOnEntry(gamma: Rationals.Rational, s: Rand.Bitstream)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures CaseLe1LoopInvariant(gamma, s, true, 0, s)
+  {
+    reveal CaseLe1LoopInvariant();
+  }
+
+  lemma EnsureCaseLe1LoopInvariantMaintained(gamma: Rationals.Rational, oldS: Rand.Bitstream, k: nat, s: Rand.Bitstream, a': bool, k': nat, s': Rand.Bitstream)
     requires 0 <= gamma.numer <= gamma.denom
     requires k' == k + 1
     requires inv: CaseLe1LoopInvariant(gamma, oldS, true, k, s)
