@@ -97,19 +97,6 @@ module BernoulliExpNeg.Model {
     a => Monad.Return((a, k))
   }
 
-  lemma SampleGammaLe1Property(gamma: Rationals.Rational, k: nat, s: Rand.Bitstream)
-    requires 0 <= gamma.numer <= gamma.denom
-    requires Monad.Result((false, k), s) == GammaLe1Loop(gamma)((true, 0))(s)
-    ensures Monad.Result(k % 2 == 1, s) == SampleGammaLe1(gamma)(s)
-  {}
-
-  lemma GammaLe1LoopIterProperty(gamma: Rationals.Rational, a: bool, k: nat, s: Rand.Bitstream, a': bool, k': nat, s': Rand.Bitstream)
-    requires 0 <= gamma.numer <= gamma.denom
-    requires k' == k + 1
-    requires Monad.Result(a' , s') == Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s)
-    ensures Monad.Result((a', k'), s') == GammaLe1LoopIter(gamma)((a, k))(s)
-  {}
-
   lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
     ensures Loops.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
