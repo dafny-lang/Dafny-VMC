@@ -116,6 +116,7 @@ module UniformPowerOfTwo.Correctness {
     forall m: nat ensures UnifIsCorrect(n, k, m) {
       assert n >= 1 by { Helper.PowerGreater0(2, k); }
       if k == 0 {
+        reveal Model.Sample();
         if m == 0 {
           assert (iset s | Model.Sample(1)(s).value == m) == (iset s);
         } else {
@@ -162,6 +163,7 @@ module UniformPowerOfTwo.Correctness {
     ensures Independence.IsIndep(Model.Sample(n))
   {
     var fn := Model.Sample(n);
+    reveal Model.Sample();
     if n == 1 {
       Independence.ReturnIsIndep(0 as nat);
     } else {
@@ -193,6 +195,7 @@ module UniformPowerOfTwo.Correctness {
     if n == 1 {
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
         forall s: Rand.Bitstream ensures f(s) == s {
+          reveal Model.Sample();
           assert f(s) == s;
         }
         Measures.PreImageIdentity(f, e);
@@ -251,7 +254,7 @@ module UniformPowerOfTwo.Correctness {
     var Result(b, s'') := Monad.Coin(s');
     calc {
       Model.Sample(n)(s).rest;
-    ==
+    == { reveal Model.Sample(); }
       Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).rest;
     ==
       Model.UnifStep(a)(s').rest;
@@ -282,7 +285,7 @@ module UniformPowerOfTwo.Correctness {
       var Result(b, s'') := Monad.Coin(s');
       calc {
         Model.Sample(n)(s).value;
-      ==
+      == { reveal Model.Sample(); }
         Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).value;
       ==
         Model.UnifStep(a)(s').value;
