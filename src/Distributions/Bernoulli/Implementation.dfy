@@ -17,6 +17,7 @@ module Bernoulli.Implementation {
       requires 0 <= p.numer <= p.denom
       ensures Model.Sample(p.numer, p.denom)(old(s)) == Monad.Result(c, s)
     {
+      reveal Model.Sample();
       var k := UniformSample(p.denom);
       c := k < p.numer;
     }

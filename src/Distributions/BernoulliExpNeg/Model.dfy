@@ -10,7 +10,7 @@ module BernoulliExpNeg.Model {
   import Loops
   import BernoulliModel = Bernoulli.Model
 
-  ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
+  opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires gamma.denom != 0
     requires gamma.numer >= 0
   {
@@ -70,7 +70,9 @@ module BernoulliExpNeg.Model {
   {
     Monad.Bind(
       BernoulliModel.Sample(gamma.numer, (ak.1 + 1) * gamma.denom),
-      (a': bool) => Monad.Return((a', ak.1 + 1))
+      (a': bool) =>
+        var res: Monad.Hurd<(bool, nat)> := Monad.Return((a', ak.1 + 1));
+        res
     )
   }
 }

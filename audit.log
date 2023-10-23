@@ -5,11 +5,7 @@ src/Distributions/BernoulliExpNeg/Implementation.dfy(53,6): BernoulliExpNegSampl
 src/Distributions/BernoulliExpNeg/Model.dfy(30,4): GammaReductionLoop: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(60,4): GammaLe1Loop: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/DiscreteLaplace/Correctness.dfy(36,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/DiscreteLaplace/Implementation.dfy(65,6): DiscreteLaplaceSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/DiscreteLaplace/Model.dfy(23,4): SampleTailRecursive: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/DiscreteLaplace/Model.dfy(41,4): SampleTailRecursiveHelper: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Uniform/Implementation.dfy(45,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Implementation.dfy(46,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(2,26): Exp: Declaration has explicit `{:axiom}` attribute. 
@@ -25,12 +21,12 @@ src/ProbabilisticProgramming/Independence.dfy(46,17): IsIndepImpliesIsIndepFunct
 src/ProbabilisticProgramming/Independence.dfy(51,17): CoinIsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(55,17): ReturnIsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(59,17): BindIsIndep: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(229,8): WhileUnroll: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Loops.dfy(257,17): EnsureWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(263,17): UntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(294,4): EnsureUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Loops.dfy(317,4): WhileIsIndep: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Monad.dfy(144,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(151,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Monad.dfy(157,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(237,8): WhileUnroll: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Loops.dfy(265,17): EnsureWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(271,17): UntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(302,4): EnsureUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Loops.dfy(325,4): WhileIsIndep: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Monad.dfy(140,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(147,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Monad.dfy(153,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(25,17): ProbIsProbabilityMeasure: Declaration has explicit `{:axiom}` attribute. 

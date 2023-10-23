@@ -50,6 +50,7 @@ module Uniform.Correctness {
 
     assert Eq: eventResultEqualsI == SampleEquals(n, i) by {
       forall s ensures s in eventResultEqualsI <==> s in SampleEquals(n, i) {
+        reveal Model.Sample();
         assert s in eventResultEqualsI <==> s in SampleEquals(n, i);
       }
     }
@@ -166,5 +167,6 @@ module Uniform.Correctness {
       Model.SampleTerminates(n);
     }
     Loops.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
+    reveal Model.Sample();
   }
 }

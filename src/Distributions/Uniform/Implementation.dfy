@@ -28,6 +28,7 @@ module Uniform.Implementation {
         prevS := s;
         u := UniformPowerOfTwoSample(2 * n);
       }
+      reveal Model.Sample();
     }
   }
 
