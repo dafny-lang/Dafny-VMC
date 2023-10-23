@@ -14,8 +14,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Rand.Bitstream>) {
-    var e1 := iset s | f(s).rest in E;
-    var e2 := iset s | f(s).value in A;
+    var e1 := iset s | f(s).RestIn(E);
+    var e2 := iset s | f(s).In(A);
     Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
   }
 

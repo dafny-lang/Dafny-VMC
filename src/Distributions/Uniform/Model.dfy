@@ -36,9 +36,7 @@ module Uniform.Model {
   ghost function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
   {
-    (s: Rand.Bitstream) =>
-      var Result(x, s') := Sample(b - a)(s);
-      Monad.Result(a + x, s')
+    Monad.Map(Sample(b - a), x => a + x)
   }
 
   lemma SampleTerminates(n: nat)
