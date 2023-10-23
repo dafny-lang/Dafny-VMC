@@ -19,6 +19,10 @@ module Monad {
   // It consists of the computed value and the (unconsumed) rest of the bitstream.
   datatype Result<A> = Result(value: A, rest: Rand.Bitstream)
 
+  function Extract<A>(r: Result): (A, Rand.Bitstream) {
+    (r.value, r.rest)
+  }
+
   // Equation (2.38)
   function Tail(s: Rand.Bitstream): (s': Rand.Bitstream) {
     (n: nat) => s(n+1)
