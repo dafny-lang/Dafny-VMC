@@ -35,6 +35,7 @@ module Bernoulli.Correctness {
     }
 
     Independence.BindIsIndep(f, g);
+    reveal Model.Sample();
   }
 
 
