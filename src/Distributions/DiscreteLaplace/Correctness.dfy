@@ -11,17 +11,25 @@ module DiscreteLaplace.Correctness {
   import Monad
   import RealArith
 
-
-  ghost function Numerator1(scale: Rationals.Rational): real {
+  ghost function Numerator1(scale: Rationals.Rational): real 
+    requires scale.numer >= 1  
+  {
     Exponential.Exp((1.0 / Rationals.ToReal(scale)) - 1.0)
   }
 
-  ghost function Numerator2(scale: Rationals.Rational, x: int): real {
+  ghost function Numerator2(scale: Rationals.Rational, x: int): real 
+    requires scale.numer >= 1
+  {
     Exponential.Exp(-((RealArith.Abs(x as real)) / Rationals.ToReal(scale)))
   }
 
-  ghost function Denominator(scale: Rationals.Rational): real {
-    Exponential.Exp((1.0 / Rationals.ToReal(scale)) + 1.0)
+  ghost function Denominator(scale: Rationals.Rational): (r: real)
+    requires scale.numer >= 1
+    ensures r > 0.0
+  {
+    var x := (1.0 / Rationals.ToReal(scale)) + 1.0;
+    Exponential.Positive(x);
+    Exponential.Exp(x)
   }
 
   lemma {:axiom} Correctness(scale: Rationals.Rational, x: int)

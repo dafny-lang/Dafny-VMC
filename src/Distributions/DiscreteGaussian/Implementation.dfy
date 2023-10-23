@@ -18,6 +18,7 @@ module DiscreteGaussian.Implementation {
     {
       var sigmaSquared := Rationals.Mul(sigma, sigma);
       var t := Rationals.Floor(sigma) + 1;
+      assert t >= 1;
       while true
         decreases *
       {

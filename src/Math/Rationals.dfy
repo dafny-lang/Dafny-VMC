@@ -8,7 +8,7 @@ module Rationals {
    Definitions
   ************/
 
-  type PosInt = n: int | n >=1 witness 1
+  type PosInt = n: int | n >= 1 witness 1
 
   datatype Rational = Rational(numer: int, denom: PosInt)
 
@@ -20,7 +20,9 @@ module Rationals {
     lhs.numer * rhs.denom <= rhs.numer * lhs.denom
   }
 
-  function Int(n: int): Rational {
+  function Int(n: int): (r: Rational)
+    ensures r.numer == n
+  {
     Rational(n, 1)
   }
 
@@ -53,7 +55,9 @@ module Rationals {
     Mul(lhs, Inv(rhs))
   }
 
-  function Floor(r: Rational): int {
+  function Floor(r: Rational): (f: int) 
+    ensures r.numer >= 1 ==> f >= 0
+  {
     r.numer / r.denom
   }
 
