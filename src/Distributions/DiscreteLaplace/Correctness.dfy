@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module DiscreteLaplace.Correctness {
+
   import Rationals
   import Exponential
   import Rand
@@ -11,13 +12,13 @@ module DiscreteLaplace.Correctness {
   import Monad
   import RealArith
 
-  ghost function Numerator1(scale: Rationals.Rational): real 
-    requires scale.numer >= 1  
+  ghost function Numerator1(scale: Rationals.Rational): real
+    requires scale.numer >= 1
   {
     Exponential.Exp((1.0 / Rationals.ToReal(scale)) - 1.0)
   }
 
-  ghost function Numerator2(scale: Rationals.Rational, x: int): real 
+  ghost function Numerator2(scale: Rationals.Rational, x: int): real
     requires scale.numer >= 1
   {
     Exponential.Exp(-((RealArith.Abs(x as real)) / Rationals.ToReal(scale)))
@@ -34,6 +35,6 @@ module DiscreteLaplace.Correctness {
 
   lemma {:axiom} Correctness(scale: Rationals.Rational, x: int)
     requires scale.numer >= 1
-    ensures Rand.prob(iset s | Model.Sample(scale)(s).value == x) == (Numerator1(scale) * Numerator2(scale, x)) / Denominator(scale) 
+    ensures Rand.prob(iset s | Model.Sample(scale)(s).value == x) == (Numerator1(scale) * Numerator2(scale, x)) / Denominator(scale)
 
 }

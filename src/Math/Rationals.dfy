@@ -55,7 +55,7 @@ module Rationals {
     Mul(lhs, Inv(rhs))
   }
 
-  function Floor(r: Rational): (f: int) 
+  function Floor(r: Rational): (f: int)
     ensures r.numer >= 1 ==> f >= 0
   {
     r.numer / r.denom
