@@ -204,11 +204,11 @@ module UniformPowerOfTwo.Correctness {
     } else {
       var g := Sample1(n / 2);
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
-        var e' := (iset s | Monad.Tail(s) in e);
+        var e' := (iset s | Rand.Tail(s) in e);
         assert e' in Rand.eventSpace by {
-          assert e' == Measures.PreImage(Monad.Tail, e);
-          Monad.TailIsMeasurePreserving();
-          assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, Monad.Tail);
+          assert e' == Measures.PreImage(Rand.Tail, e);
+          Rand.TailIsMeasurePreserving();
+          assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, Rand.Tail);
         }
         assert Measures.PreImage(f, e) == Measures.PreImage(g, e') by {
           assert forall s :: f(s) in e <==> g(s) in e' by {
@@ -218,7 +218,7 @@ module UniformPowerOfTwo.Correctness {
               <==> { assert f(s) == Model.Sample(n)(s).rest; }
                 Model.Sample(n)(s).rest in e;
               <==> { SampleTailDecompose(n, s); }
-                Monad.Tail(Model.Sample(n / 2)(s).rest) in e;
+                Rand.Tail(Model.Sample(n / 2)(s).rest) in e;
               <==>
                 Model.Sample(n / 2)(s).rest in e';
               <==> { assert Model.Sample(n / 2)(s).rest == g(s); }
@@ -235,9 +235,9 @@ module UniformPowerOfTwo.Correctness {
             Rand.prob(Measures.PreImage(g, e'));
           == { SampleIsMeasurePreserving(n / 2); assert Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, g); assert e' in Rand.eventSpace; }
             Rand.prob(e');
-          == { assert e' == Measures.PreImage(Monad.Tail, e); }
-            Rand.prob(Measures.PreImage(Monad.Tail, e));
-          == { Monad.TailIsMeasurePreserving(); }
+          == { assert e' == Measures.PreImage(Rand.Tail, e); }
+            Rand.prob(Measures.PreImage(Rand.Tail, e));
+          == { Rand.TailIsMeasurePreserving(); }
             Rand.prob(e);
           }
         }
@@ -248,7 +248,7 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleTailDecompose(n: nat, s: Rand.Bitstream)
     requires n >= 2
-    ensures Model.Sample(n)(s).rest == Monad.Tail(Model.Sample(n / 2)(s).rest)
+    ensures Model.Sample(n)(s).rest == Rand.Tail(Model.Sample(n / 2)(s).rest)
   {
     var Result(a, s') := Model.Sample(n / 2)(s);
     var Result(b, s'') := Monad.Coin(s');
@@ -265,9 +265,9 @@ module UniformPowerOfTwo.Correctness {
     ==
       s'';
     ==
-      Monad.Tail(s');
+      Rand.Tail(s');
     ==
-      Monad.Tail(Model.Sample(n / 2)(s).rest);
+      Rand.Tail(Model.Sample(n / 2)(s).rest);
     }
   }
 
@@ -345,8 +345,8 @@ module UniformPowerOfTwo.Correctness {
     }
 
     assert E in Rand.eventSpace && Rand.prob(E) == 0.5 by {
-      assert E == (iset s | Monad.Head(s) == (m % 2 == 1));
-      Monad.CoinHasProbOneHalf(m % 2 == 1);
+      assert E == (iset s | Rand.Head(s) == (m % 2 == 1));
+      Rand.CoinHasProbOneHalf(m % 2 == 1);
     }
 
     assert Indep: Rand.prob(e1 * e2) == Rand.prob(e1) * Rand.prob(e2) by {
