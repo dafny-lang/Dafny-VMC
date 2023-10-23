@@ -36,8 +36,12 @@ module Loops {
     forall init :: Quantifier.AlmostSurely(p(init))
   }
 
+  // Definition of while loops.
+  // This definition is opaque because the details are not very useful.
+  // For proofs, use the lemma `WhileUnroll`.
   // Equation (3.25)
-  ghost function While<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
+  opaque ghost function While<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
+    ensures forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s)
   {
     (s: Rand.Bitstream) =>
       if WhileCutTerminates(condition, body, init, s)
@@ -77,6 +81,8 @@ module Loops {
     WhileTerminatesAlmostSurely(reject, body)
   }
 
+  // Definition of until loops (rejection sampling).
+  // For proofs, use the lemma `UntilUnroll`.
   // Definition 44
   ghost function Until<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
     requires UntilTerminatesAlmostSurely(proposal, accept)
@@ -179,9 +185,11 @@ module Loops {
     assert loop == unrolled by {
       calc {
         loop;
+        { reveal While(); }
         WhileCut(condition, body, init, fuel)(s);
         { WhileCutUnroll(condition, body, init, s, init', s', fuel'); }
         WhileCut(condition, body, init', fuel')(s');
+        { reveal While(); }
         unrolled;
       }
     }
@@ -324,9 +332,10 @@ module Loops {
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    forall init: A {
+    var f := (init: A) => While(reject, body, init);
+    forall init: A ensures Independence.IsIndep(f(init)) {
       WhileIsIndep(reject, body, init);
     }
-    Independence.BindIsIndep(proposal, (init: A) => While(reject, body, init));
+    Independence.BindIsIndep(proposal, f);
   }
 }
