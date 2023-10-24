@@ -1,6 +1,6 @@
 src/Distributions/BernoulliExpNeg/Correctness.dfy(13,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(17,17): SampleIsIndep: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/BernoulliExpNeg/Model.dfy(100,17): GammaLe1LoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Model.dfy(104,17): GammaLe1LoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Uniform/Implementation.dfy(46,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 

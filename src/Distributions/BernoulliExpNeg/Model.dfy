@@ -21,10 +21,12 @@ module BernoulliExpNeg.Model {
       (bgamma: (bool, Rationals.Rational)) =>
         var res: Monad.Hurd<bool> :=
           if bgamma.0 then
-            // This if condition should not be needed, but Monad.Bind does not accept functions with preconditions
+            // The else path should never be taken, but we cannot turn this into a precondition
+            // because Monad.Bind does not accept functions with preconditions.
+            // We return a dummy value in the else-branch.
             if 0 <= bgamma.1.numer <= bgamma.1.denom
             then SampleGammaLe1(bgamma.1)
-            else Monad.Return(false) // return a dummy value because this path should never be taken
+            else Monad.Return(false) // dummy value
           else
             Monad.Return(false);
         res
@@ -41,10 +43,12 @@ module BernoulliExpNeg.Model {
         GammaReductionLoopIter(bgamma),
         (bgamma': (bool, Rationals.Rational)) =>
           var res: Monad.Hurd<(bool, Rationals.Rational)> :=
-            // This if condition should not be needed, but Monad.Bind does not accept functions with preconditions
-            if bgamma'.1.numer < 0 || bgamma'.1.numer >= bgamma.1.numer
-            then Monad.Return((bgamma'.0, Rationals.Rational(0, 1)))
-            else GammaReductionLoop(bgamma'); // return a dummy value because this path should never be taken
+            // The else path should never be taken, but we cannot turn this into a precondition
+            // because Monad.Bind does not accept functions with preconditions.
+            // We return a dummy value in the else-branch.
+            if 0 <= bgamma'.1.numer < bgamma.1.numer
+            then GammaReductionLoop(bgamma')
+            else Monad.Return((bgamma'.0, Rationals.Rational(0, 1))); // dummy value
           res
       )
   }
