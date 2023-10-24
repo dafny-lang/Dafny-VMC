@@ -26,14 +26,22 @@ module Measures {
     f(i) + CountableSum(f, i+1)
   }
 
-  ghost const boolSampleSpace: iset<bool> := iset _: bool
+  ghost function Powerset<A(!new)>(): iset<A> {
+    iset _: A
+  }
 
-  ghost const boolEventSpace: iset<iset<bool>> := iset _: iset<bool>
+  ghost function DiscreteSigmaAlgebra<A(!new)>(): iset<iset<A>> {
+    iset _: iset<A>
+  }
 
-  ghost const natSampleSpace: iset<nat> := iset _: nat
+  ghost const boolSampleSpace: iset<bool> := Powerset<bool>()
+
+  ghost const boolEventSpace: iset<iset<bool>> := DiscreteSigmaAlgebra<bool>()
+
+  ghost const natSampleSpace: iset<nat> := Powerset<nat>()
 
   // The sigma algebra on the natural numbers is just the power set
-  ghost const natEventSpace: iset<iset<nat>> := iset _: iset<nat>
+  ghost const natEventSpace: iset<iset<nat>> := DiscreteSigmaAlgebra<nat>()
 
   // Definition 5
   ghost predicate IsPositive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {

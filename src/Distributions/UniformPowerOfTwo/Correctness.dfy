@@ -50,9 +50,9 @@ module UniformPowerOfTwo.Correctness {
       assert iset{m} in Measures.natEventSpace;
       var preimage := Measures.PreImage((s: Rand.Bitstream) => Model.Sample(n)(s).value, iset{m});
       assert preimage in Rand.eventSpace by {
-        assert Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => Model.Sample(n)(s).value) by {
+        assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Model.Sample(n)) by {
           SampleIsIndep(n);
-          Independence.IsIndepImpliesValueMeasurableNat(Model.Sample(n));
+          Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
         }
       }
       assert e == preimage;
@@ -187,9 +187,9 @@ module UniformPowerOfTwo.Correctness {
     ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, Sample1(n))
   {
     var f := Sample1(n);
-    assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, f) by {
+    assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, f) by {
       SampleIsIndep(n);
-      Independence.IsIndepImpliesRestMeasurable(Model.Sample(n));
+      Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
       assert Independence.IsIndep(Model.Sample(n));
     }
     if n == 1 {

@@ -20,43 +20,67 @@ module Monad {
   datatype Result<A> =
   | Result(value: A, rest: Rand.Bitstream)
   | Diverging
-{
-  function Map<B>(f: A -> B): Result<B> {
-    match this
-    case Diverging => Diverging
-    case Result(value, rest) => Result(f(value), rest)
+  {
+    function Map<B>(f: A -> B): Result<B> {
+      match this
+      case Diverging => Diverging
+      case Result(value, rest) => Result(f(value), rest)
+    }
+
+    function Bind<B>(f: A -> Hurd<B>): Result<B> {
+      match this
+      case Diverging => Diverging
+      case Result(value, rest) => f(value)(rest)
+    }
+
+    ghost predicate In(s: iset<A>) {
+      Satisfies(x => x in s)
+    }
+
+    ghost predicate Equals(a: A) {
+      Satisfies(x => x == a)
+    }
+
+    predicate Satisfies(property: A -> bool) {
+      match this
+      case Diverging => false
+      case Result(value, _) => property(value)
+    }
+
+    ghost predicate RestIn(s: iset<Rand.Bitstream>) {
+      RestSatisfies(r => r in s)
+    }
+
+    predicate RestSatisfies(property: Rand.Bitstream -> bool) {
+      match this
+      case Diverging => false
+      case Result(_, rest) => property(rest)
+    }
   }
 
-  function Bind<B>(f: A -> Hurd<B>): Result<B> {
-    match this
-    case Diverging => Diverging
-    case Result(value, rest) => f(value)(rest)
+  ghost function ResultSampleSpace<A(!new)>(sampleSpace: iset<A>): iset<Result<A>> {
+    iset r: Result<A> | r.Diverging? || (r.value in sampleSpace && r.rest in Rand.sampleSpace)
   }
 
-  ghost predicate In(s: iset<A>) {
-    Satisfies(x => x in s)
+  ghost function Values<A>(results: iset<Result<A>>): iset<A> {
+    iset r <- results | r.Result? :: r.value
   }
 
-  ghost predicate Equals(a: A) {
-    Satisfies(x => x == a)
+  ghost function Rests<A>(results: iset<Result<A>>): iset<Rand.Bitstream> {
+    iset r <- results | r.Result? :: r.rest
   }
 
-  predicate Satisfies(property: A -> bool) {
-    match this
-    case Diverging => false
-    case Result(value, _) => property(value)
+  ghost function ResultEventSpace<A(!new)>(eventSpace: iset<iset<A>>): iset<iset<Result<A>>> {
+    iset e: iset<Result<A>> | Values(e) in eventSpace && Rests(e) in Rand.eventSpace
   }
 
-  ghost predicate RestIn(s: iset<Rand.Bitstream>) {
-    RestSatisfies(r => r in s)
-  }
+  ghost const boolResultSampleSpace: iset<Result<bool>> := ResultSampleSpace(Measures.boolSampleSpace)
 
-  predicate RestSatisfies(property: Rand.Bitstream -> bool) {
-    match this
-    case Diverging => false
-    case Result(_, rest) => property(rest)
-  }
-}
+  ghost const boolResultEventSpace: iset<iset<Result<bool>>> := ResultEventSpace(Measures.boolEventSpace)
+
+  ghost const natResultSampleSpace: iset<Result<nat>> := ResultSampleSpace(Measures.natSampleSpace)
+
+  ghost const natResultEventSpace: iset<iset<Result<nat>>> := ResultEventSpace(Measures.natEventSpace)
 
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
