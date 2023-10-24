@@ -19,48 +19,15 @@ module Monad {
   // It consists of the computed value and the (unconsumed) rest of the bitstream.
   datatype Result<A> = Result(value: A, rest: Rand.Bitstream)
 
-  // Equation (2.38)
-  function Tail(s: Rand.Bitstream): (s': Rand.Bitstream) {
-    (n: nat) => s(n+1)
-  }
-
-  function IterateTail(s: Rand.Bitstream, n: nat): (t: Rand.Bitstream)
-    ensures t(0) == s(n)
-  {
-    if n == 0 then
-      s
-    else
-      IterateTail(Tail(s), n - 1)
-  }
-
-  lemma TailOfIterateTail(s: Rand.Bitstream, n: nat)
-    ensures Tail(IterateTail(s, n)) == IterateTail(s, n + 1)
-  {}
-
-  // Equation (2.37)
-  function Head(s: Rand.Bitstream): bool {
-    s(0)
-  }
-
-  // Equation (2.42)
-  const Coin: Hurd<bool> := s => Result(Head(s), Tail(s))
-
-  // Equation (2.41)
-  function Drop(n: nat, s: Rand.Bitstream): (s': Rand.Bitstream)
-    ensures Head(s') == s(n)
-  {
-    if n == 0 then
-      s
-    else
-      Drop(n - 1, Tail(s))
-  }
-
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) =>
       var Result(a, s') := f(s);
       g(a)(s')
   }
+
+  // Equation (2.42)
+  const Coin: Hurd<bool> := s => Result(Rand.Head(s), Rand.Tail(s))
 
   function Composition<A,B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
     (a: A) => Bind(f(a), g)
@@ -135,22 +102,5 @@ module Monad {
       Join(Join(fff))(s);
     }
   }
-
-  // Equation (2.68) && (2.77)
-  lemma {:axiom} CoinHasProbOneHalf(b: bool)
-    ensures
-      var e := (iset s | Head(s) == b);
-      && e in Rand.eventSpace
-      && Rand.prob(e) == 0.5
-
-  // Equation (2.82)
-  lemma {:axiom} MeasureHeadDrop(n: nat, s: Rand.Bitstream)
-    ensures
-      && (iset s | Head(Drop(n, s))) in Rand.eventSpace
-      && Rand.prob(iset s | Head(Drop(n, s))) == 0.5
-
-  // Equation (2.78)
-  lemma {:axiom} TailIsMeasurePreserving()
-    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, Tail)
 }
 

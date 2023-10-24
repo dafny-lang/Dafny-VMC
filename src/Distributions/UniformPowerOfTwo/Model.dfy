@@ -38,7 +38,7 @@ module UniformPowerOfTwo.Model {
       if n == 1 then
         Monad.Result(u, s)
       else
-        SampleTailRecursive(n / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s))
+        SampleTailRecursive(n / 2, if Rand.Head(s) then 2*u + 1 else 2*u)(Rand.Tail(s))
   }
 
   // Equivalence of Sample and its tail-recursive version
@@ -80,9 +80,9 @@ module UniformPowerOfTwo.Model {
       assert 1 <= n;
       calc {
         SampleTailRecursive(m, u)(s);
-        SampleTailRecursive(m / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s));
-        { SampleTailRecursiveEqualIfSameLog2Floor(m / 2, n / 2, k - 1, if Monad.Head(s) then 2*u + 1 else 2*u, Monad.Tail(s)); }
-        SampleTailRecursive(n / 2, if Monad.Head(s) then 2*u + 1 else 2*u)(Monad.Tail(s));
+        SampleTailRecursive(m / 2, if Rand.Head(s) then 2*u + 1 else 2*u)(Rand.Tail(s));
+        { SampleTailRecursiveEqualIfSameLog2Floor(m / 2, n / 2, k - 1, if Rand.Head(s) then 2*u + 1 else 2*u, Rand.Tail(s)); }
+        SampleTailRecursive(n / 2, if Rand.Head(s) then 2*u + 1 else 2*u)(Rand.Tail(s));
         SampleTailRecursive(n, u)(s);
       }
     }
@@ -133,7 +133,7 @@ module UniformPowerOfTwo.Model {
         (var Result(u, s') := Sample(Helper.Power(2, m))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));
         { reveal LGreaterZero; }
         (var Result(u, s') := Sample(Helper.Power(2, m))(s);
-         SampleTailRecursive(Helper.Power(2, l) / 2, if Monad.Head(s') then 2 * u + 1 else 2 * u)(Monad.Tail(s')));
+         SampleTailRecursive(Helper.Power(2, l) / 2, if Rand.Head(s') then 2 * u + 1 else 2 * u)(Rand.Tail(s')));
         { assert Helper.Power(2, l) / 2 == Helper.Power(2, l - 1); reveal L1GreaterZero; }
         (var Result(u', s') := Monad.Bind(Sample(Helper.Power(2, m)), UnifStep)(s);
          SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
