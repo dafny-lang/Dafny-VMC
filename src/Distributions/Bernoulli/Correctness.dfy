@@ -47,6 +47,7 @@ module Bernoulli.Correctness {
       && e in Rand.eventSpace
       && Rand.prob(e) == m as real / n as real
   {
+    reveal Model.Sample();
     var e := iset s | Model.Sample(m, n)(s).value;
 
     if m == 0 {

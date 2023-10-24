@@ -4,10 +4,13 @@
  *******************************************************************************/
 
 module BernoulliExpNeg.Implementation {
+  import Helper
   import Rationals
+  import Rand
   import Monad
   import Interface
   import Model
+  import Bernoulli
 
   trait {:termination false} Trait extends Interface.Trait {
 
@@ -23,6 +26,7 @@ module BernoulliExpNeg.Implementation {
       while b && gamma'.numer >= gamma'.denom
         decreases gamma'.numer
         invariant gamma'.numer >= 0
+        invariant Model.GammaReductionLoop((true, gamma))(old(s)) == Model.GammaReductionLoop((b, gamma'))(s)
       {
         b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
         gamma' := Rationals.Rational(gamma'.numer - gamma'.denom, gamma'.denom);
@@ -32,7 +36,7 @@ module BernoulliExpNeg.Implementation {
       } else {
         c := false;
       }
-      assume {:axiom} Monad.Result(c, s) == Model.Sample(gamma)(old(s)); // add later
+      reveal Model.Sample();
     }
 
     method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
@@ -41,17 +45,70 @@ module BernoulliExpNeg.Implementation {
       decreases *
       ensures Monad.Result(c, s) == Model.SampleGammaLe1(gamma)(old(s))
     {
-      var k := 0;
+      var k: nat := 0;
       var a := true;
+      EnsureCaseLe1LoopInvariantOnEntry(gamma, s);
       while a
         decreases *
+        invariant CaseLe1LoopInvariant(gamma, old(s), a, k, s)
       {
+        ghost var prevK: nat := k;
+        ghost var prevS := s;
         k := k + 1;
+        Helper.MulMonotonic(1, gamma.denom, k, gamma.denom);
         a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
+        EnsureCaseLe1LoopInvariantMaintained(gamma, old(s), prevK, prevS, a, k, s);
       }
       c := k % 2 == 1;
-      assume {:axiom} Monad.Result(c, s) == Model.SampleGammaLe1(gamma)(old(s)); // add later
+      EnsureCaseLe1PostCondition(gamma, old(s), k, s, c);
     }
+  }
 
+  opaque ghost predicate CaseLe1LoopInvariant(gamma: Rationals.Rational, oldS: Rand.Bitstream, a: bool, k: nat, s: Rand.Bitstream)
+    requires 0 <= gamma.numer <= gamma.denom
+  {
+    Model.GammaLe1Loop(gamma)((true, 0))(oldS) == Model.GammaLe1Loop(gamma)((a, k))(s)
+  }
+
+  lemma EnsureCaseLe1LoopInvariantOnEntry(gamma: Rationals.Rational, s: Rand.Bitstream)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures CaseLe1LoopInvariant(gamma, s, true, 0, s)
+  {
+    reveal CaseLe1LoopInvariant();
+  }
+
+  lemma EnsureCaseLe1LoopInvariantMaintained(gamma: Rationals.Rational, oldS: Rand.Bitstream, k: nat, s: Rand.Bitstream, a': bool, k': nat, s': Rand.Bitstream)
+    requires 0 <= gamma.numer <= gamma.denom
+    requires k' == k + 1
+    requires inv: CaseLe1LoopInvariant(gamma, oldS, true, k, s)
+    requires bernoulli: Monad.Result(a' , s') == Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom)(s)
+    ensures CaseLe1LoopInvariant(gamma, oldS, a', k', s')
+  {
+    assert iter: Monad.Result((a', k'), s') == Model.GammaLe1LoopIter(gamma)((true, k))(s) by {
+      reveal bernoulli;
+    }
+    calc {
+      Model.GammaLe1Loop(gamma)((true, 0))(oldS);
+      { reveal CaseLe1LoopInvariant(); reveal inv; }
+      Model.GammaLe1Loop(gamma)((true, k))(s);
+      { reveal iter; Model.GammaLe1LoopUnroll(gamma, (true, k), s); }
+      Model.GammaLe1Loop(gamma)((a', k'))(s');
+    }
+    reveal CaseLe1LoopInvariant();
+  }
+
+  lemma EnsureCaseLe1PostCondition(gamma: Rationals.Rational, oldS: Rand.Bitstream, k: nat, s: Rand.Bitstream, c: bool)
+    requires 0 <= gamma.numer <= gamma.denom
+    requires CaseLe1LoopInvariant(gamma, oldS, false, k, s)
+    requires c <==> (k % 2 == 1)
+    ensures Monad.Result(c, s) == Model.SampleGammaLe1(gamma)(oldS)
+  {
+    calc {
+      Model.GammaLe1Loop(gamma)((true, 0))(oldS);
+      { reveal CaseLe1LoopInvariant(); }
+      Model.GammaLe1Loop(gamma)((false, k))(s);
+      { reveal Model.GammaLe1Loop(); }
+      Monad.Result((false, k), s);
+    }
   }
 }
