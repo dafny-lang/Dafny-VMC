@@ -226,11 +226,11 @@ module UniformPowerOfTwo.Correctness {
               calc {
                 f(s) in e;
               <==> { assert f(s) == Model.Sample(n)(s).rest; }
-                Model.Sample(n)(s).RestIn(e);
+                Model.Sample(n)(s).rest in e;
               <==> { SampleTailDecompose(n, s); }
                 Rand.Tail(Model.Sample(n / 2)(s).rest) in e;
               <==>
-                Model.Sample(n / 2)(s).RestIn(e');
+                Model.Sample(n / 2)(s).rest in e';
               <==> { assert Model.Sample(n / 2)(s).rest == g(s); }
                 g(s) in e';
               }
@@ -319,8 +319,8 @@ module UniformPowerOfTwo.Correctness {
     var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin(s).value));
     var f := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).rest;
 
-    var e1 := (iset s | Model.Sample(n / 2)(s).RestIn(E));
-    var e2 := (iset s | Model.Sample(n / 2)(s).In(A));
+    var e1 := (iset s | Model.Sample(n / 2)(s).rest in E);
+    var e2 := (iset s | Model.Sample(n / 2)(s).value in A);
     var e3 := (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
@@ -339,7 +339,7 @@ module UniformPowerOfTwo.Correctness {
     }
 
     assert Eq2: (iset s | aOf(s) == m / 2) == e2 by {
-      forall s ensures aOf(s) == m / 2 <==> Model.Sample(n / 2)(s).In(A) {
+      forall s ensures aOf(s) == m / 2 <==> Model.Sample(n / 2)(s).value in A {
       }
     }
 
@@ -350,7 +350,7 @@ module UniformPowerOfTwo.Correctness {
     }
 
     assert Eq4: e1 == Measures.PreImage(f, E) by {
-      forall s ensures Model.Sample(n / 2)(s).RestIn(E) <==> f(s) in E {
+      forall s ensures Model.Sample(n / 2)(s).rest in E <==> f(s) in E {
       }
     }
 

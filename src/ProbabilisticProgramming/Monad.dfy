@@ -144,7 +144,9 @@ module Monad {
     ensures ResultsWithValueIn(event) in ResultEventSpace(eventSpace)
   {
     var results := ResultsWithValueIn(event);
-    Rand.ProbIsProbabilityMeasure();
+    assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace) by {
+      Rand.ProbIsProbabilityMeasure();
+    }
     assert Rand.sampleSpace in Rand.eventSpace by {
       Measures.SampleSpaceInEventSpace(Rand.sampleSpace, Rand.eventSpace);
     }
@@ -155,10 +157,7 @@ module Monad {
       }
     }
     assert Rests(results) in Rand.eventSpace by {
-      if event == iset{} {
-        assert Rests(results) == iset{};
-      } else {
-        var v :| v in event;
+      if v :| v in event {
         assert Rests(results) == Rand.sampleSpace by {
           forall s: Rand.Bitstream ensures s in Rests(results) <==> s in Rand.sampleSpace {
             calc {
@@ -168,6 +167,8 @@ module Monad {
             }
           }
         }
+      } else {
+        assert Rests(results) == iset{};
       }
     }
   }
@@ -179,20 +180,21 @@ module Monad {
     ensures ResultsWithRestIn(rests) in ResultEventSpace(eventSpace)
   {
     var results := ResultsWithRestIn(rests);
-    Rand.ProbIsProbabilityMeasure();
+    assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace) by {
+      Rand.ProbIsProbabilityMeasure();
+    }
     assert Rand.sampleSpace in Rand.eventSpace by {
       Measures.SampleSpaceInEventSpace(Rand.sampleSpace, Rand.eventSpace);
     }
     assert Values(results) in eventSpace by {
-      if rests == iset{} {
-        assert Values(results) == iset{};
-      } else {
-        var rest :| rest in rests;
+      if rest :| rest in rests {
         assert Values(results) == Measures.Powerset<A>() by {
           forall v: A ensures v in Values(results) {
             assert Result(v, rest) in results;
           }
         }
+      } else {
+        assert Values(results) == iset{};
       }
     }
     assert Rests(results) in Rand.eventSpace by {
