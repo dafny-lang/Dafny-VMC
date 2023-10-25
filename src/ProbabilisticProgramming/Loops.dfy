@@ -172,6 +172,22 @@ module Loops {
     ensures WhileCutTerminatesWithFuel(condition, body, init, s)(fuel + 1) == WhileCutTerminatesWithFuel(condition, body, init', s')(fuel)
   {}
 
+  lemma WhileCutTerminatesUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream)
+    requires condition(init)
+    requires body(init)(s) == Monad.Result(init', s')
+    ensures WhileCutTerminates(condition, body, init, s) == WhileCutTerminates(condition, body, init', s')
+  {
+    if WhileCutTerminates(condition, body, init, s) {
+      var fuel: nat :| WhileCutTerminatesWithFuel(condition, body, init, s)(fuel);
+      WhileCutTerminatesWithFuelUnroll(condition, body, init, s, init', s', fuel - 1);
+    }
+    if WhileCutTerminates(condition, body, init', s') {
+      var fuel: nat :| WhileCutTerminatesWithFuel(condition, body, init', s')(fuel);
+      WhileCutTerminatesWithFuelUnroll(condition, body, init, s, init', s', fuel);
+
+    }
+  }
+
   lemma WhileUnrollIfConditionSatisfied<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires WhileCutTerminates(condition, body, init, s)
     requires condition(init)
@@ -210,8 +226,16 @@ module Loops {
     ensures loop == unrolled
   {
     if condition(init) {
+      assert fuel >= 1;
       match body(init)(s)
-      case Diverging => assume false;
+      case Diverging =>
+        calc {
+          loop;
+          { reveal While(); }
+          WhileCut(condition, body, init, fuel)(s);
+          Monad.Diverging;
+          unrolled;
+        }
       case Result(init', s') =>
         calc {
           loop;
@@ -228,6 +252,22 @@ module Loops {
     }
   }
 
+  lemma WhileUnrollIfDiverges<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
+    requires !WhileCutTerminates(condition, body, init, s)
+    requires loop == While(condition, body, init)(s)
+    requires unrolled == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
+    ensures loop == unrolled == Monad.Diverging
+  {
+    reveal While();
+    match body(init)(s)
+    case Diverging =>
+      assert unrolled == Monad.Diverging;
+    case Result(init', s') =>
+      assert !WhileCutTerminates(condition, body, init', s') by {
+        WhileCutTerminatesUnroll(condition, body, init, s, init', s');
+      }
+  }
+
   // Theorem 38
   lemma WhileUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
     requires WhileTerminatesAlmostSurely(condition, body)
@@ -240,10 +280,7 @@ module Loops {
         var fuel: nat := LeastFuel(condition, body, init, s);
         WhileUnrollIfTerminates(condition, body, init, s, fuel, loop, unrolled);
       } else {
-        // In this case, equality does not hold in Dafny.
-        // Hurd avoids this problem in HOL by having `While` return `arb` (an arbitrary value) in this case.
-        // That's not possible in Dafny, so we must resort to `assume false`.
-        assume {:axiom} false;
+        WhileUnrollIfDiverges(condition, body, init, s, loop, unrolled);
       }
     }
   }
