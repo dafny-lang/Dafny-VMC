@@ -319,8 +319,8 @@ module UniformPowerOfTwo.Correctness {
     var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin(s).value));
     var f := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).rest;
 
-    var e1 := (iset s | Model.Sample(n / 2)(s).rest in E);
-    var e2 := (iset s | Model.Sample(n / 2)(s).value in A);
+    var e1 := (iset s | Model.Sample(n / 2)(s).RestIn(E));
+    var e2 := (iset s | Model.Sample(n / 2)(s).In(A));
     var e3 := (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
