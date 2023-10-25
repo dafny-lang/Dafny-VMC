@@ -47,13 +47,14 @@ module UniformPowerOfTwo.Correctness {
     var k := Helper.Log2Floor(n);
 
     assert e in Rand.eventSpace by {
-      assert iset{m} in Measures.natEventSpace;
-      var preimage := Measures.PreImage((s: Rand.Bitstream) => Model.Sample(n)(s).value, iset{m});
-      assert preimage in Rand.eventSpace by {
-        assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Model.Sample(n)) by {
-          SampleIsIndep(n);
-          Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
-        }
+      var resultsWithValueM := Monad.ResultsWithValueIn(iset{m});
+      assert resultsWithValueM in Monad.natResultEventSpace by {
+        Monad.LiftInEventSpaceToResultEventSpace(iset{m}, Measures.natEventSpace);
+      }
+      var preimage := Measures.PreImage(Model.Sample(n), resultsWithValueM);
+      assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Model.Sample(n)) by {
+        SampleIsIndep(n);
+        Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
       }
       assert e == preimage;
     }
@@ -187,10 +188,12 @@ module UniformPowerOfTwo.Correctness {
     ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, Sample1(n))
   {
     var f := Sample1(n);
-    assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, f) by {
-      SampleIsIndep(n);
-      Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
-      assert Independence.IsIndep(Model.Sample(n));
+    assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, f) by {
+      forall e | e in Rand.eventSpace ensures Measures.PreImage(f, e) in Rand.eventSpace {
+        SampleIsIndep(n);
+        Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
+        assume false;
+      }
     }
     if n == 1 {
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {

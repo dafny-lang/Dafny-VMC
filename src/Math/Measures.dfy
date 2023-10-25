@@ -122,6 +122,17 @@ module Measures {
     ensures PreImage(f, e) == PreImage(f', e')
   {}
 
+  lemma SampleSpaceInEventSpace<T>(sampleSpace: iset<T>, eventSpace: iset<iset<T>>)
+    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+    ensures sampleSpace in eventSpace
+  {
+    var empty := iset{};
+    assert empty in eventSpace;
+    var compl := sampleSpace - empty;
+    assert compl == sampleSpace;
+    assert compl in eventSpace;
+  }
+
   // Equation (2.18)
   lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real)
     requires IsSigmaAlgebra(eventSpace, sampleSpace)

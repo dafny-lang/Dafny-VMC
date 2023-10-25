@@ -51,15 +51,19 @@ module Uniform.Model {
     }
     var e := iset s | Loops.ProposalIsAccepted(Proposal(n), Accept(n))(s);
     assert e in Rand.eventSpace by {
-      assert e == Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), (iset r: Monad.Result<nat> | r.Result? && r.value < n));
-      assert Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), (iset r: Monad.Result<nat> | r.Result? && r.value < n)) in Rand.eventSpace by {
+      var ltN := iset m: nat | m < n;
+      var resultsLtN := Monad.ResultsWithValueIn(ltN);
+      assert e == Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), resultsLtN);
+      assert Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), resultsLtN) in Rand.eventSpace by {
         assert Independence.IsIndep(UniformPowerOfTwo.Model.Sample(2 * n)) by {
           UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
         }
-        assert Measures.IsMeasurable(Rand.eventSpace, Monad.ResultEventSpace(Measures.natEventSpace), UniformPowerOfTwo.Model.Sample(2 * n)) by {
+        assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, UniformPowerOfTwo.Model.Sample(2 * n)) by {
           Independence.IsIndepImpliesMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
         }
-        assert (iset r: Monad.Result<nat> | r.Result? && r.value < n) in Monad.ResultEventSpace(Measures.natEventSpace);
+        assert resultsLtN in Monad.natResultEventSpace by {
+          Monad.LiftInEventSpaceToResultEventSpace(ltN, Measures.natEventSpace);
+        }
       }
     }
     assert Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n))) by {

@@ -40,6 +40,7 @@ module Loops {
   // This definition is opaque because the details are not very useful.
   // For proofs, use the lemma `WhileUnroll`.
   // Equation (3.25)
+  // TODO: While(condition, body)(init) would be cleaner
   opaque ghost function While<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
     ensures forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s)
   {

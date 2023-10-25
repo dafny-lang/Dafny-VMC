@@ -82,6 +82,10 @@ module Monad {
 
   ghost const natResultEventSpace: iset<iset<Result<nat>>> := ResultEventSpace(Measures.natEventSpace)
 
+  ghost function ResultsWithValueIn<A(!new)>(values: iset<A>): iset<Result<A>> {
+    iset result: Result<A> | result.Result? && result.value in values
+  }
+
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) => f(s).Bind(g)
@@ -130,5 +134,38 @@ module Monad {
   lemma JoinIsAssociative<A>(fff: Hurd<Hurd<Hurd<A>>>, s: Rand.Bitstream)
     ensures Join(Map(fff, Join))(s) == Join(Join(fff))(s)
   {}
+
+  lemma LiftInEventSpaceToResultEventSpace<A(!new)>(event: iset<A>, eventSpace: iset<iset<A>>)
+    requires event in eventSpace
+    ensures ResultsWithValueIn(event) in ResultEventSpace(eventSpace)
+  {
+    var results := ResultsWithValueIn(event);
+    Rand.ProbIsProbabilityMeasure();
+    assert Rand.sampleSpace in Rand.eventSpace by {
+      Measures.SampleSpaceInEventSpace(Rand.sampleSpace, Rand.eventSpace);
+    }
+    assert Values(results) == event by {
+      forall v: A ensures v in event <==> v in Values(results) {
+        var s: Rand.Bitstream :| true;
+        assert v in event <==> Result(v, s) in results;
+      }
+    }
+    assert Rests(results) in Rand.eventSpace by {
+      if event == iset{} {
+        assert Rests(results) == iset{};
+      } else {
+        var v :| v in event;
+        assert Rests(results) == Rand.sampleSpace by {
+          forall s: Rand.Bitstream ensures s in Rests(results) <==> s in Rand.sampleSpace {
+            calc {
+              s in Rests(results);
+              Result(v, s) in results;
+              true;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
