@@ -23,7 +23,7 @@ module UniformPowerOfTwo.Correctness {
     Rand.prob(iset s | Model.Sample(n)(s).value == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
-  function Sample1(n: nat): Rand.Bitstream -> Rand.Bitstream
+  function SampleRest(n: nat): Rand.Bitstream -> Rand.Bitstream
     requires n >= 1
   {
     (s: Rand.Bitstream) => Model.Sample(n)(s).rest
@@ -185,14 +185,21 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleIsMeasurePreserving(n: nat)
     requires n >= 1
-    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, Sample1(n))
+    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, SampleRest(n))
   {
-    var f := Sample1(n);
+    var f := SampleRest(n);
     assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, f) by {
       forall e | e in Rand.eventSpace ensures Measures.PreImage(f, e) in Rand.eventSpace {
-        SampleIsIndep(n);
-        Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
-        assume false;
+        var resultsWithRestInE := Monad.ResultsWithRestIn(e);
+        assert resultsWithRestInE in Monad.natResultEventSpace by {
+          Monad.LiftRestInEventSpaceToResultEventSpace(e, Measures.natEventSpace);
+        }
+        var preimage' := Measures.PreImage(Model.Sample(n), resultsWithRestInE);
+        assert preimage' in Rand.eventSpace by {
+          SampleIsIndep(n);
+          Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
+        }
+        assert Measures.PreImage(f, e) == preimage';
       }
     }
     if n == 1 {
@@ -205,7 +212,7 @@ module UniformPowerOfTwo.Correctness {
       }
       assert Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, f);
     } else {
-      var g := Sample1(n / 2);
+      var g := SampleRest(n / 2);
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
         var e' := (iset s | Rand.Tail(s) in e);
         assert e' in Rand.eventSpace by {

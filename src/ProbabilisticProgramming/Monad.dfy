@@ -86,6 +86,10 @@ module Monad {
     iset result: Result<A> | result.Result? && result.value in values
   }
 
+  ghost function ResultsWithRestIn<A(!new)>(rests: iset<Rand.Bitstream>): iset<Result<A>> {
+    iset result: Result<A> | result.Result? && result.rest in rests
+  }
+
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) => f(s).Bind(g)
@@ -164,6 +168,42 @@ module Monad {
             }
           }
         }
+      }
+    }
+  }
+
+  lemma LiftRestInEventSpaceToResultEventSpace<A(!new)>(rests: iset<Rand.Bitstream>, eventSpace: iset<iset<A>>)
+    requires rests in Rand.eventSpace
+    requires iset{} in eventSpace
+    requires Measures.Powerset<A>() in eventSpace
+    ensures ResultsWithRestIn(rests) in ResultEventSpace(eventSpace)
+  {
+    var results := ResultsWithRestIn(rests);
+    Rand.ProbIsProbabilityMeasure();
+    assert Rand.sampleSpace in Rand.eventSpace by {
+      Measures.SampleSpaceInEventSpace(Rand.sampleSpace, Rand.eventSpace);
+    }
+    assert Values(results) in eventSpace by {
+      if rests == iset{} {
+        assert Values(results) == iset{};
+      } else {
+        var rest :| rest in rests;
+        assert Values(results) == Measures.Powerset<A>() by {
+          forall v: A ensures v in Values(results) {
+            assert Result(v, rest) in results;
+          }
+        }
+      }
+    }
+    assert Rests(results) in Rand.eventSpace by {
+      if v: A :| true {
+        assert Rests(results) == rests by {
+          forall s: Rand.Bitstream ensures s in rests <==> s in Rests(results) {
+            assert s in rests <==> Result(v, s) in results;
+          }
+        }
+      } else {
+        assert Rests(results) == iset{};
       }
     }
   }
