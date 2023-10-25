@@ -44,13 +44,14 @@ module Loops {
   opaque ghost function While<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
     ensures forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s)
   {
-    var f := (s: Rand.Bitstream) =>
-      if WhileCutTerminates(condition, body, init, s)
-      then
-        var fuel := LeastFuel(condition, body, init, s);
-        WhileCut(condition, body, init, fuel)(s)
-      else
-        Monad.Diverging;
+    var f :=
+      (s: Rand.Bitstream) =>
+        if WhileCutTerminates(condition, body, init, s)
+        then
+          var fuel := LeastFuel(condition, body, init, s);
+          WhileCut(condition, body, init, fuel)(s)
+        else
+          Monad.Diverging;
     assert forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s) by {
       forall s: Rand.Bitstream ensures !condition(init) ==> f(s) == Monad.Return(init)(s) {
         if !condition(init) {

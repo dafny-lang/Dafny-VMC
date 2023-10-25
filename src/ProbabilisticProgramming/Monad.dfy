@@ -18,8 +18,8 @@ module Monad {
   // The result of a probabilistic computation on a bitstream.
   // It either consists of the computed value and the (unconsumed) rest of the bitstream or indicates nontermination.
   datatype Result<A> =
-  | Result(value: A, rest: Rand.Bitstream)
-  | Diverging
+    | Result(value: A, rest: Rand.Bitstream)
+    | Diverging
   {
     function Map<B>(f: A -> B): Result<B> {
       match this
