@@ -36,9 +36,7 @@ module Uniform.Model {
   ghost function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
   {
-    (s: Rand.Bitstream) =>
-      var Result(x, s') := Sample(b - a)(s);
-      Monad.Result(a + x, s')
+    Monad.Map(Sample(b - a), x => a + x)
   }
 
   lemma SampleTerminates(n: nat)
@@ -53,13 +51,18 @@ module Uniform.Model {
     }
     var e := iset s | Loops.ProposalIsAccepted(Proposal(n), Accept(n))(s);
     assert e in Rand.eventSpace by {
-      assert e == Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).value, (iset m: nat | m < n));
-      assert Measures.PreImage(s => UniformPowerOfTwo.Model.Sample(2 * n)(s).value, (iset m: nat | m < n)) in Rand.eventSpace by {
+      var ltN := iset m: nat | m < n;
+      var resultsLtN := Monad.ResultsWithValueIn(ltN);
+      assert e == Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), resultsLtN);
+      assert Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), resultsLtN) in Rand.eventSpace by {
         assert Independence.IsIndep(UniformPowerOfTwo.Model.Sample(2 * n)) by {
           UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
         }
-        assert Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => UniformPowerOfTwo.Model.Sample(2 * n)(s).value) by {
-          Independence.IsIndepImpliesValueMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
+        assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, UniformPowerOfTwo.Model.Sample(2 * n)) by {
+          Independence.IsIndepImpliesMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
+        }
+        assert resultsLtN in Monad.natResultEventSpace by {
+          Monad.LiftInEventSpaceToResultEventSpace(ltN, Measures.natEventSpace);
         }
       }
     }

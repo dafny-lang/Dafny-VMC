@@ -111,15 +111,12 @@ module BernoulliExpNeg.Model {
     ensures GammaLe1Loop(gamma)(ak)(s) == Monad.Bind(GammaLe1LoopIter(gamma)(ak), GammaLe1Loop(gamma))(s)
   {
     GammaLe1LoopTerminatesAlmostSurely(gamma);
-    var Result(ak', s') := GammaLe1LoopIter(gamma)(ak)(s);
     calc {
       GammaLe1Loop(gamma)(ak)(s);
       { reveal GammaLe1Loop(); }
       Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak)(s);
-      { Loops.WhileUnroll(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak, s); }
-      Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak')(s');
-      { reveal GammaLe1Loop(); }
-      GammaLe1Loop(gamma)(ak')(s');
+      { reveal GammaLe1Loop();
+        Loops.WhileUnroll(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak, s); }
       Monad.Bind(GammaLe1LoopIter(gamma)(ak), GammaLe1Loop(gamma))(s);
     }
   }
