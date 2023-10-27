@@ -5,7 +5,7 @@
 
 module Bernoulli.Interface {
   import Rationals
-  import Monad
+  import Monad`Bernoulli
   import Uniform
   import Model
 

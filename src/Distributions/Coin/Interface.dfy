@@ -15,7 +15,7 @@ module Coin.Interface {
 
     method CoinSample() returns (b: bool)
       modifies this
-      ensures Model.Sample(old(s)) == Monad.Result(b, s)
+      ensures Model.Sample(old(s)) == Monad.ConvergingResult(b, s)
     {
       b := ExternCoinSample();
       assume {:axiom} false; // assume correctness of extern implementation

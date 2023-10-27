@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module Independence {
-  import Monad
+  import Monad`Independence
   import Rand
   import Measures
 
@@ -14,8 +14,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Rand.Bitstream>) {
-    var e1 := iset s | f(s).RestIn(E);
-    var e2 := iset s | f(s).In(A);
+    var e1 := iset s | Monad.Eval(f, s).RestIn(E);
+    var e2 := iset s | Monad.Eval(f, s).In(A);
     Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
   }
 
@@ -46,7 +46,7 @@ module Independence {
 
   // Equation (3.17)
   lemma {:axiom} CoinIsIndep()
-    ensures IsIndep(Monad.Coin)
+    ensures IsIndep(Monad.Coin())
 
   // Equation (3.18)
   lemma {:axiom} ReturnIsIndep<T>(x: T)

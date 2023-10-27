@@ -4,8 +4,9 @@
  *******************************************************************************/
 
 module UniformPowerOfTwo.Implementation {
-  import Monad
+  import Monad`UniformPowerOfTwo
   import Model
+  import Equivalence
   import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
@@ -19,13 +20,13 @@ module UniformPowerOfTwo.Implementation {
 
       while n' > 1
         invariant n' >= 1
-        invariant Model.SampleTailRecursive(n)(old(s)) == Model.SampleTailRecursive(n', u)(s)
+        invariant Equivalence.SampleTailRecursive(n)(old(s)) == Equivalence.SampleTailRecursive(n', u)(s)
       {
         var b := CoinSample();
         u := if b then 2*u + 1 else 2*u;
         n' := n' / 2;
       }
-      Model.SampleCorrespondence(n, old(s));
+      Equivalence.SampleCorrespondence(n, old(s));
     }
   }
 }

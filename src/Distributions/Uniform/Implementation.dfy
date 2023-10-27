@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module Uniform.Implementation {
-  import Monad
+  import Monad`Uniform
   import UniformPowerOfTwo
   import Model
   import Interface

@@ -5,7 +5,7 @@
 
 module Bernoulli.Implementation {
   import Rationals
-  import Monad
+  import Monad`Bernoulli
   import Model
   import Interface
 

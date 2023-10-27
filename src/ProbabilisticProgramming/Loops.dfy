@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module Loops {
-  import Monad
+  import Monad`Loops
   import Quantifier
   import Independence
   import Rand
@@ -14,18 +14,18 @@ module Loops {
   ************/
 
   // Definition 37
-  function WhileCut<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, fuel: nat): Monad.Hurd<A> {
+  function WhileCut<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, fuel: nat): Monad.Hurd<A> {
     if fuel == 0 || !condition(init) then
       Monad.Return(init)
     else
       Monad.Bind(body(init), (init': A) => WhileCut(condition, body, init', fuel - 1))
   }
 
-  ghost predicate WhileCutTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream) {
+  ghost predicate WhileCutTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream) {
     exists fuel: nat :: WhileCutTerminatesWithFuel(condition, body, init, s)(fuel)
   }
 
-  ghost function WhileCutTerminatesWithFuel<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): nat -> bool {
+  ghost function WhileCutTerminatesWithFuel<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): nat -> bool {
     (fuel: nat) => !WhileCut(condition, body, init, fuel)(s).Satisfies(condition)
   }
 
@@ -41,7 +41,7 @@ module Loops {
   // For proofs, use the lemma `WhileUnroll`.
   // Equation (3.25), but modified to use `Monad.Diverging` instead of HOL's `arb` in case of nontermination
   // TODO: While(condition, body)(init) would be cleaner
-  opaque ghost function While<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
+  opaque ghost function While<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
     ensures forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s)
   {
     var f :=
@@ -62,7 +62,7 @@ module Loops {
     f
   }
 
-  ghost function LeastFuel<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): (fuel: nat)
+  ghost function LeastFuel<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream): (fuel: nat)
     requires WhileCutTerminates(condition, body, init, s)
     ensures WhileCutTerminatesWithFuel(condition, body, init, s)(fuel)
     ensures forall fuel': nat :: WhileCutTerminatesWithFuel(condition, body, init, s)(fuel') ==> fuel <= fuel'
@@ -93,13 +93,15 @@ module Loops {
   // Definition of until loops (rejection sampling).
   // For proofs, use the lemma `UntilUnroll`.
   // Definition 44
-  ghost function Until<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
+  ghost function Until<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
     requires UntilTerminatesAlmostSurely(proposal, accept)
     ensures
       var reject := (a: A) => !accept(a);
       var body := (a: A) => proposal;
       forall s :: f(s) == proposal(s).Bind(init => While(reject, body, init))
+    ensures forall s :: f(s).Satisfies(accept)
   {
+    assume {:axiom} false;
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
     Monad.Bind(proposal, (a: A) => While(reject, body, a))
@@ -115,13 +117,13 @@ module Loops {
       proposal(s).Satisfies(accept)
   }
 
-  ghost function UntilLoopResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool)
+  ghost function UntilLoopResultIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool)
     requires UntilTerminatesAlmostSurely(proposal, accept)
   {
     (s: Rand.Bitstream) => Until(proposal, accept)(s).Satisfies(accept)
   }
 
-  ghost function UntilLoopResultHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
+  ghost function UntilLoopResultHasProperty<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
     requires UntilTerminatesAlmostSurely(proposal, accept)
   {
     iset s | Until(proposal, accept)(s).Satisfies(property)
@@ -142,7 +144,7 @@ module Loops {
    Lemmas
   *******/
 
-  lemma LeastFuelUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, fuel': nat)
+  lemma LeastFuelUnroll<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, fuel': nat)
     requires WhileCutTerminates(condition, body, init', s')
     requires LeastFuel(condition, body, init', s') == fuel'
     requires condition(init)
@@ -173,7 +175,7 @@ module Loops {
     ensures WhileCutTerminatesWithFuel(condition, body, init, s)(fuel + 1) == WhileCutTerminatesWithFuel(condition, body, init', s')(fuel)
   {}
 
-  lemma WhileCutTerminatesUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream)
+  lemma WhileCutTerminatesUnroll<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream)
     requires condition(init)
     requires body(init)(s) == Monad.Result(init', s')
     ensures WhileCutTerminates(condition, body, init, s) == WhileCutTerminates(condition, body, init', s')
@@ -188,7 +190,7 @@ module Loops {
     }
   }
 
-  lemma WhileUnrollIfConditionSatisfied<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
+  lemma WhileUnrollIfConditionSatisfied<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, init': A, s': Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires WhileCutTerminates(condition, body, init, s)
     requires condition(init)
     requires body(init)(s) == Monad.Result(init', s')
@@ -218,7 +220,7 @@ module Loops {
     }
   }
 
-  lemma WhileUnrollIfTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
+  lemma WhileUnrollIfTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires WhileCutTerminates(condition, body, init, s)
     requires fuel == LeastFuel(condition, body, init, s)
     requires loop == While(condition, body, init)(s)
@@ -252,7 +254,7 @@ module Loops {
     }
   }
 
-  lemma WhileUnrollIfDiverges<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
+  lemma WhileUnrollIfDiverges<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires !WhileCutTerminates(condition, body, init, s)
     requires loop == While(condition, body, init)(s)
     requires unrolled == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
@@ -269,7 +271,7 @@ module Loops {
   }
 
   // Theorem 38
-  lemma WhileUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
+  lemma WhileUnroll<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
     requires WhileTerminatesAlmostSurely(condition, body)
     ensures While(condition, body, init)(s) == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
   {

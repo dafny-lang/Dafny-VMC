@@ -10,7 +10,7 @@ module BernoulliExpNeg.Model {
   import Bernoulli
   import Monad
   import Loops
-  import BernoulliModel = Bernoulli.Model
+  import Bernoulli.Model
 
   opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires gamma.denom != 0
@@ -93,7 +93,7 @@ module BernoulliExpNeg.Model {
     (ak: (bool, nat)) =>
       var k' := ak.1 + 1;
       Monad.Bind(
-        BernoulliModel.Sample(gamma.numer, k' * gamma.denom),
+        Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom),
         SetK(k'))
   }
 
@@ -104,20 +104,4 @@ module BernoulliExpNeg.Model {
   lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
     ensures Loops.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
-
-  lemma GammaLe1LoopUnroll(gamma: Rationals.Rational, ak: (bool, nat), s: Rand.Bitstream)
-    requires 0 <= gamma.numer <= gamma.denom
-    requires ak.0
-    ensures GammaLe1Loop(gamma)(ak)(s) == Monad.Bind(GammaLe1LoopIter(gamma)(ak), GammaLe1Loop(gamma))(s)
-  {
-    GammaLe1LoopTerminatesAlmostSurely(gamma);
-    calc {
-      GammaLe1Loop(gamma)(ak)(s);
-      { reveal GammaLe1Loop(); }
-      Loops.While(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak)(s);
-      { reveal GammaLe1Loop();
-        Loops.WhileUnroll(GammaLe1LoopCondition, GammaLe1LoopIter(gamma), ak, s); }
-      Monad.Bind(GammaLe1LoopIter(gamma)(ak), GammaLe1Loop(gamma))(s);
-    }
-  }
 }

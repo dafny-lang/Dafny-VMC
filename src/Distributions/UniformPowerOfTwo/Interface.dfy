@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module UniformPowerOfTwo.Interface {
-  import Monad
+  import Monad`UniformPowerOfTwo
   import Coin
   import Model
 

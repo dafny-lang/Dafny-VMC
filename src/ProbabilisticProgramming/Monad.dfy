@@ -7,6 +7,54 @@ module Monad {
   import Rand
   import Measures
 
+  export Spec 
+  provides 
+    Hurd, 
+    Return,
+    Bind,
+    Coin, 
+    Eval, 
+    Rand,
+    Map,
+    Result, 
+    Result.RestIn, 
+    Result.In, 
+    Result.Satisfies,
+    Result.Bind,
+    Result.Map,
+    Result.Equals,
+    Result.IsConverging,
+    Result.IsDiverging,
+    Result.ValueOf,
+    Result.RestOf,
+    DivergingResult,
+    ConvergingResult,
+    ResultsWithValueIn,
+    ResultsWithRestIn,
+    ResultEventSpace,
+    LiftInEventSpaceToResultEventSpace,
+    LiftRestInEventSpaceToResultEventSpace,
+    boolResultEventSpace,
+    natResultEventSpace,
+    Measures
+  reveals
+    IsAlwaysConverging
+
+  export extends Spec
+
+  export Loops extends Spec reveals Hurd, Result, Result.Bind, Result.Satisfies, Return, Bind
+
+  export UniformPowerOfTwo extends Spec reveals Hurd, Result, Bind, Result.Bind, Eval
+
+  export Uniform extends Spec reveals Hurd, Result
+
+  export Bernoulli extends Spec reveals Hurd, Result
+
+  export BernoulliExpNeg extends Spec reveals Hurd, Result
+
+  export Independence extends Spec reveals Hurd
+
+
   /************
    Definitions
   ************/
@@ -28,10 +76,12 @@ module Monad {
       case Result(value, rest) => Result(f(value), rest)
     }
 
-    function Bind<B>(f: A -> Hurd<B>): Result<B> {
+    function Bind<B>(f: A -> Hurd<B>): (r: Result<B>) 
+      ensures this.IsConverging() && IsAlwaysConverging(f(this.ValueOf())) ==> r.IsConverging()
+    {
       match this
       case Diverging => Diverging
-      case Result(value, rest) => f(value)(rest)
+      case Result(value, rest) => Eval(f(value), rest)
     }
 
     ghost predicate In(s: iset<A>) {
@@ -57,18 +107,50 @@ module Monad {
       case Diverging => false
       case Result(_, rest) => property(rest)
     }
+
+    predicate IsConverging() {
+      Result?
+    }
+
+    predicate IsDiverging() {
+      Diverging?
+    }
+
+    function ValueOf(): A
+      requires this.IsConverging()
+    {
+      this.value
+    }
+
+    function RestOf(): Rand.Bitstream
+      requires this.IsConverging()
+    {
+      this.rest
+    }
+  }
+
+  function ConvergingResult<A>(value: A, rest: Rand.Bitstream): Result<A> {
+    Result(value, rest)
+  }
+
+  function DivergingResult<A>(): Result<A> {
+    Diverging
+  }
+
+  ghost predicate IsAlwaysConverging<A>(f: Hurd<A>) {
+    forall s :: Eval(f, s).IsConverging()
   }
 
   ghost function ResultSampleSpace<A(!new)>(sampleSpace: iset<A>): iset<Result<A>> {
-    iset r: Result<A> | r.Diverging? || (r.value in sampleSpace && r.rest in Rand.sampleSpace)
+    iset r: Result<A> | r.IsDiverging() || (r.value in sampleSpace && r.rest in Rand.sampleSpace)
   }
 
   ghost function Values<A>(results: iset<Result<A>>): iset<A> {
-    iset r <- results | r.Result? :: r.value
+    iset r <- results | r.IsConverging():: r.ValueOf()
   }
 
   ghost function Rests<A>(results: iset<Result<A>>): iset<Rand.Bitstream> {
-    iset r <- results | r.Result? :: r.rest
+    iset r <- results | r.IsConverging() :: r.RestOf()
   }
 
   ghost function ResultEventSpace<A(!new)>(eventSpace: iset<iset<A>>): iset<iset<Result<A>>> {
@@ -84,36 +166,59 @@ module Monad {
   ghost const natResultEventSpace: iset<iset<Result<nat>>> := ResultEventSpace(Measures.natEventSpace)
 
   ghost function ResultsWithValueIn<A(!new)>(values: iset<A>): iset<Result<A>> {
-    iset result: Result<A> | result.Result? && result.value in values
+    iset result: Result<A> | result.IsConverging() && result.ValueOf() in values
   }
 
   ghost function ResultsWithRestIn<A(!new)>(rests: iset<Rand.Bitstream>): iset<Result<A>> {
-    iset result: Result<A> | result.Result? && result.rest in rests
+    iset result: Result<A> | result.IsConverging() && result.RestOf() in rests
   }
 
   // Equation (3.4)
-  function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
-    (s: Rand.Bitstream) => f(s).Bind(g)
+  function Bind<A(!new),B>(f: Hurd<A>, g: A -> Hurd<B>): (h: Hurd<B>)
+    ensures IsAlwaysConverging(f) && (forall a :: IsAlwaysConverging(g(a))) ==> IsAlwaysConverging(h)
+  {
+    (s: Rand.Bitstream) => Eval(f, s).Bind(g)
   }
 
   // Equation (2.42)
-  const Coin: Hurd<bool> := s => Result(Rand.Head(s), Rand.Tail(s))
+  function Coin(): (f: Hurd<bool>) 
+    ensures IsAlwaysConverging(f)
+  {
+    s => Result(Rand.Head(s), Rand.Tail(s))
+  }
 
-  function Composition<A,B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
+  function Composition<A,B(!new),C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
     (a: A) => Bind(f(a), g)
   }
 
   // Equation (3.3)
-  function Return<A>(a: A): Hurd<A> {
+  function Return<A>(a: A): (h: Hurd<A>)
+    ensures IsAlwaysConverging(h)
+  {
     (s: Rand.Bitstream) => Result(a, s)
   }
 
-  function Map<A,B>(m: Hurd<A>, f: A -> B): Hurd<B> {
+  function Map<A(!new),B>(m: Hurd<A>, f: A -> B): Hurd<B> {
     Bind(m, (a: A) => Return(f(a)))
   }
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
     (s: Rand.Bitstream) => ff(s).Bind(f => f)
+  }
+
+  function Eval<A>(f: Hurd<A>, s: Rand.Bitstream): Result<A> {
+    f(s)
+  }
+
+  // A tail recursive version of Sample, closer to the imperative implementation
+  function UniformPowerOfTwoTailRecursive(n: nat, u: nat := 0): Hurd<nat>
+    requires n >= 1
+  {
+    (s: Rand.Bitstream) =>
+      if n == 1 then
+        Result(u, s)
+      else
+        UniformPowerOfTwoTailRecursive(n / 2, if Rand.Head(s) then 2*u + 1 else 2*u)(Rand.Tail(s))
   }
 
   /*******
@@ -210,5 +315,15 @@ module Monad {
       }
     }
   }
+
+/*   lemma IsAlwaysConvergingPointwise<A>(h: Hurd<A>)
+    requires IsAlwaysConverging(h)
+    ensures forall s :: Eval(h, s).IsConverging()
+  {
+    forall s ensures Eval(h, s).IsConverging() {
+      assert IsAlwaysConverging(h);
+    }
+  } */
+  
 }
 
