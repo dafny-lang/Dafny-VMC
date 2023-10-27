@@ -37,7 +37,7 @@ module Uniform.Correctness {
   {
     var equalsI := (x: nat) => x == i;
 
-    assert Independence.IsIndep(Model.Proposal(n)) && Quantifier.WithPosProb(Loops.ProposalIsAccepted(Model.Proposal(n), Model.Accept(n))) by {
+    assert Quantifier.WithPosProb(Loops.ProposalIsAccepted(Model.Proposal(n), Model.Accept(n))) by {
       Model.SampleTerminates(n);
     }
 
@@ -153,20 +153,5 @@ module Uniform.Correctness {
         assert Model.IntervalSample(a, b)(s) == Model.Sample(b - a)(s).Map(x => a + x);
       }
     }
-  }
-
-  // Equation (4.10)
-  lemma SampleIsIndep(n: nat)
-    requires n > 0
-    ensures Independence.IsIndep(Model.Sample(n))
-  {
-    assert Independence.IsIndep(Model.Proposal(n)) by {
-      UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
-    }
-    assert Loops.UntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
-      Model.SampleTerminates(n);
-    }
-    Loops.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
-    reveal Model.Sample();
   }
 }

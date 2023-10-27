@@ -11,9 +11,14 @@ module Monad {
    Definitions
   ************/
 
+  // Definition 35: (strong) independence
+  opaque ghost predicate {:axiom} IsIndep<A>(f: Rand.Bitstream -> Result<A>)
+
+  type RawHurd<A> = Rand.Bitstream -> Result<A>
+
   // The type (monad) of probabilistic computations (cf. Joe Hurd's PhD thesis).
   // For a given stream of bits (coin flips), it yields the result of the computation.
-  type Hurd<A> = Rand.Bitstream -> Result<A>
+  type Hurd<A> = m: RawHurd<A> | IsIndep(m) witness *
 
   // The result of a probabilistic computation on a bitstream.
   // It either consists of the computed value and the (unconsumed) rest of the bitstream or indicates nontermination.
@@ -28,7 +33,7 @@ module Monad {
       case Result(value, rest) => Result(f(value), rest)
     }
 
-    function Bind<B>(f: A -> Hurd<B>): Result<B> {
+    function Bind<B>(f: A -> RawHurd<B>): Result<B> {
       match this
       case Diverging => Diverging
       case Result(value, rest) => f(value)(rest)
@@ -93,11 +98,26 @@ module Monad {
 
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
-    (s: Rand.Bitstream) => f(s).Bind(g)
+    var res :=
+      (s: Rand.Bitstream) =>
+        match f(s)
+        case Diverging => Diverging
+        case Result(v, s') => g(v)(s');
+    assume {:axiom} IsIndep(res);
+    res
+  }
+
+  // Equation (3.4)
+  function RawBind<A,B>(f: RawHurd<A>, g: A -> RawHurd<B>): RawHurd<B> {
+    var res := (s: Rand.Bitstream) => f(s).Bind(g);
+    res
   }
 
   // Equation (2.42)
-  const Coin: Hurd<bool> := s => Result(Rand.Head(s), Rand.Tail(s))
+  const Coin: Hurd<bool> :=
+    var res := s => Result(Rand.Head(s), Rand.Tail(s));
+    assume {:axiom} IsIndep(res);
+    res
 
   function Composition<A,B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
     (a: A) => Bind(f(a), g)
@@ -105,7 +125,9 @@ module Monad {
 
   // Equation (3.3)
   function Return<A>(a: A): Hurd<A> {
-    (s: Rand.Bitstream) => Result(a, s)
+    var res := (s: Rand.Bitstream) => Result(a, s);
+    assume {:axiom} IsIndep(res);
+    res
   }
 
   function Map<A,B>(m: Hurd<A>, f: A -> B): Hurd<B> {
@@ -113,7 +135,7 @@ module Monad {
   }
 
   function Join<A>(ff: Hurd<Hurd<A>>): Hurd<A> {
-    (s: Rand.Bitstream) => ff(s).Bind(f => f)
+    Bind(ff, x => x)
   }
 
   /*******

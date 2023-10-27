@@ -24,39 +24,22 @@ module Independence {
     forall A: iset<A>, E: iset<Rand.Bitstream> | E in Rand.eventSpace :: IsIndepFunctionCondition(f, A, E)
   }
 
-  // Definition 35: (strong) independence
-  ghost predicate {:axiom} IsIndep<A(!new)>(f: Monad.Hurd<A>)
-
   /*******
    Lemmas
   *******/
 
   lemma {:axiom} IsIndepImpliesMeasurableBool(f: Monad.Hurd<bool>)
-    requires IsIndep(f)
+    requires Monad.IsIndep(f)
     ensures Measures.IsMeasurable(Rand.eventSpace, Monad.boolResultEventSpace, f)
 
   lemma {:axiom} IsIndepImpliesMeasurableNat(f: Monad.Hurd<nat>)
-    requires IsIndep(f)
+    requires Monad.IsIndep(f)
     ensures Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, f)
 
   // Equation (3.14)
   lemma {:axiom} IsIndepImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
-    requires IsIndep(f)
+    requires Monad.IsIndep(f)
     ensures IsIndepFunction(f)
-
-  // Equation (3.17)
-  lemma {:axiom} CoinIsIndep()
-    ensures IsIndep(Monad.Coin)
-
-  // Equation (3.18)
-  lemma {:axiom} ReturnIsIndep<T>(x: T)
-    ensures IsIndep(Monad.Return(x))
-
-  // Equation (3.19)
-  lemma {:axiom} BindIsIndep<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
-    requires IsIndep(f)
-    requires forall a :: IsIndep(g(a))
-    ensures IsIndep(Monad.Bind(f, g))
 
   lemma AreIndepEventsConjunctElimination(e1: iset<Rand.Bitstream>, e2: iset<Rand.Bitstream>)
     requires Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)

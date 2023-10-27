@@ -59,6 +59,7 @@ module Loops {
         }
       }
     }
+    assume {:axiom} Monad.IsIndep(f);
     f
   }
 
@@ -286,7 +287,6 @@ module Loops {
   }
 
   lemma EnsureUntilTerminates<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
-    requires Independence.IsIndep(proposal)
     requires Quantifier.WithPosProb((s: Rand.Bitstream) => proposal(s).Satisfies(accept))
     ensures UntilTerminatesAlmostSurely(proposal, accept)
   {
@@ -294,9 +294,6 @@ module Loops {
     var body := (a: A) => proposal;
     var proposalIsAccepted := (s: Rand.Bitstream) => proposal(s).Satisfies(accept);
     assert UntilTerminatesAlmostSurely(proposal, accept) by {
-      forall a: A ensures Independence.IsIndep(body(a)) {
-        assert body(a) == proposal;
-      }
       forall a: A ensures Quantifier.WithPosProb(WhileLoopExitsAfterOneIteration(body, reject, a)) {
         assert Quantifier.WithPosProb(proposalIsAccepted);
         assert (iset s | proposalIsAccepted(s)) == (iset s | WhileLoopExitsAfterOneIteration(body, reject, a)(s));
@@ -309,13 +306,11 @@ module Loops {
 
   // (Equation 3.30) / Sufficient conditions for while-loop termination
   lemma {:axiom} EnsureWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>)
-    requires forall a :: Independence.IsIndep(body(a))
     requires forall a :: Quantifier.WithPosProb(WhileLoopExitsAfterOneIteration(body, condition, a))
     ensures WhileTerminatesAlmostSurely(condition, body)
 
   // Theorem 45 (wrong!) / PROB_BERN_UNTIL (correct!)
   lemma {:axiom} UntilProbabilityFraction<A>(proposal: Monad.Hurd<A>, accept: A -> bool, d: A -> bool)
-    requires Independence.IsIndep(proposal)
     requires Quantifier.WithPosProb(ProposalIsAccepted(proposal, accept))
     ensures UntilTerminatesAlmostSurely(proposal, accept)
     ensures
@@ -327,7 +322,6 @@ module Loops {
 
   // Equation (3.39)
   lemma UntilUnroll<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Rand.Bitstream)
-    requires Independence.IsIndep(proposal)
     requires UntilTerminatesAlmostSurely(proposal, accept)
     ensures Until(proposal, accept)(s) == Monad.Bind(proposal, (x: A) => if accept(x) then Monad.Return(x) else Until(proposal, accept))(s)
   {
@@ -340,49 +334,11 @@ module Loops {
 
   // Equation (3.40)
   lemma EnsureUntilTerminatesAndForAll<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
-    requires Independence.IsIndep(proposal)
     requires Quantifier.WithPosProb(ProposalIsAccepted(proposal, accept))
     ensures UntilTerminatesAlmostSurely(proposal, accept)
     ensures Quantifier.AlmostSurely(UntilLoopResultIsAccepted(proposal, accept))
   {
     EnsureUntilTerminates(proposal, accept);
     assume {:axiom} Quantifier.AlmostSurely(UntilLoopResultIsAccepted(proposal, accept)); // add later
-  }
-
-  lemma WhileCutIsIndep<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, fuel: nat)
-    requires forall a: A :: Independence.IsIndep(body(a))
-    ensures Independence.IsIndep(WhileCut(condition, body, init, fuel))
-  {
-    if fuel == 0 || !condition(init) {
-      Independence.ReturnIsIndep(init);
-    } else {
-      forall init': A ensures Independence.IsIndep(WhileCut(condition, body, init', fuel - 1)) {
-        WhileCutIsIndep(condition, body, init', fuel - 1);
-      }
-      Independence.BindIsIndep(body(init), init' => WhileCut(condition, body, init', fuel - 1));
-    }
-  }
-
-  lemma WhileIsIndep<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
-    requires forall a: A :: Independence.IsIndep(body(a))
-    requires WhileTerminatesAlmostSurely(condition, body)
-    ensures Independence.IsIndep(While(condition, body, init))
-  {
-    // To prove this, we need a definition of Independence.IsIndep
-    assume {:axiom} false;
-  }
-
-  lemma UntilIsIndep<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool)
-    requires Independence.IsIndep(proposal)
-    requires UntilTerminatesAlmostSurely(proposal, accept)
-    ensures Independence.IsIndep(Until(proposal, accept))
-  {
-    var reject := (a: A) => !accept(a);
-    var body := (a: A) => proposal;
-    var f := (init: A) => While(reject, body, init);
-    forall init: A ensures Independence.IsIndep(f(init)) {
-      WhileIsIndep(reject, body, init);
-    }
-    Independence.BindIsIndep(proposal, f);
   }
 }

@@ -53,7 +53,6 @@ module UniformPowerOfTwo.Correctness {
       }
       var preimage := Measures.PreImage(Model.Sample(n), resultsWithValueM);
       assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Model.Sample(n)) by {
-        SampleIsIndep(n);
         Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
       }
       assert e == preimage;
@@ -157,32 +156,6 @@ module UniformPowerOfTwo.Correctness {
     }
   }
 
-  // Equation (4.7)
-  lemma SampleIsIndep(n: nat)
-    requires n >= 1
-    decreases n
-    ensures Independence.IsIndep(Model.Sample(n))
-  {
-    var fn := Model.Sample(n);
-    reveal Model.Sample();
-    if n == 1 {
-      Independence.ReturnIsIndep(0 as nat);
-    } else {
-      assert Independence.IsIndep(Model.Sample(n / 2)) by {
-        SampleIsIndep(n / 2);
-      }
-      forall m: nat ensures Independence.IsIndep(Model.UnifStep(m)) {
-        Independence.CoinIsIndep();
-        var g := Model.UnifStepHelper(m);
-        forall b: bool ensures Independence.IsIndep(g(b)) {
-          Independence.ReturnIsIndep((if b then 2 * m + 1 else 2 * m) as nat);
-        }
-        Independence.BindIsIndep(Monad.Coin, g);
-      }
-      Independence.BindIsIndep(Model.Sample(n / 2), Model.UnifStep);
-    }
-  }
-
   lemma SampleIsMeasurePreserving(n: nat)
     requires n >= 1
     ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, SampleRest(n))
@@ -196,7 +169,6 @@ module UniformPowerOfTwo.Correctness {
         }
         var preimage' := Measures.PreImage(Model.Sample(n), resultsWithRestInE);
         assert preimage' in Rand.eventSpace by {
-          SampleIsIndep(n);
           Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
         }
         assert Measures.PreImage(f, e) == preimage';
@@ -362,9 +334,6 @@ module UniformPowerOfTwo.Correctness {
     assert Indep: Rand.prob(e1 * e2) == Rand.prob(e1) * Rand.prob(e2) by {
       assert Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2) by {
         assert Independence.IsIndepFunction(Model.Sample(n / 2)) by {
-          assert Independence.IsIndep(Model.Sample(n / 2)) by {
-            SampleIsIndep(n / 2);
-          }
           Independence.IsIndepImpliesIsIndepFunction(Model.Sample(n / 2));
         }
         assert E in Rand.eventSpace;

@@ -42,22 +42,15 @@ module Uniform.Model {
   lemma SampleTerminates(n: nat)
     requires n > 0
     ensures
-      && Independence.IsIndep(Proposal(n))
       && Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n)))
       && Loops.UntilTerminatesAlmostSurely(Proposal(n), Accept(n))
   {
-    assert Independence.IsIndep(Proposal(n)) by {
-      UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
-    }
     var e := iset s | Loops.ProposalIsAccepted(Proposal(n), Accept(n))(s);
     assert e in Rand.eventSpace by {
       var ltN := iset m: nat | m < n;
       var resultsLtN := Monad.ResultsWithValueIn(ltN);
       assert e == Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), resultsLtN);
       assert Measures.PreImage(UniformPowerOfTwo.Model.Sample(2 * n), resultsLtN) in Rand.eventSpace by {
-        assert Independence.IsIndep(UniformPowerOfTwo.Model.Sample(2 * n)) by {
-          UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
-        }
         assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, UniformPowerOfTwo.Model.Sample(2 * n)) by {
           Independence.IsIndepImpliesMeasurableNat(UniformPowerOfTwo.Model.Sample(2 * n));
         }
