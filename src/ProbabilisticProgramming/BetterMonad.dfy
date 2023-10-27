@@ -180,6 +180,7 @@ module BetterMonad {
 
   lemma CoinIsPreserved()
     ensures forall s: Rand.Bitstream :: Embed(Coin)(s) == Monad.Coin(s)
+  {}
 
   lemma BindIsPreserved<A, B>(m: BetterHurd<A>, f: A -> BetterHurd<B>)
     ensures forall s: Rand.Bitstream :: Embed(Bind(m, f))(s) == Monad.Bind(Embed(m), v => Embed(f(v)))(s)
