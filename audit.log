@@ -10,6 +10,10 @@ src/Math/Exponential.dfy(4,17): FunctionalEquation: Declaration has explicit `{:
 src/Math/Exponential.dfy(7,17): Increasing: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(169,17): CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(25,4): CountableSum: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/BetterMonad.dfy(181,8): CoinIsPreserved: Ghost declaration has no body and has an ensures clause. 
+src/ProbabilisticProgramming/BetterMonad.dfy(193,17): WhileIsPreserved: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/BetterMonad.dfy(270,17): WhileIsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/BetterMonad.dfy(277,4): StrongIndependenceImpliesWeakIndependence: Definition has `assume` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(28,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(34,17): IsIndepImpliesMeasurableBool: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(38,17): IsIndepImpliesMeasurableNat: Declaration has explicit `{:axiom}` attribute. 
