@@ -7,38 +7,38 @@ module Monad {
   import Rand
   import Measures
 
-  export Spec 
-  provides 
-    Hurd, 
-    Return,
-    Bind,
-    Coin, 
-    Eval, 
-    Rand,
-    Map,
-    Result, 
-    Result.RestIn, 
-    Result.In, 
-    Result.Satisfies,
-    Result.Bind,
-    Result.Map,
-    Result.Equals,
-    Result.IsConverging,
-    Result.IsDiverging,
-    Result.ValueOf,
-    Result.RestOf,
-    DivergingResult,
-    ConvergingResult,
-    ResultsWithValueIn,
-    ResultsWithRestIn,
-    ResultEventSpace,
-    LiftInEventSpaceToResultEventSpace,
-    LiftRestInEventSpaceToResultEventSpace,
-    boolResultEventSpace,
-    natResultEventSpace,
-    Measures
-  reveals
-    IsAlwaysConverging
+  export Spec
+    provides
+      Hurd,
+      Return,
+      Bind,
+      Coin,
+      Eval,
+      Rand,
+      Map,
+      Result,
+      Result.RestIn,
+      Result.In,
+      Result.Satisfies,
+      Result.Bind,
+      Result.Map,
+      Result.Equals,
+      Result.IsConverging,
+      Result.IsDiverging,
+      Result.ValueOf,
+      Result.RestOf,
+      DivergingResult,
+      ConvergingResult,
+      ResultsWithValueIn,
+      ResultsWithRestIn,
+      ResultEventSpace,
+      LiftInEventSpaceToResultEventSpace,
+      LiftRestInEventSpaceToResultEventSpace,
+      boolResultEventSpace,
+      natResultEventSpace,
+      Measures
+    reveals
+      IsAlwaysConverging
 
   export extends Spec
 
@@ -76,7 +76,7 @@ module Monad {
       case Result(value, rest) => Result(f(value), rest)
     }
 
-    function Bind<B>(f: A -> Hurd<B>): (r: Result<B>) 
+    function Bind<B>(f: A -> Hurd<B>): (r: Result<B>)
       ensures this.IsConverging() && IsAlwaysConverging(f(this.ValueOf())) ==> r.IsConverging()
     {
       match this
@@ -181,7 +181,7 @@ module Monad {
   }
 
   // Equation (2.42)
-  function Coin(): (f: Hurd<bool>) 
+  function Coin(): (f: Hurd<bool>)
     ensures IsAlwaysConverging(f)
   {
     s => Result(Rand.Head(s), Rand.Tail(s))
@@ -316,14 +316,14 @@ module Monad {
     }
   }
 
-/*   lemma IsAlwaysConvergingPointwise<A>(h: Hurd<A>)
-    requires IsAlwaysConverging(h)
-    ensures forall s :: Eval(h, s).IsConverging()
-  {
-    forall s ensures Eval(h, s).IsConverging() {
-      assert IsAlwaysConverging(h);
-    }
-  } */
-  
+  /*   lemma IsAlwaysConvergingPointwise<A>(h: Hurd<A>)
+      requires IsAlwaysConverging(h)
+      ensures forall s :: Eval(h, s).IsConverging()
+    {
+      forall s ensures Eval(h, s).IsConverging() {
+        assert IsAlwaysConverging(h);
+      }
+    } */
+
 }
 
