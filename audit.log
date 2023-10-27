@@ -16,8 +16,8 @@ src/ProbabilisticProgramming/Loops.dfy(308,17): EnsureWhileTerminates: Declarati
 src/ProbabilisticProgramming/Loops.dfy(313,17): UntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Loops.dfy(342,4): EnsureUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Loops.dfy(62,4): While: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Monad.dfy(105,4): Bind: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Monad.dfy(128,4): Return: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Monad.dfy(106,4): Bind: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Monad.dfy(123,4): Return: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Monad.dfy(15,34): IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(52,17): ProbIsProbabilityMeasure: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(56,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 

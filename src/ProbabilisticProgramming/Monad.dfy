@@ -107,12 +107,6 @@ module Monad {
     res
   }
 
-  // Equation (3.4)
-  function RawBind<A,B>(f: RawHurd<A>, g: A -> RawHurd<B>): RawHurd<B> {
-    var res := (s: Rand.Bitstream) => f(s).Bind(g);
-    res
-  }
-
   // Equation (2.42)
   const Coin: Hurd<bool> :=
     var res := s => Result(Rand.Head(s), Rand.Tail(s));
