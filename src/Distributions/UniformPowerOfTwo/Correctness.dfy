@@ -23,7 +23,7 @@ module UniformPowerOfTwo.Correctness {
     Rand.prob(iset s | Model.Sample(n)(s).value == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
-  function Sample1(n: nat): Rand.Bitstream -> Rand.Bitstream
+  function SampleRest(n: nat): Rand.Bitstream -> Rand.Bitstream
     requires n >= 1
   {
     (s: Rand.Bitstream) => Model.Sample(n)(s).rest
@@ -47,13 +47,14 @@ module UniformPowerOfTwo.Correctness {
     var k := Helper.Log2Floor(n);
 
     assert e in Rand.eventSpace by {
-      assert iset{m} in Measures.natEventSpace;
-      var preimage := Measures.PreImage((s: Rand.Bitstream) => Model.Sample(n)(s).value, iset{m});
-      assert preimage in Rand.eventSpace by {
-        assert Measures.IsMeasurable(Rand.eventSpace, Measures.natEventSpace, s => Model.Sample(n)(s).value) by {
-          SampleIsIndep(n);
-          Independence.IsIndepImpliesValueMeasurableNat(Model.Sample(n));
-        }
+      var resultsWithValueM := Monad.ResultsWithValueIn(iset{m});
+      assert resultsWithValueM in Monad.natResultEventSpace by {
+        Monad.LiftInEventSpaceToResultEventSpace(iset{m}, Measures.natEventSpace);
+      }
+      var preimage := Measures.PreImage(Model.Sample(n), resultsWithValueM);
+      assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Model.Sample(n)) by {
+        SampleIsIndep(n);
+        Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
       }
       assert e == preimage;
     }
@@ -184,13 +185,22 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleIsMeasurePreserving(n: nat)
     requires n >= 1
-    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, Sample1(n))
+    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, SampleRest(n))
   {
-    var f := Sample1(n);
+    var f := SampleRest(n);
     assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, f) by {
-      SampleIsIndep(n);
-      Independence.IsIndepImpliesRestMeasurable(Model.Sample(n));
-      assert Independence.IsIndep(Model.Sample(n));
+      forall e | e in Rand.eventSpace ensures Measures.PreImage(f, e) in Rand.eventSpace {
+        var resultsWithRestInE := Monad.ResultsWithRestIn(e);
+        assert resultsWithRestInE in Monad.natResultEventSpace by {
+          Monad.LiftRestInEventSpaceToResultEventSpace(e, Measures.natEventSpace);
+        }
+        var preimage' := Measures.PreImage(Model.Sample(n), resultsWithRestInE);
+        assert preimage' in Rand.eventSpace by {
+          SampleIsIndep(n);
+          Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
+        }
+        assert Measures.PreImage(f, e) == preimage';
+      }
     }
     if n == 1 {
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
@@ -202,13 +212,13 @@ module UniformPowerOfTwo.Correctness {
       }
       assert Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, f);
     } else {
-      var g := Sample1(n / 2);
+      var g := SampleRest(n / 2);
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
-        var e' := (iset s | Monad.Tail(s) in e);
+        var e' := (iset s | Rand.Tail(s) in e);
         assert e' in Rand.eventSpace by {
-          assert e' == Measures.PreImage(Monad.Tail, e);
-          Monad.TailIsMeasurePreserving();
-          assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, Monad.Tail);
+          assert e' == Measures.PreImage(Rand.Tail, e);
+          Rand.TailIsMeasurePreserving();
+          assert Measures.IsMeasurable(Rand.eventSpace, Rand.eventSpace, Rand.Tail);
         }
         assert Measures.PreImage(f, e) == Measures.PreImage(g, e') by {
           assert forall s :: f(s) in e <==> g(s) in e' by {
@@ -218,7 +228,7 @@ module UniformPowerOfTwo.Correctness {
               <==> { assert f(s) == Model.Sample(n)(s).rest; }
                 Model.Sample(n)(s).rest in e;
               <==> { SampleTailDecompose(n, s); }
-                Monad.Tail(Model.Sample(n / 2)(s).rest) in e;
+                Rand.Tail(Model.Sample(n / 2)(s).rest) in e;
               <==>
                 Model.Sample(n / 2)(s).rest in e';
               <==> { assert Model.Sample(n / 2)(s).rest == g(s); }
@@ -235,9 +245,9 @@ module UniformPowerOfTwo.Correctness {
             Rand.prob(Measures.PreImage(g, e'));
           == { SampleIsMeasurePreserving(n / 2); assert Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, g); assert e' in Rand.eventSpace; }
             Rand.prob(e');
-          == { assert e' == Measures.PreImage(Monad.Tail, e); }
-            Rand.prob(Measures.PreImage(Monad.Tail, e));
-          == { Monad.TailIsMeasurePreserving(); }
+          == { assert e' == Measures.PreImage(Rand.Tail, e); }
+            Rand.prob(Measures.PreImage(Rand.Tail, e));
+          == { Rand.TailIsMeasurePreserving(); }
             Rand.prob(e);
           }
         }
@@ -248,7 +258,7 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleTailDecompose(n: nat, s: Rand.Bitstream)
     requires n >= 2
-    ensures Model.Sample(n)(s).rest == Monad.Tail(Model.Sample(n / 2)(s).rest)
+    ensures Model.Sample(n)(s).rest == Rand.Tail(Model.Sample(n / 2)(s).rest)
   {
     var Result(a, s') := Model.Sample(n / 2)(s);
     var Result(b, s'') := Monad.Coin(s');
@@ -265,9 +275,9 @@ module UniformPowerOfTwo.Correctness {
     ==
       s'';
     ==
-      Monad.Tail(s');
+      Rand.Tail(s');
     ==
-      Monad.Tail(Model.Sample(n / 2)(s).rest);
+      Rand.Tail(Model.Sample(n / 2)(s).rest);
     }
   }
 
@@ -309,8 +319,8 @@ module UniformPowerOfTwo.Correctness {
     var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin(s).value));
     var f := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).rest;
 
-    var e1 := (iset s | Model.Sample(n / 2)(s).rest in E);
-    var e2 := (iset s | Model.Sample(n / 2)(s).value in A);
+    var e1 := (iset s | Model.Sample(n / 2)(s).RestIn(E));
+    var e2 := (iset s | Model.Sample(n / 2)(s).In(A));
     var e3 := (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
@@ -345,8 +355,8 @@ module UniformPowerOfTwo.Correctness {
     }
 
     assert E in Rand.eventSpace && Rand.prob(E) == 0.5 by {
-      assert E == (iset s | Monad.Head(s) == (m % 2 == 1));
-      Monad.CoinHasProbOneHalf(m % 2 == 1);
+      assert E == (iset s | Rand.Head(s) == (m % 2 == 1));
+      Rand.CoinHasProbOneHalf(m % 2 == 1);
     }
 
     assert Indep: Rand.prob(e1 * e2) == Rand.prob(e1) * Rand.prob(e2) by {

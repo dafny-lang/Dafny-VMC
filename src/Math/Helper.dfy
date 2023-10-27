@@ -117,6 +117,52 @@ module Helper {
     }
   }
 
+  lemma MulMonotonic(a: nat, b: nat, c: nat, d: nat)
+    requires a <= c
+    requires b <= d
+    ensures a * b <= c * d
+  {
+    calc {
+      a * b;
+    <=
+      c * b;
+    <=
+      c * d;
+    }
+  }
+
+  lemma MulMonotonicStrictRhs(b: nat, c: nat, d: nat)
+    requires b < d
+    requires c > 0
+    ensures c * b < c * d
+  {}
+
+  lemma MulMonotonicStrict(a: nat, b: nat, c: nat, d: nat)
+    requires a <= c
+    requires b <= d
+    requires (a != c && d > 0) || (b != d && c > 0)
+    ensures a * b < c * d
+  {
+    if a != c && d > 0 {
+      calc {
+        a * b;
+      <= { MulMonotonic(a, b, a, d); }
+        a * d;
+      <
+        c * d;
+      }
+    }
+    if b != d && c > 0 {
+      calc {
+        a * b;
+      <=
+        c * b;
+      < { MulMonotonicStrictRhs(b, c, d); }
+        c * d;
+      }
+    }
+  }
+
   lemma AdditionOfFractions(x: real, y: real, z: real)
     requires z != 0.0
     ensures (x / z) + (y / z) == (x + y) / z
