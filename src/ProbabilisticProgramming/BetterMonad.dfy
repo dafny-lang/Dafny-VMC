@@ -274,7 +274,7 @@ module BetterMonad {
     requires IsIndep(m)
     ensures Independence.IsIndepFunction(Embed(m))
   {
-    assume false;
+    assume {:axiom} false;
   }
 }
 
