@@ -11,6 +11,20 @@ module BernoulliExpNeg.Equivalence {
   import Loops
   import Bernoulli
 
+  /************
+   Definitions
+  ************/
+
+  opaque ghost predicate CaseLe1LoopInvariant(gamma: Rationals.Rational, oldS: Rand.Bitstream, a: bool, k: nat, s: Rand.Bitstream)
+    requires 0 <= gamma.numer <= gamma.denom
+  {
+    Model.GammaLe1Loop(gamma)((true, 0))(oldS) == Model.GammaLe1Loop(gamma)((a, k))(s)
+  }
+
+  /*******
+   Lemmas
+  *******/
+
   lemma GammaLe1LoopUnroll(gamma: Rationals.Rational, ak: (bool, nat), s: Rand.Bitstream)
     requires 0 <= gamma.numer <= gamma.denom
     requires ak.0
@@ -25,12 +39,6 @@ module BernoulliExpNeg.Equivalence {
         Loops.WhileUnroll(Model.GammaLe1LoopCondition, Model.GammaLe1LoopIter(gamma), ak, s); }
       Monad.Bind(Model.GammaLe1LoopIter(gamma)(ak), Model.GammaLe1Loop(gamma))(s);
     }
-  }
-
-  opaque ghost predicate CaseLe1LoopInvariant(gamma: Rationals.Rational, oldS: Rand.Bitstream, a: bool, k: nat, s: Rand.Bitstream)
-    requires 0 <= gamma.numer <= gamma.denom
-  {
-    Model.GammaLe1Loop(gamma)((true, 0))(oldS) == Model.GammaLe1Loop(gamma)((a, k))(s)
   }
 
   lemma EnsureCaseLe1LoopInvariantOnEntry(gamma: Rationals.Rational, s: Rand.Bitstream)
