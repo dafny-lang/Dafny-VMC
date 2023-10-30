@@ -23,7 +23,7 @@ module UniformPowerOfTwo.Equivalence {
       else
         SampleTailRecursive(n / 2, if Rand.Head(s) then 2*u + 1 else 2*u)(Rand.Tail(s))
   }
-  
+
   /*******
    Lemmas
   *******/
