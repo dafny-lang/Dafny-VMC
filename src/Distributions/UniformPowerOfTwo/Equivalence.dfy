@@ -9,6 +9,10 @@ module UniformPowerOfTwo.Equivalence {
   import Helper
   import Model
 
+  /************
+   Definitions
+  ************/
+
   // A tail recursive version of Sample, closer to the imperative implementation
   function SampleTailRecursive(n: nat, u: nat := 0): Monad.Hurd<nat>
     requires n >= 1
@@ -19,6 +23,10 @@ module UniformPowerOfTwo.Equivalence {
       else
         SampleTailRecursive(n / 2, if Rand.Head(s) then 2*u + 1 else 2*u)(Rand.Tail(s))
   }
+  
+  /*******
+   Lemmas
+  *******/
 
   // Equivalence of Sample and its tail-recursive version
   lemma SampleCorrespondence(n: nat, s: Rand.Bitstream)
