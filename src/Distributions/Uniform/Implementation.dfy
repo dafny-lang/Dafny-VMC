@@ -8,6 +8,7 @@ module Uniform.Implementation {
   import UniformPowerOfTwo
   import Model
   import Interface
+  import Equivalence
 
   trait {:termination false} TraitFoundational extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
@@ -24,7 +25,7 @@ module Uniform.Implementation {
         invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prevS)
         invariant Monad.Result(u, s) == Model.Proposal(n)(prevS)
       {
-        Model.SampleUnroll(n, prevS);
+        Equivalence.SampleUnroll(n, prevS);
         prevS := s;
         u := UniformPowerOfTwoSample(2 * n);
       }

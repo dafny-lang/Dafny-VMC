@@ -85,13 +85,4 @@ module Uniform.Model {
       Loops.EnsureUntilTerminates(Proposal(n), Accept(n));
     }
   }
-
-  lemma SampleUnroll(n: nat, s: Rand.Bitstream)
-    requires n > 0
-    ensures Sample(n)(s) == Monad.Bind(Proposal(n), (x: nat) => if Accept(n)(x) then Monad.Return(x) else Sample(n))(s)
-  {
-    SampleTerminates(n);
-    reveal Sample();
-    Loops.UntilUnroll(Proposal(n), Accept(n), s);
-  }
 }
