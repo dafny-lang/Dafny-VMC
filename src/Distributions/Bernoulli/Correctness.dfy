@@ -8,7 +8,6 @@ module Bernoulli.Correctness {
   import Helper
   import Uniform
   import Rand
-  import Independence
   import Monad
   import Model
 
@@ -19,22 +18,22 @@ module Bernoulli.Correctness {
   lemma SampleIsIndep(m: nat, n: nat)
     requires n != 0
     requires m <= n
-    ensures Independence.IsIndep(Model.Sample(m, n))
+    ensures Monad.IsIndep(Model.Sample(m, n))
   {
     var f := Uniform.Model.Sample(n);
     var g := (k: nat) => Monad.Return(k < m);
 
-    assert Independence.IsIndep(f) by {
+    assert Monad.IsIndep(f) by {
       Uniform.Correctness.SampleIsIndep(n);
     }
 
-    assert forall k: nat :: Independence.IsIndep(g(k)) by {
-      forall k: nat ensures Independence.IsIndep(g(k)) {
-        Independence.ReturnIsIndep(k < m);
+    assert forall k: nat :: Monad.IsIndep(g(k)) by {
+      forall k: nat ensures Monad.IsIndep(g(k)) {
+        Monad.ReturnIsIndep(k < m);
       }
     }
 
-    Independence.BindIsIndep(f, g);
+    Monad.BindIsIndep(f, g);
     reveal Model.Sample();
   }
 

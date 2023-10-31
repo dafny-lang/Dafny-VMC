@@ -8,8 +8,6 @@ module UniformPowerOfTwo.Model {
   import Rand
   import Quantifier
   import Monad
-  import Independence
-  import Loops
 
   // Adapted from Definition 48 (see issue #79 for the reason of the modification)
   // The return value u is uniformly distributed between 0 <= u < 2^k where 2^k <= n < 2^(k + 1).

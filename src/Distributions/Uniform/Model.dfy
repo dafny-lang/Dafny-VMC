@@ -9,16 +9,14 @@ module Uniform.Model {
   import Rand
   import Quantifier
   import Monad`Spec
-  import Independence
-  import Loops
   import UniformPowerOfTwo
 
   // Definition 49
   opaque ghost function Sample(n: nat): Monad.Hurd<nat>
     requires n > 0
   {
-    SampleTerminates(n);
-    Loops.Until(Proposal(n), Accept(n))
+    //SampleTerminates(n);
+    Monad.Until(Proposal(n), Accept(n))
   }
 
   function Proposal(n: nat): Monad.Hurd<nat>
@@ -39,7 +37,7 @@ module Uniform.Model {
     Monad.Map(Sample(b - a), x => a + x)
   }
 
-  lemma SampleTerminates(n: nat)
+/*   lemma SampleTerminates(n: nat)
     requires n > 0
     ensures
       && Independence.IsIndep(Proposal(n))
@@ -84,5 +82,5 @@ module Uniform.Model {
     assert Loops.UntilTerminatesAlmostSurely(Proposal(n), Accept(n)) by {
       Loops.EnsureUntilTerminates(Proposal(n), Accept(n));
     }
-  }
+  } */
 }

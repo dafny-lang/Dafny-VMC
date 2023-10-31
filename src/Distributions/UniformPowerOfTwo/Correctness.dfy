@@ -6,10 +6,8 @@
 module UniformPowerOfTwo.Correctness {
   import Helper
   import Monad
-  import Independence
   import Rand
   import Quantifier
-  import Loops
   import Measures
   import Model
 
@@ -54,7 +52,7 @@ module UniformPowerOfTwo.Correctness {
       var preimage := Measures.PreImage(Model.Sample(n), resultsWithValueM);
       assert Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Model.Sample(n)) by {
         SampleIsIndep(n);
-        Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
+        Monad.IsIndepImpliesMeasurableNat(Model.Sample(n));
       }
       assert e == preimage;
     }
@@ -161,25 +159,25 @@ module UniformPowerOfTwo.Correctness {
   lemma SampleIsIndep(n: nat)
     requires n >= 1
     decreases n
-    ensures Independence.IsIndep(Model.Sample(n))
+    ensures Monad.IsIndep(Model.Sample(n))
   {
     var fn := Model.Sample(n);
     reveal Model.Sample();
     if n == 1 {
-      Independence.ReturnIsIndep(0 as nat);
+      Monad.ReturnIsIndep(0 as nat);
     } else {
-      assert Independence.IsIndep(Model.Sample(n / 2)) by {
+      assert Monad.IsIndep(Model.Sample(n / 2)) by {
         SampleIsIndep(n / 2);
       }
-      forall m: nat ensures Independence.IsIndep(Model.UnifStep(m)) {
-        Independence.CoinIsIndep();
+      forall m: nat ensures Monad.IsIndep(Model.UnifStep(m)) {
+        Monad.CoinIsIndep();
         var g := Model.UnifStepHelper(m);
-        forall b: bool ensures Independence.IsIndep(g(b)) {
-          Independence.ReturnIsIndep((if b then 2 * m + 1 else 2 * m) as nat);
+        forall b: bool ensures Monad.IsIndep(g(b)) {
+          Monad.ReturnIsIndep((if b then 2 * m + 1 else 2 * m) as nat);
         }
-        Independence.BindIsIndep(Monad.Coin, g);
+        Monad.BindIsIndep(Monad.Coin, g);
       }
-      Independence.BindIsIndep(Model.Sample(n / 2), Model.UnifStep);
+      Monad.BindIsIndep(Model.Sample(n / 2), Model.UnifStep);
     }
   }
 
@@ -197,7 +195,7 @@ module UniformPowerOfTwo.Correctness {
         var preimage' := Measures.PreImage(Model.Sample(n), resultsWithRestInE);
         assert preimage' in Rand.eventSpace by {
           SampleIsIndep(n);
-          Independence.IsIndepImpliesMeasurableNat(Model.Sample(n));
+          Monad.IsIndepImpliesMeasurableNat(Model.Sample(n));
         }
         assert Measures.PreImage(f, e) == preimage';
       }
@@ -361,16 +359,16 @@ module UniformPowerOfTwo.Correctness {
 
     assert Indep: Rand.prob(e1 * e2) == Rand.prob(e1) * Rand.prob(e2) by {
       assert Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2) by {
-        assert Independence.IsIndepFunction(Model.Sample(n / 2)) by {
-          assert Independence.IsIndep(Model.Sample(n / 2)) by {
+        assert Monad.IsIndepFunction(Model.Sample(n / 2)) by {
+          assert Monad.IsIndep(Model.Sample(n / 2)) by {
             SampleIsIndep(n / 2);
           }
-          Independence.IsIndepImpliesIsIndepFunction(Model.Sample(n / 2));
+          Monad.IsIndepImpliesIsIndepFunction(Model.Sample(n / 2));
         }
         assert E in Rand.eventSpace;
-        assert Independence.IsIndepFunctionCondition(Model.Sample(n / 2), A, E);
+        assert Monad.IsIndepFunctionCondition(Model.Sample(n / 2), A, E);
       }
-      Independence.AreIndepEventsConjunctElimination(e1, e2);
+      Monad.AreIndepEventsConjunctElimination(e1, e2);
     }
 
     assert ProbE1: Rand.prob(e1) == 0.5 by {

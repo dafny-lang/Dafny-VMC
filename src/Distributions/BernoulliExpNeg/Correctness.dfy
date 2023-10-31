@@ -7,8 +7,8 @@ module BernoulliExpNeg.Correctness {
   import Rationals
   import Exponential
   import Rand
-  import Independence
   import Model
+  import Monad
 
   lemma {:axiom} Correctness(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
@@ -16,5 +16,5 @@ module BernoulliExpNeg.Correctness {
 
   lemma {:axiom} SampleIsIndep(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
-    ensures Independence.IsIndep(Model.Sample(gamma))
+    ensures Monad.IsIndep(Model.Sample(gamma))
 }

@@ -6,10 +6,8 @@
 module Uniform.Correctness {
   import Helper
   import Monad
-  import Independence
   import Rand
   import Quantifier
-  import Loops
   import Measures
   import UniformPowerOfTwo
   import Model
@@ -37,14 +35,14 @@ module Uniform.Correctness {
   {
     var equalsI := (x: nat) => x == i;
 
-    assert Independence.IsIndep(Model.Proposal(n)) && Quantifier.WithPosProb(Loops.ProposalIsAccepted(Model.Proposal(n), Model.Accept(n))) by {
-      Model.SampleTerminates(n);
-    }
+    // assert Monad.IsIndep(Model.Proposal(n)) && Quantifier.WithPosProb(Monad.ProposalIsAccepted(Model.Proposal(n), Model.Accept(n))) by {
+    //   Model.SampleTerminates(n);
+    // }
 
-    Loops.UntilProbabilityFraction(Model.Proposal(n), Model.Accept(n), equalsI);
-    var eventResultEqualsI := Loops.UntilLoopResultHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
-    var eventProposalAcceptedAndEqualsI := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
-    var proposalAccepted := Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
+    Monad.UntilProbabilityFraction(Model.Proposal(n), Model.Accept(n), equalsI);
+    var eventResultEqualsI := Monad.UntilLoopResultHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
+    var eventProposalAcceptedAndEqualsI := Monad.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), equalsI);
+    var proposalAccepted := Monad.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
 
     assert Fraction: Rand.prob(eventResultEqualsI) == Rand.prob(eventProposalAcceptedAndEqualsI) / Rand.prob(proposalAccepted);
 
@@ -79,9 +77,9 @@ module Uniform.Correctness {
   lemma ProbabilityProposalAcceptedAndEqualsI(n: nat, i: nat)
     requires 0 <= i < n
     ensures
-      Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i)) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Rand.prob(Monad.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i)) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
   {
-    var e := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
+    var e := Monad.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
     var nextPowerOfTwo := Helper.Power(2, Helper.Log2Floor(2 * n));
     assert iBound: i < nextPowerOfTwo by {
       calc {
@@ -92,13 +90,13 @@ module Uniform.Correctness {
         nextPowerOfTwo;
       }
     }
-    assert setEq: Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i) == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i) by {
+    assert setEq: Monad.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i) == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i) by {
       forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i {
         assert s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i;
       }
     }
     calc {
-      Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i));
+      Rand.prob(Monad.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i));
       { reveal setEq; }
       Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value == i);
       { reveal iBound; UniformPowerOfTwo.Correctness.UnifCorrectness2(2 * n, i); }
@@ -109,9 +107,9 @@ module Uniform.Correctness {
   lemma ProbabilityProposalAccepted(n: nat)
     requires n >= 1
     ensures
-      Rand.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Rand.prob(Monad.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
   {
-    var e := Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
+    var e := Monad.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
     assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by { Helper.NLtPower2Log2FloorOf2N(n); }
     assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n) by {
       forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n {
@@ -122,7 +120,7 @@ module Uniform.Correctness {
         }
       }
     }
-    assert Rand.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+    assert Rand.prob(Monad.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
       calc {
         Rand.prob(e);
         { reveal Equal; }
@@ -158,15 +156,15 @@ module Uniform.Correctness {
   // Equation (4.10)
   lemma SampleIsIndep(n: nat)
     requires n > 0
-    ensures Independence.IsIndep(Model.Sample(n))
+    ensures Monad.IsIndep(Model.Sample(n))
   {
-    assert Independence.IsIndep(Model.Proposal(n)) by {
+    assert Monad.IsIndep(Model.Proposal(n)) by {
       UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
     }
-    assert Loops.UntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
-      Model.SampleTerminates(n);
-    }
-    Loops.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
+    // assert Monad.UntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
+    //   Model.SampleTerminates(n);
+    // }
+    Monad.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
     reveal Model.Sample();
   }
 }

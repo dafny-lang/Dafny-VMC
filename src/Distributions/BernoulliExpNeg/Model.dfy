@@ -9,7 +9,6 @@ module BernoulliExpNeg.Model {
   import Uniform
   import Bernoulli
   import Monad
-  import Loops
   import BernoulliModel = Bernoulli.Model
 
   opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
@@ -76,7 +75,7 @@ module BernoulliExpNeg.Model {
   {
     (ak: (bool, nat)) =>
       GammaLe1LoopTerminatesAlmostSurely(gamma);
-      Loops.While(
+      Monad.While(
         GammaLe1LoopCondition,
         GammaLe1LoopIter(gamma),
         ak
@@ -103,7 +102,7 @@ module BernoulliExpNeg.Model {
 
   lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
-    ensures Loops.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
+    ensures Monad.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
 
 
 }

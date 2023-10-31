@@ -8,7 +8,6 @@ module BernoulliExpNeg.Equivalence {
   import Rand
   import Monad
   import Model
-  import Loops
   import Bernoulli
 
   /************
@@ -34,9 +33,9 @@ module BernoulliExpNeg.Equivalence {
     calc {
       Model.GammaLe1Loop(gamma)(ak)(s);
       { reveal Model.GammaLe1Loop(); }
-      Loops.While(Model.GammaLe1LoopCondition, Model.GammaLe1LoopIter(gamma), ak)(s);
+      Monad.While(Model.GammaLe1LoopCondition, Model.GammaLe1LoopIter(gamma), ak)(s);
       { reveal Model.GammaLe1Loop();
-        Loops.WhileUnroll(Model.GammaLe1LoopCondition, Model.GammaLe1LoopIter(gamma), ak, s); }
+        Monad.WhileUnroll(Model.GammaLe1LoopCondition, Model.GammaLe1LoopIter(gamma), ak, s); }
       Monad.Bind(Model.GammaLe1LoopIter(gamma)(ak), Model.GammaLe1Loop(gamma))(s);
     }
   }
