@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module Uniform.Implementation {
-  import Monad
+  import Monad`Spec
   import UniformPowerOfTwo
   import Model
   import Interface
@@ -16,14 +16,14 @@ module Uniform.Implementation {
       decreases *
       requires n > 0
       ensures u < n
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+      ensures Model.Sample(n)(old(s)) == Monad.Return(u)(s)
     {
       ghost var prevS := s;
       u := UniformPowerOfTwoSample(2 * n);
       while u >= n
         decreases *
         invariant Model.Sample(n)(old(s)) == Model.Sample(n)(prevS)
-        invariant Monad.Result(u, s) == Model.Proposal(n)(prevS)
+        invariant Monad.Return(u)(s) == Model.Proposal(n)(prevS)
       {
         Equivalence.SampleUnroll(n, prevS);
         prevS := s;
@@ -41,7 +41,7 @@ module Uniform.Implementation {
       decreases *
       requires n > 0
       ensures u < n
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+      ensures Model.Sample(n)(old(s)) == Monad.Return(u)(s)
     {
       u := ExternUniformSample(n);
       assume {:axiom} false; // assume correctness of extern implementation

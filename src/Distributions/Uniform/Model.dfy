@@ -8,7 +8,7 @@ module Uniform.Model {
   import Helper
   import Rand
   import Quantifier
-  import Monad
+  import Monad`Spec
   import Independence
   import Loops
   import UniformPowerOfTwo

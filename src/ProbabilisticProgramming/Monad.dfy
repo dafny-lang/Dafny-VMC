@@ -7,6 +7,19 @@ module Monad {
   import Rand
   import Measures
 
+  export Spec provides 
+    Hurd,
+    Result, 
+    Return, 
+    Bind, 
+    Map, 
+    ResultsWithValueIn,
+    natResultEventSpace,
+    LiftInEventSpaceToResultEventSpace,
+    ResultEventSpace
+
+  export reveals *
+
   /************
    Definitions
   ************/
@@ -14,6 +27,7 @@ module Monad {
   // The type (monad) of probabilistic computations (cf. Joe Hurd's PhD thesis).
   // For a given stream of bits (coin flips), it yields the result of the computation.
   type Hurd<A> = Rand.Bitstream -> Result<A>
+
 
   // The result of a probabilistic computation on a bitstream.
   // It either consists of the computed value and the (unconsumed) rest of the bitstream or indicates nontermination.
