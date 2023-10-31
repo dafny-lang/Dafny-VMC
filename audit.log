@@ -3,7 +3,8 @@ src/Distributions/BernoulliExpNeg/Correctness.dfy(17,17): SampleIsIndep: Declara
 src/Distributions/BernoulliExpNeg/Equivalence.dfy(80,37): EnsureCaseLe1PostCondition: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Equivalence.dfy(85,17): GammaLe1LoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Uniform/Implementation.dfy(47,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Implementation.dfy(33,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Implementation.dfy(48,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/UniformPowerOfTwo/Correctness.dfy(216,10): SampleIsMeasurePreserving: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/UniformPowerOfTwo/Model.dfy(24,4): UnifStepHelper: Definition has `assume {:axiom}` statement in body. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 

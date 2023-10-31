@@ -30,7 +30,7 @@ module Uniform.Implementation {
         u := UniformPowerOfTwoSample(2 * n);
       }
       reveal Model.Sample();
-      assume {:axiom} false; // TODO 
+      assume {:axiom} false; // TODO
     }
   }
 

@@ -45,7 +45,7 @@ module UniformPowerOfTwo.Correctness {
   // the thesis, but models PROB_BERN_UNIF of the HOL implementation.
   lemma UnifCorrectness2(n: nat, m: nat)
     requires n >= 1
-    ensures forall s :: Model.Sample(n)(s).Result? 
+    ensures forall s :: Model.Sample(n)(s).Result?
     ensures
       var e := iset s | Model.Sample(n)(s).value == m;
       && e in Rand.eventSpace
@@ -76,7 +76,7 @@ module UniformPowerOfTwo.Correctness {
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires n >= 1
     requires m <= Helper.Power(2, Helper.Log2Floor(n))
-    ensures forall s :: Model.Sample(n)(s).Result? 
+    ensures forall s :: Model.Sample(n)(s).Result?
     ensures
       var e := iset s | Model.Sample(n)(s).value < m;
       && e in Rand.eventSpace

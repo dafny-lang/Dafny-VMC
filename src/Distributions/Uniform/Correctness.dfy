@@ -153,18 +153,18 @@ module Uniform.Correctness {
     }
   }
 
-/*   // Equation (4.10)
-  lemma SampleIsIndep(n: nat)
-    requires n > 0
-    ensures Monad.IsIndep(Model.Sample(n))
-  {
-    assert Monad.IsIndep(Model.Proposal(n)) by {
-      UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
-    }
-    // assert Monad.UntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
-    //   Model.SampleTerminates(n);
-    // }
-    Monad.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
-    reveal Model.Sample();
-  } */
+  /*   // Equation (4.10)
+    lemma SampleIsIndep(n: nat)
+      requires n > 0
+      ensures Monad.IsIndep(Model.Sample(n))
+    {
+      assert Monad.IsIndep(Model.Proposal(n)) by {
+        UniformPowerOfTwo.Correctness.SampleIsIndep(2 * n);
+      }
+      // assert Monad.UntilTerminatesAlmostSurely(Model.Proposal(n), Model.Accept(n)) by {
+      //   Model.SampleTerminates(n);
+      // }
+      Monad.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
+      reveal Model.Sample();
+    } */
 }

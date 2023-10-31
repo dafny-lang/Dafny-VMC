@@ -14,28 +14,28 @@ module Bernoulli.Correctness {
   /*******
    Lemmas
   *******/
-/* 
-  lemma SampleIsIndep(m: nat, n: nat)
-    requires n != 0
-    requires m <= n
-    ensures Monad.IsIndep(Model.Sample(m, n))
-  {
-    var f := Uniform.Model.Sample(n);
-    var g := (k: nat) => Monad.Return(k < m);
-
-    assert Monad.IsIndep(f) by {
-      Uniform.Correctness.SampleIsIndep(n);
-    }
-
-    assert forall k: nat :: Monad.IsIndep(g(k)) by {
-      forall k: nat ensures Monad.IsIndep(g(k)) {
-        Monad.ReturnIsIndep(k < m);
+  /* 
+    lemma SampleIsIndep(m: nat, n: nat)
+      requires n != 0
+      requires m <= n
+      ensures Monad.IsIndep(Model.Sample(m, n))
+    {
+      var f := Uniform.Model.Sample(n);
+      var g := (k: nat) => Monad.Return(k < m);
+  
+      assert Monad.IsIndep(f) by {
+        Uniform.Correctness.SampleIsIndep(n);
       }
-    }
-
-    Monad.BindIsIndep(f, g);
-    reveal Model.Sample();
-  } */
+  
+      assert forall k: nat :: Monad.IsIndep(g(k)) by {
+        forall k: nat ensures Monad.IsIndep(g(k)) {
+          Monad.ReturnIsIndep(k < m);
+        }
+      }
+  
+      Monad.BindIsIndep(f, g);
+      reveal Model.Sample();
+    } */
 
 
   lemma BernoulliCorrectness(m: nat, n: nat)
