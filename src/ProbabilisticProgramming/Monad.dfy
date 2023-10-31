@@ -7,16 +7,16 @@ module Monad {
   import Rand
   import Measures
 
-  export Spec provides 
-    Hurd,
-    Result, 
-    Return, 
-    Bind, 
-    Map, 
-    ResultsWithValueIn,
-    natResultEventSpace,
-    LiftInEventSpaceToResultEventSpace,
-    ResultEventSpace
+  export Spec provides
+      Hurd,
+      Result,
+      Return,
+      Bind,
+      Map,
+      ResultsWithValueIn,
+      natResultEventSpace,
+      LiftInEventSpaceToResultEventSpace,
+      ResultEventSpace
 
   export reveals *
 
