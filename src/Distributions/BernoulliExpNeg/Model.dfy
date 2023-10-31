@@ -8,7 +8,7 @@ module BernoulliExpNeg.Model {
   import Rand
   import Uniform
   import Bernoulli
-  import Monad
+  import Monad`Spec
   import BernoulliModel = Bernoulli.Model
 
   opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
@@ -74,7 +74,7 @@ module BernoulliExpNeg.Model {
     requires 0 <= gamma.numer <= gamma.denom
   {
     (ak: (bool, nat)) =>
-      GammaLe1LoopTerminatesAlmostSurely(gamma);
+      //Equivalence.GammaLe1LoopTerminatesAlmostSurely(gamma);
       Monad.While(
         GammaLe1LoopCondition,
         GammaLe1LoopIter(gamma),
@@ -99,10 +99,5 @@ module BernoulliExpNeg.Model {
   ghost function SetK(k: nat): bool -> Monad.Hurd<(bool, nat)> {
     a => Monad.Return((a, k))
   }
-
-  lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
-    requires 0 <= gamma.numer <= gamma.denom
-    ensures Monad.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
-
 
 }

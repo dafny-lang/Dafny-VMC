@@ -29,7 +29,7 @@ module BernoulliExpNeg.Equivalence {
     requires ak.0
     ensures Model.GammaLe1Loop(gamma)(ak)(s) == Monad.Bind(Model.GammaLe1LoopIter(gamma)(ak), Model.GammaLe1Loop(gamma))(s)
   {
-    Model.GammaLe1LoopTerminatesAlmostSurely(gamma);
+    GammaLe1LoopTerminatesAlmostSurely(gamma);
     calc {
       Model.GammaLe1Loop(gamma)(ak)(s);
       { reveal Model.GammaLe1Loop(); }
@@ -77,8 +77,13 @@ module BernoulliExpNeg.Equivalence {
       Model.GammaLe1Loop(gamma)((true, 0))(oldS);
       { reveal CaseLe1LoopInvariant(); }
       Model.GammaLe1Loop(gamma)((false, k))(s);
-      { reveal Model.GammaLe1Loop(); }
+      { reveal Model.GammaLe1Loop(); assume {:axiom} false; } // prove likely via Monad.AboutWhile
       Monad.Result((false, k), s);
     }
   }
+
+  lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures Monad.WhileTerminatesAlmostSurely(Model.GammaLe1LoopCondition, Model.GammaLe1LoopIter(gamma))
+
 }

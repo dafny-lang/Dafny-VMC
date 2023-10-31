@@ -5,9 +5,9 @@
 
 module Coin.Model {
   import Rand
-  import Monad
+  import Monad`Spec
 
-  function Sample(s: Rand.Bitstream): Monad.Result<bool> {
-    Monad.Coin(s)
+  function Sample(): Monad.Hurd<bool> {
+    Monad.Coin()
   }
 }

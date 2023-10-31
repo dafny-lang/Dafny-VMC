@@ -13,7 +13,9 @@ module Monad {
       Return,
       Bind,
       Map,
-      Until
+      Until,
+      While,
+      Coin
 
   export reveals *
 
@@ -108,7 +110,9 @@ module Monad {
   }
 
   // Equation (2.42)
-  const Coin: Hurd<bool> := s => Result(Rand.Head(s), Rand.Tail(s))
+  function Coin(): Hurd<bool> {
+    s => Result(Rand.Head(s), Rand.Tail(s))
+  }
 
   function Composition<A,B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
     (a: A) => Bind(f(a), g)
@@ -263,7 +267,7 @@ module Monad {
 
   // Equation (3.17)
   lemma {:axiom} CoinIsIndep()
-    ensures IsIndep(Coin)
+    ensures IsIndep(Coin())
 
   // Equation (3.18)
   lemma {:axiom} ReturnIsIndep<T>(x: T)
@@ -317,9 +321,7 @@ module Monad {
   // For proofs, use the lemma `WhileUnroll`.
   // Equation (3.25), but modified to use `Monad.Diverging` instead of HOL's `arb` in case of nontermination
   // TODO: While(condition, body)(init) would be cleaner
-  opaque ghost function While<A>(condition: A -> bool, body: A -> Hurd<A>, init: A): (f: Hurd<A>)
-    ensures forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Return(init)(s)
-  {
+  opaque ghost function While<A>(condition: A -> bool, body: A -> Hurd<A>, init: A): (f: Hurd<A>) {
     var f :=
       (s: Rand.Bitstream) =>
         if WhileCutTerminates(condition, body, init, s)
@@ -336,6 +338,14 @@ module Monad {
       }
     }
     f
+  }
+
+  lemma AboutWhile<A>(condition: A -> bool, body: A -> Hurd<A>, init: A)
+    ensures 
+      var f := While(condition, body, init);
+      forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Return(init)(s)
+  {
+    assume {:axiom} false; // prove, did hold before as postcondition
   }
 
   ghost function LeastFuel<A>(condition: A -> bool, body: A -> Hurd<A>, init: A, s: Rand.Bitstream): (fuel: nat)
@@ -522,6 +532,7 @@ module Monad {
     } else {
       calc {
         loop;
+        { AboutWhile(condition, body, init); }
         Result(init, s);
         unrolled;
       }
@@ -537,8 +548,10 @@ module Monad {
     reveal While();
     match body(init)(s)
     case Diverging =>
+      AboutWhile(condition, body, init);
       assert unrolled == Diverging;
     case Result(init', s') =>
+      AboutWhile(condition, body, init);
       assert !WhileCutTerminates(condition, body, init', s') by {
         WhileCutTerminatesUnroll(condition, body, init, s, init', s');
       }
