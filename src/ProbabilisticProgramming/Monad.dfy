@@ -341,7 +341,7 @@ module Monad {
   }
 
   lemma AboutWhile<A>(condition: A -> bool, body: A -> Hurd<A>, init: A)
-    ensures 
+    ensures
       var f := While(condition, body, init);
       forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Return(init)(s)
   {
