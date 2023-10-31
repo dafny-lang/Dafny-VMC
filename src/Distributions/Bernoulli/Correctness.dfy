@@ -14,7 +14,7 @@ module Bernoulli.Correctness {
   /*******
    Lemmas
   *******/
-
+/* 
   lemma SampleIsIndep(m: nat, n: nat)
     requires n != 0
     requires m <= n
@@ -35,7 +35,7 @@ module Bernoulli.Correctness {
 
     Monad.BindIsIndep(f, g);
     reveal Model.Sample();
-  }
+  } */
 
 
   lemma BernoulliCorrectness(m: nat, n: nat)

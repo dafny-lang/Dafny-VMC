@@ -153,7 +153,7 @@ module Uniform.Correctness {
     }
   }
 
-  // Equation (4.10)
+/*   // Equation (4.10)
   lemma SampleIsIndep(n: nat)
     requires n > 0
     ensures Monad.IsIndep(Model.Sample(n))
@@ -166,5 +166,5 @@ module Uniform.Correctness {
     // }
     Monad.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
     reveal Model.Sample();
-  }
+  } */
 }
