@@ -8,6 +8,7 @@ module UniformPowerOfTwo.Equivalence {
   import Monad
   import Helper
   import Model
+  import Correctness
 
   /************
    Definitions
@@ -105,6 +106,7 @@ module UniformPowerOfTwo.Equivalence {
     decreases l
     ensures Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s) == Model.Sample(Helper.Power(2, m + l))(s)
   {
+    Correctness.SampleReturnsResult(Helper.Power(2, m));
     if l == 0 {
       calc {
         Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
