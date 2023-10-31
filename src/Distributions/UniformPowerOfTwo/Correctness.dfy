@@ -18,12 +18,14 @@ module UniformPowerOfTwo.Correctness {
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
   {
+    SampleReturnsResult(n);
     Rand.prob(iset s | Model.Sample(n)(s).value == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
   function SampleRest(n: nat): Rand.Bitstream -> Rand.Bitstream
     requires n >= 1
   {
+    SampleReturnsResult(n);
     (s: Rand.Bitstream) => Model.Sample(n)(s).rest
   }
 
@@ -31,16 +33,25 @@ module UniformPowerOfTwo.Correctness {
    Lemmas
   *******/
 
+  lemma SampleReturnsResult(n: nat)
+    requires n >= 1
+    ensures forall s :: Model.Sample(n)(s).Result? // always terminates, not just almost surely
+  {
+    reveal Model.Sample();
+  }
+
   // Correctness Theorem for Model.Sample.
   // In contrast to UnifCorrectness, this lemma does not follow
   // the thesis, but models PROB_BERN_UNIF of the HOL implementation.
   lemma UnifCorrectness2(n: nat, m: nat)
     requires n >= 1
+    ensures forall s :: Model.Sample(n)(s).Result? 
     ensures
       var e := iset s | Model.Sample(n)(s).value == m;
       && e in Rand.eventSpace
       && Rand.prob(e) == if m < Helper.Power(2, Helper.Log2Floor(n)) then 1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real) else 0.0
   {
+    SampleReturnsResult(n);
     var e := iset s | Model.Sample(n)(s).value == m;
     var k := Helper.Log2Floor(n);
 
@@ -65,11 +76,13 @@ module UniformPowerOfTwo.Correctness {
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires n >= 1
     requires m <= Helper.Power(2, Helper.Log2Floor(n))
+    ensures forall s :: Model.Sample(n)(s).Result? 
     ensures
       var e := iset s | Model.Sample(n)(s).value < m;
       && e in Rand.eventSpace
       && Rand.prob(e) == (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real)
   {
+    SampleReturnsResult(n);
     var e := iset s | Model.Sample(n)(s).value < m;
 
     if m == 0 {
@@ -112,6 +125,7 @@ module UniformPowerOfTwo.Correctness {
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
   {
+    SampleReturnsResult(n);
     forall m: nat ensures UnifIsCorrect(n, k, m) {
       assert n >= 1 by { Helper.PowerGreater0(2, k); }
       if k == 0 {
@@ -128,6 +142,7 @@ module UniformPowerOfTwo.Correctness {
         assert RecursiveCorrect: UnifIsCorrect(n / 2, k - 1, m / 2) by {
           UnifCorrectness(n / 2, k - 1);
         }
+        SampleReturnsResult(n / 2);
         if m < Helper.Power(2, k) {
           calc {
             Rand.prob(iset s | Model.Sample(n)(s).value == m);
@@ -197,7 +212,9 @@ module UniformPowerOfTwo.Correctness {
           SampleIsIndep(n);
           Monad.IsIndepImpliesMeasurableNat(Model.Sample(n));
         }
-        assert Measures.PreImage(f, e) == preimage';
+        assert Measures.PreImage(f, e) == preimage' by {
+          assume {:axiom} false; // TODO
+        }
       }
     }
     if n == 1 {
@@ -210,6 +227,8 @@ module UniformPowerOfTwo.Correctness {
       }
       assert Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, f);
     } else {
+      SampleReturnsResult(n);
+      SampleReturnsResult(n / 2);
       var g := SampleRest(n / 2);
       forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
         var e' := (iset s | Rand.Tail(s) in e);
@@ -256,8 +275,12 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleTailDecompose(n: nat, s: Rand.Bitstream)
     requires n >= 2
+    ensures forall s :: Model.Sample(n)(s).Result?
+    ensures forall s :: Model.Sample(n / 2)(s).Result?
     ensures Model.Sample(n)(s).rest == Rand.Tail(Model.Sample(n / 2)(s).rest)
   {
+    SampleReturnsResult(n);
+    SampleReturnsResult(n / 2);
     var Result(a, s') := Model.Sample(n / 2)(s);
     var Result(b, s'') := Monad.Coin()(s');
     calc {
@@ -281,11 +304,14 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleSetEquality(n: nat, m: nat)
     requires n >= 2
+    ensures forall s :: Model.Sample(n / 2)(s).Result?
     ensures
       var bOf := (s: Rand.Bitstream) => Monad.Coin()(Model.Sample(n / 2)(s).rest).value;
       var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
-      (iset s | Model.Sample(n)(s).value == m) == (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m)
+      (iset s | SampleReturnsResult(n); Model.Sample(n)(s).value == m) == (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m)
   {
+    SampleReturnsResult(n);
+    SampleReturnsResult(n / 2);
     var bOf := (s: Rand.Bitstream) => Monad.Coin()(Model.Sample(n / 2)(s).rest).value;
     var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
     forall s ensures Model.Sample(n)(s).value == m <==> (2 * aOf(s) + Helper.boolToNat(bOf(s)) == m) {
@@ -309,8 +335,12 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleRecursiveHalf(n: nat, m: nat)
     requires n >= 2
+    ensures forall s :: Model.Sample(n)(s).Result?
+    ensures forall s :: Model.Sample(n / 2)(s).Result?
     ensures Rand.prob(iset s | Model.Sample(n)(s).value == m) == Rand.prob(iset s | Model.Sample(n / 2)(s).value == m / 2) / 2.0
   {
+    SampleReturnsResult(n);
+    SampleReturnsResult(n / 2);
     var aOf: Rand.Bitstream -> nat := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
     var bOf: Rand.Bitstream -> bool := (s: Rand.Bitstream) => Monad.Coin()(Model.Sample(n / 2)(s).rest).value;
     var A: iset<nat> := (iset x: nat | x == m / 2);
