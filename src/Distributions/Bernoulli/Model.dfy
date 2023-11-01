@@ -12,8 +12,7 @@ module Bernoulli.Model {
     requires denom != 0
     requires numer <= denom
   {
-    // TODO: this should use Map instead of Bind
-    Monad.Bind(Uniform.Model.Sample(denom), (k: nat) => Monad.Return(k < numer))
+    Monad.Map(Uniform.Model.Sample(denom), (k: nat) => k < numer)
   }
 
 }
