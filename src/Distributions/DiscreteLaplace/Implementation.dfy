@@ -37,7 +37,7 @@ module DiscreteLaplace.Implementation {
         }
         var x := u + scale.numer * v;
         y := x / scale.denom;
-        b := BernoulliSample(Rationals.Rational(1, 2));
+        b := CoinSample();
       }
       z := if b then -y else y;
     }
