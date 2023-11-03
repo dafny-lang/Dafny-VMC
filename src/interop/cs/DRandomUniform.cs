@@ -8,14 +8,37 @@ using System.Numerics;
 
 namespace Uniform_mImplementation {
 
-    public class DRandomUniform {
+    public class DRandomUniform : Coin_mInterface.DRandomCoin {
 
-      private static Random r = new Random();
+      /// Generates a uniformly random BigInteger between 0 (inclusive) and 2^bitLength (exclusive)
+      private static BigInteger UniformPowerOfTwo(int bitLength) {
+        if (bitLength < 1) {
+          return BigInteger.Zero;
+        }
+
+        int numBytes = bitLength / 8;
+        int numBits = bitLength % 8;
+
+        byte[] randomBytes = rng.GetBytes(numBytes + 1);
+
+        // Mask out the top bits:
+        byte mask = (byte)(0xFF >> (8 - numBits));
+        randomBytes[numBytes] &= mask;
+
+        return new BigInteger(randomBytes);
+      }
 
       public static BigInteger Uniform(BigInteger n) {
-        // `(Int64) n` throws an `OverflowException` if `n` is too large to fit in an `Int64`
-        // see https://learn.microsoft.com/en-us/dotnet/api/system.numerics.biginteger.op_explicit?view=net-7.0#system-numerics-biginteger-op-explicit(system-numerics-biginteger)-system-int64
-        return new BigInteger(r.NextInt64((Int64) n));
+        if (n <= BigInteger.Zero) {
+          throw new ArgumentException("n must be positive");
+        }
+
+        BigInteger sampleValue;
+        do {
+          sampleValue = UniformPowerOfTwo(System.Convert.ToInt32(n.GetBitLength()));
+        } while (sampleValue >= n);
+
+        return sampleValue;
       }
 
   }

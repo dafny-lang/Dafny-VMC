@@ -3,17 +3,17 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-using System;
+using System.Security.Cryptography;
 using System.Numerics;
 
 namespace Coin_mInterface {
 
     public class DRandomCoin {
 
-      private static Random r = new Random();
+      protected static RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
       public static bool Coin() {
-        return r.Next(2) == 0;
+        return rng.GetInt32(2) == 0;
       }
 
   }
