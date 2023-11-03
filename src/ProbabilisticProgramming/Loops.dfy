@@ -40,11 +40,11 @@ module Loops {
   // This definition is opaque because the details are not very useful.
   // For proofs, use the lemma `WhileUnroll`.
   // Equation (3.25), but modified to use `Monad.Diverging` instead of HOL's `arb` in case of nontermination
-  // TODO: While(condition, body)(init) would be cleaner
-  opaque ghost function While<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): (f: Monad.Hurd<A>)
-    ensures forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s)
+  opaque ghost function While<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>): (loop: A -> Monad.Hurd<A>)
+    ensures forall s: Rand.Bitstream, init: A :: !condition(init) ==> loop(init)(s) == Monad.Return(init)(s)
   {
     var f :=
+      (init: A) =>
       (s: Rand.Bitstream) =>
         if WhileCutTerminates(condition, body, init, s)
         then
@@ -52,8 +52,8 @@ module Loops {
           WhileCut(condition, body, init, fuel)(s)
         else
           Monad.Diverging;
-    assert forall s: Rand.Bitstream :: !condition(init) ==> f(s) == Monad.Return(init)(s) by {
-      forall s: Rand.Bitstream ensures !condition(init) ==> f(s) == Monad.Return(init)(s) {
+    assert forall s: Rand.Bitstream, init: A :: !condition(init) ==> f(init)(s) == Monad.Return(init)(s) by {
+      forall s: Rand.Bitstream, init: A ensures !condition(init) ==> f(init)(s) == Monad.Return(init)(s) {
         if !condition(init) {
           assert WhileCutTerminatesWithFuel(condition, body, init, s)(0);
         }
@@ -93,16 +93,16 @@ module Loops {
   // Definition of until loops (rejection sampling).
   // For proofs, use the lemma `UntilUnroll`.
   // Definition 44
-  ghost function Until<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
+  ghost function Until<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
     requires UntilTerminatesAlmostSurely(proposal, accept)
     ensures
       var reject := (a: A) => !accept(a);
       var body := (a: A) => proposal;
-      forall s :: f(s) == proposal(s).Bind(init => While(reject, body, init))
+      forall s :: f(s) == proposal(s).Bind(While(reject, body))
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    Monad.Bind(proposal, (a: A) => While(reject, body, a))
+    Monad.Bind(proposal, While(reject, body))
   }
 
   function WhileLoopExitsAfterOneIteration<A(!new)>(body: A -> Monad.Hurd<A>, condition: A -> bool, init: A): (Rand.Bitstream -> bool) {
@@ -115,13 +115,13 @@ module Loops {
       proposal(s).Satisfies(accept)
   }
 
-  ghost function UntilLoopResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool)
+  ghost function UntilLoopResultIsAccepted<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (Rand.Bitstream -> bool)
     requires UntilTerminatesAlmostSurely(proposal, accept)
   {
     (s: Rand.Bitstream) => Until(proposal, accept)(s).Satisfies(accept)
   }
 
-  ghost function UntilLoopResultHasProperty<A>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
+  ghost function UntilLoopResultHasProperty<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool, property: A -> bool): iset<Rand.Bitstream>
     requires UntilTerminatesAlmostSurely(proposal, accept)
   {
     iset s | Until(proposal, accept)(s).Satisfies(property)
@@ -192,8 +192,8 @@ module Loops {
     requires WhileCutTerminates(condition, body, init, s)
     requires condition(init)
     requires body(init)(s) == Monad.Result(init', s')
-    requires loop == While(condition, body, init)(s)
-    requires unrolled == While(condition, body, init')(s')
+    requires loop == While(condition, body)(init)(s)
+    requires unrolled == While(condition, body)(init')(s')
     ensures loop == unrolled
   {
     var fuel: nat := LeastFuel(condition, body, init, s);
@@ -218,11 +218,11 @@ module Loops {
     }
   }
 
-  lemma WhileUnrollIfTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
+  lemma WhileUnrollIfTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, fuel: nat, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires WhileCutTerminates(condition, body, init, s)
     requires fuel == LeastFuel(condition, body, init, s)
-    requires loop == While(condition, body, init)(s)
-    requires unrolled == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
+    requires loop == While(condition, body)(init)(s)
+    requires unrolled == (if condition(init) then Monad.Bind(body(init), While(condition, body)) else Monad.Return(init))(s)
     ensures loop == unrolled
   {
     if condition(init) {
@@ -240,7 +240,7 @@ module Loops {
         calc {
           loop;
           { WhileUnrollIfConditionSatisfied(condition, body, init, s, init', s', loop, unrolled); }
-          While(condition, body, init')(s');
+          While(condition, body)(init')(s');
           unrolled;
         }
     } else {
@@ -254,8 +254,8 @@ module Loops {
 
   lemma WhileUnrollIfDiverges<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires !WhileCutTerminates(condition, body, init, s)
-    requires loop == While(condition, body, init)(s)
-    requires unrolled == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
+    requires loop == While(condition, body)(init)(s)
+    requires unrolled == (if condition(init) then Monad.Bind(body(init), While(condition, body)) else Monad.Return(init))(s)
     ensures loop == unrolled == Monad.Diverging
   {
     reveal While();
@@ -269,12 +269,12 @@ module Loops {
   }
 
   // Theorem 38
-  lemma WhileUnroll<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
+  lemma WhileUnroll<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
     requires WhileTerminatesAlmostSurely(condition, body)
-    ensures While(condition, body, init)(s) == (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s)
+    ensures While(condition, body)(init)(s) == (if condition(init) then Monad.Bind(body(init), While(condition, body)) else Monad.Return(init))(s)
   {
-    var loop := While(condition, body, init)(s);
-    var unrolled := (if condition(init) then Monad.Bind(body(init), (init': A) => While(condition, body, init')) else Monad.Return(init))(s);
+    var loop := While(condition, body)(init)(s);
+    var unrolled := (if condition(init) then Monad.Bind(body(init), While(condition, body)) else Monad.Return(init))(s);
     assert loop == unrolled by {
       if WhileCutTerminates(condition, body, init, s) {
         var fuel: nat := LeastFuel(condition, body, init, s);
@@ -366,7 +366,7 @@ module Loops {
   lemma WhileIsIndep<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
     requires forall a: A :: Independence.IsIndep(body(a))
     requires WhileTerminatesAlmostSurely(condition, body)
-    ensures Independence.IsIndep(While(condition, body, init))
+    ensures Independence.IsIndep(While(condition, body)(init))
   {
     // To prove this, we need a definition of Independence.IsIndep
     assume {:axiom} false;
@@ -379,10 +379,9 @@ module Loops {
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
-    var f := (init: A) => While(reject, body, init);
-    forall init: A ensures Independence.IsIndep(f(init)) {
+    forall init: A ensures Independence.IsIndep(While(reject, body)(init)) {
       WhileIsIndep(reject, body, init);
     }
-    Independence.BindIsIndep(proposal, f);
+    Independence.BindIsIndep(proposal, While(reject, body));
   }
 }
