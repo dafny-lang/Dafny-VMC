@@ -22,19 +22,13 @@ module Bernoulli.Correctness {
     ensures Independence.IsIndep(Model.Sample(m, n))
   {
     var f := Uniform.Model.Sample(n);
-    var g := (k: nat) => Monad.Return(k < m);
+    var g := (k: nat) => k < m;
 
     assert Independence.IsIndep(f) by {
       Uniform.Correctness.SampleIsIndep(n);
     }
 
-    assert forall k: nat :: Independence.IsIndep(g(k)) by {
-      forall k: nat ensures Independence.IsIndep(g(k)) {
-        Independence.ReturnIsIndep(k < m);
-      }
-    }
-
-    Independence.BindIsIndep(f, g);
+    Independence.MapIsIndep(f, g);
     reveal Model.Sample();
   }
 
