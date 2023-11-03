@@ -29,7 +29,7 @@ public final class DRandomUniform {
 
     BigInteger sampleValue;
     do {
-      sampleValue = new BigInteger(n.bitLength(), RNG);
+      sampleValue = new BigInteger(n.bitLength(), RNG.get());
     } while (sampleValue.compareTo(n) >= 0);
 
     return sampleValue;
