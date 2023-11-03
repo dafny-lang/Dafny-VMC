@@ -45,13 +45,13 @@ module Loops {
   {
     var f :=
       (init: A) =>
-      (s: Rand.Bitstream) =>
-        if WhileCutTerminates(condition, body, init, s)
-        then
-          var fuel := LeastFuel(condition, body, init, s);
-          WhileCut(condition, body, init, fuel)(s)
-        else
-          Monad.Diverging;
+        (s: Rand.Bitstream) =>
+          if WhileCutTerminates(condition, body, init, s)
+          then
+            var fuel := LeastFuel(condition, body, init, s);
+            WhileCut(condition, body, init, fuel)(s)
+          else
+            Monad.Diverging;
     assert forall s: Rand.Bitstream, init: A :: !condition(init) ==> f(init)(s) == Monad.Return(init)(s) by {
       forall s: Rand.Bitstream, init: A ensures !condition(init) ==> f(init)(s) == Monad.Return(init)(s) {
         if !condition(init) {
