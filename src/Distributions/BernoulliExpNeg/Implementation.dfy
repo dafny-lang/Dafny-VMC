@@ -29,8 +29,11 @@ module BernoulliExpNeg.Implementation {
         invariant gamma'.numer >= 0
         invariant Model.GammaReductionLoop((true, gamma))(old(s)) == Model.GammaReductionLoop((b, gamma'))(s)
       {
+        var prevGamma := gamma';
+        var prevS := s;
         b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
         gamma' := Rationals.Rational(gamma'.numer - gamma'.denom, gamma'.denom);
+        assert Model.GammaReductionLoop((true, prevGamma))(prevS) == Model.GammaReductionLoop((b, gamma'))(s);
       }
       if b {
         c:= BernoulliExpNegSampleCaseLe1(gamma');

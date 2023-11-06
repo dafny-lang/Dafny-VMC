@@ -59,7 +59,7 @@ module Bernoulli.Correctness {
 
       assert e in Rand.eventSpace && Rand.prob(e) == 0.0 by {
         Rand.ProbIsProbabilityMeasure();
-        assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace);
+        assert Measures.IsSigmaAlgebra(Rand.eventSpace);
         assert Measures.IsPositive(Rand.eventSpace, Rand.prob);
       }
     } else {
@@ -96,7 +96,7 @@ module Bernoulli.Correctness {
       calc {
         Rand.prob(e);
         Rand.prob(e1 + e2);
-        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.sampleSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
         Rand.prob(e1) + Rand.prob(e2);
         { reveal A1; reveal A2; }
         (1.0 / n as real) + ((m - 1) as real / n as real);
@@ -108,7 +108,7 @@ module Bernoulli.Correctness {
         Rand.ProbIsProbabilityMeasure();
         reveal A1;
         reveal A2;
-        Measures.BinaryUnion(Rand.eventSpace, Rand.sampleSpace, e1, e2);
+        Measures.BinaryUnion(Rand.eventSpace, e1, e2);
       }
     }
   }

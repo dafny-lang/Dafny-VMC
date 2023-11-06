@@ -12,8 +12,6 @@ module Rand {
 
   type Bitstream = nat -> bool
 
-  ghost const sampleSpace: iset<Bitstream> := iset s: Bitstream
-
   ghost const eventSpace: iset<iset<Bitstream>>
 
   ghost const prob: iset<Bitstream> -> real
@@ -50,7 +48,7 @@ module Rand {
   *******/
 
   lemma {:axiom} ProbIsProbabilityMeasure()
-    ensures Measures.IsProbability(eventSpace, sampleSpace, prob)
+    ensures Measures.IsProbability(eventSpace, prob)
 
   // Equation (2.68) && (2.77)
   lemma {:axiom} CoinHasProbOneHalf(b: bool)
