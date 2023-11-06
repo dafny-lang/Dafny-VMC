@@ -74,13 +74,11 @@ module BernoulliExpNeg.Model {
   opaque ghost function GammaLe1Loop(gamma: Rationals.Rational): ((bool, nat)) -> Monad.Hurd<(bool, nat)>
     requires 0 <= gamma.numer <= gamma.denom
   {
-    (ak: (bool, nat)) =>
-      GammaLe1LoopTerminatesAlmostSurely(gamma);
-      Loops.While(
-        GammaLe1LoopCondition,
-        GammaLe1LoopIter(gamma),
-        ak
-      )
+    GammaLe1LoopTerminatesAlmostSurely(gamma);
+    Loops.While(
+      GammaLe1LoopCondition,
+      GammaLe1LoopIter(gamma)
+    )
   }
 
   ghost function GammaLe1LoopCondition(ak: (bool, nat)): bool {

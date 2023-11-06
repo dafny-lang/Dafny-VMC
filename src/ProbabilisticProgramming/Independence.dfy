@@ -52,6 +52,16 @@ module Independence {
   lemma {:axiom} ReturnIsIndep<T>(x: T)
     ensures IsIndep(Monad.Return(x))
 
+  lemma MapIsIndep<A, B(!new)>(f: Monad.Hurd<A>, g: A -> B)
+    requires IsIndep(f)
+    ensures IsIndep(Monad.Map(f, g))
+  {
+    forall a: A ensures IsIndep(Monad.Return(g(a))) {
+      ReturnIsIndep(g(a));
+    }
+    BindIsIndep(f, (a: A) => Monad.Return(g(a)));
+  }
+
   // Equation (3.19)
   lemma {:axiom} BindIsIndep<A, B>(f: Monad.Hurd<A>, g: A -> Monad.Hurd<B>)
     requires IsIndep(f)
