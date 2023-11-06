@@ -1,4 +1,4 @@
-package Uniform_mImplementation;
+package UniformPowerOfTwo_mImplementation;
 
 import java.security.SecureRandom;
 import java.math.BigInteger;
