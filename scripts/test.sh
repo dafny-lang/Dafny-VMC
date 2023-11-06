@@ -16,14 +16,14 @@ fi
 
 echo Running $TARGET_LANG tests...
 echo "Running tests/TestsFoundational.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 echo "Running tests/TestsExternUniform.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsExternUniformPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
 
 echo Running $TARGET_LANG documentation...
 
 echo "Building docs/dafny/ExamplesFoundational.dfy..." 
-$DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
+$DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesFoundational.dfy:" 
 if [ "$TARGET_LANG" = "cs" ]
 then
@@ -32,12 +32,12 @@ else
   java -jar docs/dafny/ExamplesFoundational.jar
 fi
 
-echo "Building docs/dafny/ExamplesExternUniform.dfy..." 
-$DAFNY build docs/dafny/ExamplesExternUniform.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniform.$TARGET_LANG dfyconfig.toml --no-verify
-echo "Executing compiled docs/dafny/ExamplesExternUniform.dfy:" 
+echo "Building docs/dafny/ExamplesExternUniformPowerOfTwo.dfy..." 
+$DAFNY build docs/dafny/ExamplesExternUniformPowerOfTwo.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG dfyconfig.toml --no-verify
+echo "Executing compiled docs/dafny/ExamplesExternUniformPowerOfTwo.dfy:" 
 if [ "$TARGET_LANG" = "cs" ]
 then
-  dotnet docs/dafny/ExamplesExternUniform.dll
+  dotnet docs/dafny/ExamplesExternUniformPowerOfTwo.dll
 else
-  java -jar docs/dafny/ExamplesExternUniform.jar
+  java -jar docs/dafny/ExamplesExternUniformPowerOfTwo.jar
 fi

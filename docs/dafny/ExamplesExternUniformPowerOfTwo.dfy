@@ -11,7 +11,7 @@ module RandomExamples.ExternUniform {
     decreases *
   {
     var n := 100000;
-    var r: DafnyVMC.DRandomExternUniform := new DafnyVMC.DRandomExternUniform();
+    var r: DafnyVMC.DRandomExternUniformPowerOfTwo := new DafnyVMC.DRandomExternUniformPowerOfTwo();
 
     var t := 0;
     for i := 0 to n {
