@@ -1,3 +1,3 @@
 using DafnyVMC;
 
-DRandomExternUniform d = new DRandomExternUniform();
+DRandomExternUniformPowerOfTwo d = new DRandomExternUniformPowerOfTwo();
