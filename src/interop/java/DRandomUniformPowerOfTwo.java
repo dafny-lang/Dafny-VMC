@@ -22,6 +22,6 @@ public final class DRandomUniformPowerOfTwo {
       throw new IllegalArgumentException("n must be positive");
     }
 
-    return new BigInteger(n.bitLength(), RNG.get());
+    return new BigInteger(n.bitLength()-1, RNG.get());
   }
 }
