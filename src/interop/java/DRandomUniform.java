@@ -5,9 +5,7 @@ import java.math.BigInteger;
 import java.lang.Thread;
 
 public final class DRandomUniform {
-
   private static final ThreadLocal<SecureRandom> RNG = ThreadLocal.withInitial(DRandomUniform::createSecureRandom);
-  
   private DRandomUniform() {} // Prevent instantiation
 
   private static final SecureRandom createSecureRandom() {
@@ -17,9 +15,23 @@ public final class DRandomUniform {
     return rng;
   }
 
-  public static BigInteger Uniform(BigInteger n) {
-    // `n.intValueExact` will throw an `ArithmeticException` if `n` does not fit in an `int`.
-    // see https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html#intValueExact--
-    return BigInteger.valueOf(RNG.get().nextInt(n.intValueExact()));
+  /**
+   * Sample a uniform value using rejection sampling between [0, n).
+   * 
+   * @param n an integer (must be >= 1)
+   * @return a uniform value between 0 and n-1
+   * @throws IllegalArgumentException if `n` is less than 1
+   */
+  public static BigInteger Uniform(final BigInteger n) {
+    if (n.compareTo(BigInteger.ONE) < 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+
+    BigInteger sampleValue;
+    do {
+      sampleValue = new BigInteger(n.bitLength(), RNG.get());
+    } while (sampleValue.compareTo(n) >= 0);
+
+    return sampleValue;
   }
 }

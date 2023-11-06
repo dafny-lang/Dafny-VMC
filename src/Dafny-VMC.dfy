@@ -16,7 +16,11 @@ module DafnyVMC {
     constructor {:extern} ()
   }
 
-  class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitExtern, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
+/*   class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitExtern, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
+    constructor {:extern} ()
+  } */
+
+  class DRandomExternUniform extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.TraitExtern, Bernoulli.Implementation.Trait, Uniform.Implementation.Trait, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait {
     constructor {:extern} ()
   }
 }

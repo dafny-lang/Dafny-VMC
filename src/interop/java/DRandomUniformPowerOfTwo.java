@@ -17,9 +17,15 @@ public final class DRandomUniformPowerOfTwo {
     return rng;
   }
 
-  public static BigInteger Uniform(BigInteger n) {
-    // `n.intValueExact` will throw an `ArithmeticException` if `n` does not fit in an `int`.
-    // see https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html#intValueExact--
-    return BigInteger.valueOf(RNG.get().nextInt(n.intValueExact()));
+  public static BigInteger UniformPowerOfTwo(BigInteger n) {
+    if (n.compareTo(BigInteger.ONE) < 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+
+    BigInteger sampleValue;
+
+    sampleValue = new BigInteger(n.bitLength(), RNG.get());
+
+    return sampleValue;
   }
 }
