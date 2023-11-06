@@ -4,11 +4,11 @@ import java.security.SecureRandom;
 import java.math.BigInteger;
 import java.lang.Thread;
 
-public final class DRandomUniform {
+public final class DRandomUniformPowerOfTwo {
 
-  private static final ThreadLocal<SecureRandom> RNG = ThreadLocal.withInitial(DRandomUniform::createSecureRandom);
+  private static final ThreadLocal<SecureRandom> RNG = ThreadLocal.withInitial(DRandomUniformPowerOfTwo::createSecureRandom);
   
-  private DRandomUniform() {} // Prevent instantiation
+  private DRandomUniformPowerOfTwo() {} // Prevent instantiation
 
   private static final SecureRandom   createSecureRandom() {
     final SecureRandom rng = new SecureRandom();
