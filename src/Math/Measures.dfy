@@ -10,11 +10,23 @@ module Measures {
 
   type Probability = x: real | 0.0 <= x <= 1.0
 
-  ghost predicate IsSigmaAlgebra<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>) {
-    && (forall e | e in eventSpace :: e <= sampleSpace)
+  // States that given collection of sets is σ-algebra on the set of values of type `T`.
+  // In other words, the sample space is `SampleSpace<T>()`, i.e. the set of all values of type `T`,
+  // and `eventSpace` is the collection of measurable subsets.
+  ghost predicate IsSigmaAlgebra<T(!new)>(eventSpace: iset<iset<T>>) {
     && (iset{}) in eventSpace
-    && (forall e | e in eventSpace :: (sampleSpace - e) in eventSpace)
+    && (forall e | e in eventSpace :: Complement(e) in eventSpace)
     && (forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) :: (CountableUnion(f) in eventSpace))
+  }
+
+  // The set of all values of type `T` that are not in the given set.
+  ghost function Complement<T(!new)>(event: iset<T>): iset<T> {
+    iset x: T | x !in event
+  }
+
+  // The set of all values of type `T`.
+  ghost function SampleSpace<T(!new)>(): iset<T> {
+    Complement(iset{})
   }
 
   ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
@@ -26,19 +38,12 @@ module Measures {
     f(i) + CountableSum(f, i+1)
   }
 
-  ghost function Powerset<A(!new)>(): iset<A> {
-    iset _: A
-  }
-
+  // The σ-algebra that contains all subsets.
   ghost function DiscreteSigmaAlgebra<A(!new)>(): iset<iset<A>> {
     iset _: iset<A>
   }
 
-  ghost const boolSampleSpace: iset<bool> := Powerset<bool>()
-
   ghost const boolEventSpace: iset<iset<bool>> := DiscreteSigmaAlgebra<bool>()
-
-  ghost const natSampleSpace: iset<nat> := Powerset<nat>()
 
   // The sigma algebra on the natural numbers is just the power set
   ghost const natEventSpace: iset<iset<nat>> := DiscreteSigmaAlgebra<nat>()
@@ -60,8 +65,8 @@ module Measures {
   }
 
   // Definition 6
-  ghost predicate IsMeasure<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real) {
-    && IsSigmaAlgebra(eventSpace, sampleSpace)
+  ghost predicate IsMeasure<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    && IsSigmaAlgebra(eventSpace)
     && IsPositive(eventSpace, Prob)
     && IsCountablyAdditive(eventSpace, Prob)
   }
@@ -82,9 +87,9 @@ module Measures {
   }
 
   // Definition 12
-  ghost predicate IsProbability<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real) {
-    && IsMeasure(eventSpace, sampleSpace, Prob)
-    && Prob(sampleSpace) == 1.0
+  ghost predicate IsProbability<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    && IsMeasure(eventSpace, Prob)
+    && Prob(SampleSpace()) == 1.0
   }
 
   // Definition 13
@@ -99,17 +104,11 @@ module Measures {
   *******/
 
   lemma boolsHaveSigmaAlgebra()
-    ensures IsSigmaAlgebra(boolEventSpace, boolSampleSpace)
-  {
-    forall e | e in boolEventSpace ensures e <= boolSampleSpace {
-      assert e <= boolSampleSpace by {
-        forall x: bool ensures x in e ==> x in boolSampleSpace {}
-      }
-    }
-  }
+    ensures IsSigmaAlgebra(boolEventSpace)
+  {}
 
   lemma natsHaveSigmaAlgebra()
-    ensures IsSigmaAlgebra(natEventSpace, natSampleSpace)
+    ensures IsSigmaAlgebra(natEventSpace)
   {}
 
   lemma PreImageIdentity<S(!new)>(f: S -> S, e: iset<S>)
@@ -122,20 +121,9 @@ module Measures {
     ensures PreImage(f, e) == PreImage(f', e')
   {}
 
-  lemma SampleSpaceInEventSpace<T>(sampleSpace: iset<T>, eventSpace: iset<iset<T>>)
-    requires IsSigmaAlgebra(eventSpace, sampleSpace)
-    ensures sampleSpace in eventSpace
-  {
-    var empty := iset{};
-    assert empty in eventSpace;
-    var compl := sampleSpace - empty;
-    assert compl == sampleSpace;
-    assert compl in eventSpace;
-  }
-
   // Equation (2.18)
-  lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real)
-    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+  lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real)
+    requires IsSigmaAlgebra(eventSpace)
     requires IsPositive(eventSpace, Prob)
     requires IsCountablyAdditive(eventSpace, Prob)
     ensures IsAdditive(eventSpace, Prob)
@@ -174,8 +162,8 @@ module Measures {
     ensures CountableUnion(f, i) == f(i) + CountableUnion(f, i + 1)
   {}
 
-  lemma BinaryUnion<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, e1: iset<T>, e2: iset<T>)
-    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+  lemma BinaryUnion<T(!new)>(eventSpace: iset<iset<T>>, e1: iset<T>, e2: iset<T>)
+    requires IsSigmaAlgebra(eventSpace)
     requires e1 in eventSpace
     requires e2 in eventSpace
     ensures e1 + e2 in eventSpace

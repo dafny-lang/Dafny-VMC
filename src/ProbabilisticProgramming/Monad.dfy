@@ -59,10 +59,6 @@ module Monad {
     }
   }
 
-  ghost function ResultSampleSpace<A(!new)>(sampleSpace: iset<A>): iset<Result<A>> {
-    iset r: Result<A> | r.Diverging? || (r.value in sampleSpace && r.rest in Rand.sampleSpace)
-  }
-
   ghost function Values<A>(results: iset<Result<A>>): iset<A> {
     iset r <- results | r.Result? :: r.value
   }
@@ -75,11 +71,7 @@ module Monad {
     iset e: iset<Result<A>> | Values(e) in eventSpace && Rests(e) in Rand.eventSpace
   }
 
-  ghost const boolResultSampleSpace: iset<Result<bool>> := ResultSampleSpace(Measures.boolSampleSpace)
-
   ghost const boolResultEventSpace: iset<iset<Result<bool>>> := ResultEventSpace(Measures.boolEventSpace)
-
-  ghost const natResultSampleSpace: iset<Result<nat>> := ResultSampleSpace(Measures.natSampleSpace)
 
   ghost const natResultEventSpace: iset<iset<Result<nat>>> := ResultEventSpace(Measures.natEventSpace)
 
@@ -145,11 +137,8 @@ module Monad {
     ensures ResultsWithValueIn(event) in ResultEventSpace(eventSpace)
   {
     var results := ResultsWithValueIn(event);
-    assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace) by {
+    assert Measures.IsSigmaAlgebra(Rand.eventSpace) by {
       Rand.ProbIsProbabilityMeasure();
-    }
-    assert Rand.sampleSpace in Rand.eventSpace by {
-      Measures.SampleSpaceInEventSpace(Rand.sampleSpace, Rand.eventSpace);
     }
     assert Values(results) == event by {
       forall v: A ensures v in event <==> v in Values(results) {
@@ -159,8 +148,8 @@ module Monad {
     }
     assert Rests(results) in Rand.eventSpace by {
       if v :| v in event {
-        assert Rests(results) == Rand.sampleSpace by {
-          forall s: Rand.Bitstream ensures s in Rests(results) <==> s in Rand.sampleSpace {
+        assert Rests(results) == Measures.SampleSpace() by {
+          forall s: Rand.Bitstream ensures s in Rests(results) <==> s in Measures.SampleSpace() {
             calc {
               s in Rests(results);
               Result(v, s) in results;
@@ -177,19 +166,16 @@ module Monad {
   lemma LiftRestInEventSpaceToResultEventSpace<A(!new)>(rests: iset<Rand.Bitstream>, eventSpace: iset<iset<A>>)
     requires rests in Rand.eventSpace
     requires iset{} in eventSpace
-    requires Measures.Powerset<A>() in eventSpace
+    requires Measures.SampleSpace() in eventSpace
     ensures ResultsWithRestIn(rests) in ResultEventSpace(eventSpace)
   {
     var results := ResultsWithRestIn(rests);
-    assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace) by {
+    assert Measures.IsSigmaAlgebra(Rand.eventSpace) by {
       Rand.ProbIsProbabilityMeasure();
-    }
-    assert Rand.sampleSpace in Rand.eventSpace by {
-      Measures.SampleSpaceInEventSpace(Rand.sampleSpace, Rand.eventSpace);
     }
     assert Values(results) in eventSpace by {
       if rest :| rest in rests {
-        assert Values(results) == Measures.Powerset<A>() by {
+        assert Values(results) == Measures.SampleSpace() by {
           forall v: A ensures v in Values(results) {
             assert Result(v, rest) in results;
           }

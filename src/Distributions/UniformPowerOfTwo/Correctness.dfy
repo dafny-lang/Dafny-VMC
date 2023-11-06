@@ -89,13 +89,13 @@ module UniformPowerOfTwo.Correctness {
       assert e in Rand.eventSpace by {
         assert e == e1 + e2;
         Rand.ProbIsProbabilityMeasure();
-        Measures.BinaryUnion(Rand.eventSpace, Rand.sampleSpace, e1, e2);
+        Measures.BinaryUnion(Rand.eventSpace, e1, e2);
       }
       calc {
         Rand.prob(e);
         { assert e == e1 + e2; }
         Rand.prob(e1 + e2);
-        { assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.sampleSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
+        { assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
         Rand.prob(e1) + Rand.prob(e2);
         { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
         (1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real));
@@ -119,7 +119,7 @@ module UniformPowerOfTwo.Correctness {
       if k == 0 {
         reveal Model.Sample();
         if m == 0 {
-          assert (iset s | Model.Sample(1)(s).value == m) == (iset s);
+          assert (iset s | Model.Sample(1)(s).value == m) == Measures.SampleSpace();
         } else {
           assert (iset s | Model.Sample(1)(s).value == m) == iset{};
         }
