@@ -83,7 +83,7 @@ module Measures {
   // Definition 12
   ghost predicate IsProbability<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
     && IsMeasure(eventSpace, Prob)
-    && Prob(Complement(iset{})) == 1.0
+    && Prob(SampleSpace()) == 1.0
   }
 
   // Definition 13
