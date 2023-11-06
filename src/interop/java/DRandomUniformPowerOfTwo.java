@@ -10,7 +10,7 @@ public final class DRandomUniformPowerOfTwo {
   
   private DRandomUniformPowerOfTwo() {} // Prevent instantiation
 
-  private static final SecureRandom createSecureRandom() {
+  private static final SecureRandom   createSecureRandom() {
     final SecureRandom rng = new SecureRandom();
     // Required for proper initialization
     rng.nextBoolean(); 
