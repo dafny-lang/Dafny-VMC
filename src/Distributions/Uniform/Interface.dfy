@@ -9,7 +9,7 @@ module Uniform.Interface {
   import Model
   import UniformPowerOfTwo
 
-  trait {:termination false} Trait extends Coin.Interface.Trait, UniformPowerOfTwo.Interface.Trait {
+  trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
 
     method UniformSample(n: nat) returns (u: nat)
       modifies this
