@@ -10,18 +10,23 @@ module Measures {
 
   type Probability = x: real | 0.0 <= x <= 1.0
 
-  ghost function Complement<T(!new)>(event: iset<T>): iset<T> {
-    iset x: T | x !in event
-  }
-
-  ghost function SampleSpace<T(!new)>(): iset<T> {
-    Complement(iset{})
-  }
-
+  // States that given collection of sets is σ-algebra on the set of values of type `T`.
+  // In other words, the sample space is `SampleSpace<T>()`, i.e. the set of all values of type `T`,
+  // and `eventSpace` is the collection of measurable subsets.
   ghost predicate IsSigmaAlgebra<T(!new)>(eventSpace: iset<iset<T>>) {
     && (iset{}) in eventSpace
     && (forall e | e in eventSpace :: Complement(e) in eventSpace)
     && (forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) :: (CountableUnion(f) in eventSpace))
+  }
+
+  // The set of all values of type `T` that are not in the given set.
+  ghost function Complement<T(!new)>(event: iset<T>): iset<T> {
+    iset x: T | x !in event
+  }
+
+  // The set of all values of type `T`.
+  ghost function SampleSpace<T(!new)>(): iset<T> {
+    Complement(iset{})
   }
 
   ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
@@ -33,6 +38,7 @@ module Measures {
     f(i) + CountableSum(f, i+1)
   }
 
+  // The σ-algebra that contains all subsets.
   ghost function DiscreteSigmaAlgebra<A(!new)>(): iset<iset<A>> {
     iset _: iset<A>
   }
