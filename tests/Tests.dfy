@@ -73,6 +73,7 @@ module Tests {
   method TestUniform(n: nat, u: nat, r: Uniform.Interface.Trait)
     decreases *
     requires n > 0
+    requires u > 0
     modifies r
   {
     var m: map<nat,nat> := map[];

@@ -12,11 +12,25 @@ module TestsExternUniform {
     Tests.TestCoin(1_000_000, r);
   }
 
-  method {:test} TestUniform()
+  method {:test} TestUniform100()
     decreases *
   {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestUniform(1_000_000, 3, r);
+    Tests.TestUniform(1_000_000_000, 100, r);
+  }
+
+  method {:test} TestUniform10_000()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniform(1_000_000_000, 10_000, r);
+  }
+
+  method {:test} TestUniform1_000_000()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniform(1_000_000_000, 1_000_000, r);
   }
 
   method {:test} TestUniformInterval()
