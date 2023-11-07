@@ -13,7 +13,7 @@ namespace UniformPowerOfTwo_mImplementation {
       private static RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
       /// Generates a uniformly random BigInteger between 0 (inclusive) and 2^bitLength (exclusive)
-      private static BigInteger UniformPowerOfTwo(BigInteger n) {
+      public static BigInteger UniformPowerOfTwo(BigInteger n) {
         if (n <= BigInteger.Zero) {
           throw new ArgumentException("n must be positive");
         }
