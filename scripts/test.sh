@@ -16,9 +16,9 @@ fi
 
 echo Running $TARGET_LANG tests...
 echo "Running tests/TestsFoundational.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify --enforce-determinism false
 echo "Running tests/TestsExternUniform.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsExternUniformPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsExternUniformPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml  --no-verify --enforce-determinism false
 
 echo Running $TARGET_LANG documentation...
 
