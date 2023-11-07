@@ -3,7 +3,7 @@
 *  SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-using System.Security.Cryptography;
+using System.Security.Cryptography.Algorithms;
 using System.Numerics;
 
 namespace Coin_mInterface {
