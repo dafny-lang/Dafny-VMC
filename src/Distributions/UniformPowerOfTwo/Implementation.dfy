@@ -29,4 +29,17 @@ module UniformPowerOfTwo.Implementation {
       Equivalence.SampleCorrespondence(n, old(s));
     }
   }
+
+  method {:extern "DRandomUniformPowerOfTwo", "UniformPowerOfTwo"} ExternUniformPowerOfTwoSample(n: nat) returns (u: nat)
+
+  trait {:termination false} TraitExtern extends Interface.Trait {
+    method UniformPowerOfTwoSample(n: nat) returns (u: nat)
+      requires n >= 1
+      modifies this
+      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+    {
+      u := ExternUniformPowerOfTwoSample(n);
+      assume {:axiom} false; // assume correctness of extern implementation
+    }
+  }
 }
