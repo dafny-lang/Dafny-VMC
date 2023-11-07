@@ -16,7 +16,7 @@ module TestsExternUniform {
     decreases *
   {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestUniform(1_000_000, r);
+    Tests.TestUniform(1_000_000, 3, r);
   }
 
   method {:test} TestUniformInterval()

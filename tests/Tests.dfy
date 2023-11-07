@@ -63,25 +63,26 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
   }
 
-  method TestUniform(n: nat, r: Uniform.Interface.Trait)
+  method TestUniform(n: nat, u: nat, r: Uniform.Interface.Trait)
     decreases *
     requires n > 0
     modifies r
   {
-    var a := 0;
-    var b := 0;
-    var c := 0;
+    var m := map[];
     for i := 0 to n {
-      var k := r.UniformSample(3);
-      match k {
-        case 0 => a := a + 1;
-        case 1 => b := b + 1;
-        case 2 => c := c + 1;
+      var k := r.UniformSample(u);
+      expect 0 <= k < u;
+      if k in m.Keys {
+        m[k] := m[k] + 1;
+      } else {
+        m[k] := 1;
       }
     }
-    testBernoulliIsWithin4SigmaOfTrueMean(n, a as real, 1.0 / 3.0, "p(0)");
-    testBernoulliIsWithin4SigmaOfTrueMean(n, b as real, 1.0 / 3.0, "p(1)");
-    testBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(2)");
+    var items := m.Items;
+    while items != {} {
+      var item :| item in items;
+      testBernoulliIsWithin4SigmaOfTrueMean(n, item.1 as real, 1.0 / (u as real), "p(" + item.0 + ")");
+    }
   }
 
   method TestUniformInterval(n: nat, r: Uniform.Interface.Trait)

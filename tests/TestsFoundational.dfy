@@ -16,7 +16,7 @@ module TestsFoundational {
     decreases *
   {
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestUniform(1_000_000, r);
+    Tests.TestUniform(1_000_000, 3, r);
   }
 
   method {:test} TestUniformInterval()
