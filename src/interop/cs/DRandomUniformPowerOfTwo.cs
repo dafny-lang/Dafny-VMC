@@ -11,7 +11,13 @@ namespace UniformPowerOfTwo_mImplementation {
     public class DRandomUniformPowerOfTwo : Coin_mInterface.DRandomCoin {
 
       /// Generates a uniformly random BigInteger between 0 (inclusive) and 2^bitLength (exclusive)
-      private static BigInteger UniformPowerOfTwo(int bitLength) {
+      private static BigInteger UniformPowerOfTwo(BigInteger n) {
+        if (n <= BigInteger.Zero) {
+          throw new ArgumentException("n must be positive");
+        }
+
+        int bitLength = System.Convert.ToInt32(n.GetBitLength());
+
         if (bitLength < 1) {
           return BigInteger.Zero;
         }
