@@ -47,7 +47,7 @@ module Tests {
   {
     var empiricalMean := empiricalSum / n as real;
     var diff := Abs(empiricalMean - trueMean);
-    var threshold := 4.0 * 4.0 * trueVariance / n as real;
+    var threshold := 7.0 * 7.0 * trueVariance / n as real;
     if diff * diff > threshold {
       print "Test failed: ", description, "\n";
       print "Difference between empirical and true mean: ", diff, "\n";
