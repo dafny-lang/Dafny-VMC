@@ -78,9 +78,23 @@ module Tests {
     modifies r
   {
     var m: map<nat,nat> := map[];
+    var k := Helper.Log2Floor(u);
     for i := 0 to n {
       var l := r.UniformPowerOfTwoSample(u);
-      expect 0 <= l < Helper.Power(2, Helper.Log2Floor(u));
+      expect 0 <= l < Helper.Power(2, k), "sample in the right bound";
+      if l in m.Keys {
+        m := m[l := m[l] + 1];
+      } else {
+        m := m[l := 1];
+      }
+    }
+    var items := m.Items;
+    while items != {} {
+      var item :| item in items;
+      items := items - {item};
+      if item.0 < Helper.Power(2, k) {
+        testBernoulliIsWithin4SigmaOfTrueMean(n, item.1 as real, 1.0 / (u as real), "p(" + natToString(item.0) + ")");
+      }
     }
   }
 
@@ -93,7 +107,7 @@ module Tests {
     var m: map<nat,nat> := map[];
     for i := 0 to n {
       var l := r.UniformSample(u);
-      expect 0 <= l < u;
+      expect 0 <= l < u, "sample in the right bound";
       if l in m.Keys {
         m := m[l := m[l] + 1];
       } else {
