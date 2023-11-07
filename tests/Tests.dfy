@@ -47,7 +47,7 @@ module Tests {
   {
     var empiricalMean := empiricalSum / n as real;
     var diff := Abs(empiricalMean - trueMean);
-    var threshold := 10.0 * 10.0 * trueVariance / n as real;
+    var threshold := 4.0 * 4.0 * trueVariance / n as real;
     if diff * diff >= threshold {
       print "Test failed: ", description, "\n";
       print "Difference between empirical and true mean: ", diff, "\n";
@@ -89,7 +89,10 @@ module Tests {
       }
     }
     var items := m.Items;
-    while items != {} {
+    while items != {} 
+      decreases |items|
+    {
+      assert items != {};
       var item :| item in items;
       items := items - {item};
       if item.0 < Helper.Power(2, k) {
