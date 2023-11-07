@@ -16,6 +16,13 @@ module Tests {
     if x < 0.0 then -x else x
   }
 
+  function natToString(n: nat): string {
+    match n
+    case 0 => "0" case 1 => "1" case 2 => "2" case 3 => "3" case 4 => "4"
+    case 5 => "5" case 6 => "6" case 7 => "7" case 8 => "8" case 9 => "9"
+    case _ => natToString(n / 10) + natToString(n % 10)
+  }
+
   method testBernoulliIsWithin4SigmaOfTrueMean(
     n: nat,
     empiricalSum: real,
@@ -68,20 +75,21 @@ module Tests {
     requires n > 0
     modifies r
   {
-    var m := map[];
+    var m: map<nat,nat> := map[];
     for i := 0 to n {
       var k := r.UniformSample(u);
       expect 0 <= k < u;
       if k in m.Keys {
-        m[k] := m[k] + 1;
+        m := m[k := m[k] + 1];
       } else {
-        m[k] := 1;
+        m := m[k := 1];
       }
     }
     var items := m.Items;
     while items != {} {
       var item :| item in items;
-      testBernoulliIsWithin4SigmaOfTrueMean(n, item.1 as real, 1.0 / (u as real), "p(" + item.0 + ")");
+      items := items - {item};
+      testBernoulliIsWithin4SigmaOfTrueMean(n, item.1 as real, 1.0 / (u as real), "p(" + natToString(item.0) + ")");
     }
   }
 
