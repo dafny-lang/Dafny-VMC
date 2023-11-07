@@ -78,10 +78,9 @@ module Tests {
     modifies r
   {
     var m: map<nat,nat> := map[];
-    var k :| Helper.Power(2, k) <= u < Helper.Power(2, k + 1);
     for i := 0 to n {
       var l := r.UniformPowerOfTwoSample(u);
-      expect 0 <= l < Helper.Power(2, k);
+      expect 0 <= l < Helper.Power(2, Helper.Log2Floor(u));
     }
   }
 
