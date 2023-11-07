@@ -16,6 +16,7 @@ fi
 
 if [ "$TARGET_LANG" = "cs" ]
 then 
+  dotnet new console
   dotnet add package System.Security.Cryptography.Algorithms --version 4.3.1
 fi
 
