@@ -88,15 +88,9 @@ module Tests {
         m := m[l := 1];
       }
     }
-    var items := m.Items;
-    while items != {} 
-      decreases |items|
-    {
-      assert items != {};
-      var item :| item in items;
-      items := items - {item};
-      if item.0 < Helper.Power(2, k) {
-        testBernoulliIsWithin4SigmaOfTrueMean(n, item.1 as real, 1.0 /  (Helper.Power(2, k) as real), "p(" + natToString(item.0) + ")");
+    for i := 0 to Helper.Power(2, k) {
+      if i in m.Keys {
+        testBernoulliIsWithin4SigmaOfTrueMean(n, m[i] as real, 1.0 /  (Helper.Power(2, k) as real), "p(" + natToString(i) + ")");
       }
     }
   }
