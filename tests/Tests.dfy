@@ -77,21 +77,15 @@ module Tests {
     requires u > 0
     modifies r
   {
-    var m: map<nat,nat> := map[];
     var k := Helper.Log2Floor(u);
+    var a := new nat[Helper.Power(2, k)](i => 0);
     for i := 0 to n {
       var l := r.UniformPowerOfTwoSample(u);
       expect 0 <= l < Helper.Power(2, k), "sample not in the right bound";
-      if l in m.Keys {
-        m := m[l := m[l] + 1];
-      } else {
-        m := m[l := 1];
-      }
+      a[l] := a[l] + 1;
     }
     for i := 0 to Helper.Power(2, k) {
-      if i in m.Keys {
-        testBernoulliIsWithin4SigmaOfTrueMean(n, m[i] as real, 1.0 /  (Helper.Power(2, k) as real), "p(" + natToString(i) + ")");
-      }
+      testBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (Helper.Power(2, k) as real), "p(" + natToString(i) + ")");
     }
   }
 
@@ -101,21 +95,15 @@ module Tests {
     requires u > 0
     modifies r
   {
-    var m: map<nat,nat> := map[];
+    var k := Helper.Log2Floor(u);
+    var a := new nat[u](i => 0);
     for i := 0 to n {
       var l := r.UniformSample(u);
       expect 0 <= l < u, "sample not in the right bound";
-      if l in m.Keys {
-        m := m[l := m[l] + 1];
-      } else {
-        m := m[l := 1];
-      }
+      a[l] := a[l] + 1;
     }
-    var items := m.Items;
-    while items != {} {
-      var item :| item in items;
-      items := items - {item};
-      testBernoulliIsWithin4SigmaOfTrueMean(n, item.1 as real, 1.0 / (u as real), "p(" + natToString(item.0) + ")");
+    for i := 0 to u {
+      testBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (u as real), "p(" + natToString(i) + ")");
     }
   }
 
