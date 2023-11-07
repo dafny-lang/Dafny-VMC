@@ -8,7 +8,9 @@ using System.Numerics;
 
 namespace UniformPowerOfTwo_mImplementation {
 
-    public class DRandomUniformPowerOfTwo : Coin_mInterface.DRandomCoin {
+    public class DRandomUniformPowerOfTwo {
+
+      private static RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
       /// Generates a uniformly random BigInteger between 0 (inclusive) and 2^bitLength (exclusive)
       private static BigInteger UniformPowerOfTwo(BigInteger n) {
