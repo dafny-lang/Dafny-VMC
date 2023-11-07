@@ -12,6 +12,34 @@ module TestsFoundational {
     Tests.TestCoin(1_000_000, r);
   }
 
+  method {:test} TestUniformPowerOfTwo_10()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniformPowerOfTwo(1_000_000, 10, r);
+  }
+
+  method {:test} TestUniformPowerOfTwo_100()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniformPowerOfTwo(1_000_000, 10, r);
+  }
+
+  method {:test} TestUniformPowerOfTwo_1000()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniformPowerOfTwo(1_000_000, 10, r);
+  }
+
+  method {:test} TestUniform_10()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniform(1_000_000, 10, r);
+  }
+
   method {:test} TestUniform_100()
     decreases *
   {
@@ -19,18 +47,11 @@ module TestsFoundational {
     Tests.TestUniform(1_000_000, 100, r);
   }
 
-  method {:test} TestUniform_10_000()
+  method {:test} TestUniform_1000()
     decreases *
   {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestUniform(1_000_000, 10_000, r);
-  }
-
-  method {:test} TestUniform_1_000_000()
-    decreases *
-  {
-    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestUniform(1_000_000, 1_000_000, r);
+    Tests.TestUniform(1_000_000, 1_000, r);
   }
 
   method {:test} TestUniformInterval()

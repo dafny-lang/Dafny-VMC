@@ -7,10 +7,12 @@ module Tests {
   import Rationals
   import Coin
   import Uniform
+  import UniformPowerOfTwo
   import Bernoulli
   import BernoulliExpNeg
   import DiscreteLaplace
   import DiscreteGaussian
+  import Helper
 
   function Abs(x: real): real {
     if x < 0.0 then -x else x
@@ -55,7 +57,6 @@ module Tests {
     expect diff * diff < threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
 
-
   method TestCoin(n: nat, r: Coin.Interface.Trait)
     requires n > 0
     modifies r
@@ -70,6 +71,20 @@ module Tests {
     testBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
   }
 
+  method TestUniformPowerOfTwo(n: nat, u: nat, r: UniformPowerOfTwo.Interface.Trait)
+    decreases *
+    requires n > 0
+    requires u > 0
+    modifies r
+  {
+    var m: map<nat,nat> := map[];
+    var k :| Helper.Power(2, k) <= u < Helper.Power(2, k + 1);
+    for i := 0 to n {
+      var l := r.UniformPowerOfTwoSample(u);
+      expect 0 <= l < Helper.Power(2, k) - 1;
+    }
+  }
+
   method TestUniform(n: nat, u: nat, r: Uniform.Interface.Trait)
     decreases *
     requires n > 0
@@ -78,12 +93,12 @@ module Tests {
   {
     var m: map<nat,nat> := map[];
     for i := 0 to n {
-      var k := r.UniformSample(u);
-      expect 0 <= k < u;
-      if k in m.Keys {
-        m := m[k := m[k] + 1];
+      var l := r.UniformSample(u);
+      expect 0 <= l < u;
+      if l in m.Keys {
+        m := m[l := m[l] + 1];
       } else {
-        m := m[k := 1];
+        m := m[l := 1];
       }
     }
     var items := m.Items;
