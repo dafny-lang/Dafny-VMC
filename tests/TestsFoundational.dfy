@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module TestsFoundational {
+  import Helper
   import DafnyVMC
   import Tests
 
@@ -26,6 +27,14 @@ module TestsFoundational {
     Tests.TestUniformPowerOfTwo(1_000_000, 100, r);
   }
 
+  // Test arguments that don't fit in 64 bits:
+  method {:test} TestUniformPowerOfTwoMean_10Pow100()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomFoundational();
+    Tests.TestUniformPowerOfTwoMean(100_000, Helper.Power(10, 100), r);
+  }
+
   method {:test} TestUniform_10()
     decreases *
   {
@@ -38,6 +47,14 @@ module TestsFoundational {
   {
     var r := new DafnyVMC.DRandomFoundational();
     Tests.TestUniform(1_000_000, 100, r);
+  }
+
+  // Test arguments that don't fit in 64 bits:
+  method {:test} TestUniformMean_10Pow100()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomFoundational();
+    Tests.TestUniformMean(100_000, Helper.Power(10, 100), r);
   }
 
   method {:test} TestUniformInterval()
