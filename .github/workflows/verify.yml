@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
-      - run: DAFNY=dafny/dafny bash scripts/verify.sh
+      - run: DAFNY=dafny-4.3.0/Scripts/dafny bash scripts/verify.sh

@@ -12,6 +12,6 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
       - run: cp audit.log audit_.log
-      - run: DAFNY=dafny/dafny bash scripts/audit.sh
+      - run: DAFNY=dafny-4.3.0/Scripts/dafny bash scripts/audit.sh
       - run: cat audit.log
       - run: diff audit.log audit_.log
