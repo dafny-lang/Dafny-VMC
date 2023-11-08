@@ -12,11 +12,18 @@ module TestsFoundational {
     Tests.TestCoin(1_000_000, r);
   }
 
-  method {:test} TestUniform()
+  method {:test} TestUniformPowerOfTwo_10()
     decreases *
   {
-    var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestUniform(1_000_000, r);
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniformPowerOfTwo(1_000_000, 10, r);
+  }
+
+  method {:test} TestUniform_10()
+    decreases *
+  {
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestUniform(1_000_000, 10, r);
   }
 
   method {:test} TestUniformInterval()
