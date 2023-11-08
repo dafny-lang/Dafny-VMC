@@ -14,12 +14,6 @@ then
   exit 1
 fi
 
-if [ "$TARGET_LANG" = "cs" ]
-then 
-  dotnet new console
-  dotnet add package System.Security.Cryptography.Algorithms --version 4.3.1
-fi
-
 echo Running $TARGET_LANG tests...
 echo "Running tests/TestsFoundational.dfy:"
 time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify

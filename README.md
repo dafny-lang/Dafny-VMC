@@ -10,17 +10,17 @@ To run the examples in the `docs` directory, use one of the following commands:
 
 ```bash
 # C# ExamplesFoundational
-$ dafny build docs/dafny/ExamplesFoundational.dfy --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniform.cs dfyconfig.toml --no-verify
+$ dafny build docs/dafny/ExamplesFoundational.dfy --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniformPowerOfTwo.cs dfyconfig.toml --no-verify
 $ dotnet docs/dafny/ExamplesFoundational.dll
 # C# ExamplesExternUniform
-$ dafny build docs/dafny/ExamplesExternUniform.dfy --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniform.cs dfyconfig.toml --no-verify
-$ dotnet docs/dafny/ExamplesExternUniform.dll
+$ dafny build docs/dafny/ExamplesExternUniform.dfy --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniformPowerOfTwo.cs dfyconfig.toml --no-verify
+$ dotnet docs/dafny/ExamplesExternUniformPowerOfTwo.dll
 # Java ExamplesFoundational
-$ dafny build docs/dafny/ExamplesFoundational.dfy --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniform.java dfyconfig.toml --no-verify
+$ dafny build docs/dafny/ExamplesFoundational.dfy --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java dfyconfig.toml --no-verify
 $ java -jar docs/dafny/ExamplesFoundational.jar
 # Java ExamplesExternUniform
-$ dafny build docs/dafny/ExamplesExternUniform.dfy --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniform.java dfyconfig.toml --no-verify
-$ java -jar docs/dafny/ExamplesExternUniform.jar
+$ dafny build docs/dafny/ExamplesExternUniformPowerOfTwo.dfy --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java dfyconfig.toml --no-verify
+$ java -jar docs/dafny/ExamplesExternUniformPowerOfTwo.jar
 ```
 
 # Testing
@@ -29,11 +29,11 @@ To run the statistical tests in the `tests` diretory, use one of the following c
 
 ```bash
 # C# TestsFoundational
-$ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniform.cs tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+$ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniformPowerOfTwo.cs tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 # C# TestsExternUniform
-$ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniform.cs tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+$ dafny test --target:cs src/interop/cs/DRandomCoin.cs src/interop/cs/DRandomUniformPowerOfTwo.cs tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 # Java TestsFoundational
-$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniform.java tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java tests/TestsFoundationalPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 # Java TestsExternUniform
-$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniform.java tests/TestsExternUniform.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java tests/TestsExternUniformPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 ```
