@@ -4,7 +4,7 @@
 *******************************************************************************/
 
 using System;
-using System.Security.Cryptography.Algorithms;
+using System.Security.Cryptography;
 using System.Numerics;
 
 namespace UniformPowerOfTwo_mImplementation {
