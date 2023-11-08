@@ -25,19 +25,15 @@ echo Running $TARGET_LANG documentation...
 echo "Building docs/dafny/ExamplesFoundational.dfy..." 
 $DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesFoundational.dfy:" 
-if [ "$TARGET_LANG" = "cs" ]
+if [ "$TARGET_LANG" = "java" ]
 then
-  dotnet docs/dafny/ExamplesFoundational.dll
-else
   java -jar docs/dafny/ExamplesFoundational.jar
 fi
 
 echo "Building docs/dafny/ExamplesExternUniformPowerOfTwo.dfy..." 
 $DAFNY build docs/dafny/ExamplesExternUniformPowerOfTwo.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesExternUniformPowerOfTwo.dfy:" 
-if [ "$TARGET_LANG" = "cs" ]
+if [ "$TARGET_LANG" = "java" ]
 then
-  dotnet docs/dafny/ExamplesExternUniformPowerOfTwo.dll
-else
   java -jar docs/dafny/ExamplesExternUniformPowerOfTwo.jar
 fi
