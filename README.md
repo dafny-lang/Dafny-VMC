@@ -4,7 +4,7 @@ The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At 
 
 There are two ways to use the library:
 - The trait `DRandomFoundational` only needs fair coin flips as a primitive.
-- The trait `DRandomExternUniform` also uses an external implementation of uniformly random numbers.
+- The trait `DRandomExternUniformPowerOfTwo` also uses an external implementation of uniformly random numbers.
 
 To run the examples in the `docs` directory, use one of the following commands:
 
