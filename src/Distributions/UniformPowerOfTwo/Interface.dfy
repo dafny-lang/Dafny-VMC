@@ -14,7 +14,7 @@ module UniformPowerOfTwo.Interface {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
       modifies this
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+      ensures Monad.Run(Model.Sample(n))(old(s)) == Monad.Result(u, s)
 
   }
 }

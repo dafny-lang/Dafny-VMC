@@ -5,7 +5,7 @@
 
 module UniformPowerOfTwo.Correctness {
   import Helper
-  import Monad
+  import Monad`MonadInternals
   import Independence
   import Rand
   import Quantifier
@@ -20,13 +20,13 @@ module UniformPowerOfTwo.Correctness {
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
     requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
   {
-    Rand.prob(iset s | Model.Sample(n)(s).value == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
+    Rand.prob(iset s | Monad.Run(Model.Sample(n))(s).value == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
   }
 
   function SampleRest(n: nat): Rand.Bitstream -> Rand.Bitstream
     requires n >= 1
   {
-    (s: Rand.Bitstream) => Model.Sample(n)(s).rest
+    (s: Rand.Bitstream) => Monad.Run(Model.Sample(n))(s).rest
   }
 
   /*******
@@ -39,11 +39,11 @@ module UniformPowerOfTwo.Correctness {
   lemma UnifCorrectness2(n: nat, m: nat)
     requires n >= 1
     ensures
-      var e := iset s | Model.Sample(n)(s).value == m;
+      var e := iset s | Monad.Run(Model.Sample(n))(s).value == m;
       && e in Rand.eventSpace
       && Rand.prob(e) == if m < Helper.Power(2, Helper.Log2Floor(n)) then 1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real) else 0.0
   {
-    var e := iset s | Model.Sample(n)(s).value == m;
+    var e := iset s | Monad.Run(Model.Sample(n))(s).value == m;
     var k := Helper.Log2Floor(n);
 
     assert e in Rand.eventSpace by {
@@ -68,11 +68,11 @@ module UniformPowerOfTwo.Correctness {
     requires n >= 1
     requires m <= Helper.Power(2, Helper.Log2Floor(n))
     ensures
-      var e := iset s | Model.Sample(n)(s).value < m;
+      var e := iset s | Monad.Run(Model.Sample(n))(s).value < m;
       && e in Rand.eventSpace
       && Rand.prob(e) == (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real)
   {
-    var e := iset s | Model.Sample(n)(s).value < m;
+    var e := iset s | Monad.Run(Model.Sample(n))(s).value < m;
 
     if m == 0 {
       assert e == iset{};
@@ -132,9 +132,9 @@ module UniformPowerOfTwo.Correctness {
         }
         if m < Helper.Power(2, k) {
           calc {
-            Rand.prob(iset s | Model.Sample(n)(s).value == m);
+            Rand.prob(iset s | Monad.Run(Model.Sample(n))(s).value == m);
           == { SampleRecursiveHalf(n, m); }
-            Rand.prob(iset s | Model.Sample(n / 2)(s).value == u) / 2.0;
+            Rand.prob(iset s | Monad.Run(Model.Sample(n / 2))(s).value == u) / 2.0;
           == { reveal RecursiveCorrect; }
             (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
           == { Helper.PowerOfTwoLemma(k - 1); }
@@ -143,9 +143,9 @@ module UniformPowerOfTwo.Correctness {
           assert UnifIsCorrect(n, k, m);
         } else {
           calc {
-            Rand.prob(iset s | Model.Sample(n)(s).value == m);
+            Rand.prob(iset s | Monad.Run(Model.Sample(n))(s).value == m);
           == { SampleRecursiveHalf(n, m); }
-            Rand.prob(iset s | Model.Sample(n / 2)(s).value == u) / 2.0;
+            Rand.prob(iset s | Monad.Run(Model.Sample(n / 2))(s).value == u) / 2.0;
           == { reveal RecursiveCorrect; }
             0.0 / 2.0;
           ==
@@ -177,7 +177,7 @@ module UniformPowerOfTwo.Correctness {
         forall b: bool ensures Independence.IsIndep(g(b)) {
           Independence.ReturnIsIndep((if b then 2 * m + 1 else 2 * m) as nat);
         }
-        Independence.BindIsIndep(Monad.Coin, g);
+        Independence.BindIsIndep(Monad.Coin(), g);
       }
       Independence.BindIsIndep(Model.Sample(n / 2), Model.UnifStep);
     }
@@ -258,18 +258,18 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleTailDecompose(n: nat, s: Rand.Bitstream)
     requires n >= 2
-    ensures Model.Sample(n)(s).rest == Rand.Tail(Model.Sample(n / 2)(s).rest)
+    ensures Monad.Run(Model.Sample(n))(s).rest == Rand.Tail(Monad.Run(Model.Sample(n / 2))(s).rest)
   {
-    var Result(a, s') := Model.Sample(n / 2)(s);
-    var Result(b, s'') := Monad.Coin(s');
+    var Result(a, s') := Monad.Run(Model.Sample(n / 2))(s);
+    var Result(b, s'') := Monad.Coin()(s');
     calc {
-      Model.Sample(n)(s).rest;
+      Monad.Run(Model.Sample(n))(s).rest;
     == { reveal Model.Sample(); }
       Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).rest;
     ==
       Model.UnifStep(a)(s').rest;
     ==
-      Monad.Bind(Monad.Coin, (b: bool) => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').rest;
+      Monad.Bind(Monad.Coin(), (b: bool) => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').rest;
     ==
       Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').rest;
     ==
@@ -284,23 +284,23 @@ module UniformPowerOfTwo.Correctness {
   lemma SampleSetEquality(n: nat, m: nat)
     requires n >= 2
     ensures
-      var bOf := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).rest).value;
+      var bOf := (s: Rand.Bitstream) => Monad.Coin()(Monad.Run(Model.Sample(n / 2))(s).rest).value;
       var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
-      (iset s | Model.Sample(n)(s).value == m) == (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m)
+      (iset s | Monad.Run(Model.Sample(n))(s).value == m) == (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m)
   {
-    var bOf := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).rest).value;
+    var bOf := (s: Rand.Bitstream) => Monad.Coin()(Model.Sample(n / 2)(s).rest).value;
     var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
-    forall s ensures Model.Sample(n)(s).value == m <==> (2 * aOf(s) + Helper.boolToNat(bOf(s)) == m) {
+    forall s ensures Monad.Run(Model.Sample(n))(s).value == m <==> (2 * aOf(s) + Helper.boolToNat(bOf(s)) == m) {
       var Result(a, s') := Model.Sample(n / 2)(s);
-      var Result(b, s'') := Monad.Coin(s');
+      var Result(b, s'') := Monad.Coin()(s');
       calc {
-        Model.Sample(n)(s).value;
+        Monad.Run(Model.Sample(n))(s).value;
       == { reveal Model.Sample(); }
         Monad.Bind(Model.Sample(n / 2), Model.UnifStep)(s).value;
       ==
         Model.UnifStep(a)(s').value;
       ==
-        Monad.Bind(Monad.Coin, b => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').value;
+        Monad.Bind(Monad.Coin(), b => Monad.Return((if b then 2*a + 1 else 2*a) as nat))(s').value;
       ==
         Monad.Return((if b then 2*a + 1 else 2*a) as nat)(s'').value;
       ==
@@ -311,13 +311,13 @@ module UniformPowerOfTwo.Correctness {
 
   lemma SampleRecursiveHalf(n: nat, m: nat)
     requires n >= 2
-    ensures Rand.prob(iset s | Model.Sample(n)(s).value == m) == Rand.prob(iset s | Model.Sample(n / 2)(s).value == m / 2) / 2.0
+    ensures Rand.prob(iset s | Monad.Run(Model.Sample(n))(s).value == m) == Rand.prob(iset s | Monad.Run(Model.Sample(n / 2))(s).value == m / 2) / 2.0
   {
     var aOf: Rand.Bitstream -> nat := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
-    var bOf: Rand.Bitstream -> bool := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).rest).value;
+    var bOf: Rand.Bitstream -> bool := (s: Rand.Bitstream) => Monad.Coin()(Monad.Run(Model.Sample(n / 2))(s).rest).value;
     var A: iset<nat> := (iset x: nat | x == m / 2);
-    var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin(s).value));
-    var f := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).rest;
+    var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin()(s).value));
+    var f := (s: Rand.Bitstream) => Monad.Run(Model.Sample(n / 2))(s).rest;
 
     var e1 := (iset s | Model.Sample(n / 2)(s).RestIn(E));
     var e2 := (iset s | Model.Sample(n / 2)(s).In(A));
@@ -386,7 +386,7 @@ module UniformPowerOfTwo.Correctness {
     }
 
     calc {
-      Rand.prob(iset s | Model.Sample(n)(s).value == m);
+      Rand.prob(iset s | Monad.Run(Model.Sample(n))(s).value == m);
     == { SampleSetEquality(n, m); }
       Rand.prob(e3);
     == { reveal SplitEvent; }

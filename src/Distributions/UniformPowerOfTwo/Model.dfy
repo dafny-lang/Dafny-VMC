@@ -15,7 +15,7 @@ module UniformPowerOfTwo.Model {
   // The return value u is uniformly distributed between 0 <= u < 2^k where 2^k <= n < 2^(k + 1).
   opaque function Sample(n: nat): (h: Monad.Hurd<nat>)
     requires n >= 1
-    ensures forall s :: Sample(n)(s).Result? // always terminates, not just almost surely
+    ensures forall s :: Monad.Run(Sample(n))(s).Result? // always terminates, not just almost surely
   {
     if n == 1 then
       Monad.Return(0)
@@ -24,10 +24,10 @@ module UniformPowerOfTwo.Model {
   }
 
   function UnifStepHelper(m: nat): bool -> Monad.Hurd<nat> {
-    (b: bool) => Monad.Return(if b then 2*m + 1 else 2*m)
+    (b: bool) => Monad.Return<nat>(if b then 2 * m + 1 else 2 * m)
   }
 
   function UnifStep(m: nat): Monad.Hurd<nat> {
-    Monad.Bind(Monad.Coin, UnifStepHelper(m))
+    Monad.Bind(Monad.Coin(), UnifStepHelper(m))
   }
 }

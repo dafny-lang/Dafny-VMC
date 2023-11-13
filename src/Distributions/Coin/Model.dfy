@@ -8,6 +8,6 @@ module Coin.Model {
   import Monad
 
   function Sample(s: Rand.Bitstream): Monad.Result<bool> {
-    Monad.Coin(s)
+    Monad.Run(Monad.Coin())(s)
   }
 }

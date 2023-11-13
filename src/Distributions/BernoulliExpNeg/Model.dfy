@@ -75,7 +75,7 @@ module BernoulliExpNeg.Model {
     requires 0 <= gamma.numer <= gamma.denom
   {
     GammaLe1LoopTerminatesAlmostSurely(gamma);
-    Loops.While(
+    Monad.While(
       GammaLe1LoopCondition,
       GammaLe1LoopIter(gamma)
     )
@@ -101,7 +101,7 @@ module BernoulliExpNeg.Model {
 
   lemma {:axiom} GammaLe1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
-    ensures Loops.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
+    ensures Monad.WhileTerminatesAlmostSurely(GammaLe1LoopCondition, GammaLe1LoopIter(gamma))
 
 
 }

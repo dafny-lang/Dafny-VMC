@@ -35,6 +35,19 @@ module Helper {
     if b then 1 else 0
   }
 
+  ghost function Least(property: nat -> bool, bound: nat, start: nat := 0): (l: nat)
+    decreases bound - start
+    requires start <= bound
+    requires property(bound)
+    ensures property(l)
+    ensures start <= l <= bound
+    ensures forall n: nat | start <= n :: property(n) ==> l <= n
+  {
+    if start == bound || property(start)
+    then start
+    else Least(property, bound, start + 1)
+  }
+
   /*******
    Lemmas
   *******/

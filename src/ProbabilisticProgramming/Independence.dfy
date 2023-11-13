@@ -14,8 +14,8 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Rand.Bitstream>) {
-    var e1 := iset s | f(s).RestIn(E);
-    var e2 := iset s | f(s).In(A);
+    var e1 := iset s | Monad.Run(f)(s).RestIn(E);
+    var e2 := iset s | Monad.Run(f)(s).In(A);
     Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
   }
 
@@ -33,11 +33,11 @@ module Independence {
 
   lemma {:axiom} IsIndepImpliesMeasurableBool(f: Monad.Hurd<bool>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Rand.eventSpace, Monad.boolResultEventSpace, f)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Monad.boolResultEventSpace, Monad.Run(f))
 
   lemma {:axiom} IsIndepImpliesMeasurableNat(f: Monad.Hurd<nat>)
     requires IsIndep(f)
-    ensures Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, f)
+    ensures Measures.IsMeasurable(Rand.eventSpace, Monad.natResultEventSpace, Monad.Run(f))
 
   // Equation (3.14)
   lemma {:axiom} IsIndepImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
@@ -46,7 +46,7 @@ module Independence {
 
   // Equation (3.17)
   lemma {:axiom} CoinIsIndep()
-    ensures IsIndep(Monad.Coin)
+    ensures IsIndep(Monad.Coin())
 
   // Equation (3.18)
   lemma {:axiom} ReturnIsIndep<T>(x: T)

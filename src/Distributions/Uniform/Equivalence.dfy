@@ -11,7 +11,7 @@ module Uniform.Equivalence {
 
   lemma SampleUnroll(n: nat, s: Rand.Bitstream)
     requires n > 0
-    ensures Model.Sample(n)(s) == Monad.Bind(Model.Proposal(n), (x: nat) => if Model.Accept(n)(x) then Monad.Return(x) else Model.Sample(n))(s)
+    ensures Monad.Run(Model.Sample(n))(s) == Monad.Run(Monad.Bind(Model.Proposal(n), (x: nat) => if Model.Accept(n)(x) then Monad.Return(x) else Model.Sample(n)))(s)
   {
     Model.SampleTerminates(n);
     reveal Model.Sample();

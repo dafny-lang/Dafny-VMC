@@ -5,7 +5,7 @@
 
 module UniformPowerOfTwo.Equivalence {
   import Rand
-  import Monad
+  import Monad`MonadInternals
   import Helper
   import Model
 
@@ -31,7 +31,7 @@ module UniformPowerOfTwo.Equivalence {
   // Equivalence of Sample and its tail-recursive version
   lemma SampleCorrespondence(n: nat, s: Rand.Bitstream)
     requires n >= 1
-    ensures SampleTailRecursive(n)(s) == Model.Sample(n)(s)
+    ensures Monad.Run(SampleTailRecursive(n))(s) == Monad.Run(Model.Sample(n))(s)
   {
     if n == 1 {
       reveal Model.Sample();
@@ -108,7 +108,7 @@ module UniformPowerOfTwo.Equivalence {
     if l == 0 {
       calc {
         Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
-        (var Result(u, s') := Model.Sample(Helper.Power(2, m))(s); SampleTailRecursive(1, u)(s'));
+        (var Result(u, s') := Monad.Run(Model.Sample(Helper.Power(2, m)))(s); SampleTailRecursive(1, u)(s'));
         Model.Sample(Helper.Power(2, m + l))(s);
       }
     } else {
@@ -117,7 +117,7 @@ module UniformPowerOfTwo.Equivalence {
       assert L1GreaterZero: Helper.Power(2, l - 1) >= 1 by { Helper.PowerGreater0(2, l - 1); }
       calc {
         Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
-        (var Result(u, s') := Model.Sample(Helper.Power(2, m))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));
+        (var Result(u, s') := Monad.Run(Model.Sample(Helper.Power(2, m)))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));
         { reveal LGreaterZero; }
         (var Result(u, s') := Model.Sample(Helper.Power(2, m))(s);
          SampleTailRecursive(Helper.Power(2, l) / 2, if Rand.Head(s') then 2 * u + 1 else 2 * u)(Rand.Tail(s')));

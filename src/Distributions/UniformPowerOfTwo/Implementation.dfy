@@ -13,14 +13,14 @@ module UniformPowerOfTwo.Implementation {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
       modifies this
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+      ensures Monad.Run(Model.Sample(n))(old(s)) == Monad.Run(Monad.Return(u))(s)
     {
       u := 0;
       var n' := n;
 
       while n' > 1
         invariant n' >= 1
-        invariant Equivalence.SampleTailRecursive(n)(old(s)) == Equivalence.SampleTailRecursive(n', u)(s)
+        invariant Monad.Run(Equivalence.SampleTailRecursive(n))(old(s)) == Monad.Run(Equivalence.SampleTailRecursive(n', u))(s)
       {
         var b := CoinSample();
         u := if b then 2*u + 1 else 2*u;
