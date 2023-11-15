@@ -25,6 +25,16 @@ module BernoulliExpNeg.Equivalence {
    Lemmas
   *******/
 
+  lemma SampleUnfold(gamma: Rationals.Rational, s: Rand.Bitstream, prevGamma: Rationals.Rational, prevS: Rand.Bitstream, b: bool)
+    requires gamma.numer >= 0
+    requires prevGamma.denom == gamma.denom
+    requires prevGamma.numer == gamma.numer + gamma.denom
+    requires Model.SampleGammaLe1(Rationals.Int(1))(prevS) == Monad.Result(b, s)
+    ensures Model.Sample(prevGamma)(prevS) == if b then Model.Sample(gamma)(s) else Monad.Result(false, s)
+  {
+    reveal Model.Sample();
+  }
+
   lemma GammaLe1LoopUnroll(gamma: Rationals.Rational, ak: (bool, nat), s: Rand.Bitstream)
     requires 0 <= gamma.numer <= gamma.denom
     requires ak.0
