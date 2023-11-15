@@ -23,7 +23,7 @@ module BernoulliExpNeg.Implementation {
       ensures Monad.Result(c, s) == Model.Sample(gamma)(old(s))
     {
       var gamma' := gamma;
-      while gamma'.numer >= gamma'.denom
+      while gamma'.numer > gamma'.denom
         decreases gamma'.numer
         invariant gamma'.numer >= 0
         invariant Model.Sample(gamma)(old(s)) == Model.Sample(gamma')(s)

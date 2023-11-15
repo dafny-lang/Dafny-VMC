@@ -17,7 +17,7 @@ module BernoulliExpNeg.Model {
     requires gamma.numer >= 0
     decreases gamma.numer
   {
-    if gamma.numer < gamma.denom
+    if gamma.numer <= gamma.denom
     then SampleGammaLe1(gamma)
     else Monad.Bind(
         SampleGammaLe1(Rationals.Int(1)),
