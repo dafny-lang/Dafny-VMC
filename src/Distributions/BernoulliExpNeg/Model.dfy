@@ -15,51 +15,19 @@ module BernoulliExpNeg.Model {
   opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires gamma.denom != 0
     requires gamma.numer >= 0
+    decreases gamma.numer
   {
-    Monad.Bind(
-      GammaReductionLoop((true, gamma)),
-      (bgamma: (bool, Rationals.Rational)) =>
-        var res: Monad.Hurd<bool> :=
-          if bgamma.0 then
-            // The else path should never be taken, but we cannot turn this into a precondition
-            // because Monad.Bind does not accept functions with preconditions.
-            // We return a dummy value in the else-branch.
-            if 0 <= bgamma.1.numer <= bgamma.1.denom
-            then SampleGammaLe1(bgamma.1)
-            else Monad.Return(false) // dummy value
-          else
-            Monad.Return(false);
-        res
-    )
-  }
-
-  ghost function GammaReductionLoop(bgamma: (bool, Rationals.Rational)): Monad.Hurd<(bool, Rationals.Rational)>
-    requires bgamma.1.numer >= 0
-    decreases bgamma.1.numer
-  {
-    if !bgamma.0 || bgamma.1.numer < bgamma.1.denom
-    then Monad.Return(bgamma)
+    if gamma.numer <= gamma.denom
+    then SampleGammaLe1(gamma)
     else Monad.Bind(
-        GammaReductionLoopIter(bgamma),
-        (bgamma': (bool, Rationals.Rational)) =>
-          var res: Monad.Hurd<(bool, Rationals.Rational)> :=
-            // The else path should never be taken, but we cannot turn this into a precondition
-            // because Monad.Bind does not accept functions with preconditions.
-            // We return a dummy value in the else-branch.
-            if 0 <= bgamma'.1.numer < bgamma.1.numer
-            then GammaReductionLoop(bgamma')
-            else Monad.Return((bgamma'.0, Rationals.Rational(0, 1))); // dummy value
+        SampleGammaLe1(Rationals.Int(1)),
+        b =>
+          var res: Monad.Hurd<bool> :=
+            if b
+            then Sample(Rationals.Rational(gamma.numer - gamma.denom, gamma.denom))
+            else Monad.Return(false);
           res
       )
-  }
-
-  ghost function GammaReductionLoopIter(bgamma: (bool, Rationals.Rational)): Monad.Hurd<(bool, Rationals.Rational)>
-    requires bgamma.1.numer >= 0
-  {
-    Monad.Bind(
-      SampleGammaLe1(Rationals.Int(1)),
-      b' => Monad.Return((b', Rationals.Rational(bgamma.1.numer - bgamma.1.denom, bgamma.1.denom)))
-    )
   }
 
   ghost function SampleGammaLe1(gamma: Rationals.Rational): Monad.Hurd<bool>

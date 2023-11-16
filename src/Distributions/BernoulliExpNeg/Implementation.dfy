@@ -23,23 +23,21 @@ module BernoulliExpNeg.Implementation {
       ensures Monad.Result(c, s) == Model.Sample(gamma)(old(s))
     {
       var gamma' := gamma;
-      var b := true;
-      while b && gamma'.numer >= gamma'.denom
+      while gamma'.numer > gamma'.denom
         decreases gamma'.numer
         invariant gamma'.numer >= 0
-        invariant Model.GammaReductionLoop((true, gamma))(old(s)) == Model.GammaReductionLoop((b, gamma'))(s)
+        invariant Model.Sample(gamma)(old(s)) == Model.Sample(gamma')(s)
       {
-        var prevGamma := gamma';
-        var prevS := s;
-        b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
+        ghost var prevGamma := gamma';
+        ghost var prevS := s;
+        var b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
         gamma' := Rationals.Rational(gamma'.numer - gamma'.denom, gamma'.denom);
-        assert Model.GammaReductionLoop((true, prevGamma))(prevS) == Model.GammaReductionLoop((b, gamma'))(s);
+        Equivalence.SampleUnfold(gamma', s, prevGamma, prevS, b);
+        if !b {
+          return false;
+        }
       }
-      if b {
-        c:= BernoulliExpNegSampleCaseLe1(gamma');
-      } else {
-        c := false;
-      }
+      c:= BernoulliExpNegSampleCaseLe1(gamma');
       reveal Model.Sample();
     }
 
