@@ -75,18 +75,7 @@ module BernoulliExpNeg.Correctness {
         }
       }
       assert gammaMinusOne: Rationals.ToReal(gamma') == Rationals.ToReal(gamma) - 1.0 by {
-        var numer := gamma.numer as real;
-        var denom := gamma.denom as real;
-        assert denom != 0.0;
-        calc {
-          Rationals.ToReal(gamma');
-          gamma'.numer as real / gamma'.denom as real;
-          (gamma.numer - gamma.denom) as real / denom;
-          (numer - denom) / denom;
-          numer / denom - denom / denom;
-          { assert denom / denom == 1.0; }
-          numer / denom - 1.0;
-        }
+        RationalMinusOneFact(gamma, gamma');
       }
       assert secondProb: Rand.prob(secondSampleTrueEvent) == Exponential.Exp(-Rationals.ToReal(gamma) + 1.0) by {
         calc {
@@ -108,6 +97,25 @@ module BernoulliExpNeg.Correctness {
         { Exponential.FunctionalEquation(-1.0, -Rationals.ToReal(gamma) + 1.0); }
         Exponential.Exp(-Rationals.ToReal(gamma));
       }
+    }
+  }
+
+  lemma RationalMinusOneFact(gamma: Rationals.Rational, gamma': Rationals.Rational)
+    requires gamma.numer > gamma.denom
+    requires gamma.denom == gamma'.denom
+    requires gamma'.numer == gamma.numer - gamma.denom
+    ensures Rationals.ToReal(gamma') == Rationals.ToReal(gamma) - 1.0
+  {
+    var numer := gamma.numer as real;
+    var denom := gamma.denom as real;
+    assert denom != 0.0;
+    calc {
+      Rationals.ToReal(gamma');
+      gamma'.numer as real / gamma'.denom as real;
+      (gamma.numer - gamma.denom) as real / denom;
+      (numer - denom) / denom;
+      numer / denom - denom / denom;
+      numer / denom - 1.0;
     }
   }
 
