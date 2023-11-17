@@ -14,9 +14,11 @@ module Independence {
 
   // Definition 33
   ghost predicate IsIndepFunctionCondition<A(!new)>(f: Monad.Hurd<A>, A: iset<A>, E: iset<Rand.Bitstream>) {
-    var e1 := iset s | f(s).RestIn(E);
-    var e2 := iset s | f(s).In(A);
-    Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
+    Measures.AreIndepEvents(
+      Rand.eventSpace,
+      Rand.prob,
+      Monad.BitstreamsWithValueIn(f, A),
+      Monad.BitstreamsWithRestIn(f, E))
   }
 
   // Definition 33: (weak) independence
@@ -31,9 +33,48 @@ module Independence {
    Lemmas
   *******/
 
+  lemma ResultsIndependent<A(!new), B(!new)>(
+    h: Monad.Hurd<A>,
+    f: A -> Monad.Hurd<B>,
+    aSet: iset<A>,
+    bSeeds: iset<Rand.Bitstream>
+  )
+    requires hIndep: IsIndepFunction(h)
+    requires fIndep: forall a: A :: IsIndepFunction(f(a))
+    requires bMeasurable: bSeeds in Rand.eventSpace
+    ensures Rand.prob(Monad.BitstreamsWithValueIn(h, aSet) * Monad.BitstreamsWithRestIn(h, bSeeds)) == Rand.prob(Monad.BitstreamsWithValueIn(h, aSet)) * Rand.prob(bSeeds)
+  {
+    var aSeeds := Monad.BitstreamsWithValueIn(h, aSet);
+    var restBSeeds := Monad.BitstreamsWithRestIn(h, bSeeds);
+    assert Rand.prob(aSeeds * restBSeeds) == Rand.prob(aSeeds) * Rand.prob(restBSeeds) by {
+      reveal hIndep;
+      reveal bMeasurable;
+      assert IsIndepFunction(h);
+      assert IsIndepFunctionCondition(h, aSet, bSeeds);
+      assert Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, aSeeds, restBSeeds);
+    }
+    assert Rand.prob(restBSeeds) == Rand.prob(bSeeds) by {
+      assume {:axiom} false; // TODO
+    }
+  }
+
   lemma {:axiom} IsIndepImpliesMeasurableBool(f: Monad.Hurd<bool>)
     requires IsIndep(f)
     ensures Measures.IsMeasurable(Rand.eventSpace, Monad.boolResultEventSpace, f)
+
+  lemma IsIndepImpliesMeasurablePreImageBool(f: Monad.Hurd<bool>, bSet: iset<bool>)
+    requires IsIndep(f)
+    ensures Monad.BitstreamsWithValueIn(f, bSet) in Rand.eventSpace
+  {
+    var resultSet := Monad.ResultsWithValueIn(bSet);
+    assert resultSet in Monad.boolResultEventSpace by {
+      Monad.LiftInEventSpaceToResultEventSpace(bSet, Measures.boolEventSpace);
+    }
+    assert Measures.IsMeasurable(Rand.eventSpace, Monad.boolResultEventSpace, f) by {
+      IsIndepImpliesMeasurableBool(f);
+    }
+    assert Monad.BitstreamsWithValueIn(f, bSet) == Measures.PreImage(f, resultSet);
+  }
 
   lemma {:axiom} IsIndepImpliesMeasurableNat(f: Monad.Hurd<nat>)
     requires IsIndep(f)

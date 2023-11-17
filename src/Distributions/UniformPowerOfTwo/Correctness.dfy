@@ -183,6 +183,8 @@ module UniformPowerOfTwo.Correctness {
     }
   }
 
+  // This lemma shouldn't be necessary.
+  // It should be a consequence of (strong?) independence of `Sample(n)` and the fact that it terminates almost surely.
   lemma SampleIsMeasurePreserving(n: nat)
     requires n >= 1
     ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, SampleRest(n))
