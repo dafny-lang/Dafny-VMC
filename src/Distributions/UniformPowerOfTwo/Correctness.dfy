@@ -361,8 +361,8 @@ module UniformPowerOfTwo.Correctness {
       Rand.CoinHasProbOneHalf(m % 2 == 1);
     }
 
-    assert Indep: Rand.prob(e1 * e2) == Rand.prob(e1) * Rand.prob(e2) by {
-      assert Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2) by {
+    assert Indep: Rand.prob(e2 * e1) == Rand.prob(e2) * Rand.prob(e1) by {
+      assert Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e2, e1) by {
         assert Independence.IsIndepFunction(Model.Sample(n / 2)) by {
           assert Independence.IsIndep(Model.Sample(n / 2)) by {
             SampleIsIndep(n / 2);
@@ -371,8 +371,10 @@ module UniformPowerOfTwo.Correctness {
         }
         assert E in Rand.eventSpace;
         assert Independence.IsIndepFunctionCondition(Model.Sample(n / 2), A, E);
+        assert e1 == Monad.BitstreamsWithRestIn(Model.Sample(n / 2), E);
+        assert e2 == Monad.BitstreamsWithValueIn(Model.Sample(n / 2), A);
       }
-      Independence.AreIndepEventsConjunctElimination(e1, e2);
+      Independence.AreIndepEventsConjunctElimination(e2, e1);
     }
 
     assert ProbE1: Rand.prob(e1) == 0.5 by {
@@ -393,8 +395,10 @@ module UniformPowerOfTwo.Correctness {
       Rand.prob(e3);
     == { reveal SplitEvent; }
       Rand.prob(e1 * e2);
+    == { assert e1 * e2 == e2 * e1; }
+      Rand.prob(e2 * e1);
     == { reveal Indep; }
-      Rand.prob(e1) * Rand.prob(e2);
+      Rand.prob(e2) * Rand.prob(e1);
     == { reveal ProbE1; Helper.Congruence(Rand.prob(e1), 0.5, x => x * Rand.prob(e2)); }
       0.5 * Rand.prob(e2);
     ==
