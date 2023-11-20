@@ -45,7 +45,7 @@ module BernoulliExpNeg.Implementation {
       modifies this
       requires 0 <= gamma.numer <= gamma.denom
       decreases *
-      ensures Monad.Result(c, s) == Model.SampleGammaLe1(gamma)(old(s))
+      ensures Monad.Result(c, s) == Model.SampleLe1(gamma)(old(s))
     {
       var k: nat := 0;
       var a := true;

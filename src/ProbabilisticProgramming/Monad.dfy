@@ -83,6 +83,14 @@ module Monad {
     iset result: Result<A> | result.Result? && result.rest in rests
   }
 
+  ghost function BitstreamsWithValueIn<A(!new)>(h: Hurd<A>, aSet: iset<A>): iset<Rand.Bitstream> {
+    iset s | h(s).In(aSet)
+  }
+
+  ghost function BitstreamsWithRestIn<A(!new)>(h: Hurd<A>, restSet: iset<Rand.Bitstream>): iset<Rand.Bitstream> {
+    iset s | h(s).RestIn(restSet)
+  }
+
   // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) => f(s).Bind(g)
