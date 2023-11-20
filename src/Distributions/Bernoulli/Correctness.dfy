@@ -108,7 +108,7 @@ module Bernoulli.Correctness {
         Rand.ProbIsProbabilityMeasure();
         reveal A1;
         reveal A2;
-        Measures.BinaryUnion(Rand.eventSpace, e1, e2);
+        Measures.BinaryUnionIsMeasurable(Rand.eventSpace, e1, e2);
       }
     }
   }

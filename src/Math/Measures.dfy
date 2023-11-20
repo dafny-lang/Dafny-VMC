@@ -4,6 +4,8 @@
  *******************************************************************************/
 
 module Measures {
+  import Series
+
   /************
    Definitions
   ************/
@@ -33,11 +35,6 @@ module Measures {
     iset n: nat | n >= i, x <- f(n) :: x
   }
 
-  function CountableSum(f: nat -> real, i: nat := 0): real {
-    assume {:axiom} false; // assume termination
-    f(i) + CountableSum(f, i+1)
-  }
-
   // The σ-algebra that contains all subsets.
   ghost function DiscreteSigmaAlgebra<A(!new)>(): iset<iset<A>> {
     iset _: iset<A>
@@ -59,9 +56,13 @@ module Measures {
     forall e1, e2 | e1 in eventSpace && e2 in eventSpace && e1 * e2 == iset{} :: Prob(e1) + Prob(e2) == Prob(e1 + e2)
   }
 
+  ghost predicate PairwiseDisjoint<T(!new)>(s: nat -> iset<T>) {
+    forall m, n | m != n :: s(m) * s(n) == iset{}
+  }
+
   // Definition 5
   ghost predicate IsCountablyAdditive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
-    forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) && (forall m, n | m != n :: f(m) * f(n) == iset{}) && (CountableUnion(f) in eventSpace) :: (CountableSum((n: nat) => Prob(f(n))) == Prob(CountableUnion(f)))
+    forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) && PairwiseDisjoint(f) && (CountableUnion(f) in eventSpace) :: Series.SumsTo((n: nat) => Prob(f(n)), Prob(CountableUnion(f)))
   }
 
   // Definition 6
@@ -130,39 +131,40 @@ module Measures {
   {
     forall e1, e2 | e1 in eventSpace && e2 in eventSpace && e1 * e2 == iset{} ensures Prob(e1) + Prob(e2) == Prob(e1 + e2) {
       var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
-      assert CountableUnion(f) == e1 + e2;
-      assert CountableSum((n: nat) => Prob(f(n))) == Prob(e1) + Prob(e2) by {
-        assert CountableSum((n: nat) => Prob(f(n)), 2) == 0.0 by {
-          CountableSumOfZeroesIsZero((n: nat) => Prob(f(n)), 2);
-        }
+      assert CountableUnion(f) == e1 + e2 by {
         calc {
-          CountableSum((n: nat) => Prob(f(n)))
-       ==
-          Prob(f(0)) + CountableSum((n: nat) => Prob(f(n)), 1)
-       ==
-          Prob(f(0)) + Prob(f(1)) + CountableSum((n: nat) => Prob(f(n)), 2)
-       ==
-          Prob(e1) + Prob(e2) + CountableSum((n: nat) => Prob(f(n)), 2)
-       ==
+          CountableUnion(f);
+          f(0) + f(1);
+          e1 + e2;
+        }
+      }
+      var probs := (n: nat) => Prob(f(n));
+      var probSum := Prob(e1) + Prob(e2);
+      assert Series.SumsTo(probs, probSum) by {
+        assert seq(2, probs) == [probs(0), probs(1)];
+        calc {
+          Series.PartialSums(probs)(2);
+          Series.SumTo(probs, 2);
+          probs(0) + Series.SumFromTo(probs, 1, 2);
+          probs(0) + probs(1) + Series.SumFromTo(probs, 2, 2);
           Prob(e1) + Prob(e2);
         }
+        Series.ZeroSuffixSum(probs, 2, Prob(e1) + Prob(e2));
       }
-      assert Prob(CountableUnion(f)) == CountableSum((n: nat) => Prob(f(n))) by {
+      assert Series.SumsTo(probs, Prob(CountableUnion(f))) by {
         assert IsCountablyAdditive(eventSpace, Prob);
       }
+      Series.SumsToImpliesSumIs(probs, probSum);
+      Series.SumsToImpliesSumIs(probs, Prob(CountableUnion(f)));
       assert Prob(e1 + e2) == Prob(e1) + Prob(e2);
     }
   }
-
-  lemma {:axiom} CountableSumOfZeroesIsZero(f: nat -> real, i: nat := 0)
-    requires forall n | n >= i :: f(n) == 0.0
-    ensures CountableSum(f, i) == 0.0
 
   lemma CountableUnionSplit<T(!new)>(f: nat -> iset<T>, i: nat)
     ensures CountableUnion(f, i) == f(i) + CountableUnion(f, i + 1)
   {}
 
-  lemma BinaryUnion<T(!new)>(eventSpace: iset<iset<T>>, e1: iset<T>, e2: iset<T>)
+  lemma BinaryUnionIsMeasurable<T(!new)>(eventSpace: iset<iset<T>>, e1: iset<T>, e2: iset<T>)
     requires IsSigmaAlgebra(eventSpace)
     requires e1 in eventSpace
     requires e2 in eventSpace

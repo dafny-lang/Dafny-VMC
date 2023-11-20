@@ -7,6 +7,14 @@ module Sequences {
   import RealArith
   import Reals
 
+  ghost predicate Equal(sequence1: nat -> real, sequence2: nat -> real) {
+    forall n: nat :: sequence1(n) == sequence2(n)
+  }
+
+  ghost predicate IsSuffixOf(suffix: nat -> real, full: nat -> real, prefix: nat) {
+    forall n: nat :: suffix(n) == full(n + prefix)
+  }
+
   ghost predicate IsBounded(sequence: nat -> real, bound: real) {
     forall n: nat :: RealArith.Abs(sequence(n)) < bound
   }
@@ -14,6 +22,10 @@ module Sequences {
   function OneOverNPlus1(n: nat): real
   {
     1.0 / (n as real + 1.0)
+  }
+
+  function Suffix(sequence: nat -> real, len: nat): nat -> real {
+    (n: nat) => sequence(n + len)
   }
 
   function Constant(constant: real): (nat -> real) {

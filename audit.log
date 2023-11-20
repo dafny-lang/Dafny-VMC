@@ -8,8 +8,6 @@ src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` at
 src/Math/Exponential.dfy(2,26): Exp: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(4,17): FunctionalEquation: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(7,17): Increasing: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Measures.dfy(157,17): CountableSumOfZeroesIsZero: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Measures.dfy(37,4): CountableSum: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(28,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(34,17): IsIndepImpliesMeasurableBool: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(38,17): IsIndepImpliesMeasurableNat: Declaration has explicit `{:axiom}` attribute. 
