@@ -15,7 +15,7 @@ module BernoulliExpNeg.Correctness {
     requires 0 <= gamma.numer
     requires 0 < gamma.denom
     decreases gamma.numer
-    ensures Rand.prob(iset s | Model.Sample(gamma)(s).Equals(true)) == Exponential.Exp(-Rationals.ToReal(gamma))
+    ensures Rand.prob(iset s | Model.Sample(gamma)(s).Equals(true)) == Exponential.Exp(-gamma.ToReal())
   {
     if gamma.numer <= gamma.denom {
       assert (iset s | Model.Sample(gamma)(s).Equals(true)) == (iset s | Model.SampleLe1(gamma)(s).Equals(true)) by {
@@ -24,7 +24,7 @@ module BernoulliExpNeg.Correctness {
       calc {
         Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true));
         { CorrectnessLe1(gamma); }
-        Exponential.Exp(-Rationals.ToReal(gamma));
+        Exponential.Exp(-gamma.ToReal());
       }
     } else {
       var trueEvent := iset s | Model.Sample(gamma)(s).Equals(true);
@@ -74,17 +74,17 @@ module BernoulliExpNeg.Correctness {
           Exponential.Exp(-1.0);
         }
       }
-      assert gammaMinusOne: Rationals.ToReal(gamma') == Rationals.ToReal(gamma) - 1.0 by {
+      assert gammaMinusOne: gamma'.ToReal() == gamma.ToReal() - 1.0 by {
         RationalMinusOneFact(gamma, gamma');
       }
-      assert secondProb: Rand.prob(secondSampleTrueEvent) == Exponential.Exp(-Rationals.ToReal(gamma) + 1.0) by {
+      assert secondProb: Rand.prob(secondSampleTrueEvent) == Exponential.Exp(-gamma.ToReal() + 1.0) by {
         calc {
           Rand.prob(secondSampleTrueEvent);
           { Correctness(gamma'); }
-          Exponential.Exp(-Rationals.ToReal(gamma'));
+          Exponential.Exp(-gamma'.ToReal());
           { reveal gammaMinusOne; }
-          Exponential.Exp(-(Rationals.ToReal(gamma) - 1.0));
-          Exponential.Exp(-Rationals.ToReal(gamma) + 1.0);
+          Exponential.Exp(-(gamma.ToReal() - 1.0));
+          Exponential.Exp(-gamma.ToReal() + 1.0);
         }
       }
       calc {
@@ -93,9 +93,9 @@ module BernoulliExpNeg.Correctness {
         { reveal independence; }
         Rand.prob(firstSampleTrueEvent) * Rand.prob(secondSampleTrueEvent);
         { reveal firstProb; reveal secondProb; }
-        Exponential.Exp(-1.0) * Exponential.Exp(-Rationals.ToReal(gamma) + 1.0);
-        { Exponential.FunctionalEquation(-1.0, -Rationals.ToReal(gamma) + 1.0); }
-        Exponential.Exp(-Rationals.ToReal(gamma));
+        Exponential.Exp(-1.0) * Exponential.Exp(-gamma.ToReal() + 1.0);
+        { Exponential.FunctionalEquation(-1.0, -gamma.ToReal() + 1.0); }
+        Exponential.Exp(-gamma.ToReal());
       }
     }
   }
@@ -104,18 +104,19 @@ module BernoulliExpNeg.Correctness {
     requires gamma.numer > gamma.denom
     requires gamma.denom == gamma'.denom
     requires gamma'.numer == gamma.numer - gamma.denom
-    ensures Rationals.ToReal(gamma') == Rationals.ToReal(gamma) - 1.0
+    ensures gamma'.ToReal() == gamma.ToReal() - 1.0
   {
     var numer := gamma.numer as real;
     var denom := gamma.denom as real;
     assert denom != 0.0;
     calc {
-      Rationals.ToReal(gamma');
+      gamma'.ToReal();
       gamma'.numer as real / gamma'.denom as real;
       (gamma.numer - gamma.denom) as real / denom;
       (numer - denom) / denom;
       numer / denom - denom / denom;
       numer / denom - 1.0;
+      gamma.ToReal() - 1.0;
     }
   }
 
@@ -138,7 +139,7 @@ module BernoulliExpNeg.Correctness {
 
   lemma {:axiom} CorrectnessLe1(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
-    ensures Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Exponential.Exp(-Rationals.ToReal(gamma))
+    ensures Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Exponential.Exp(-gamma.ToReal())
 
   lemma SampleIsIndep(gamma: Rationals.Rational)
     requires 0 <= gamma.numer

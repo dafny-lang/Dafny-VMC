@@ -10,59 +10,59 @@ module Rationals {
 
   type PosInt = n: int | n >=1 witness 1
 
-  datatype Rational = Rational(numer: int, denom: PosInt)
+  datatype Rational = Rational(numer: int, denom: PosInt) {
+    predicate Eq(rhs: Rational) {
+      this.numer * rhs.denom == rhs.numer * this.denom
+    }
 
-  predicate Eq(lhs: Rational, rhs: Rational) {
-    lhs.numer * rhs.denom == rhs.numer * lhs.denom
-  }
+    predicate Leq(rhs: Rational) {
+      this.numer * rhs.denom <= rhs.numer * this.denom
+    }
 
-  predicate Leq(lhs: Rational, rhs: Rational) {
-    lhs.numer * rhs.denom <= rhs.numer * lhs.denom
+    function Neg(): Rational {
+      Rational(-this.numer, this.denom)
+    }
+
+    function Add(rhs: Rational): Rational {
+      Rational(this.numer * rhs.denom + rhs.numer * this.denom, this.denom * rhs.denom)
+    }
+
+    function Sub(rhs: Rational): Rational {
+      Add(rhs.Neg())
+    }
+
+    function Inv(): Rational
+      requires this.numer != 0
+    {
+      var denom: int := this.denom;
+      if this.numer < 0 then Rational(-denom, -this.numer) else Rational(denom, this.numer)
+    }
+
+    function Mul(rhs: Rational): Rational {
+      Rational(this.numer * rhs.numer, this.denom * rhs.denom)
+    }
+
+    function Div(rhs: Rational): Rational
+      requires rhs.numer != 0
+    {
+      Mul(rhs.Inv())
+    }
+
+    function Floor(): int {
+      this.numer / this.denom
+    }
+
+    function FractionalPart(): Rational {
+      Rational(this.numer % this.denom, this.denom)
+    }
+
+    function ToReal(): real {
+      this.numer as real / this.denom as real
+    }
   }
 
   function Int(n: int): Rational {
     Rational(n, 1)
-  }
-
-  function Neg(arg: Rational): Rational {
-    Rational(-arg.numer, arg.denom)
-  }
-
-  function Add(lhs: Rational, rhs: Rational): Rational {
-    Rational(lhs.numer * rhs.denom + rhs.numer * lhs.denom, lhs.denom * rhs.denom)
-  }
-
-  function Sub(lhs: Rational, rhs: Rational): Rational {
-    Add(lhs, Neg(rhs))
-  }
-
-  function Inv(arg: Rational): Rational
-    requires arg.numer != 0
-  {
-    var denom: int := arg.denom;
-    if arg.numer < 0 then Rational(-denom, -arg.numer) else Rational(denom, arg.numer)
-  }
-
-  function Mul(lhs: Rational, rhs: Rational): Rational {
-    Rational(lhs.numer * rhs.numer, lhs.denom * rhs.denom)
-  }
-
-  function Div(lhs: Rational, rhs: Rational): Rational
-    requires rhs.numer != 0
-  {
-    Mul(lhs, Inv(rhs))
-  }
-
-  function Floor(r: Rational): int {
-    r.numer / r.denom
-  }
-
-  function FractionalPart(r: Rational): Rational {
-    Rational(r.numer % r.denom, r.denom)
-  }
-
-  function ToReal(r: Rational): real {
-    r.numer as real / r.denom as real
   }
 
   /*******
@@ -70,63 +70,63 @@ module Rationals {
   *******/
 
   lemma RationalEqImpliesRealEq(lhs: Rational, rhs: Rational)
-    requires Eq(lhs, rhs)
-    ensures ToReal(lhs) == ToReal(rhs)
+    requires lhs.Eq(rhs)
+    ensures lhs.ToReal() == rhs.ToReal()
   {}
 
   lemma RealEqImpliesRationalEq(lhs: Rational, rhs: Rational)
-    requires ToReal(lhs) == ToReal(rhs)
-    ensures Eq(lhs, rhs)
+    requires lhs.ToReal() == rhs.ToReal()
+    ensures lhs.Eq(rhs)
   {}
 
   lemma RationalLeqImpliesRealLeq(lhs: Rational, rhs: Rational)
-    requires Leq(lhs, rhs)
-    ensures ToReal(lhs) <= ToReal(rhs)
+    requires lhs.Leq(rhs)
+    ensures lhs.ToReal() <= rhs.ToReal()
   {}
 
   lemma RealLeqImpliesRationalLeq(lhs: Rational, rhs: Rational)
-    requires ToReal(lhs) <= ToReal(rhs)
-    ensures Leq(lhs, rhs)
+    requires lhs.ToReal() <= rhs.ToReal()
+    ensures lhs.Leq(rhs)
   {}
 
   lemma NegIsCorrect(r: Rational)
-    ensures ToReal(Neg(r)) == -ToReal(r)
+    ensures r.Neg().ToReal() == -r.ToReal()
   {}
 
   lemma AddIsCorrect(lhs: Rational, rhs: Rational)
-    ensures ToReal(Add(lhs, rhs)) == ToReal(lhs) + ToReal(rhs)
+    ensures lhs.Add(rhs).ToReal() == lhs.ToReal() + rhs.ToReal()
   {}
 
   lemma SubIsCorrect(lhs: Rational, rhs: Rational)
-    ensures ToReal(Sub(lhs, rhs)) == ToReal(lhs) - ToReal(rhs)
+    ensures lhs.Sub(rhs).ToReal() == lhs.ToReal() - rhs.ToReal()
   {}
 
   lemma InvIsCorrect(r: Rational)
     requires r.numer != 0
-    ensures ToReal(Inv(r)) == 1.0 / ToReal(r)
+    ensures r.Inv().ToReal() == 1.0 / r.ToReal()
   {}
 
   lemma MulIsCorrect(lhs: Rational, rhs: Rational)
-    ensures ToReal(Mul(lhs, rhs)) == ToReal(lhs) * ToReal(rhs)
+    ensures lhs.Mul(rhs).ToReal() == lhs.ToReal() * rhs.ToReal()
   {}
 
   lemma DivIsCorrect(lhs: Rational, rhs: Rational)
     requires rhs.numer != 0
-    ensures ToReal(Div(lhs, rhs)) == ToReal(lhs) / ToReal(rhs)
+    ensures lhs.Div(rhs).ToReal() == lhs.ToReal() / rhs.ToReal()
   {}
 
   lemma FloorIsCorrect(r: Rational)
-    ensures Floor(r) == ToReal(r).Floor
+    ensures r.Floor() == r.ToReal().Floor
   {
     var floor := r.numer / r.denom;
     var multiple := floor * r.denom;
     assert r.numer == multiple + r.numer % r.denom;
     var nextMultiple := multiple + r.denom;
-    assert Floor(r) as real <= ToReal(r);
-    assert ToReal(r) < Floor(r) as real + 1.0 by {
+    assert r.Floor() as real <= r.ToReal();
+    assert r.ToReal() < r.Floor() as real + 1.0 by {
       assert r.numer < nextMultiple;
       calc {
-        ToReal(r);
+        r.ToReal();
       ==
         r.numer as real / r.denom as real;
       < { DivStrictlyMonotonic(r.denom as real, r.numer as real, nextMultiple as real); }
@@ -134,28 +134,28 @@ module Rationals {
       ==
         (floor + 1) as real;
       ==
-        Floor(r) as real + 1.0;
+        r.Floor() as real + 1.0;
       }
     }
   }
 
   lemma FloorFractionalPartRelation(r: Rational)
-    ensures r == Add(Int(Floor(r)), FractionalPart(r))
+    ensures r == Int(r.Floor()).Add(r.FractionalPart())
   {}
 
   lemma FractionalPartIsCorrect(r: Rational)
-    ensures ToReal(FractionalPart(r)) == ToReal(r) - ToReal(r).Floor as real
+    ensures r.FractionalPart().ToReal() == r.ToReal() - r.ToReal().Floor as real
   {
     calc {
-      ToReal(FractionalPart(r));
+      r.FractionalPart().ToReal();
     == { FloorFractionalPartRelation(r); }
-      ToReal(Sub(r, Int(Floor(r))));
-    == { SubIsCorrect(r, Int(Floor(r))); }
-      ToReal(r) - ToReal(Int(Floor(r)));
+      r.Sub(Int(r.Floor())).ToReal();
+    == { SubIsCorrect(r, Int(r.Floor())); }
+      r.ToReal() - Int(r.Floor()).ToReal();
     ==
-      ToReal(r) - Floor(r) as real;
+      r.ToReal() - r.Floor() as real;
     == { FloorIsCorrect(r); }
-      ToReal(r) - ToReal(r).Floor as real;
+      r.ToReal() - r.ToReal().Floor as real;
     }
   }
 
