@@ -1,5 +1,5 @@
-src/Distributions/BernoulliExpNeg/Correctness.dfy(139,17): CorrectnessLe1: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(175,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(140,17): CorrectnessLe1: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(176,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/BernoulliExpNeg/Model.dfy(70,17): Le1LoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/UniformPowerOfTwo/Implementation.dfy(42,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
