@@ -11,8 +11,8 @@ module Sequences {
     forall n: nat :: sequence1(n) == sequence2(n)
   }
 
-  ghost predicate IsSuffixOf(suffix: nat -> real, full: nat -> real, prefix: nat) {
-    forall n: nat :: suffix(n) == full(n + prefix)
+  ghost predicate IsSuffixOf(suffix: nat -> real, full: nat -> real, offset: nat) {
+    forall n: nat :: suffix(n) == full(n + offset)
   }
 
   ghost predicate IsBounded(sequence: nat -> real, bound: real) {
@@ -24,8 +24,8 @@ module Sequences {
     1.0 / (n as real + 1.0)
   }
 
-  function Suffix(sequence: nat -> real, len: nat): nat -> real {
-    (n: nat) => sequence(n + len)
+  function Suffix(sequence: nat -> real, offset: nat): nat -> real {
+    (n: nat) => sequence(n + offset)
   }
 
   function Constant(constant: real): (nat -> real) {
