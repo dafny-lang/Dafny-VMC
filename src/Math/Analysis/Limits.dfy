@@ -25,8 +25,12 @@ module Limits {
     forall epsilon: real | epsilon > 0.0 :: ExistsCloseSuffix(sequence, limit, epsilon)
   }
 
+  ghost predicate Converges(sequence: nat -> real) {
+    exists limit: real :: ConvergesTo(sequence, limit)
+  }
+
   ghost function Limit(sequence: nat -> real): real
-    requires exists limit: real :: ConvergesTo(sequence, limit)
+    requires Converges(sequence)
     ensures ConvergesTo(sequence, Limit(sequence))
   {
     var limit: real :| ConvergesTo(sequence, limit);
@@ -89,11 +93,32 @@ module Limits {
     }
   }
 
-  lemma ConstantSequenceConverges(constant: real)
-    ensures ConvergesTo(Sequences.Constant(constant), constant)
+  lemma SuffixConvergesToSame(sequence: nat -> real, suffix: nat -> real, prefix: nat, limit: real)
+    requires Sequences.IsSuffixOf(suffix, sequence, prefix)
+    ensures ConvergesTo(suffix, limit) <==> ConvergesTo(sequence, limit)
   {
-    forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(Sequences.Constant(constant), constant, epsilon) {
-      assert SuffixIsClose(Sequences.Constant(constant), constant, epsilon, 0);
+    forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(suffix, limit, epsilon) <==> ExistsCloseSuffix(sequence, limit, epsilon) {
+      if N: nat :| SuffixIsClose(sequence, limit, epsilon, N) {
+        assert SuffixIsClose(sequence, limit, epsilon, N + prefix);
+        assert SuffixIsClose(suffix, limit, epsilon, N);
+      }
+      if N: nat :| SuffixIsClose(suffix, limit, epsilon, N) {
+        assert SuffixIsClose(sequence, limit, epsilon, N + prefix) by {
+          forall n: nat | n >= N + prefix ensures RealArith.Dist(sequence(n), limit) < epsilon {
+            var n' := n - prefix;
+            assert sequence(n) == suffix(n');
+          }
+        }
+      }
+    }
+  }
+
+  lemma ConstantSequenceConverges(sequence: nat -> real, constant: real)
+    requires forall n: nat :: sequence(n) == constant
+    ensures ConvergesTo(sequence, constant)
+  {
+    forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(sequence, constant, epsilon) {
+      assert SuffixIsClose(sequence, constant, epsilon, 0);
     }
   }
 

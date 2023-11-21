@@ -89,7 +89,7 @@ module UniformPowerOfTwo.Correctness {
       assert e in Rand.eventSpace by {
         assert e == e1 + e2;
         Rand.ProbIsProbabilityMeasure();
-        Measures.BinaryUnion(Rand.eventSpace, e1, e2);
+        Measures.BinaryUnionIsMeasurable(Rand.eventSpace, e1, e2);
       }
       calc {
         Rand.prob(e);
