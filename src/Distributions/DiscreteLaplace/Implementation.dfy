@@ -33,10 +33,10 @@ module DiscreteLaplace.Implementation {
         y' := y;
         label L1:
         var u := UniformSample(scale.numer);
-        assert (u, s) == Monad.Extract(Uniform.Model.Sample(scale.numer)(old@L1(s)));
+        assert (u, s) == Uniform.Model.Sample(scale.numer)(old@L1(s)).Extract();
         label L2:
         var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
-        assert (d, s) == Monad.Extract(BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(old@L2(s)));
+        assert (d, s) == BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(old@L2(s)).Extract();
         //assert Model.SampleTailRecursive(scale, b', y')(old@L1(s)) == Model.SampleTailRecursive(scale, b, y)(s);
         if !d {
           continue;
@@ -53,7 +53,7 @@ module DiscreteLaplace.Implementation {
             v := v + 1;
           }
         }
-        assert (v, s) == Monad.Extract(Model.SampleTailRecursiveHelper(scale)(old@L3(s)));
+        assert (v, s) == Model.SampleTailRecursiveHelper(scale)(old@L3(s)).Extract();
         var x := u + scale.numer * v;
         y := x / scale.denom;
         b := CoinSample();

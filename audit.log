@@ -2,6 +2,10 @@ src/Distributions/BernoulliExpNeg/Correctness.dfy(140,17): CorrectnessLe1: Decla
 src/Distributions/BernoulliExpNeg/Correctness.dfy(176,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/BernoulliExpNeg/Model.dfy(70,17): Le1LoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Correctness.dfy(36,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(62,6): DiscreteLaplaceSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Model.dfy(24,4): SampleTailRecursive: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Model.dfy(56,4): SampleTailRecursiveHelper: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/UniformPowerOfTwo/Implementation.dfy(42,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 

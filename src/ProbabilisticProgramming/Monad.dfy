@@ -57,6 +57,23 @@ module Monad {
       case Diverging => false
       case Result(_, rest) => property(rest)
     }
+
+    predicate IsFailure() {
+      Diverging?
+    }
+
+    function PropagateFailure(): Result<A>
+      requires Diverging?
+    {
+      Diverging
+    }
+
+    function Extract(): (A, Rand.Bitstream)
+      requires Result?
+    {
+      (this.value, this.rest)
+    }
+
   }
 
   ghost function Values<A>(results: iset<Result<A>>): iset<A> {

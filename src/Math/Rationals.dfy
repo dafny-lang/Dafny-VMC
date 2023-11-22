@@ -55,7 +55,7 @@ module Rationals {
     function FractionalPart(): Rational {
       Rational(this.numer % this.denom, this.denom)
     }
-    
+
     function ToReal(): real {
       this.numer as real / this.denom as real
     }
@@ -115,8 +115,7 @@ module Rationals {
     ensures lhs.Div(rhs).ToReal() == lhs.ToReal() / rhs.ToReal()
   {}
 
-  lemma 
-  IsCorrect(r: Rational)
+  lemma FloorIsCorrect(r: Rational)
     ensures r.Floor() == r.ToReal().Floor
   {
     var floor := r.numer / r.denom;
