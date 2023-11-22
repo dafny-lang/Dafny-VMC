@@ -4,10 +4,14 @@
  *******************************************************************************/
 
 module BernoulliExpNeg.Implementation {
+  import Helper
   import Rationals
+  import Rand
   import Monad
   import Interface
   import Model
+  import Bernoulli
+  import Equivalence
 
   trait {:termination false} Trait extends Interface.Trait {
 
@@ -19,39 +23,47 @@ module BernoulliExpNeg.Implementation {
       ensures Monad.Result(c, s) == Model.Sample(gamma)(old(s))
     {
       var gamma' := gamma;
-      var b := true;
-      while b && gamma'.numer >= gamma'.denom
+      while gamma'.numer > gamma'.denom
         decreases gamma'.numer
         invariant gamma'.numer >= 0
+        invariant Model.Sample(gamma)(old(s)) == Model.Sample(gamma')(s)
       {
-        b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
+        ghost var prevGamma := gamma';
+        ghost var prevS := s;
+        var b := BernoulliExpNegSampleCaseLe1(Rationals.Int(1));
         gamma' := Rationals.Rational(gamma'.numer - gamma'.denom, gamma'.denom);
+        Equivalence.SampleUnfold(gamma', s, prevGamma, prevS, b);
+        if !b {
+          return false;
+        }
       }
-      if b {
-        c:= BernoulliExpNegSampleCaseLe1(gamma');
-      } else {
-        c := false;
-      }
-      assume {:axiom} Monad.Result(c, s) == Model.Sample(gamma)(old(s)); // add later
+      c:= BernoulliExpNegSampleCaseLe1(gamma');
+      reveal Model.Sample();
     }
 
     method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
       modifies this
       requires 0 <= gamma.numer <= gamma.denom
       decreases *
-      ensures Monad.Result(c, s) == Model.SampleGammaLe1(gamma)(old(s))
+      ensures Monad.Result(c, s) == Model.SampleLe1(gamma)(old(s))
     {
-      var k := 0;
+      var k: nat := 0;
       var a := true;
+      Equivalence.EnsureCaseLe1LoopInvariantOnEntry(gamma, s);
       while a
         decreases *
+        invariant Equivalence.CaseLe1LoopInvariant(gamma, old(s), a, k, s)
       {
+        ghost var prevK: nat := k;
+        ghost var prevS := s;
         k := k + 1;
+        Helper.MulMonotonic(1, gamma.denom, k, gamma.denom);
         a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
+        Equivalence.EnsureCaseLe1LoopInvariantMaintained(gamma, old(s), prevK, prevS, a, k, s);
       }
       c := k % 2 == 1;
-      assume {:axiom} Monad.Result(c, s) == Model.SampleGammaLe1(gamma)(old(s)); // add later
+      Equivalence.EnsureCaseLe1PostCondition(gamma, old(s), k, s, c);
     }
-
   }
+
 }

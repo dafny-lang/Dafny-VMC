@@ -5,7 +5,9 @@
 
 module BernoulliExpNeg.Model {
   import Rationals
+  import Rand
   import Uniform
+  import Bernoulli
   import Monad
   import Loops
   import BernoulliModel = Bernoulli.Model
@@ -13,66 +15,61 @@ module BernoulliExpNeg.Model {
   opaque ghost function Sample(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires gamma.denom != 0
     requires gamma.numer >= 0
+    decreases gamma.numer
   {
-    Monad.Bind(
-      GammaReductionLoop(gamma),
-      (bgamma: (bool, Rationals.Rational)) =>
-        if bgamma.0 then
-          SampleGammaLe1(bgamma.1)
-        else
-          Monad.Return(false)
-    )
+    if gamma.numer <= gamma.denom
+    then SampleLe1(gamma)
+    else Monad.Bind(
+        SampleLe1(Rationals.Int(1)),
+        b =>
+          var res: Monad.Hurd<bool> :=
+            if b
+            then Sample(Rationals.Rational(gamma.numer - gamma.denom, gamma.denom))
+            else Monad.Return(false);
+          res
+      )
   }
 
-  ghost function GammaReductionLoop(gamma: Rationals.Rational): Monad.Hurd<(bool, Rationals.Rational)>
-    requires gamma.numer >= 0
-  {
-    assume {:axiom} false; // assume termination
-    Loops.While(
-      (bgamma: (bool, Rationals.Rational)) => bgamma.0 && bgamma.1.denom <= bgamma.1.numer,
-      GammaReductionLoopIter,
-      (true, gamma)
-    )
-  }
-
-  ghost function GammaReductionLoopIter(bgamma: (bool, Rationals.Rational)): Monad.Hurd<(bool, Rationals.Rational)>
-    requires bgamma.1.numer >= 0
-  {
-    Monad.Bind(
-      SampleGammaLe1(Rationals.Int(1)),
-      b' => Monad.Return((b', Rationals.Rational(bgamma.1.numer - bgamma.1.denom, bgamma.1.denom)))
-    )
-  }
-
-  ghost function SampleGammaLe1(gamma: Rationals.Rational): Monad.Hurd<bool>
-  {
-    if 0 <= gamma.numer <= gamma.denom
-    then Monad.Bind(
-           GammaLe1Loop(gamma, (true, 0)),
-           (ak: (bool, nat)) => Monad.Return(ak.1 % 2 == 1)
-         )
-    else Monad.Return(false) // to keep this function total, we return a dummy value here
-  }
-
-  ghost function GammaLe1Loop(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
-    requires 0 <= gamma.numer <= gamma.denom
-  {
-    assume {:axiom} false; // assume termination
-    Loops.While(
-      (ak: (bool, nat)) => ak.0,
-      (ak: (bool, nat)) => GammaLe1LoopIter(gamma, ak),
-      ak
-    )
-  }
-
-  ghost function GammaLe1LoopIter(gamma: Rationals.Rational, ak: (bool, nat)): Monad.Hurd<(bool, nat)>
+  ghost function SampleLe1(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires 0 <= gamma.numer <= gamma.denom
   {
     Monad.Bind(
-      BernoulliModel.Sample(gamma.numer, (ak.1 + 1) * gamma.denom),
-      (a': bool) =>
-        var res: Monad.Hurd<(bool, nat)> := Monad.Return((a', ak.1 + 1));
-        res
+      Le1Loop(gamma)((true, 0)),
+      (ak: (bool, nat)) => Monad.Return(ak.1 % 2 == 1)
     )
   }
+
+  opaque ghost function Le1Loop(gamma: Rationals.Rational): ((bool, nat)) -> Monad.Hurd<(bool, nat)>
+    requires 0 <= gamma.numer <= gamma.denom
+  {
+    Le1LoopTerminatesAlmostSurely(gamma);
+    Loops.While(
+      Le1LoopCondition,
+      Le1LoopIter(gamma)
+    )
+  }
+
+  ghost function Le1LoopCondition(ak: (bool, nat)): bool {
+    ak.0
+  }
+
+  ghost function Le1LoopIter(gamma: Rationals.Rational): ((bool, nat)) -> Monad.Hurd<(bool, nat)>
+    requires 0 <= gamma.numer <= gamma.denom
+  {
+    (ak: (bool, nat)) =>
+      var k' := ak.1 + 1;
+      Monad.Bind(
+        BernoulliModel.Sample(gamma.numer, k' * gamma.denom),
+        SetK(k'))
+  }
+
+  ghost function SetK(k: nat): bool -> Monad.Hurd<(bool, nat)> {
+    a => Monad.Return((a, k))
+  }
+
+  lemma {:axiom} Le1LoopTerminatesAlmostSurely(gamma: Rationals.Rational)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures Loops.WhileTerminatesAlmostSurely(Le1LoopCondition, Le1LoopIter(gamma))
+
+
 }

@@ -4,36 +4,46 @@
  *******************************************************************************/
 
 module Measures {
+  import Series
+
   /************
    Definitions
   ************/
 
   type Probability = x: real | 0.0 <= x <= 1.0
 
-  ghost predicate IsSigmaAlgebra<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>) {
-    && (forall e | e in eventSpace :: e <= sampleSpace)
+  // States that given collection of sets is σ-algebra on the set of values of type `T`.
+  // In other words, the sample space is `SampleSpace<T>()`, i.e. the set of all values of type `T`,
+  // and `eventSpace` is the collection of measurable subsets.
+  ghost predicate IsSigmaAlgebra<T(!new)>(eventSpace: iset<iset<T>>) {
     && (iset{}) in eventSpace
-    && (forall e | e in eventSpace :: (sampleSpace - e) in eventSpace)
+    && (forall e | e in eventSpace :: Complement(e) in eventSpace)
     && (forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) :: (CountableUnion(f) in eventSpace))
+  }
+
+  // The set of all values of type `T` that are not in the given set.
+  ghost function Complement<T(!new)>(event: iset<T>): iset<T> {
+    iset x: T | x !in event
+  }
+
+  // The set of all values of type `T`.
+  ghost function SampleSpace<T(!new)>(): iset<T> {
+    Complement(iset{})
   }
 
   ghost function CountableUnion<T(!new)>(f: nat -> iset<T>, i: nat := 0): iset<T> {
     iset n: nat | n >= i, x <- f(n) :: x
   }
 
-  function CountableSum(f: nat -> real, i: nat := 0): real {
-    assume {:axiom} false; // assume termination
-    f(i) + CountableSum(f, i+1)
+  // The σ-algebra that contains all subsets.
+  ghost function DiscreteSigmaAlgebra<A(!new)>(): iset<iset<A>> {
+    iset _: iset<A>
   }
 
-  ghost const boolSampleSpace: iset<bool> := iset _: bool
-
-  ghost const boolEventSpace: iset<iset<bool>> := iset _: iset<bool>
-
-  ghost const natSampleSpace: iset<nat> := iset _: nat
+  ghost const boolEventSpace: iset<iset<bool>> := DiscreteSigmaAlgebra<bool>()
 
   // The sigma algebra on the natural numbers is just the power set
-  ghost const natEventSpace: iset<iset<nat>> := iset _: iset<nat>
+  ghost const natEventSpace: iset<iset<nat>> := DiscreteSigmaAlgebra<nat>()
 
   // Definition 5
   ghost predicate IsPositive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
@@ -46,14 +56,18 @@ module Measures {
     forall e1, e2 | e1 in eventSpace && e2 in eventSpace && e1 * e2 == iset{} :: Prob(e1) + Prob(e2) == Prob(e1 + e2)
   }
 
+  ghost predicate PairwiseDisjoint<T(!new)>(s: nat -> iset<T>) {
+    forall m, n | m != n :: s(m) * s(n) == iset{}
+  }
+
   // Definition 5
   ghost predicate IsCountablyAdditive<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
-    forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) && (forall m, n | m != n :: f(m) * f(n) == iset{}) && (CountableUnion(f) in eventSpace) :: (CountableSum((n: nat) => Prob(f(n))) == Prob(CountableUnion(f)))
+    forall f: nat -> iset<T> | (forall n :: f(n) in eventSpace) && PairwiseDisjoint(f) && (CountableUnion(f) in eventSpace) :: Series.SumsTo((n: nat) => Prob(f(n)), Prob(CountableUnion(f)))
   }
 
   // Definition 6
-  ghost predicate IsMeasure<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real) {
-    && IsSigmaAlgebra(eventSpace, sampleSpace)
+  ghost predicate IsMeasure<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    && IsSigmaAlgebra(eventSpace)
     && IsPositive(eventSpace, Prob)
     && IsCountablyAdditive(eventSpace, Prob)
   }
@@ -74,9 +88,9 @@ module Measures {
   }
 
   // Definition 12
-  ghost predicate IsProbability<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real) {
-    && IsMeasure(eventSpace, sampleSpace, Prob)
-    && Prob(sampleSpace) == 1.0
+  ghost predicate IsProbability<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real) {
+    && IsMeasure(eventSpace, Prob)
+    && Prob(SampleSpace()) == 1.0
   }
 
   // Definition 13
@@ -91,17 +105,11 @@ module Measures {
   *******/
 
   lemma boolsHaveSigmaAlgebra()
-    ensures IsSigmaAlgebra(boolEventSpace, boolSampleSpace)
-  {
-    forall e | e in boolEventSpace ensures e <= boolSampleSpace {
-      assert e <= boolSampleSpace by {
-        forall x: bool ensures x in e ==> x in boolSampleSpace {}
-      }
-    }
-  }
+    ensures IsSigmaAlgebra(boolEventSpace)
+  {}
 
   lemma natsHaveSigmaAlgebra()
-    ensures IsSigmaAlgebra(natEventSpace, natSampleSpace)
+    ensures IsSigmaAlgebra(natEventSpace)
   {}
 
   lemma PreImageIdentity<S(!new)>(f: S -> S, e: iset<S>)
@@ -115,48 +123,49 @@ module Measures {
   {}
 
   // Equation (2.18)
-  lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, Prob: iset<T> -> real)
-    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+  lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real)
+    requires IsSigmaAlgebra(eventSpace)
     requires IsPositive(eventSpace, Prob)
     requires IsCountablyAdditive(eventSpace, Prob)
     ensures IsAdditive(eventSpace, Prob)
   {
     forall e1, e2 | e1 in eventSpace && e2 in eventSpace && e1 * e2 == iset{} ensures Prob(e1) + Prob(e2) == Prob(e1 + e2) {
       var f : nat -> iset<T> := (n: nat) => if n == 0 then e1 else if n == 1 then e2 else iset{};
-      assert CountableUnion(f) == e1 + e2;
-      assert CountableSum((n: nat) => Prob(f(n))) == Prob(e1) + Prob(e2) by {
-        assert CountableSum((n: nat) => Prob(f(n)), 2) == 0.0 by {
-          CountableSumOfZeroesIsZero((n: nat) => Prob(f(n)), 2);
-        }
+      assert CountableUnion(f) == e1 + e2 by {
         calc {
-          CountableSum((n: nat) => Prob(f(n)))
-       ==
-          Prob(f(0)) + CountableSum((n: nat) => Prob(f(n)), 1)
-       ==
-          Prob(f(0)) + Prob(f(1)) + CountableSum((n: nat) => Prob(f(n)), 2)
-       ==
-          Prob(e1) + Prob(e2) + CountableSum((n: nat) => Prob(f(n)), 2)
-       ==
+          CountableUnion(f);
+          f(0) + f(1);
+          e1 + e2;
+        }
+      }
+      var probs := (n: nat) => Prob(f(n));
+      var probSum := Prob(e1) + Prob(e2);
+      assert Series.SumsTo(probs, probSum) by {
+        assert seq(2, probs) == [probs(0), probs(1)];
+        calc {
+          Series.PartialSums(probs)(2);
+          Series.SumTo(probs, 2);
+          probs(0) + Series.SumFromTo(probs, 1, 2);
+          probs(0) + probs(1) + Series.SumFromTo(probs, 2, 2);
           Prob(e1) + Prob(e2);
         }
+        Series.ZeroSuffixSum(probs, 2, Prob(e1) + Prob(e2));
       }
-      assert Prob(CountableUnion(f)) == CountableSum((n: nat) => Prob(f(n))) by {
+      assert Series.SumsTo(probs, Prob(CountableUnion(f))) by {
         assert IsCountablyAdditive(eventSpace, Prob);
       }
+      Series.SumsToImpliesSumIs(probs, probSum);
+      Series.SumsToImpliesSumIs(probs, Prob(CountableUnion(f)));
       assert Prob(e1 + e2) == Prob(e1) + Prob(e2);
     }
   }
-
-  lemma {:axiom} CountableSumOfZeroesIsZero(f: nat -> real, i: nat := 0)
-    requires forall n | n >= i :: f(n) == 0.0
-    ensures CountableSum(f, i) == 0.0
 
   lemma CountableUnionSplit<T(!new)>(f: nat -> iset<T>, i: nat)
     ensures CountableUnion(f, i) == f(i) + CountableUnion(f, i + 1)
   {}
 
-  lemma BinaryUnion<T(!new)>(eventSpace: iset<iset<T>>, sampleSpace: iset<T>, e1: iset<T>, e2: iset<T>)
-    requires IsSigmaAlgebra(eventSpace, sampleSpace)
+  lemma BinaryUnionIsMeasurable<T(!new)>(eventSpace: iset<iset<T>>, e1: iset<T>, e2: iset<T>)
+    requires IsSigmaAlgebra(eventSpace)
     requires e1 in eventSpace
     requires e2 in eventSpace
     ensures e1 + e2 in eventSpace

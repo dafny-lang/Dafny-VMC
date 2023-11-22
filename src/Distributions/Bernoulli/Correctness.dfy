@@ -22,19 +22,13 @@ module Bernoulli.Correctness {
     ensures Independence.IsIndep(Model.Sample(m, n))
   {
     var f := Uniform.Model.Sample(n);
-    var g := (k: nat) => Monad.Return(k < m);
+    var g := (k: nat) => k < m;
 
     assert Independence.IsIndep(f) by {
       Uniform.Correctness.SampleIsIndep(n);
     }
 
-    assert forall k: nat :: Independence.IsIndep(g(k)) by {
-      forall k: nat ensures Independence.IsIndep(g(k)) {
-        Independence.ReturnIsIndep(k < m);
-      }
-    }
-
-    Independence.BindIsIndep(f, g);
+    Independence.MapIsIndep(f, g);
     reveal Model.Sample();
   }
 
@@ -43,18 +37,21 @@ module Bernoulli.Correctness {
     requires n != 0
     requires m <= n
     ensures
-      var e := iset s | Model.Sample(m, n)(s).value;
+      var e := iset s | Model.Sample(m, n)(s).Equals(true);
       && e in Rand.eventSpace
       && Rand.prob(e) == m as real / n as real
   {
-    var e := iset s | Model.Sample(m, n)(s).value;
+    reveal Model.Sample();
+    var e := iset s | Model.Sample(m, n)(s).Equals(true);
+    var ltM: nat -> bool := x => x < m;
+    var ltM1: nat -> bool := x => x < m - 1;
 
     if m == 0 {
       assert e == iset{} by {
-        forall s ensures !Model.Sample(m, n)(s).value {
+        forall s ensures !Model.Sample(m, n)(s).Equals(true) {
           calc {
-            Model.Sample(m, n)(s).value;
-            Uniform.Model.Sample(n)(s).value < 0;
+            Model.Sample(m, n)(s).Equals(true);
+            Uniform.Model.Sample(n)(s).Satisfies(x => x < 0);
             false;
           }
         }
@@ -62,17 +59,17 @@ module Bernoulli.Correctness {
 
       assert e in Rand.eventSpace && Rand.prob(e) == 0.0 by {
         Rand.ProbIsProbabilityMeasure();
-        assert Measures.IsSigmaAlgebra(Rand.eventSpace, Rand.sampleSpace);
+        assert Measures.IsSigmaAlgebra(Rand.eventSpace);
         assert Measures.IsPositive(Rand.eventSpace, Rand.prob);
       }
     } else {
-      var e1 := iset s | Uniform.Model.Sample(n)(s).value == m-1;
-      var e2 := (iset s {:trigger Uniform.Model.Sample(n)(s).value} | Model.Sample(m-1, n)(s).value);
+      var e1 := iset s | Uniform.Model.Sample(n)(s).Equals(m - 1);
+      var e2 := (iset s {:trigger Uniform.Model.Sample(n)(s).value} | Model.Sample(m-1, n)(s).Equals(true));
 
-      assert (iset s | Uniform.Model.Sample(n)(s).value < m-1) == e2 by {
-        assert (iset s | Uniform.Model.Sample(n)(s).value < m-1) == (iset s {:trigger Uniform.Model.Sample(n)(s).value} | Model.Sample(m-1, n)(s).value) by {
-          forall s ensures Uniform.Model.Sample(n)(s).value < m-1 <==> Model.Sample(m-1, n)(s).value {
-            assert Uniform.Model.Sample(n)(s).value < m-1 <==> Model.Sample(m-1, n)(s).value;
+      assert (iset s | Uniform.Model.Sample(n)(s).Satisfies(ltM1)) == e2 by {
+        assert (iset s | Uniform.Model.Sample(n)(s).Satisfies(ltM1)) == (iset s {:trigger Uniform.Model.Sample(n)(s).value} | Model.Sample(m-1, n)(s).Equals(true)) by {
+          forall s ensures Uniform.Model.Sample(n)(s).Satisfies(ltM1) <==> Model.Sample(m-1, n)(s).Equals(true) {
+            assert Uniform.Model.Sample(n)(s).Satisfies(ltM1) <==> Model.Sample(m-1, n)(s).Equals(true);
           }
         }
       }
@@ -80,9 +77,9 @@ module Bernoulli.Correctness {
       assert e == e1 + e2 by {
         calc {
           e;
-          iset s | Uniform.Model.Sample(n)(s).value < m;
-          iset s | Uniform.Model.Sample(n)(s).value == m-1 || Uniform.Model.Sample(n)(s).value < m-1;
-          (iset s | Uniform.Model.Sample(n)(s).value == m-1) + (iset s | Uniform.Model.Sample(n)(s).value < m-1);
+          iset s | Uniform.Model.Sample(n)(s).Satisfies(ltM);
+          iset s | Uniform.Model.Sample(n)(s).Equals(m-1) || Uniform.Model.Sample(n)(s).Satisfies(ltM1);
+          (iset s | Uniform.Model.Sample(n)(s).Equals(m-1)) + (iset s | Uniform.Model.Sample(n)(s).Satisfies(ltM1));
           e1 + e2;
         }
       }
@@ -99,7 +96,7 @@ module Bernoulli.Correctness {
       calc {
         Rand.prob(e);
         Rand.prob(e1 + e2);
-        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.sampleSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
+        { reveal A1; reveal A2; assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
         Rand.prob(e1) + Rand.prob(e2);
         { reveal A1; reveal A2; }
         (1.0 / n as real) + ((m - 1) as real / n as real);
@@ -111,7 +108,7 @@ module Bernoulli.Correctness {
         Rand.ProbIsProbabilityMeasure();
         reveal A1;
         reveal A2;
-        Measures.BinaryUnion(Rand.eventSpace, Rand.sampleSpace, e1, e2);
+        Measures.BinaryUnionIsMeasurable(Rand.eventSpace, e1, e2);
       }
     }
   }

@@ -16,25 +16,16 @@ module DiscreteGaussian.Implementation {
       requires sigma.numer >= 1
       decreases *
     {
-      var sigmaSquared := Rationals.Mul(sigma, sigma);
-      var t := Rationals.Floor(sigma) + 1;
-      assert t >= 1;
+      var sigmaSquared := sigma.Mul(sigma);
+      var t := sigma.Floor() + 1;
       while true
         decreases *
       {
         y := DiscreteLaplaceSample(Rationals.Int(t));
         var yAbs := if y < 0 then -y else y;
-        var numeratorTerm := Rationals.Sub(
-          Rationals.Int(yAbs),
-          Rationals.Div(sigmaSquared, Rationals.Int(t))
-        );
-        var gamma := Rationals.Div(
-          Rationals.Mul(numeratorTerm, numeratorTerm),
-          Rationals.Mul(
-            Rationals.Int(2),
-            sigmaSquared
-          )
-        );
+        var numeratorTerm := Rationals.Int(yAbs).Sub(sigmaSquared.Div(Rationals.Int(t)));
+        var gamma := numeratorTerm.Mul(numeratorTerm)
+        .Div(Rationals.Int(2).Mul(sigmaSquared));
         var c := BernoulliExpNegSample(gamma);
         if c {
           return;

@@ -21,7 +21,7 @@ module Uniform.Correctness {
   ghost function SampleEquals(n: nat, i: nat): iset<Rand.Bitstream>
     requires 0 <= i < n
   {
-    iset s | Model.Sample(n)(s).value == i
+    iset s | Model.Sample(n)(s).Equals(i)
   }
 
   /*******
@@ -137,7 +137,7 @@ module Uniform.Correctness {
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
     ensures
-      var e := iset s | Model.IntervalSample(a, b)(s).value == i;
+      var e := iset s | Model.IntervalSample(a, b)(s).Equals(i);
       && e in Rand.eventSpace
       && Rand.prob(e) == (1.0 / ((b-a) as real))
   {
@@ -147,10 +147,10 @@ module Uniform.Correctness {
     var e' := SampleEquals(b - a, i - a);
     assert e' in Rand.eventSpace by { UniformFullCorrectness(b - a, i - a); }
     assert Rand.prob(e') == (1.0 / ((b-a) as real)) by { UniformFullCorrectness(b - a, i - a); }
-    var e := iset s | Model.IntervalSample(a, b)(s).value == i;
+    var e := iset s | Model.IntervalSample(a, b)(s).Equals(i);
     assert e == e' by {
-      forall s ensures Model.IntervalSample(a, b)(s).value == i <==> Model.Sample(b-a)(s).value == i - a {
-        assert Model.IntervalSample(a, b)(s).value == a + Model.Sample(b - a)(s).value;
+      forall s ensures Model.IntervalSample(a, b)(s).Equals(i) <==> Model.Sample(b-a)(s).Equals(i - a) {
+        assert Model.IntervalSample(a, b)(s) == Model.Sample(b - a)(s).Map(x => a + x);
       }
     }
   }

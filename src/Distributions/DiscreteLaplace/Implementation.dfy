@@ -56,10 +56,7 @@ module DiscreteLaplace.Implementation {
         assert (v, s) == Monad.Extract(Model.SampleTailRecursiveHelper(scale)(old@L3(s)));
         var x := u + scale.numer * v;
         y := x / scale.denom;
-        label L4:
-        b := BernoulliSample(Rationals.Rational(1, 2));
-        assert (b, s) == Monad.Extract(Bernoulli.Model.Sample(1, 2)(old@L4(s)));
-        //assume {:axiom} false; // add equivalence proof later
+        b := CoinSample();
       }
       z := if b then -y else y;
       assume {:axiom} false; // add equivalence proof later
