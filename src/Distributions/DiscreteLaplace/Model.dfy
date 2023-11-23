@@ -9,9 +9,12 @@ module DiscreteLaplace.Model {
   import Rationals
   import Uniform
   import BernoulliExpNeg
-  import Bernoulli
   import Coin
   import Loops
+
+  /************
+   Definitions
+  ************/
 
   ghost function Sample(scale: Rationals.Rational): Monad.Hurd<int>
     requires scale.numer >= 1
@@ -29,13 +32,14 @@ module DiscreteLaplace.Model {
   ghost function Body(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
+    // replace with functional version
     (x: (bool, int)) =>
       (s: Rand.Bitstream) =>
         var (b, y) := (x.0, x.1);
         var (u, s) :- Uniform.Model.Sample(scale.numer)(s);
         var (d, s) :- BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(s);
         if d then
-          var (v, s) :- SampleTailRecursiveHelper(scale)(s);
+          var (v, s) :- SampleHelper()(s);
           var x := u + scale.numer * v;
           var y := x / scale.denom;
           var (b, s) :- Coin.Model.Sample(s);
@@ -48,34 +52,8 @@ module DiscreteLaplace.Model {
     x.0 && x.1 == 0
   }
 
-  ghost function SampleTailRecursive(scale: Rationals.Rational, b: bool := true, y: int := 0): Monad.Hurd<int>
-    requires scale.numer >= 1
-  {
-    assume {:axiom} false; // assume termination
-    (s: Rand.Bitstream) =>
-      if !(b && y == 0) then
-        Monad.Result(if b then -y else y, s)
-      else
-        var (u, s) :- Uniform.Model.Sample(scale.numer)(s);
-        var (d, s) :- BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(s);
-        if d then
-          var (v, s) :- SampleTailRecursiveHelper(scale)(s);
-          var x := u + scale.numer * v;
-          var y := x / scale.denom;
-          var sample := Coin.Model.Sample(s);
-          SampleTailRecursive(scale, sample.value, y)(sample.rest)
-        else
-          SampleTailRecursive(scale, b, y)(s)
-
-  }
-
-  ghost function SampleTailRecursiveHelper(scale: Rationals.Rational, a: bool := true, v: int := 0): Monad.Hurd<int> {
-    assume {:axiom} false; // assume termination
-    (s: Rand.Bitstream) =>
-      if !a then
-        Monad.Result(v, s)
-      else
-        var (a, s) :- BernoulliExpNeg.Model.Sample(Rationals.Int(1))(s);
-        SampleTailRecursiveHelper(scale, a, if a then v + 1 else v)(s)
+  ghost function SampleHelper(a: bool := true, v: int := 0): Monad.Hurd<int> {
+    // add functional version
+    (s: Rand.Bitstream) => Monad.Result(1, s)
   }
 }

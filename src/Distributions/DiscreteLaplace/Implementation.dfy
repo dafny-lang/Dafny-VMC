@@ -12,6 +12,7 @@ module DiscreteLaplace.Implementation {
   import BernoulliExpNeg
   import Bernoulli
   import Coin
+  import Equivalence
 
   trait {:termination false} Trait extends Interface.Trait {
 
@@ -24,30 +25,15 @@ module DiscreteLaplace.Implementation {
     {
       var b := true;
       var y := 0;
-      // ghost var prevB := b;
-      // ghost var prevY := y;
-      // ghost var prevS := s;
       while b && y == 0
-        // invariant Monad.Result(z, s) ==
-        // invariant Model.SampleTailRecursive(scale, prevB, prevY)(old(s)) == Model.SampleTailRecursive(scale, b, y)(s)
         decreases *
       {
-        // prevB := b;
-        // prevY := y;
-        // prevS := s;
-        // label L1:
         var u := UniformSample(scale.numer);
-        // assert (u, s) == Uniform.Model.Sample(scale.numer)(old@L1(s)).Extract();
-        // label L2:
         var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
-        // assert (d, s) == BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(old@L2(s)).Extract();
-        //assert Model.SampleTailRecursive(scale, b', y')(old@L1(s)) == Model.SampleTailRecursive(scale, b, y)(s);
         if d {
-          // label L3:
           var a := true;
           var v := 0;
           while a
-            // invariant Model.SampleTailRecursiveHelper(scale)(old@L3(s)) == Model.SampleTailRecursiveHelper(scale, v, a)(s)
             decreases *
           {
             a := BernoulliExpNegSample(Rationals.Int(1));
@@ -55,16 +41,14 @@ module DiscreteLaplace.Implementation {
               v := v + 1;
             }
           }
-          // assert (v, s) == Model.SampleTailRecursiveHelper(scale)(old@L3(s)).Extract();
           var x := u + scale.numer * v;
           y := x / scale.denom;
-          // label L4:
           b := CoinSample();
-          // assert Coin.Model.Sample(old@L4(s)) == Monad.Result(b, s);
         }
       }
       z := if b then -y else y;
-      assume {:axiom} false;
+      assume {:axiom} Monad.Result(z, s) == Equivalence.SampleTailRecursive(scale)(old(s));
+      Equivalence.SampleTailRecursiveEquivalence(scale, old(s));
     }
 
   }
