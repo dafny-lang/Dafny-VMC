@@ -62,7 +62,7 @@ module Monad {
       Diverging?
     }
 
-    function PropagateFailure(): Result<A>
+    function PropagateFailure<B>(): Result<B>
       requires Diverging?
     {
       Diverging
@@ -108,7 +108,7 @@ module Monad {
     iset s | h(s).RestIn(restSet)
   }
 
-  // Equation (3.4)
+  // Equation (3.4)B
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) => f(s).Bind(g)
   }
