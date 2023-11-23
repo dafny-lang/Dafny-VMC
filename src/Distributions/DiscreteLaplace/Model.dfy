@@ -58,14 +58,15 @@ module DiscreteLaplace.Model {
       else
         var (u, s) :- Uniform.Model.Sample(scale.numer)(s);
         var (d, s) :- BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(s);
-        if !d then
-          SampleTailRecursive(scale, b, y)(s)
-        else
+        if d then
           var (v, s) :- SampleTailRecursiveHelper(scale)(s);
           var x := u + scale.numer * v;
           y := x / scale.denom;
           var sample := Coin.Model.Sample(s);
           SampleTailRecursive(scale, sample.value, y)(sample.rest)
+        else 
+          SampleTailRecursive(scale, b, y)(s)
+
   }
 
   ghost function SampleTailRecursiveHelper(scale: Rationals.Rational, a: bool := true, v: int := 0): Monad.Hurd<int> {
