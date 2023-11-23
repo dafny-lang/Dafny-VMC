@@ -57,6 +57,22 @@ module Monad {
       case Diverging => false
       case Result(_, rest) => property(rest)
     }
+
+    predicate IsFailure() {
+      Diverging?
+    }
+
+    function PropagateFailure<B>(): Result<B>
+      requires Diverging?
+    {
+      Diverging
+    }
+
+    function Extract(): (A, Rand.Bitstream)
+      requires Result?
+    {
+      (this.value, this.rest)
+    }
   }
 
   ghost function Values<A>(results: iset<Result<A>>): iset<A> {
@@ -96,11 +112,28 @@ module Monad {
     (s: Rand.Bitstream) => f(s).Bind(g)
   }
 
+  function BindAlternative<A,B>(f: Hurd<A>, g: A -> Hurd<B>): (h: Hurd<B>)
+    ensures forall s :: h(s) == Bind(f, g)(s)
+  {
+    (s: Rand.Bitstream) =>
+      var (a, s') :- f(s);
+      g(a)(s')
+  }
+
   // Equation (2.42)
   const Coin: Hurd<bool> := s => Result(Rand.Head(s), Rand.Tail(s))
 
   function Composition<A,B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
     (a: A) => Bind(f(a), g)
+  }
+
+  function CompositionAlternative<A(!new),B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): (h: A -> Hurd<C>)
+    ensures forall a, s :: h(a)(s) == Composition(f, g)(a)(s)
+  {
+    (a: A) =>
+      (s: Rand.Bitstream) =>
+        var (b, s') :- f(a)(s);
+        g(b)(s')
   }
 
   // Equation (3.3)
