@@ -11,6 +11,7 @@ module DiscreteLaplace.Implementation {
   import Uniform
   import BernoulliExpNeg
   import Bernoulli
+  import Coin
 
   trait {:termination false} Trait extends Interface.Trait {
 
@@ -23,14 +24,15 @@ module DiscreteLaplace.Implementation {
     {
       var b := true;
       var y := 0;
-      ghost var b' := b;
-      ghost var y' := y;
+      ghost var prevB := b;
+      ghost var prevY := y;
+      ghost var prevS := s;
       while b && y == 0
-        //invariant Model.SampleTailRecursive(scale, b', y')(old(s)) == Model.SampleTailRecursive(scale, b, y)(s)
+        invariant Model.SampleTailRecursive(scale, prevB, prevY)(old(s)) == Model.SampleTailRecursive(scale, b, y)(s)
         decreases *
       {
-        b' := b;
-        y' := y;
+        prevB := b;
+        prevY := y;
         label L1:
         var u := UniformSample(scale.numer);
         assert (u, s) == Uniform.Model.Sample(scale.numer)(old@L1(s)).Extract();
@@ -56,10 +58,12 @@ module DiscreteLaplace.Implementation {
         assert (v, s) == Model.SampleTailRecursiveHelper(scale)(old@L3(s)).Extract();
         var x := u + scale.numer * v;
         y := x / scale.denom;
+        label L4:
         b := CoinSample();
+        assert Coin.Model.Sample(old@L4(s)) == Monad.Result(b, s);
+        assume {:axiom} false; // add equivalence proof later
       }
       z := if b then -y else y;
-      assume {:axiom} false; // add equivalence proof later
     }
 
   }
