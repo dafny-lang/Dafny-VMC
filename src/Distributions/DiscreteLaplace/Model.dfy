@@ -57,8 +57,10 @@ module DiscreteLaplace.Model {
     Monad.Map(SampleHelperLoop(), f)
   }
 
-  ghost function SampleHelperLoop(): Monad.Hurd<(bool, int)> {
-    Loops.While(SampleHelperLoopCondition, SampleHelperLoopBody)((true, 0))
+  ghost function SampleHelperLoop(x: (bool, int) := (true, 0)): Monad.Hurd<(bool, int)> 
+    requires Loops.WhileCutTerminates(SampleHelperLoopCondition, SampleHelperLoopBody, x, s) 
+  {
+    Loops.While(SampleHelperLoopCondition, SampleHelperLoopBody)(x)
   }
 
   ghost function SampleHelperLoopBody(x: (bool, int)): Monad.Hurd<(bool, int)> {
