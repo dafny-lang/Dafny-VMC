@@ -34,7 +34,6 @@ module DiscreteLaplace.Equivalence {
           SampleTailRecursive(scale, sample.value, y)(sample.rest)
         else
           SampleTailRecursive(scale, b, y)(s)
-
   }
 
   ghost function SampleTailRecursiveHelper(a: bool := true, v: int := 0): Monad.Hurd<int> {
