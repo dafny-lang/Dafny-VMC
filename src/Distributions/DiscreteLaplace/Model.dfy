@@ -61,7 +61,7 @@ module DiscreteLaplace.Model {
         if d then
           var (v, s) :- SampleTailRecursiveHelper(scale)(s);
           var x := u + scale.numer * v;
-          y := x / scale.denom;
+          var y := x / scale.denom;
           var sample := Coin.Model.Sample(s);
           SampleTailRecursive(scale, sample.value, y)(sample.rest)
         else 
