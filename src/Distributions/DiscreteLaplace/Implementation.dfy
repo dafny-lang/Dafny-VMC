@@ -28,7 +28,7 @@ module DiscreteLaplace.Implementation {
       // ghost var prevY := y;
       // ghost var prevS := s;
       while b && y == 0
-        // invariant Monad.Result(z, s) == 
+        // invariant Monad.Result(z, s) ==
         // invariant Model.SampleTailRecursive(scale, prevB, prevY)(old(s)) == Model.SampleTailRecursive(scale, b, y)(s)
         decreases *
       {

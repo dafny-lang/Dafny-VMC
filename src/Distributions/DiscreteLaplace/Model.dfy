@@ -29,9 +29,9 @@ module DiscreteLaplace.Model {
   ghost function Body(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
-    (x: (bool, int)) => 
+    (x: (bool, int)) =>
       (s: Rand.Bitstream) =>
-        var (b, y) := (x.0, x.1); 
+        var (b, y) := (x.0, x.1);
         var (u, s) :- Uniform.Model.Sample(scale.numer)(s);
         var (d, s) :- BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(s);
         if d then
@@ -40,7 +40,7 @@ module DiscreteLaplace.Model {
           var y := x / scale.denom;
           var (b, s) :- Coin.Model.Sample(s);
           Monad.Result((b, y), s)
-        else 
+        else
           Monad.Result((b, y), s)
   }
 
@@ -64,7 +64,7 @@ module DiscreteLaplace.Model {
           var y := x / scale.denom;
           var sample := Coin.Model.Sample(s);
           SampleTailRecursive(scale, sample.value, y)(sample.rest)
-        else 
+        else
           SampleTailRecursive(scale, b, y)(s)
 
   }
