@@ -108,7 +108,7 @@ module Monad {
     iset s | h(s).RestIn(restSet)
   }
 
-  // Equation (3.4)B
+  // Equation (3.4)
   function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
     (s: Rand.Bitstream) => f(s).Bind(g)
   }
