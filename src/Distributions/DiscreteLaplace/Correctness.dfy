@@ -33,6 +33,7 @@ module DiscreteLaplace.Correctness {
     Exponential.Exp(x)
   }
 
+  // Based on Definition 28 in https://arxiv.org/pdf/2004.00010.pdf
   lemma {:axiom} Correctness(scale: Rationals.Rational, x: int)
     requires scale.numer >= 1
     ensures Rand.prob(iset s | Model.Sample(scale)(s).Equals(x)) == (Numerator1(scale) * Numerator2(scale, x)) / Denominator(scale)
