@@ -60,7 +60,7 @@ module DiscreteLaplace.Implementation {
         decreases *
         invariant Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s)  // proof related
       {
-        assume {:axiom} fuel > 1; // proof related
+        assume {:axiom} fuel > 0; // proof related
         fuel := fuel - 1; // proof related
 
         a := BernoulliExpNegSample(Rationals.Int(1));
