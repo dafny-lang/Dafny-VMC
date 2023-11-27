@@ -3,10 +3,11 @@ src/Distributions/BernoulliExpNeg/Correctness.dfy(176,17): SampleLe1IsIndep: Dec
 src/Distributions/BernoulliExpNeg/Model.dfy(70,17): Le1LoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/DiscreteLaplace/Correctness.dfy(36,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/DiscreteLaplace/Equivalence.dfy(22,4): SampleTailRecursive: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/DiscreteLaplace/Equivalence.dfy(40,4): SampleTailRecursiveHelper: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/DiscreteLaplace/Equivalence.dfy(53,17): SampleTailRecursiveEquivalence: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/DiscreteLaplace/Implementation.dfy(50,6): DiscreteLaplaceSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Equivalence.dfy(23,4): SampleTailRecursive: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Equivalence.dfy(70,17): SampleTailRecursiveEquivalence: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(42,6): DiscreteLaplaceSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(52,6): DiscreteLaplaceSampleHelper: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(63,8): DiscreteLaplaceSampleHelper: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/UniformPowerOfTwo/Implementation.dfy(42,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 

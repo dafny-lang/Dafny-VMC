@@ -54,7 +54,7 @@ module DiscreteLaplace.Equivalence {
   ghost function SampleTailRecursiveHelperLoopCut(x: (bool, int) := (true, 0), fuel: nat): Monad.Hurd<(bool, int)>
     decreases fuel
   {
-    (s: Rand.Bitstream) => 
+    (s: Rand.Bitstream) =>
       if fuel == 0 || !x.0 then
         Monad.Result(x, s)
       else

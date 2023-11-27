@@ -43,7 +43,7 @@ module DiscreteLaplace.Implementation {
       Equivalence.SampleTailRecursiveEquivalence(scale, old(s));
     }
 
-    method DiscreteLaplaceSampleHelper() returns (v: int) 
+    method DiscreteLaplaceSampleHelper() returns (v: int)
       modifies this
       decreases *
       ensures Model.SampleHelper.requires(old(s))
@@ -79,9 +79,9 @@ module DiscreteLaplace.Implementation {
         Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s).Map(f);
         { assert Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s) == Monad.Result((a, v), s); }
         Monad.Result((a, v), s).Map(f);
-        Monad.Result(v, s); 
+        Monad.Result(v, s);
       }
-      
+
     }
   }
 }
