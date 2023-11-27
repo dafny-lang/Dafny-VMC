@@ -32,35 +32,25 @@ module DiscreteLaplace.Model {
   ghost function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
-    // replace with functional version
-    (x: (bool, int)) =>
-      (s: Rand.Bitstream) =>
-        var (b, y) := (x.0, x.1);
-        var (u, s) :- Uniform.Model.Sample(scale.numer)(s);
-        var (d, s) :- BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer))(s);
-        if d then
-          var (v, s) :- SampleHelper()(s);
-          var x := u + scale.numer * v;
-          var y := x / scale.denom;
-          var (b, s) :- Coin.Model.Sample(s);
-          Monad.Result((b, y), s)
-        else
-          Monad.Result((b, y), s)
+    // replace with functional version using SampleHelper
+    (x: (bool, int)) => Monad.Return(x)
   }
 
   ghost function SampleLoopCondition(x: (bool, int)): bool {
     x.0 && x.1 == 0
   }
 
-  ghost function SampleHelper(): Monad.Hurd<int> {
+  ghost function SampleHelper(s: Rand.Bitstream): Monad.Result<int>
+    requires Loops.WhileCutTerminates(SampleHelperLoopCondition, SampleHelperLoopBody, (true, 0), s)
+  {
     var f := (x: (bool, int)) => x.1;
-    Monad.Map(SampleHelperLoop(), f)
+    SampleHelperLoop(s).Map(f)
   }
 
-  ghost function SampleHelperLoop(x: (bool, int) := (true, 0)): Monad.Hurd<(bool, int)> 
-    requires Loops.WhileCutTerminates(SampleHelperLoopCondition, SampleHelperLoopBody, x, s) 
+  ghost function SampleHelperLoop(s: Rand.Bitstream, x: (bool, int) := (true, 0)): Monad.Result<(bool, int)>
+    requires Loops.WhileCutTerminates(SampleHelperLoopCondition, SampleHelperLoopBody, x, s)
   {
-    Loops.While(SampleHelperLoopCondition, SampleHelperLoopBody)(x)
+    Loops.While(SampleHelperLoopCondition, SampleHelperLoopBody)(x)(s)
   }
 
   ghost function SampleHelperLoopBody(x: (bool, int)): Monad.Hurd<(bool, int)> {
