@@ -39,7 +39,7 @@ module DiscreteLaplace.Implementation {
         }
       }
       z := if b then -y else y;
-      assume {:axiom} Monad.Result(z, s) == Equivalence.SampleTailRecursive(scale)(old(s));
+      assume {:axiom} Monad.Result(z, s) == Equivalence.SampleTailRecursive(scale)(old(s)); // TODO: add later
       Equivalence.SampleTailRecursiveEquivalence(scale, old(s));
     }
 

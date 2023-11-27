@@ -29,6 +29,7 @@ module DiscreteLaplace.Model {
     Loops.While(SampleLoopCondition, SampleLoopBody(scale))((true, 0))
   }
 
+  // TODO: add correct version later
   ghost function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {

@@ -60,13 +60,13 @@ module DiscreteLaplace.Equivalence {
       else
         var (a, s') :- BernoulliExpNeg.Model.Sample(Rationals.Int(1))(s);
         SampleTailRecursiveHelperLoopCut((a, if a then x.1 + 1 else x.1), fuel - 1)(s')
-        // Monad.Bind(Model.SampleHelperLoopBody(x), (x': (bool, int)) => SampleTailRecursiveHelperLoopCut(x', fuel - 1))
   }
 
   /*******
    Lemmas
   *******/
 
+  // TODO: add later
   lemma {:axiom} SampleTailRecursiveEquivalence(scale: Rationals.Rational, s: Rand.Bitstream)
     requires scale.numer >= 1
     ensures SampleTailRecursive(scale)(s) == Model.Sample(scale)(s)
@@ -76,7 +76,6 @@ module DiscreteLaplace.Equivalence {
     ensures SampleTailRecursiveHelper(s) == Model.SampleHelper(s)
   {
     var f := (x: (bool, int)) => x.1;
-
     calc {
       SampleTailRecursiveHelper(s);
       SampleTailRecursiveHelperLoop(s).Map(f);
