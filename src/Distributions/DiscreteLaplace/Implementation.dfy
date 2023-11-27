@@ -49,61 +49,35 @@ module DiscreteLaplace.Implementation {
       ensures Model.SampleHelper.requires(old(s))
       ensures Model.SampleHelper(old(s)) == Monad.Result(v, s)
     {
-      assume {:axiom} Model.SampleHelper.requires(old(s));
+      assume {:axiom} Model.SampleHelper.requires(old(s));  // proof related
+      ghost var fuel := Loops.LeastFuel(Model.SampleHelperLoopCondition, Model.SampleHelperLoopBody, (true, 0), old(s));  // proof related
+      ghost var f := (x: (bool, int)) => x.1;  // proof related
 
       var a := true;
       v := 0;
-      ghost var fuel := Loops.LeastFuel(Model.SampleHelperLoopCondition, Model.SampleHelperLoopBody, (true, 0), old(s));
-
-      ghost var prevFuel := fuel;
-      ghost var prevA := a;
-      ghost var prevV := v;
-      ghost var prevS := s;
-    
-
-      a := BernoulliExpNegSample(Rationals.Int(1));
-      if a {
-        v := v + 1;
-      }
-      fuel := fuel - 1;
 
       while a
         decreases *
-        invariant Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s)
-        //invariant !a ==> Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s) == Monad.Result((a, v), s); 
-        //invariant Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((prevA, prevV), prevFuel)(prevS)
-        //invariant Equivalence.SampleTailRecursiveHelperLoopCut((prevA, prevV), prevFuel)(prevS) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s)
+        invariant Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s)  // proof related
       {
-        assume {:axiom} fuel > 1;
-        prevFuel := fuel;
-        prevA := a;
-        prevV := v;
-        prevS := s;
+        assume {:axiom} fuel > 1; // proof related
+        fuel := fuel - 1; // proof related
 
         a := BernoulliExpNegSample(Rationals.Int(1));
         if a {
           v := v + 1;
         }
-        fuel := fuel - 1;
       }
 
-      //assert A1: Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s) == Monad.Result((a, v), s);
-      //assert A2: Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((prevA, prevV), prevFuel)(prevS);
-      //assert A3: Equivalence.SampleTailRecursiveHelperLoopCut((prevA, prevV), prevFuel)(prevS) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s);
-      var f := (x: (bool, int)) => x.1;
-
-
-
+      // proof related
       calc {
         Model.SampleHelper(old(s));
         { Equivalence.SampleTailRecursiveHelperEquivalence(old(s)); }
         Equivalence.SampleTailRecursiveHelper(old(s));
         Equivalence.SampleTailRecursiveHelperLoop(old(s)).Map(f);
-        //{ reveal A2; }
-       // Equivalence.SampleTailRecursiveHelperLoopCut((prevA, prevV), prevFuel)(prevS).Map(f);
-       // { reveal A3; }
+        { assert Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s); }
         Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s).Map(f);
-        //{ reveal A1; }
+        { assert Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s) == Monad.Result((a, v), s); }
         Monad.Result((a, v), s).Map(f);
         Monad.Result(v, s); 
       }
