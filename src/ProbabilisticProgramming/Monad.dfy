@@ -137,6 +137,11 @@ module Monad {
    Lemmas
   *******/
 
+  lemma BindEquality<A, B>(f: Hurd<A>, g: A -> Hurd<B>, g': A -> Hurd<B>)
+    requires forall a, s :: g(a)(s) == g'(a)(s)
+    ensures forall s :: Bind(f, g)(s) == Bind(f, g')(s)
+  {}
+
   lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: Rand.Bitstream)
     ensures Bind(Return(a), g)(s) == g(a)(s)
   {}

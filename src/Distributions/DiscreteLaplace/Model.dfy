@@ -38,29 +38,42 @@ module DiscreteLaplace.Model {
   }
 
   ghost function SampleLoopCondition(x: (bool, int)): bool {
-    x.0 && x.1 == 0
+    x.0 && (x.1 == 0)
   }
 
-  ghost function SampleHelper(s: Rand.Bitstream): Monad.Result<int>
-    requires Loops.WhileCutTerminates(SampleHelperLoopCondition, SampleHelperLoopBody, (true, 0), s)
-  {
+  ghost function SampleInnerLoopFull(): Monad.Hurd<int> {
     var f := (x: (bool, int)) => x.1;
-    SampleHelperLoop(s).Map(f)
+    Monad.Map(SampleInnerLoop(), f)
   }
 
-  ghost function SampleHelperLoop(s: Rand.Bitstream, x: (bool, int) := (true, 0)): Monad.Result<(bool, int)>
-    requires Loops.WhileCutTerminates(SampleHelperLoopCondition, SampleHelperLoopBody, x, s)
+  ghost function SampleInnerLoop(x: (bool, int) := (true, 0)): (f: Monad.Hurd<(bool, int)>) {
+    Loops.While(SampleInnerLoopCondition, SampleInnerLoopBody)(x)
+  }
+
+  ghost function SampleInnerLoop2(x: (bool, int)): (f: Monad.Hurd<(bool, int)>)
+    ensures f == Loops.While(SampleInnerLoopCondition, SampleInnerLoopBody)(x)
   {
-    Loops.While(SampleHelperLoopCondition, SampleHelperLoopBody)(x)(s)
+    var f := Loops.While(SampleInnerLoopCondition, SampleInnerLoopBody)(x);
+    f
   }
 
-  ghost function SampleHelperLoopBody(x: (bool, int)): Monad.Hurd<(bool, int)> {
-    (s: Rand.Bitstream) =>
-      var (a, s) :- BernoulliExpNeg.Model.Sample(Rationals.Int(1))(s);
-      Monad.Result((a, if a then x.1 + 1 else x.1), s)
+  ghost function SampleInnerLoopBody(x: (bool, int)): Monad.Hurd<(bool, int)> {
+    Monad.Bind(
+      BernoulliExpNeg.Model.Sample(Rationals.Int(1)), 
+      (a: bool) => Monad.Return((a, if a then x.1 + 1 else x.1))
+    )
   }
 
-  ghost function SampleHelperLoopCondition(x: (bool, int)): bool {
+  ghost opaque function SampleInnerLoopCondition(x: (bool, int)): bool {
     x.0
   }
+
+  /*******
+   Lemmas
+  *******/
+
+  // add later
+  lemma {:axiom} SampleInnerLoopTerminatesAlmostSurely()
+    ensures Loops.WhileTerminatesAlmostSurely(SampleInnerLoopCondition, SampleInnerLoopBody)
+
 }

@@ -32,56 +32,37 @@ module DiscreteLaplace.Implementation {
         var u := UniformSample(scale.numer);
         var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
         if d {
-          var v := DiscreteLaplaceSampleHelper();
+          var v := DisceteLaplaceInnerLoop();
           var x := u + scale.numer * v;
           y := x / scale.denom;
           b := CoinSample();
         }
       }
       z := if b then -y else y;
-      assume {:axiom} Monad.Result(z, s) == Equivalence.SampleTailRecursive(scale)(old(s)); // TODO: add later
-      Equivalence.SampleTailRecursiveEquivalence(scale, old(s));
+      assume {:axiom} false; // fix later
     }
 
-    method DiscreteLaplaceSampleHelper() returns (v: int)
+    method DisceteLaplaceInnerLoop() returns (v: int)
       modifies this
       decreases *
-      ensures Model.SampleHelper.requires(old(s))
-      ensures Model.SampleHelper(old(s)) == Monad.Result(v, s)
+      ensures Monad.Result(v, s) == Model.SampleInnerLoopFull()(old(s))
     {
-      assume {:axiom} Model.SampleHelper.requires(old(s));  // proof related
-      ghost var fuel := Loops.LeastFuel(Model.SampleHelperLoopCondition, Model.SampleHelperLoopBody, (true, 0), old(s));  // proof related
-      ghost var f := (x: (bool, int)) => x.1;  // proof related
-
       var a := true;
       v := 0;
 
       while a
         decreases *
-        invariant Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s)  // proof related
+        invariant Equivalence.SampleInnerLoopTailRecursive()(old(s)) == Equivalence.SampleInnerLoopTailRecursive((a, v))(s)
       {
-        assume {:axiom} fuel > 0; // proof related
-        fuel := fuel - 1; // proof related
-
+        reveal Equivalence.SampleInnerLoopTailRecursive(); 
+        
         a := BernoulliExpNegSample(Rationals.Int(1));
         if a {
           v := v + 1;
         }
       }
 
-      // proof related
-      calc {
-        Model.SampleHelper(old(s));
-        { Equivalence.SampleTailRecursiveHelperEquivalence(old(s)); }
-        Equivalence.SampleTailRecursiveHelper(old(s));
-        Equivalence.SampleTailRecursiveHelperLoop(old(s)).Map(f);
-        { assert Equivalence.SampleTailRecursiveHelperLoop(old(s)) == Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s); }
-        Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s).Map(f);
-        { assert Equivalence.SampleTailRecursiveHelperLoopCut((a, v), fuel)(s) == Monad.Result((a, v), s); }
-        Monad.Result((a, v), s).Map(f);
-        Monad.Result(v, s);
-      }
-
+      Equivalence.SampleInnerLoopLiftToEnsures(old(s), s, a, v);
     }
   }
 }

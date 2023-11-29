@@ -29,7 +29,7 @@ module Loops {
     (fuel: nat) => !WhileCut(condition, body, init, fuel)(s).Satisfies(condition)
   }
 
-  // Definition 39 / True iff Prob(iset s | While(condition, body, a)(s) terminates) == 1
+  // Definition 39 / True iff Prob(iset s | While(condition, body)(a)(s) terminates) == 1
   ghost predicate WhileTerminatesAlmostSurely<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
     var p := (init: A) =>
                (s: Rand.Bitstream) => WhileCutTerminates(condition, body, init, s);
