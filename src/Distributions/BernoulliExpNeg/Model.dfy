@@ -158,13 +158,7 @@ module BernoulliExpNeg.Model {
       Measures.ProbabilityLe1(divergenceEvent, Rand.eventSpace, Rand.prob);
       assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) <= Le1LoopDivergenceProbBound(ak.1)(n);
     } else {
-      if !Le1LoopCondition(ak) {
-        forall s ensures Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n) {}
-        assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) == 0.0 by {
-          assert iset{} == iset s | !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n);
-          Rand.ProbIsProbabilityMeasure();
-        }
-      } else {
+      if Le1LoopCondition(ak) {
         var (a, k) := ak;
         var k': nat := k + 1;
         var continueValues := iset ak': (bool, nat) | Le1LoopCondition(ak');
@@ -178,26 +172,18 @@ module BernoulliExpNeg.Model {
             case Diverging => {}
             case Result(ak', s') =>
               assert s in firstIterationContinuesEvent <==> ak'.0;
+              calc {
+                s in divergenceEvent;
+                !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n);
+                { Loops.WhileCutTerminatesWithFuelUnroll(Le1LoopCondition, Le1LoopIter(gamma), ak, s, ak', s', n); }
+                !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak', s')(n - 1);
+              }
               if ak'.0 {
                 assert ak' == (true, k');
-                calc {
-                  s in divergenceEvent;
-                  !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n);
-                  { Loops.WhileCutTerminatesWithFuelUnroll(Le1LoopCondition, Le1LoopIter(gamma), ak, s, ak', s', n); }
-                  !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak', s')(n - 1);
-                  s' in restOfLoopDiverges;
-                }
+                assert s' in restOfLoopDiverges <==> !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak', s')(n - 1);
               } else {
-                assert s !in divergenceEvent by {
-                  calc {
-                    s in divergenceEvent;
-                    !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n);
-                    { Loops.WhileCutTerminatesWithFuelUnroll(Le1LoopCondition, Le1LoopIter(gamma), ak, s, ak', s', n); }
-                    !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak', s')(n - 1);
-                    false;
-                  }
-                }
                 assert s !in firstIterationContinuesEvent;
+                assert s !in divergenceEvent;
               }
           }
         }
@@ -205,54 +191,75 @@ module BernoulliExpNeg.Model {
           assume {:axiom} Independence.IsIndepFunction(Le1LoopIter(gamma)(ak)); // TODO
           Independence.ResultsIndependent(Le1LoopIter(gamma)(ak), continueValues, restOfLoopDiverges);
         }
-        assert 0.0 <= Rand.prob(restOfLoopDiverges) <= 1.0 by {
+        calc {
+          Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n);
+          Rand.prob(divergenceEvent);
+          Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges);
+          <= { Le1LoopDivergenceProbabilityBoundHelper(gamma, ak, k', n, firstIterationContinuesEvent, restOfLoopDiverges); }
+          Le1LoopDivergenceProbBound(ak.1)(n);
+        }
+      } else { // i.e. if !LeLoopCondition(ak)
+        forall s ensures Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n) {}
+        assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) == 0.0 by {
+          assert iset{} == iset s | !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), ak, s)(n);
           Rand.ProbIsProbabilityMeasure();
-          Measures.ProbabilityLe1(restOfLoopDiverges, Rand.eventSpace, Rand.prob);
-        }
-        assert 0.0 <= Rand.prob(firstIterationContinuesEvent) <= 1.0 by {
-          Rand.ProbIsProbabilityMeasure(); Measures.ProbabilityLe1(firstIterationContinuesEvent, Rand.eventSpace, Rand.prob);
-        }
-        if n == 1 {
-          assert Rand.prob(firstIterationContinuesEvent) <= 1.0 / k' as real by {
-            assert firstIterationContinuesEvent == Monad.BitstreamsWithValueIn(Le1LoopIter(gamma)(ak), iset{(true, k')}) by {
-              forall s ensures s in firstIterationContinuesEvent <==> s in Monad.BitstreamsWithValueIn(Le1LoopIter(gamma)(ak), iset{(true, k')}) {}
-            }
-            calc {
-              Rand.prob(firstIterationContinuesEvent);
-              { Le1LoopIterCorrectness(gamma, ak, k'); }
-              gamma.numer as real / (k' * gamma.denom) as real;
-            <=
-              1.0 / k' as real;
-            }
-          }
-          calc {
-            Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n);
-            Rand.prob(divergenceEvent);
-            Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges);
-          <= { RealArith.MulMonotonic(Rand.prob(firstIterationContinuesEvent), Rand.prob(restOfLoopDiverges), 1.0); }
-            Rand.prob(firstIterationContinuesEvent);
-          <=
-            1.0 / k' as real;
-            1.0 / (k + n) as real;
-          }
-          assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) <= Le1LoopDivergenceProbBound(ak.1)(n);
-        } else {
-          calc {
-            Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n);
-            Rand.prob(divergenceEvent);
-            Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges);
-          <= { RealArith.MulMonotonic(Rand.prob(restOfLoopDiverges), Rand.prob(firstIterationContinuesEvent), 1.0); }
-            Rand.prob(restOfLoopDiverges);
-            Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), (true, k'))(n - 1);
-          <= { Le1LoopDivergenceProbabilityBound(gamma, (true, k'), n - 1); }
-            1.0 / (k + n) as real;
-          }
-          assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) <= Le1LoopDivergenceProbBound(ak.1)(n);
         }
       }
       assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) <= Le1LoopDivergenceProbBound(ak.1)(n);
     }
-    assert Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n) <= Le1LoopDivergenceProbBound(ak.1)(n);
+  }
+
+  lemma Le1LoopDivergenceProbabilityBoundHelper(gamma: Rationals.Rational, ak: (bool, nat), k': nat, n: nat, firstIterationContinuesEvent: iset<Rand.Bitstream>, restOfLoopDiverges: iset<Rand.Bitstream>)
+    requires 0 <= gamma.numer <= gamma.denom
+    requires n >= 1
+    requires k' == ak.1 + 1
+    requires firstIterationContinuesEvent == iset s | Le1LoopIter(gamma)(ak)(s).Satisfies(Le1LoopCondition)
+    requires restOfLoopDiverges == iset s | !Loops.WhileCutTerminatesWithFuel(Le1LoopCondition, Le1LoopIter(gamma), (true, k'), s)(n - 1)
+    requires firstIterationContinuesEvent in Rand.eventSpace
+    requires restOfLoopDiverges in Rand.eventSpace
+    decreases n, 1
+    ensures Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges) <= Le1LoopDivergenceProbBound(ak.1)(n)
+  {
+    var k := ak.1;
+    var k' := k + 1;
+    assert 0.0 <= Rand.prob(restOfLoopDiverges) <= 1.0 by {
+      Rand.ProbIsProbabilityMeasure();
+      Measures.ProbabilityLe1(restOfLoopDiverges, Rand.eventSpace, Rand.prob);
+    }
+    assert 0.0 <= Rand.prob(firstIterationContinuesEvent) <= 1.0 by {
+      Rand.ProbIsProbabilityMeasure(); Measures.ProbabilityLe1(firstIterationContinuesEvent, Rand.eventSpace, Rand.prob);
+    }
+    if n == 1 {
+      assert Rand.prob(firstIterationContinuesEvent) <= 1.0 / k' as real by {
+        assert firstIterationContinuesEvent == Monad.BitstreamsWithValueIn(Le1LoopIter(gamma)(ak), iset{(true, k')}) by {
+          forall s ensures s in firstIterationContinuesEvent <==> s in Monad.BitstreamsWithValueIn(Le1LoopIter(gamma)(ak), iset{(true, k')}) {}
+        }
+        calc {
+          Rand.prob(firstIterationContinuesEvent);
+          { Le1LoopIterCorrectness(gamma, ak, k'); }
+          gamma.numer as real / (k' * gamma.denom) as real;
+        <=
+          1.0 / k' as real;
+        }
+      }
+      calc {
+        Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges);
+      <= { RealArith.MulMonotonic(Rand.prob(firstIterationContinuesEvent), Rand.prob(restOfLoopDiverges), 1.0); }
+        Rand.prob(firstIterationContinuesEvent);
+      <=
+        1.0 / k' as real;
+        1.0 / (k + n) as real;
+      }
+    } else {
+      calc {
+        Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges);
+      <= { RealArith.MulMonotonic(Rand.prob(restOfLoopDiverges), Rand.prob(firstIterationContinuesEvent), 1.0); }
+        Rand.prob(restOfLoopDiverges);
+        Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), (true, k'))(n - 1);
+      <= { Le1LoopDivergenceProbabilityBound(gamma, (true, k'), n - 1); }
+        1.0 / (k + n) as real;
+      }
+    }
   }
 
 }
