@@ -113,6 +113,13 @@ module Limits {
     }
   }
 
+  lemma {:axiom} Sandwich(lower: nat -> real, middle: nat -> real, upper: nat -> real, limit: real)
+    requires ConvergesTo(lower, limit)
+    requires ConvergesTo(upper, limit)
+    requires Sequences.IsLeq(lower, middle)
+    requires Sequences.IsLeq(middle, upper)
+    ensures ConvergesTo(middle, limit)
+
   lemma ConstantSequenceConverges(sequence: nat -> real, constant: real)
     requires forall n: nat :: sequence(n) == constant
     ensures ConvergesTo(sequence, constant)
