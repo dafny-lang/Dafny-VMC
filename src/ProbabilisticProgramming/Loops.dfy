@@ -319,7 +319,7 @@ module Loops {
   // (Equation 3.30) / Sufficient conditions for while-loop termination
   lemma {:axiom} EnsureWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>)
     requires forall a :: Independence.IsIndep(body(a))
-    requires Quantifier.WithPosProb(s => forall a: A :: WhileLoopExitsAfterOneIteration(body, condition, a)(s)) // TODO: the quantifiers should be swapped here
+    requires forall a: A :: Quantifier.WithPosProb(WhileLoopExitsAfterOneIteration(body, condition, a)) // TODO: the quantifiers should be swapped here
     ensures WhileTerminatesAlmostSurely(condition, body)
 
   lemma {:axiom} EnsureWhileTerminatesAlmostSurelyViaLimit<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
