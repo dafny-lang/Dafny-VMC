@@ -2,9 +2,9 @@ src/Distributions/BernoulliExpNeg/Correctness.dfy(126,17): CorrectnessLe1: Decla
 src/Distributions/BernoulliExpNeg/Correctness.dfy(162,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/BernoulliExpNeg/Model.dfy(118,10): Le1LoopTerminatesAlmostSurely: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(154,4): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(173,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(174,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(205,10): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(167,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(168,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(191,10): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(77,17): Le1LoopIterCorrectness: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/UniformPowerOfTwo/Implementation.dfy(42,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 

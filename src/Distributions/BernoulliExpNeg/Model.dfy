@@ -195,7 +195,7 @@ module BernoulliExpNeg.Model {
           Loops.WhileCutDivergenceProbability(Le1LoopCondition, Le1LoopIter(gamma), ak)(n);
           Rand.prob(divergenceEvent);
           Rand.prob(firstIterationContinuesEvent) * Rand.prob(restOfLoopDiverges);
-          <= { Le1LoopDivergenceProbabilityBoundHelper(gamma, ak, k', n, firstIterationContinuesEvent, restOfLoopDiverges); }
+        <= { Le1LoopDivergenceProbabilityBoundHelper(gamma, ak, k', n, firstIterationContinuesEvent, restOfLoopDiverges); }
           Le1LoopDivergenceProbBound(ak.1)(n);
         }
       } else { // i.e. if !LeLoopCondition(ak)
