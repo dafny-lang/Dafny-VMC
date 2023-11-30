@@ -46,15 +46,15 @@ module DiscreteLaplace.Equivalence {
   }
 
   lemma SampleInnerLoopTailRecursiveEquivalence(s: Rand.Bitstream, x: (bool, int) := (true, 0))
-    ensures 
-      Model.SampleInnerLoop(x)(s) == 
-        if x.0 then
-          Monad.Bind(
-            BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
-            (a: bool) => Model.SampleInnerLoop((a, if a then x.1 + 1 else x.1))
-          )(s)
-        else 
-          Monad.Return(x)(s)
+    ensures
+      Model.SampleInnerLoop(x)(s) ==
+      if x.0 then
+        Monad.Bind(
+          BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
+          (a: bool) => Model.SampleInnerLoop((a, if a then x.1 + 1 else x.1))
+        )(s)
+      else
+        Monad.Return(x)(s)
   {
     calc {
       Model.SampleInnerLoop(x)(s);
@@ -79,22 +79,22 @@ module DiscreteLaplace.Equivalence {
           Monad.Bind(
             BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
             (a: bool) => Monad.Return((a, if a then x.1 + 1 else x.1))
-          ), 
+          ),
           (y: (bool, int)) => Model.SampleInnerLoop(y)
         )(s)
-      else 
+      else
         Monad.Return(x)(s);
     ==
       if x.0 then
         Monad.Bind(
           BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
-          (a: bool) => 
+          (a: bool) =>
             Monad.Bind(
               Monad.Return((a, if a then x.1 + 1 else x.1)),
               (y: (bool, int)) => Model.SampleInnerLoop(y)
             )
         )(s)
-      else 
+      else
         Monad.Return(x)(s);
     ==
       if x.0 then
@@ -102,7 +102,7 @@ module DiscreteLaplace.Equivalence {
           BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
           (a: bool) => Model.SampleInnerLoop((a, if a then x.1 + 1 else x.1))
         )(s)
-      else 
+      else
         Monad.Return(x)(s);
     }
   }
