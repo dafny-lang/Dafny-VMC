@@ -34,7 +34,7 @@ module DiscreteLaplace.Equivalence {
   *******/
 
   lemma SampleInnerLoopLiftToEnsures(s: Rand.Bitstream, t: Rand.Bitstream, a: bool, v: int)
-    requires R1: !a 
+    requires R1: !a
     requires R2: SampleInnerLoopTailRecursive()(s) == SampleInnerLoopTailRecursive((a, v))(t)
     ensures Model.SampleInnerLoopFull()(s) == Monad.Result(v, t)
   {
@@ -57,6 +57,7 @@ module DiscreteLaplace.Equivalence {
 
     calc {
       Model.SampleInnerLoopFull()(s);
+      { reveal Model.SampleInnerLoopFull(); }
       Model.SampleInnerLoop()(s).Map(f);
       { reveal A; }
       Monad.Result((a, v), t).Map(f);
@@ -67,58 +68,64 @@ module DiscreteLaplace.Equivalence {
   lemma SampleInnerLoopTailRecursiveEquivalence(s: Rand.Bitstream, x: (bool, int) := (true, 0))
     decreases s
     ensures Model.SampleInnerLoop(x)(s) == SampleInnerLoopTailRecursive(x)(s)
-  { 
+  {
     var r := Model.SampleInnerLoopBody(x)(s);
-    Model.SampleInnerLoopTerminatesAlmostSurely();
 
     calc {
       Model.SampleInnerLoop(x)(s);
-    == { reveal Loops.While(); }
+    == { reveal Loops.While();
+         reveal Model.SampleInnerLoop();
+         reveal Model.SampleInnerLoopBody();
+         reveal Model.SampleInnerLoopCondition(); }
       Loops.While(Model.SampleInnerLoopCondition, Model.SampleInnerLoopBody)(x)(s);
-    ==  { Loops.WhileUnroll(Model.SampleInnerLoopCondition, Model.SampleInnerLoopBody, x, s); }
-      if Model.SampleInnerLoopCondition(x) then 
+    == { Model.SampleInnerLoopTerminatesAlmostSurely();
+         Loops.WhileUnroll(Model.SampleInnerLoopCondition, Model.SampleInnerLoopBody, x, s);
+         reveal Model.SampleInnerLoop();
+         reveal Model.SampleInnerLoopBody();
+         reveal Model.SampleInnerLoopCondition(); }
+      if Model.SampleInnerLoopCondition(x) then
         Monad.Bind(Model.SampleInnerLoopBody(x), (y: (bool, int)) => Model.SampleInnerLoop(y))(s)
       else
         Monad.Return(x)(s);
     == { reveal Model.SampleInnerLoopCondition();  }
-      if x.0 then 
+      if x.0 then
         if r.Result? then Model.SampleInnerLoop(r.value)(r.rest) else Monad.Diverging
-      else 
+      else
         Monad.Return(x)(s);
     == { if r.Result? { SampleInnerLoopTailRecursiveEquivalence(r.rest, r.value); } }
-      if x.0 then 
+      if x.0 then
         if r.Result? then SampleInnerLoopTailRecursive(r.value)(r.rest) else Monad.Diverging
-      else 
+      else
         Monad.Return(x)(s);
     ==
-      if x.0 then 
+      if x.0 then
         Monad.Bind(Model.SampleInnerLoopBody(x), SampleInnerLoopTailRecursive)(s)
-      else 
+      else
         Monad.Return(x)(s);
-    ==
-      if x.0 then 
+    == { reveal Model.SampleInnerLoopBody(); }
+      if x.0 then
         Monad.Bind(
           Monad.Bind(
-            BernoulliExpNeg.Model.Sample(Rationals.Int(1)), 
+            BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
             (a: bool) => Monad.Return((a, if a then x.1 + 1 else x.1))
           ),
           SampleInnerLoopTailRecursive
         )(s)
-      else 
+      else
         Monad.Return(x)(s);
     ==
-      if x.0 then 
+      if x.0 then
         Monad.Bind(
-          BernoulliExpNeg.Model.Sample(Rationals.Int(1)), 
-          (a: bool) => 
+          BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
+          (a: bool) =>
             Monad.Bind(
               Monad.Return((a, if a then x.1 + 1 else x.1)),
               SampleInnerLoopTailRecursive
             )
         )(s)
-      else 
+      else
         Monad.Return(x)(s);
-    == 
+    ==
       if x.0 then
         Monad.Bind(
           BernoulliExpNeg.Model.Sample(Rationals.Int(1)),
