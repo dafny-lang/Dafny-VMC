@@ -30,7 +30,6 @@ module BernoulliExpNeg.Correctness {
       var trueEvent := iset s | Model.Sample(gamma)(s).Equals(true);
       var firstSampleTrueEvent := iset s | Model.SampleLe1(Rationals.Int(1))(s).Equals(true);
       var gamma' := Rationals.Rational(gamma.numer - gamma.denom, gamma.denom);
-      var f: bool -> Monad.Hurd<bool> := (b: bool) => if b then Model.Sample(gamma') else Monad.Return(false);
       var secondSampleTrueEvent := iset s | Model.Sample(gamma')(s).Equals(true);
       assert decomposeTrueEvent: trueEvent == firstSampleTrueEvent * Monad.BitstreamsWithRestIn(Model.SampleLe1(Rationals.Int(1)), secondSampleTrueEvent) by {
         forall s ensures s in trueEvent <==> s in firstSampleTrueEvent && s in Monad.BitstreamsWithRestIn(Model.SampleLe1(Rationals.Int(1)), secondSampleTrueEvent) {
@@ -42,18 +41,6 @@ module BernoulliExpNeg.Correctness {
           SampleLe1IsIndep(Rationals.Int(1));
           Independence.IsIndepImpliesIsIndepFunction(Model.SampleLe1(Rationals.Int(1)));
         }
-        assert forall b: bool :: Independence.IsIndepFunction(f(b)) by {
-          forall b: bool ensures Independence.IsIndepFunction(f(b)) {
-            assert Independence.IsIndep(f(b)) by {
-              if b {
-                SampleIsIndep(gamma');
-              } else {
-                Independence.ReturnIsIndep(false);
-              }
-            }
-            Independence.IsIndepImpliesIsIndepFunction(f(b));
-          }
-        }
         assert secondSampleTrueEvent in Rand.eventSpace by {
           assert secondSampleTrueEvent == Monad.BitstreamsWithValueIn(Model.Sample(gamma'), iset{true});
           SampleIsIndep(gamma');
@@ -61,7 +48,6 @@ module BernoulliExpNeg.Correctness {
         }
         Independence.ResultsIndependent(
           Model.SampleLe1(Rationals.Int(1)),
-          f,
           iset{true},
           secondSampleTrueEvent);
         assert Monad.BitstreamsWithValueIn(Model.SampleLe1(Rationals.Int(1)), iset{true}) == firstSampleTrueEvent;
