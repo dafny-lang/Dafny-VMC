@@ -33,14 +33,12 @@ module Independence {
    Lemmas
   *******/
 
-  lemma ResultsIndependent<A(!new), B(!new)>(
+  lemma ResultsIndependent<A(!new)>(
     h: Monad.Hurd<A>,
-    f: A -> Monad.Hurd<B>,
     aSet: iset<A>,
     bSeeds: iset<Rand.Bitstream>
   )
     requires hIndep: IsIndepFunction(h)
-    requires fIndep: forall a: A :: IsIndepFunction(f(a))
     requires bMeasurable: bSeeds in Rand.eventSpace
     ensures Rand.prob(Monad.BitstreamsWithValueIn(h, aSet) * Monad.BitstreamsWithRestIn(h, bSeeds)) == Rand.prob(Monad.BitstreamsWithValueIn(h, aSet)) * Rand.prob(bSeeds)
   {

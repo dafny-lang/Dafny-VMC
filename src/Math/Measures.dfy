@@ -122,6 +122,11 @@ module Measures {
     ensures PreImage(f, e) == PreImage(f', e')
   {}
 
+  lemma {:axiom} ProbabilityLe1<T>(event: iset<T>, eventSpace: iset<iset<T>>, prob: iset<T> -> real)
+    requires IsProbability(eventSpace, prob)
+    requires event in eventSpace
+    ensures 0.0 <= prob(event) <= 1.0
+
   // Equation (2.18)
   lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real)
     requires IsSigmaAlgebra(eventSpace)
