@@ -19,6 +19,6 @@ module Quantifier {
   ghost predicate WithPosProb(p: Rand.Bitstream -> bool) {
     var e := iset s | p(s);
     && e in Rand.eventSpace
-    && Rand.prob(e) != 0.0
+    && Rand.prob(e) > 0.0
   }
 }
