@@ -1,0 +1,34 @@
+src/Distributions/BernoulliExpNeg/Correctness.dfy(126,17): CorrectnessLe1: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(162,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Model.dfy(118,10): Le1LoopTerminatesAlmostSurely: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(154,4): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(167,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(168,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(191,10): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Model.dfy(77,17): Le1LoopIterCorrectness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/UniformPowerOfTwo/Implementation.dfy(42,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
+src/Math/Analysis/Limits.dfy(116,17): Sandwich: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(2,26): Exp: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(4,17): FunctionalEquation: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Exponential.dfy(7,17): Increasing: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Measures.dfy(125,17): ProbabilityLe1: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(105,17): BindIsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(30,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(55,6): ResultsIndependent: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Independence.dfy(59,17): IsIndepImpliesMeasurableBool: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(77,17): IsIndepImpliesMeasurableNat: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(82,17): IsIndepImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(87,17): CoinIsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Independence.dfy(91,17): ReturnIsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(320,17): EnsureWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(325,17): EnsureWhileTerminatesAlmostSurelyViaLimit: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(341,17): UntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(373,4): EnsureUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Loops.dfy(396,4): WhileIsIndep: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/RandomSource.dfy(38,17): ProbIsProbabilityMeasure: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/RandomSource.dfy(42,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/RandomSource.dfy(49,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/RandomSource.dfy(55,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
