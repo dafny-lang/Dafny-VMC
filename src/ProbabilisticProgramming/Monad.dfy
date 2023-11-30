@@ -57,23 +57,6 @@ module Monad {
       case Diverging => false
       case Result(_, rest) => property(rest)
     }
-
-    predicate IsFailure() {
-      Diverging?
-    }
-
-    function PropagateFailure<B>(): Result<B>
-      requires Diverging?
-    {
-      Diverging
-    }
-
-    function Extract(): (A, Rand.Bitstream)
-      requires Result?
-    {
-      (this.value, this.rest)
-    }
-
   }
 
   ghost function Values<A>(results: iset<Result<A>>): iset<A> {
@@ -136,11 +119,6 @@ module Monad {
   /*******
    Lemmas
   *******/
-
-  lemma BindEquality<A, B>(f: Hurd<A>, g: A -> Hurd<B>, g': A -> Hurd<B>)
-    requires forall a, s :: g(a)(s) == g'(a)(s)
-    ensures forall s :: Bind(f, g)(s) == Bind(f, g')(s)
-  {}
 
   lemma UnitalityBindReturn<A,B>(a: A, g: A -> Hurd<B>, s: Rand.Bitstream)
     ensures Bind(Return(a), g)(s) == g(a)(s)
