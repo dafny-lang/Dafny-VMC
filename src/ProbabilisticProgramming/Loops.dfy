@@ -4,6 +4,8 @@
  *******************************************************************************/
 
 module Loops {
+  import Helper
+  import Limits
   import Monad
   import Quantifier
   import Independence
@@ -21,6 +23,7 @@ module Loops {
       Monad.Bind(body(init), (init': A) => WhileCut(condition, body, init', fuel - 1))
   }
 
+  // TODO: this should be renamed to WhileTerminatesOn
   ghost predicate WhileCutTerminates<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream) {
     exists fuel: nat :: WhileCutTerminatesWithFuel(condition, body, init, s)(fuel)
   }
@@ -29,11 +32,17 @@ module Loops {
     (fuel: nat) => !WhileCut(condition, body, init, fuel)(s).Satisfies(condition)
   }
 
+  ghost function WhileCutDivergenceProbability<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A): nat -> real {
+    (fuel: nat) => Rand.prob(iset s | !WhileCutTerminatesWithFuel(condition, body, init, s)(fuel))
+  }
+
+  ghost predicate WhileTerminatesAlmostSurelyInit<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A) {
+    Quantifier.AlmostSurely((s: Rand.Bitstream) => WhileCutTerminates(condition, body, init, s))
+  }
+
   // Definition 39 / True iff Prob(iset s | While(condition, body)(a)(s) terminates) == 1
   ghost predicate WhileTerminatesAlmostSurely<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
-    var p := (init: A) =>
-               (s: Rand.Bitstream) => WhileCutTerminates(condition, body, init, s);
-    forall init :: Quantifier.AlmostSurely(p(init))
+    forall init :: WhileTerminatesAlmostSurelyInit(condition, body, init)
   }
 
   // Definition of while loops.
@@ -310,8 +319,23 @@ module Loops {
   // (Equation 3.30) / Sufficient conditions for while-loop termination
   lemma {:axiom} EnsureWhileTerminates<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>)
     requires forall a :: Independence.IsIndep(body(a))
-    requires forall a :: Quantifier.WithPosProb(WhileLoopExitsAfterOneIteration(body, condition, a))
+    requires forall a: A :: Quantifier.WithPosProb(WhileLoopExitsAfterOneIteration(body, condition, a)) // TODO: the quantifiers should be swapped here
     ensures WhileTerminatesAlmostSurely(condition, body)
+
+  lemma {:axiom} EnsureWhileTerminatesAlmostSurelyViaLimit<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
+    requires Limits.ConvergesTo(WhileCutDivergenceProbability(condition, body, init), 0.0)
+    ensures WhileTerminatesAlmostSurely(condition, body)
+  /*
+    Proof strategy:
+
+    Prove that the event that WhileCut terminates grows with the fuel.
+    By monotonicity of probability, the probability is increasing with the fuel.
+    The event that while terminates is the union of WhileCut terminating over all possible values for fuel.
+    By standard measure theory results and the monotonicity of the events,
+    the probability that while terminates is the supremum of the probabilities that WhileCut terminates over all possible values for fuel.
+    Since the probability is increasing, the supremum is the same as the limit.
+  */
+
 
   // Theorem 45 (wrong!) / PROB_BERN_UNTIL (correct!)
   lemma {:axiom} UntilProbabilityFraction<A>(proposal: Monad.Hurd<A>, accept: A -> bool, d: A -> bool)
