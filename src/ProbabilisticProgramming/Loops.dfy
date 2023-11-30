@@ -40,7 +40,7 @@ module Loops {
     Quantifier.AlmostSurely((s: Rand.Bitstream) => WhileCutTerminates(condition, body, init, s))
   }
 
-  // Definition 39 / True iff Prob(iset s | While(condition, body, a)(s) terminates) == 1
+  // Definition 39 / True iff Prob(iset s | While(condition, body)(a)(s) terminates) == 1
   ghost predicate WhileTerminatesAlmostSurely<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>) {
     forall init :: WhileTerminatesAlmostSurelyInit(condition, body, init)
   }

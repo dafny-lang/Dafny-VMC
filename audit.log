@@ -7,6 +7,9 @@ src/Distributions/BernoulliExpNeg/Model.dfy(168,8): Le1LoopDivergenceProbability
 src/Distributions/BernoulliExpNeg/Model.dfy(191,10): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(77,17): Le1LoopIterCorrectness: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Coin/Interface.dfy(21,6): CoinSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Correctness.dfy(37,17): Correctness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(42,6): DiscreteLaplaceSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Model.dfy(68,17): SampleInnerLoopTerminatesAlmostSurely: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/UniformPowerOfTwo/Implementation.dfy(42,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
 src/Math/Analysis/Limits.dfy(116,17): Sandwich: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
