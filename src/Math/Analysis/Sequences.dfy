@@ -19,6 +19,10 @@ module Sequences {
     forall n: nat :: RealArith.Abs(sequence(n)) < bound
   }
 
+  ghost predicate IsLeq(sequence1: nat -> real, sequence2: nat -> real) {
+    forall n: nat :: sequence1(n) <= sequence2(n)
+  }
+
   function OneOverNPlus1(n: nat): real
   {
     1.0 / (n as real + 1.0)
