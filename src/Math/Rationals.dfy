@@ -8,7 +8,7 @@ module Rationals {
    Definitions
   ************/
 
-  type PosInt = n: int | n >=1 witness 1
+  type PosInt = n: int | n >= 1 witness 1
 
   datatype Rational = Rational(numer: int, denom: PosInt) {
     predicate Eq(rhs: Rational) {
