@@ -52,9 +52,9 @@ module DiscreteLaplace.Implementation {
 
       while a
         decreases *
-        invariant Equivalence.SampleInnerLoopTailRecursive()(old(s)) == Equivalence.SampleInnerLoopTailRecursive((a, v))(s)
+        invariant Model.SampleInnerLoop()(old(s)) == Model.SampleInnerLoop((a, v))(s)
       {
-        reveal Equivalence.SampleInnerLoopTailRecursive();
+        Equivalence.SampleInnerLoopTailRecursiveEquivalence(s, (a, v));
 
         a := BernoulliExpNegSample(Rationals.Int(1));
         if a {
