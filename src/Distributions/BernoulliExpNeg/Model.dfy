@@ -38,10 +38,9 @@ module BernoulliExpNeg.Model {
   ghost function SampleLe1(gamma: Rationals.Rational): Monad.Hurd<bool>
     requires 0 <= gamma.numer <= gamma.denom
   {
-    // TODO: replace with Map
-    Monad.Bind(
+    Monad.Map(
       Le1Loop(gamma)((true, 0)),
-      (ak: (bool, nat)) => Monad.Return(ak.1 % 2 == 1)
+      (ak: (bool, nat)) => ak.1 % 2 == 1
     )
   }
 
@@ -63,15 +62,10 @@ module BernoulliExpNeg.Model {
     requires 0 <= gamma.numer <= gamma.denom
   {
     (ak: (bool, nat)) =>
-      var k' := ak.1 + 1;
-      // TODO: should be Map
-      Monad.Bind(
+      var k': nat := ak.1 + 1;
+      Monad.Map(
         BernoulliModel.Sample(gamma.numer, k' * gamma.denom),
-        SetK(k'))
-  }
-
-  ghost function SetK(k: nat): bool -> Monad.Hurd<(bool, nat)> {
-    a => Monad.Return((a, k))
+        a => (a, k'))
   }
 
   lemma {:axiom} Le1LoopIterCorrectness(gamma: Rationals.Rational, ak: (bool, nat), k': nat) // TODO
