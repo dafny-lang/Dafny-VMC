@@ -32,26 +32,26 @@ module DiscreteLaplace.Model {
   ghost function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
-    (bY: (bool, int)) => 
+    (bY: (bool, int)) =>
       Monad.Bind(
         Uniform.Model.Sample(scale.numer),
-        (u: nat) => 
+        (u: nat) =>
           Monad.Bind(
             BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer)),
-            (d: bool) => 
-              if d then 
+            (d: bool) =>
+              if d then
                 Monad.Bind(
                   SampleInnerLoopFull(),
-                  (v: int) => 
+                  (v: int) =>
                     Monad.Bind(
                       Coin.Model.Sample,
-                      (b: bool) => 
+                      (b: bool) =>
                         var x := u + scale.numer * v;
                         var y := x / scale.denom;
                         Monad.Return((b, y))
                     )
                 )
-              else 
+              else
                 Monad.Return(bY)
           )
       )

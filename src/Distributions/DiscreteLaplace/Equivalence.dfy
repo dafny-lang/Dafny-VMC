@@ -17,7 +17,7 @@ module DiscreteLaplace.Equivalence {
    Lemmas
   *******/
 
-  lemma SampleLiftToEnsure(scale: Rationals.Rational, s: Rand.Bitstream, t: Rand.Bitstream, x: (bool, int)) 
+  lemma SampleLiftToEnsure(scale: Rationals.Rational, s: Rand.Bitstream, t: Rand.Bitstream, x: (bool, int))
     requires scale.numer >= 1
     requires R1: Monad.Result(x, s) == Model.SampleLoop(scale)(t)
     ensures Monad.Result(if x.0 then -x.1 else x.1, s) == Model.Sample(scale)(t)

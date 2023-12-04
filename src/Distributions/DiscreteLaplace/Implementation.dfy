@@ -32,7 +32,7 @@ module DiscreteLaplace.Implementation {
     method DiscreteLaplaceSampleLoop(scale: Rationals.Rational) returns (bY: (bool, int))
       modifies this
       requires scale.numer >= 1
-      decreases * 
+      decreases *
       ensures Monad.Result(bY, s) == Model.SampleLoop(scale)(old(s))
     {
       assume {:axiom} false; // TODO later
@@ -53,7 +53,7 @@ module DiscreteLaplace.Implementation {
           b := CoinSample();
         }
       }
-      
+
       bY := (b, y);
     }
 
