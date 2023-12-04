@@ -24,25 +24,40 @@ module DiscreteLaplace.Implementation {
       decreases *
       ensures Monad.Result(z, s) == Model.Sample(scale)(old(s))
     {
+      var x := DiscreteLaplaceSampleLoop(scale);
+      Equivalence.SampleLiftToEnsure(scale, s, old(s), x);
+      z := if x.0 then -x.1 else x.1;
+    }
+
+    method DiscreteLaplaceSampleLoop(scale: Rationals.Rational) returns (bY: (bool, int))
+      modifies this
+      requires scale.numer >= 1
+      decreases * 
+      ensures Monad.Result(bY, s) == Model.SampleLoop(scale)(old(s))
+    {
+      assume {:axiom} false; // TODO later
+
       var b := true;
       var y := 0;
+
       while b && y == 0
         decreases *
+        invariant Model.SampleLoop(scale)(old(s)) == Model.SampleLoop(scale, (b, y))(s)
       {
         var u := UniformSample(scale.numer);
         var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
         if d {
-          var v := DisceteLaplaceInnerLoop();
+          var v := DisceteLaplaceSampleInnerLoop();
           var x := u + scale.numer * v;
           y := x / scale.denom;
           b := CoinSample();
         }
       }
-      z := if b then -y else y;
-      assume {:axiom} false; // fix later
+      
+      bY := (b, y);
     }
 
-    method DisceteLaplaceInnerLoop() returns (v: int)
+    method DisceteLaplaceSampleInnerLoop() returns (v: int)
       modifies this
       decreases *
       ensures Monad.Result(v, s) == Model.SampleInnerLoopFull()(old(s))
