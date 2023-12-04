@@ -25,7 +25,7 @@ module DiscreteLaplace.Implementation {
       ensures Model.Sample(scale)(old(s)) == Monad.Result(z, s)
     {
       var x := DiscreteLaplaceSampleLoop(scale);
-      Equivalence.SampleLiftToEnsure(scale, s, old(s), x);
+      Equivalence.SampleLiftToEnsures(scale, s, old(s), x);
       z := if x.0 then -x.1 else x.1;
     }
 
@@ -44,7 +44,7 @@ module DiscreteLaplace.Implementation {
         invariant Model.SampleLoop(scale)(old(s)) == Model.SampleLoop(scale, (b, y))(s)
       {
         Equivalence.SampleLoopTailRecursiveEquivalence(scale, s, (b, y));
-      
+
         var u := UniformSample(scale.numer);
         var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
         if d {
@@ -57,7 +57,7 @@ module DiscreteLaplace.Implementation {
 
       Equivalence.SampleLoopLiftToEnsures(scale, old(s), s, (b, y));
 
-      return (b, y);      
+      return (b, y);
     }
 
     method DisceteLaplaceSampleInnerLoop() returns (v: int)

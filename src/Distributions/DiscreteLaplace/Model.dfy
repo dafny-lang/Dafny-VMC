@@ -29,7 +29,7 @@ module DiscreteLaplace.Model {
     Loops.While(SampleLoopCondition, SampleLoopBody(scale))(x)
   }
 
-  ghost function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
+  ghost opaque function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
     (bY: (bool, int)) =>
@@ -57,7 +57,7 @@ module DiscreteLaplace.Model {
       )
   }
 
-  ghost function SampleLoopCondition(x: (bool, int)): bool {
+  ghost opaque function SampleLoopCondition(x: (bool, int)): bool {
     x.0 && (x.1 == 0)
   }
 
@@ -89,4 +89,8 @@ module DiscreteLaplace.Model {
   lemma {:axiom} SampleInnerLoopTerminatesAlmostSurely()
     ensures Loops.WhileTerminatesAlmostSurely(SampleInnerLoopCondition, SampleInnerLoopBody)
 
+  // TODO: add later
+  lemma {:axiom} SampleLoopTerminatesAlmostSurely(scale: Rationals.Rational)
+    requires scale.numer >= 1
+    ensures Loops.WhileTerminatesAlmostSurely(SampleLoopCondition, SampleLoopBody(scale))
 }
