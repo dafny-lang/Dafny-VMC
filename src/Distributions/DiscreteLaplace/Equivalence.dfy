@@ -18,9 +18,9 @@ module DiscreteLaplace.Equivalence {
   *******/
 
   lemma SampleLiftToEnsure(scale: Rationals.Rational, s: Rand.Bitstream, t: Rand.Bitstream, x: (bool, int))
-    requires scale.numer >= 1
-    requires R1: Monad.Result(x, s) == Model.SampleLoop(scale)(t)
-    ensures Monad.Result(if x.0 then -x.1 else x.1, s) == Model.Sample(scale)(t)
+    requires R1: scale.numer >= 1
+    requires R2: Monad.Result(x, s) == Model.SampleLoop(scale)(t)
+    ensures Model.Sample(scale)(t) == Monad.Result(if x.0 then -x.1 else x.1, s)
   {
     var f := (x: (bool, int)) => if x.0 then -x.1 else x.1;
 
@@ -28,11 +28,27 @@ module DiscreteLaplace.Equivalence {
       Monad.Result(if x.0 then -x.1 else x.1, s);
       Monad.Result(f(x), s);
       Monad.Result(x, s).Map(f);
-      { reveal R1; }
+      { reveal R1; reveal R2; }
       Model.SampleLoop(scale)(t).Map(f);
       Monad.Map(Model.SampleLoop(scale), f)(t);
       { reveal Model.Sample(); }
       Model.Sample(scale)(t);
+    }
+  }
+
+  lemma SampleLoopLiftToEnsures(scale: Rationals.Rational, s: Rand.Bitstream, t: Rand.Bitstream, bY: (bool, int))
+    requires R1: scale.numer >= 1
+    requires R2: Model.SampleLoop(scale)(s) == Model.SampleLoop(scale, bY)(t)
+    requires R3: !(bY.0 && (bY.1 == 0))
+    ensures Model.SampleLoop(scale)(s) == Monad.Result(bY, t)
+  {
+    calc {
+      Monad.Result(bY, t);
+      Monad.Return(bY)(t);
+      { reveal R1; SampleLoopTailRecursiveEquivalence(scale, t, bY); reveal R3; }
+      Model.SampleLoop(scale, bY)(t);
+      { reveal R1; reveal R2; }
+      Model.SampleLoop(scale)(s);
     }
   }
 
@@ -63,6 +79,37 @@ module DiscreteLaplace.Equivalence {
       Monad.Result(v, t);
     }
   }
+
+  lemma {:axiom} SampleLoopTailRecursiveEquivalence(scale: Rationals.Rational, s: Rand.Bitstream, bY: (bool, int) := (true, 0))
+    requires R1: scale.numer >= 1
+    ensures 
+      Model.SampleLoop(scale, bY)(s) == 
+        if bY.0 && (bY.1 == 0) then 
+          Monad.Bind(
+            Uniform.Model.Sample(scale.numer),
+            (u: nat) =>
+              Monad.Bind(
+                BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer)),
+                (d: bool) =>
+                  if d then
+                    Monad.Bind(
+                      Model.SampleInnerLoopFull(),
+                      (v: int) =>
+                        Monad.Bind(
+                          Coin.Model.Sample,
+                          (b: bool) =>
+                            var x := u + scale.numer * v;
+                            var y := x / scale.denom;
+                            Model.SampleLoop(scale, (b, y))
+                        )
+                    )
+                  else
+                    Model.SampleLoop(scale, bY)
+              )
+          )(s)
+        else 
+          Monad.Return(bY)(s)
+
 
   lemma SampleInnerLoopTailRecursiveEquivalence(s: Rand.Bitstream, x: (bool, int) := (true, 0))
     ensures
