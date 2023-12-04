@@ -20,6 +20,10 @@ module RealArith {
     Abs(x - y)
   }
 
+  function Pow(base: real, exponent: nat): real {
+    if exponent == 0 then 1.0 else base * Pow(base, exponent - 1)
+  }
+
   lemma TriangleInequality(a: real, b: real, c: real)
     ensures Dist(a, c) <= Dist(a, b) + Dist(b, c)
   {}

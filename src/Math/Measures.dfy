@@ -134,6 +134,13 @@ module Measures {
     requires set1 <= set2
     ensures mu(set1) <= mu(set2)
 
+  lemma {:axiom} MeasureOfDisjointUnionIsSum<T>(eventSpace: iset<iset<T>>, mu: iset<T> -> real, set1: iset<T>, set2: iset<T>)
+    requires IsMeasure(eventSpace, mu)
+    requires set1 in eventSpace
+    requires set2 in eventSpace
+    requires set1 * set2 == iset{}
+    ensures mu(set1 + set2) == mu(set1) + mu(set2)
+
   // Equation (2.18)
   lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real)
     requires IsSigmaAlgebra(eventSpace)
