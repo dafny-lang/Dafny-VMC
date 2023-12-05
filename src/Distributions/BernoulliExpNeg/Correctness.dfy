@@ -233,11 +233,11 @@ module BernoulliExpNeg.Correctness {
     requires 0 <= gamma.numer <= gamma.denom
   {
     (fuel: nat) => Loops.WhileCut(
-      Model.Le1LoopCondition,
-      Model.Le1LoopIter(gamma),
-      ak,
-      fuel
-    )
+        Model.Le1LoopCondition,
+        Model.Le1LoopIter(gamma),
+        ak,
+        fuel
+      )
   }
 
   lemma Le1LoopCutCorrectness(gamma: Rationals.Rational, k: nat, n: int, fuel: nat)
@@ -294,23 +294,23 @@ module BernoulliExpNeg.Correctness {
               fuel)(s);
           }
           match Model.Le1LoopIter(gamma)(init)(s) {
-          case Diverging =>
-          case Result(init', s') =>
-            calc {
-              Loops.WhileCut(
-                Model.Le1LoopCondition,
-                Model.Le1LoopIter(gamma),
-                init,
-                fuel)(s);
-              { Loops.WhileCutUnroll(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), init, s, init', s', fuel); }
-              Loops.WhileCut(
-                Model.Le1LoopCondition,
-                Model.Le1LoopIter(gamma),
-                init',
-                fuel - 1)(s');
-              { reveal Le1LoopCut(); }
-              Le1LoopCut(gamma, init')(fuel - 1)(s');
-            }
+            case Diverging =>
+            case Result(init', s') =>
+              calc {
+                Loops.WhileCut(
+                  Model.Le1LoopCondition,
+                  Model.Le1LoopIter(gamma),
+                  init,
+                  fuel)(s);
+                { Loops.WhileCutUnroll(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), init, s, init', s', fuel); }
+                Loops.WhileCut(
+                  Model.Le1LoopCondition,
+                  Model.Le1LoopIter(gamma),
+                  init',
+                  fuel - 1)(s');
+                { reveal Le1LoopCut(); }
+                Le1LoopCut(gamma, init')(fuel - 1)(s');
+              }
           }
         }
         forall s ensures s in event <==> (s in falseEvent2 && s in falseRestInEvent) || (s in trueEvent2 && s in trueRestInEvent) {
@@ -366,25 +366,25 @@ module BernoulliExpNeg.Correctness {
         assert n >= 1 ==> NatArith.Min(n, fuel) - 1 == NatArith.Min(n - 1, fuel - 1);
       }
       assert Rand.prob(event) == Rand.prob(falseEvent * falseRestInEvent) + Rand.prob(trueEvent * trueRestInEvent) by {
-        assume falseEvent * falseRestInEvent in Rand.eventSpace;
-        assume trueEvent * trueRestInEvent in Rand.eventSpace;
+        assume {:axiom} falseEvent * falseRestInEvent in Rand.eventSpace;
+        assume {:axiom} trueEvent * trueRestInEvent in Rand.eventSpace;
         Rand.ProbIsProbabilityMeasure();
         Measures.MeasureOfDisjointUnionIsSum(Rand.eventSpace, Rand.prob, falseEvent * falseRestInEvent, trueEvent * trueRestInEvent);
       }
       assert Rand.prob(trueEvent * trueRestInEvent) == Rand.prob(trueEvent) * Rand.prob(trueEvent') by {
-        assume Independence.IsIndepFunction(Model.Le1LoopIter(gamma)(init));
-        assume trueEvent' in Rand.eventSpace;
+        assume {:axiom} Independence.IsIndepFunction(Model.Le1LoopIter(gamma)(init));
+        assume {:axiom} trueEvent' in Rand.eventSpace;
         Independence.ResultsIndependent(Model.Le1LoopIter(gamma)(init), trueSet, trueEvent');
       }
       assert Rand.prob(falseEvent * falseRestInEvent) == Rand.prob(falseEvent) * Rand.prob(falseEvent') by {
-        assume Independence.IsIndepFunction(Model.Le1LoopIter(gamma)(init));
-        assume falseEvent' in Rand.eventSpace;
+        assume {:axiom} Independence.IsIndepFunction(Model.Le1LoopIter(gamma)(init));
+        assume {:axiom} falseEvent' in Rand.eventSpace;
         Independence.ResultsIndependent(Model.Le1LoopIter(gamma)(init), falseSet, falseEvent');
       }
       calc {
-          Rand.prob(event);
-          Rand.prob(falseEvent * falseRestInEvent) + Rand.prob(trueEvent * trueRestInEvent);
-          Rand.prob(falseEvent) * Rand.prob(falseEvent') + Rand.prob(trueEvent) * Rand.prob(trueEvent');
+        Rand.prob(event);
+        Rand.prob(falseEvent * falseRestInEvent) + Rand.prob(trueEvent * trueRestInEvent);
+        Rand.prob(falseEvent) * Rand.prob(falseEvent') + Rand.prob(trueEvent) * Rand.prob(trueEvent');
       }
       if n <= 0 {
         calc {
@@ -423,32 +423,32 @@ module BernoulliExpNeg.Correctness {
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 <= n))
       == 1.0 - ExpTerm(gamma.ToReal(), n)
-    {
+  {
 
-      var resultSet := iset ak: (bool, nat) | ak.1 <= n;
-      var resultSetRestricted := iset m: nat | m <= n :: (false, m);
-      var limit := 1.0 - ExpTerm(gamma.ToReal(), n);
-      assert resultSetRestricted == iset a <- resultSet | !Model.Le1LoopCondition(a);
-      var sequence: nat -> real := Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted);
-      assert Limits.ConvergesTo(sequence, limit) by {
-        forall fuel: nat | fuel >= n ensures sequence(fuel) == limit {
-          calc {
-            sequence(fuel);
-            Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted)(fuel);
-            { reveal Le1LoopCut(); }
-            Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, 0))(fuel), resultSetRestricted));
-            { Le1LoopCutCorrectness(gamma, 0, n, fuel); }
-            1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel));
-            limit;
-          }
+    var resultSet := iset ak: (bool, nat) | ak.1 <= n;
+    var resultSetRestricted := iset m: nat | m <= n :: (false, m);
+    var limit := 1.0 - ExpTerm(gamma.ToReal(), n);
+    assert resultSetRestricted == iset a <- resultSet | !Model.Le1LoopCondition(a);
+    var sequence: nat -> real := Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted);
+    assert Limits.ConvergesTo(sequence, limit) by {
+      forall fuel: nat | fuel >= n ensures sequence(fuel) == limit {
+        calc {
+          sequence(fuel);
+          Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted)(fuel);
+          { reveal Le1LoopCut(); }
+          Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, 0))(fuel), resultSetRestricted));
+          { Le1LoopCutCorrectness(gamma, 0, n, fuel); }
+          1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel));
+          limit;
         }
-        Limits.ConstantSequenceConverges(sequence, limit, n);
       }
-      reveal Model.Le1Loop();
-      assert Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultSet)) == limit by {
-        Loops.WhileProbabilityViaLimit(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSet, resultSetRestricted, limit);
-      }
+      Limits.ConstantSequenceConverges(sequence, limit, n);
     }
+    reveal Model.Le1Loop();
+    assert Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultSet)) == limit by {
+      Loops.WhileProbabilityViaLimit(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSet, resultSetRestricted, limit);
+    }
+  }
 
   lemma {:axiom} Le1LoopCorrectnessEq(gamma: Rationals.Rational, n: nat := 0)
     requires 0 <= gamma.numer <= gamma.denom
@@ -477,8 +477,8 @@ module BernoulliExpNeg.Correctness {
       assert eventLeN1 + eventEqN == eventLeN;
       assert Rand.prob(eventLeN) == Rand.prob(eventLeN1) + Rand.prob(eventEqN) by {
         Rand.ProbIsProbabilityMeasure();
-        assume eventLeN1 in Rand.eventSpace;
-        assume eventEqN in Rand.eventSpace;
+        assume {:axiom} eventLeN1 in Rand.eventSpace;
+        assume {:axiom} eventEqN in Rand.eventSpace;
         Measures.MeasureOfDisjointUnionIsSum(Rand.eventSpace, Rand.prob, eventLeN1, eventEqN);
       }
       calc {
