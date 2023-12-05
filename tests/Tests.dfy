@@ -12,7 +12,7 @@ module Tests {
   import BernoulliExpNeg
   import DiscreteLaplace
   import DiscreteGaussian
-  import Helper
+  import NatArith
 
   function Abs(x: real): real {
     if x < 0.0 then -x else x
@@ -79,8 +79,8 @@ module Tests {
     requires u > 0
     modifies r
   {
-    var k := Helper.Log2Floor(u);
-    var m := Helper.Power(2, k);
+    var k := NatArith.Log2Floor(u);
+    var m := NatArith.Power(2, k);
     var a := new nat[m](i => 0);
     var sum := 0;
     for i := 0 to n {
@@ -89,7 +89,7 @@ module Tests {
       a[l] := a[l] + 1;
       sum := sum + l;
     }
-    for i := 0 to Helper.Power(2, k) {
+    for i := 0 to NatArith.Power(2, k) {
       TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (m as real), "p(" + NatToString(i) + ")");
     }
     TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + NatToString(u) + ")");
@@ -101,8 +101,8 @@ module Tests {
     requires u > 0
     modifies r
   {
-    var k := Helper.Log2Floor(u);
-    var m := Helper.Power(2, k);
+    var k := NatArith.Log2Floor(u);
+    var m := NatArith.Power(2, k);
     var sum := 0;
     for i := 0 to n {
       var l := r.UniformPowerOfTwoSample(u);
@@ -118,7 +118,7 @@ module Tests {
     requires u > 0
     modifies r
   {
-    var k := Helper.Log2Floor(u);
+    var k := NatArith.Log2Floor(u);
     var a := new nat[u](i => 0);
     var sum := 0;
     for i := 0 to n {
@@ -139,7 +139,7 @@ module Tests {
     requires u > 0
     modifies r
   {
-    var k := Helper.Log2Floor(u);
+    var k := NatArith.Log2Floor(u);
     var sum := 0;
     for i := 0 to n {
       var l := r.UniformSample(u);

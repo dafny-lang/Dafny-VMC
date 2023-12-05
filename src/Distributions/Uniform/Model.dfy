@@ -5,7 +5,7 @@
 
 module Uniform.Model {
   import Measures
-  import Helper
+  import NatArith
   import Rand
   import Quantifier
   import Monad
@@ -69,13 +69,13 @@ module Uniform.Model {
     assert Quantifier.WithPosProb(Loops.ProposalIsAccepted(Proposal(n), Accept(n))) by {
       assert Rand.prob(e) > 0.0 by {
         assert e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n);
-        assert n <= Helper.Power(2, Helper.Log2Floor(2 * n)) by {
-          Helper.NLtPower2Log2FloorOf2N(n);
+        assert n <= NatArith.Power(2, NatArith.Log2Floor(2 * n)) by {
+          NatArith.NLtPower2Log2FloorOf2N(n);
         }
         calc {
           Rand.prob(e);
         == { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
-          n as real / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
+          n as real / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real);
         >
           0.0;
         }

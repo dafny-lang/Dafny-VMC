@@ -4,7 +4,8 @@
  *******************************************************************************/
 
 module Uniform.Correctness {
-  import Helper
+  import NatArith
+  import RealArith
   import Monad
   import Independence
   import Rand
@@ -67,10 +68,10 @@ module Uniform.Correctness {
         { reveal Fraction; }
         Rand.prob(eventProposalAcceptedAndEqualsI) / Rand.prob(proposalAccepted);
         { ProbabilityProposalAcceptedAndEqualsI(n, i); }
-        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / Rand.prob(proposalAccepted);
+        (1.0 / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real)) / Rand.prob(proposalAccepted);
         { ProbabilityProposalAccepted(n); }
-        (1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)) / ((n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real));
-        { Helper.SimplifyFractions(1.0, n as real, Helper.Power(2, Helper.Log2Floor(2 * n)) as real); }
+        (1.0 / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real)) / ((n as real) / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real));
+        { RealArith.SimplifyFractions(1.0, n as real, NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real); }
         1.0 / (n as real);
       }
     }
@@ -79,16 +80,16 @@ module Uniform.Correctness {
   lemma ProbabilityProposalAcceptedAndEqualsI(n: nat, i: nat)
     requires 0 <= i < n
     ensures
-      Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i)) == 1.0 / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Rand.prob(Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i)) == 1.0 / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real)
   {
     var e := Loops.ProposalIsAcceptedAndHasProperty(Model.Proposal(n), Model.Accept(n), (x: nat) => x == i);
-    var nextPowerOfTwo := Helper.Power(2, Helper.Log2Floor(2 * n));
+    var nextPowerOfTwo := NatArith.Power(2, NatArith.Log2Floor(2 * n));
     assert iBound: i < nextPowerOfTwo by {
       calc {
         i;
       <
         n;
-      < { Helper.NLtPower2Log2FloorOf2N(n); }
+      < { NatArith.NLtPower2Log2FloorOf2N(n); }
         nextPowerOfTwo;
       }
     }
@@ -109,10 +110,10 @@ module Uniform.Correctness {
   lemma ProbabilityProposalAccepted(n: nat)
     requires n >= 1
     ensures
-      Rand.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real)
+      Rand.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real)
   {
     var e := Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n));
-    assert n < Helper.Power(2, Helper.Log2Floor(2 * n)) by { Helper.NLtPower2Log2FloorOf2N(n); }
+    assert n < NatArith.Power(2, NatArith.Log2Floor(2 * n)) by { NatArith.NLtPower2Log2FloorOf2N(n); }
     assert Equal: e == (iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n) by {
       forall s ensures s in e <==> UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n {
         calc {
@@ -122,13 +123,13 @@ module Uniform.Correctness {
         }
       }
     }
-    assert Rand.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real) by {
+    assert Rand.prob(Loops.ProposalAcceptedEvent(Model.Proposal(n), Model.Accept(n))) == (n as real) / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real) by {
       calc {
         Rand.prob(e);
         { reveal Equal; }
         Rand.prob(iset s | UniformPowerOfTwo.Model.Sample(2 * n)(s).value < n);
         { UniformPowerOfTwo.Correctness.UnifCorrectness2Inequality(2 * n, n); }
-        (n as real) / (Helper.Power(2, Helper.Log2Floor(2 * n)) as real);
+        (n as real) / (NatArith.Power(2, NatArith.Log2Floor(2 * n)) as real);
       }
     }
   }

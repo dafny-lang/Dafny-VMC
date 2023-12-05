@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module BernoulliExpNeg.Implementation {
-  import Helper
+  import NatArith
   import Rationals
   import Rand
   import Monad
@@ -57,7 +57,7 @@ module BernoulliExpNeg.Implementation {
         ghost var prevK: nat := k;
         ghost var prevS := s;
         k := k + 1;
-        Helper.MulMonotonic(1, gamma.denom, k, gamma.denom);
+        NatArith.MulMonotonic(1, gamma.denom, k, gamma.denom);
         a := BernoulliSample(Rationals.Rational(gamma.numer, k * gamma.denom));
         Equivalence.EnsureCaseLe1LoopInvariantMaintained(gamma, old(s), prevK, prevS, a, k, s);
       }
