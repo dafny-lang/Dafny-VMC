@@ -32,14 +32,46 @@ module Bernoulli.Correctness {
     reveal Model.Sample();
   }
 
+  // The probability mass function (PMF) of the bernoulli distribution
+  opaque function BernoulliMass(numer: nat, denom: nat): bool -> real
+    requires denom > 0
+    requires numer <= denom
+  {
+    b => if b then numer as real / denom as real else 1.0 - numer as real / denom as real
+  }
 
-  lemma BernoulliCorrectness(m: nat, n: nat)
+  lemma BernoulliCorrectness(m: nat, n: nat, b: bool)
     requires n != 0
     requires m <= n
     ensures
-      var e := iset s | Model.Sample(m, n)(s).Equals(true);
-      && e in Rand.eventSpace
-      && Rand.prob(e) == m as real / n as real
+      var event := iset s | Model.Sample(m, n)(s).Equals(b);
+      && event in Rand.eventSpace
+      && Rand.prob(event) == BernoulliMass(m, n)(b)
+  {
+    reveal BernoulliMass();
+    if b {
+      BernoulliCorrectnessCaseTrue(m, n);
+    } else {
+      BernoulliCorrectnessCaseFalse(m, n);
+    }
+  }
+
+  lemma {:axiom} BernoulliCorrectnessCaseFalse(m: nat, n: nat)
+    requires n != 0
+    requires m <= n
+    ensures
+      var falseEvent := iset s | Model.Sample(m, n)(s).Equals(false);
+      && falseEvent in Rand.eventSpace
+      && Rand.prob(falseEvent) == 1.0 - m as real / n as real
+
+
+  lemma BernoulliCorrectnessCaseTrue(m: nat, n: nat)
+    requires n != 0
+    requires m <= n
+    ensures
+      var trueEvent := iset s | Model.Sample(m, n)(s).Equals(true);
+      && trueEvent in Rand.eventSpace
+      && Rand.prob(trueEvent) == m as real / n as real
   {
     reveal Model.Sample();
     var e := iset s | Model.Sample(m, n)(s).Equals(true);
@@ -90,7 +122,7 @@ module Bernoulli.Correctness {
       }
 
       assert A2: e2 in Rand.eventSpace && Rand.prob(e2) == (m-1) as real / n as real by {
-        BernoulliCorrectness(m-1, n);
+        BernoulliCorrectnessCaseTrue(m-1, n);
       }
 
       calc {
