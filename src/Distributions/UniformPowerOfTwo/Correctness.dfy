@@ -5,6 +5,8 @@
 
 module UniformPowerOfTwo.Correctness {
   import Helper
+  import NatArith
+  import RealArith
   import Monad
   import Independence
   import Rand
@@ -18,9 +20,9 @@ module UniformPowerOfTwo.Correctness {
   ************/
 
   ghost predicate UnifIsCorrect(n: nat, k: nat, m: nat)
-    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
+    requires NatArith.Power(2, k) <= n < NatArith.Power(2, k + 1)
   {
-    Rand.prob(iset s | Model.Sample(n)(s).value == m) == if m < Helper.Power(2, k) then 1.0 / (Helper.Power(2, k) as real) else 0.0
+    Rand.prob(iset s | Model.Sample(n)(s).value == m) == if m < NatArith.Power(2, k) then 1.0 / (NatArith.Power(2, k) as real) else 0.0
   }
 
   function SampleRest(n: nat): Rand.Bitstream -> Rand.Bitstream
@@ -41,10 +43,10 @@ module UniformPowerOfTwo.Correctness {
     ensures
       var e := iset s | Model.Sample(n)(s).value == m;
       && e in Rand.eventSpace
-      && Rand.prob(e) == if m < Helper.Power(2, Helper.Log2Floor(n)) then 1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real) else 0.0
+      && Rand.prob(e) == if m < NatArith.Power(2, NatArith.Log2Floor(n)) then 1.0 / (NatArith.Power(2, NatArith.Log2Floor(n)) as real) else 0.0
   {
     var e := iset s | Model.Sample(n)(s).value == m;
-    var k := Helper.Log2Floor(n);
+    var k := NatArith.Log2Floor(n);
 
     assert e in Rand.eventSpace by {
       var resultsWithValueM := Monad.ResultsWithValueIn(iset{m});
@@ -58,7 +60,7 @@ module UniformPowerOfTwo.Correctness {
       }
       assert e == preimage;
     }
-    Helper.Power2OfLog2Floor(n);
+    NatArith.Power2OfLog2Floor(n);
     UnifCorrectness(n, k);
     assert UnifIsCorrect(n, k, m);
   }
@@ -66,11 +68,11 @@ module UniformPowerOfTwo.Correctness {
   // See PROB_BERN_UNIF_LT in HOL implementation.
   lemma UnifCorrectness2Inequality(n: nat, m: nat)
     requires n >= 1
-    requires m <= Helper.Power(2, Helper.Log2Floor(n))
+    requires m <= NatArith.Power(2, NatArith.Log2Floor(n))
     ensures
       var e := iset s | Model.Sample(n)(s).value < m;
       && e in Rand.eventSpace
-      && Rand.prob(e) == (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real)
+      && Rand.prob(e) == (m as real) / (NatArith.Power(2, NatArith.Log2Floor(n)) as real)
   {
     var e := iset s | Model.Sample(n)(s).value < m;
 
@@ -98,11 +100,11 @@ module UniformPowerOfTwo.Correctness {
         { assert e1 * e2 == iset{}; Rand.ProbIsProbabilityMeasure(); Measures.PosCountAddImpliesAdd(Rand.eventSpace, Rand.prob); assert Measures.IsAdditive(Rand.eventSpace, Rand.prob); }
         Rand.prob(e1) + Rand.prob(e2);
         { UnifCorrectness2(n, m-1); UnifCorrectness2Inequality(n, m-1); }
-        (1.0 / (Helper.Power(2, Helper.Log2Floor(n)) as real)) + (((m-1) as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real));
-        { Helper.AdditionOfFractions(1.0, (m-1) as real, Helper.Power(2, Helper.Log2Floor(n)) as real); }
-        (1.0 + (m-1) as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real);
+        (1.0 / (NatArith.Power(2, NatArith.Log2Floor(n)) as real)) + (((m-1) as real) / (NatArith.Power(2, NatArith.Log2Floor(n)) as real));
+        { RealArith.AdditionOfFractions(1.0, (m-1) as real, NatArith.Power(2, NatArith.Log2Floor(n)) as real); }
+        (1.0 + (m-1) as real) / (NatArith.Power(2, NatArith.Log2Floor(n)) as real);
         { assert 1.0 + (m-1) as real == (m as real); }
-        (m as real) / (Helper.Power(2, Helper.Log2Floor(n)) as real);
+        (m as real) / (NatArith.Power(2, NatArith.Log2Floor(n)) as real);
       }
     }
   }
@@ -111,11 +113,11 @@ module UniformPowerOfTwo.Correctness {
   // In contrast to UnifCorrectness2, this lemma follows equation (4.8)
   // instead of the HOL implementation.
   lemma UnifCorrectness(n: nat, k: nat)
-    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
+    requires NatArith.Power(2, k) <= n < NatArith.Power(2, k + 1)
     ensures forall m: nat :: UnifIsCorrect(n, k, m)
   {
     forall m: nat ensures UnifIsCorrect(n, k, m) {
-      assert n >= 1 by { Helper.PowerGreater0(2, k); }
+      assert n >= 1 by { NatArith.PowerGreater0(2, k); }
       if k == 0 {
         reveal Model.Sample();
         if m == 0 {
@@ -130,15 +132,15 @@ module UniformPowerOfTwo.Correctness {
         assert RecursiveCorrect: UnifIsCorrect(n / 2, k - 1, m / 2) by {
           UnifCorrectness(n / 2, k - 1);
         }
-        if m < Helper.Power(2, k) {
+        if m < NatArith.Power(2, k) {
           calc {
             Rand.prob(iset s | Model.Sample(n)(s).value == m);
           == { SampleRecursiveHalf(n, m); }
             Rand.prob(iset s | Model.Sample(n / 2)(s).value == u) / 2.0;
           == { reveal RecursiveCorrect; }
-            (1.0 / Helper.Power(2, k - 1) as real) / 2.0;
-          == { Helper.PowerOfTwoLemma(k - 1); }
-            1.0 / (Helper.Power(2, k) as real);
+            (1.0 / NatArith.Power(2, k - 1) as real) / 2.0;
+          == { RealArith.PowerOfTwoLemma(k - 1); }
+            1.0 / (NatArith.Power(2, k) as real);
           }
           assert UnifIsCorrect(n, k, m);
         } else {
@@ -288,11 +290,11 @@ module UniformPowerOfTwo.Correctness {
     ensures
       var bOf := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).rest).value;
       var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
-      (iset s | Model.Sample(n)(s).value == m) == (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m)
+      (iset s | Model.Sample(n)(s).value == m) == (iset s | 2*aOf(s) + NatArith.boolToNat(bOf(s)) == m)
   {
     var bOf := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).rest).value;
     var aOf := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
-    forall s ensures Model.Sample(n)(s).value == m <==> (2 * aOf(s) + Helper.boolToNat(bOf(s)) == m) {
+    forall s ensures Model.Sample(n)(s).value == m <==> (2 * aOf(s) + NatArith.boolToNat(bOf(s)) == m) {
       var Result(a, s') := Model.Sample(n / 2)(s);
       var Result(b, s'') := Monad.Coin(s');
       calc {
@@ -318,17 +320,17 @@ module UniformPowerOfTwo.Correctness {
     var aOf: Rand.Bitstream -> nat := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).value;
     var bOf: Rand.Bitstream -> bool := (s: Rand.Bitstream) => Monad.Coin(Model.Sample(n / 2)(s).rest).value;
     var A: iset<nat> := (iset x: nat | x == m / 2);
-    var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == Helper.boolToNat(Monad.Coin(s).value));
+    var E: iset<Rand.Bitstream> := (iset s | m % 2 as nat == NatArith.boolToNat(Monad.Coin(s).value));
     var f := (s: Rand.Bitstream) => Model.Sample(n / 2)(s).rest;
 
     var e1 := (iset s | Model.Sample(n / 2)(s).RestIn(E));
     var e2 := (iset s | Model.Sample(n / 2)(s).In(A));
-    var e3 := (iset s | 2*aOf(s) + Helper.boolToNat(bOf(s)) == m);
+    var e3 := (iset s | 2*aOf(s) + NatArith.boolToNat(bOf(s)) == m);
 
     assert SplitEvent: e3 == e1 * e2 by {
       forall s ensures s in e3 <==> s in e1 && s in e2 {
         var a: nat := aOf(s);
-        var b: nat := Helper.boolToNat(bOf(s));
+        var b: nat := NatArith.boolToNat(bOf(s));
         assert b < 2;
         calc {
           s in e3;

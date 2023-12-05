@@ -4,9 +4,9 @@
  *******************************************************************************/
 
 module UniformPowerOfTwo.Equivalence {
+  import NatArith
   import Rand
   import Monad
-  import Helper
   import Model
 
   /************
@@ -37,16 +37,16 @@ module UniformPowerOfTwo.Equivalence {
       reveal Model.Sample();
       assert SampleTailRecursive(n)(s) == Model.Sample(n)(s);
     } else {
-      var k := Helper.Log2Floor(n);
-      assert Helper.Power(2, k) <= n < Helper.Power(2, k + 1) by { Helper.Power2OfLog2Floor(n); }
+      var k := NatArith.Log2Floor(n);
+      assert NatArith.Power(2, k) <= n < NatArith.Power(2, k + 1) by { NatArith.Power2OfLog2Floor(n); }
       calc {
         SampleTailRecursive(n)(s);
-        { SampleTailRecursiveEqualIfSameLog2Floor(n, Helper.Power(2, k), k, 0, s); }
-        SampleTailRecursive(Helper.Power(2, k))(s);
-        Monad.Bind(Model.Sample(Helper.Power(2, 0)), (u: nat) => SampleTailRecursive(Helper.Power(2, k), u))(s);
+        { SampleTailRecursiveEqualIfSameLog2Floor(n, NatArith.Power(2, k), k, 0, s); }
+        SampleTailRecursive(NatArith.Power(2, k))(s);
+        Monad.Bind(Model.Sample(NatArith.Power(2, 0)), (u: nat) => SampleTailRecursive(NatArith.Power(2, k), u))(s);
         { RelateWithTailRecursive(k, 0, s); }
-        Model.Sample(Helper.Power(2, k))(s);
-        { SampleEqualIfSameLog2Floor(n, Helper.Power(2, k), k, s); }
+        Model.Sample(NatArith.Power(2, k))(s);
+        { SampleEqualIfSameLog2Floor(n, NatArith.Power(2, k), k, s); }
         Model.Sample(n)(s);
       }
     }
@@ -56,8 +56,8 @@ module UniformPowerOfTwo.Equivalence {
   lemma SampleTailRecursiveEqualIfSameLog2Floor(m: nat, n: nat, k: nat, u: nat, s: Rand.Bitstream)
     requires m >= 1
     requires n >= 1
-    requires Helper.Power(2, k) <= m < Helper.Power(2, k + 1)
-    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
+    requires NatArith.Power(2, k) <= m < NatArith.Power(2, k + 1)
+    requires NatArith.Power(2, k) <= n < NatArith.Power(2, k + 1)
     ensures SampleTailRecursive(m, u)(s) == SampleTailRecursive(n, u)(s)
   {
     if k == 0 {
@@ -79,8 +79,8 @@ module UniformPowerOfTwo.Equivalence {
   lemma SampleEqualIfSameLog2Floor(m: nat, n: nat, k: nat, s: Rand.Bitstream)
     requires m >= 1
     requires n >= 1
-    requires Helper.Power(2, k) <= m < Helper.Power(2, k + 1)
-    requires Helper.Power(2, k) <= n < Helper.Power(2, k + 1)
+    requires NatArith.Power(2, k) <= m < NatArith.Power(2, k + 1)
+    requires NatArith.Power(2, k) <= n < NatArith.Power(2, k + 1)
     ensures Model.Sample(m)(s) == Model.Sample(n)(s)
   {
     if k == 0 {
@@ -103,33 +103,33 @@ module UniformPowerOfTwo.Equivalence {
   // The induction invariant for the equivalence proof (generalized version of SampleCorrespondence)
   lemma RelateWithTailRecursive(l: nat, m: nat, s: Rand.Bitstream)
     decreases l
-    ensures Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s) == Model.Sample(Helper.Power(2, m + l))(s)
+    ensures Monad.Bind(Model.Sample(NatArith.Power(2, m)), (u: nat) => SampleTailRecursive(NatArith.Power(2, l), u))(s) == Model.Sample(NatArith.Power(2, m + l))(s)
   {
     if l == 0 {
       calc {
-        Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
-        (var Result(u, s') := Model.Sample(Helper.Power(2, m))(s); SampleTailRecursive(1, u)(s'));
-        Model.Sample(Helper.Power(2, m + l))(s);
+        Monad.Bind(Model.Sample(NatArith.Power(2, m)), (u: nat) => SampleTailRecursive(NatArith.Power(2, l), u))(s);
+        (var Result(u, s') := Model.Sample(NatArith.Power(2, m))(s); SampleTailRecursive(1, u)(s'));
+        Model.Sample(NatArith.Power(2, m + l))(s);
       }
     } else {
-      assert LGreaterZero: Helper.Power(2, l) >= 1 by { Helper.PowerGreater0(2, l); }
-      assert MGreaterZero: Helper.Power(2, m) >= 1 by { Helper.PowerGreater0(2, m); }
-      assert L1GreaterZero: Helper.Power(2, l - 1) >= 1 by { Helper.PowerGreater0(2, l - 1); }
+      assert LGreaterZero: NatArith.Power(2, l) >= 1 by { NatArith.PowerGreater0(2, l); }
+      assert MGreaterZero: NatArith.Power(2, m) >= 1 by { NatArith.PowerGreater0(2, m); }
+      assert L1GreaterZero: NatArith.Power(2, l - 1) >= 1 by { NatArith.PowerGreater0(2, l - 1); }
       calc {
-        Monad.Bind(Model.Sample(Helper.Power(2, m)), (u: nat) => SampleTailRecursive(Helper.Power(2, l), u))(s);
-        (var Result(u, s') := Model.Sample(Helper.Power(2, m))(s); SampleTailRecursive(Helper.Power(2, l), u)(s'));
+        Monad.Bind(Model.Sample(NatArith.Power(2, m)), (u: nat) => SampleTailRecursive(NatArith.Power(2, l), u))(s);
+        (var Result(u, s') := Model.Sample(NatArith.Power(2, m))(s); SampleTailRecursive(NatArith.Power(2, l), u)(s'));
         { reveal LGreaterZero; }
-        (var Result(u, s') := Model.Sample(Helper.Power(2, m))(s);
-         SampleTailRecursive(Helper.Power(2, l) / 2, if Rand.Head(s') then 2 * u + 1 else 2 * u)(Rand.Tail(s')));
-        { assert Helper.Power(2, l) / 2 == Helper.Power(2, l - 1); reveal L1GreaterZero; }
-        (var Result(u', s') := Monad.Bind(Model.Sample(Helper.Power(2, m)), Model.UnifStep)(s);
-         SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
-        { assert Helper.Power(2, m + 1) / 2 == Helper.Power(2, m); reveal Model.Sample(); }
-        (var Result(u', s') := Model.Sample(Helper.Power(2, m + 1))(s);
-         SampleTailRecursive(Helper.Power(2, l - 1), u')(s'));
-        Monad.Bind(Model.Sample(Helper.Power(2, m + 1)), (u: nat) => SampleTailRecursive(Helper.Power(2, l - 1), u))(s);
+        (var Result(u, s') := Model.Sample(NatArith.Power(2, m))(s);
+         SampleTailRecursive(NatArith.Power(2, l) / 2, if Rand.Head(s') then 2 * u + 1 else 2 * u)(Rand.Tail(s')));
+        { assert NatArith.Power(2, l) / 2 == NatArith.Power(2, l - 1); reveal L1GreaterZero; }
+        (var Result(u', s') := Monad.Bind(Model.Sample(NatArith.Power(2, m)), Model.UnifStep)(s);
+         SampleTailRecursive(NatArith.Power(2, l - 1), u')(s'));
+        { assert NatArith.Power(2, m + 1) / 2 == NatArith.Power(2, m); reveal Model.Sample(); }
+        (var Result(u', s') := Model.Sample(NatArith.Power(2, m + 1))(s);
+         SampleTailRecursive(NatArith.Power(2, l - 1), u')(s'));
+        Monad.Bind(Model.Sample(NatArith.Power(2, m + 1)), (u: nat) => SampleTailRecursive(NatArith.Power(2, l - 1), u))(s);
         { RelateWithTailRecursive(l - 1, m + 1, s); }
-        Model.Sample(Helper.Power(2, m + l))(s);
+        Model.Sample(NatArith.Power(2, m + l))(s);
       }
     }
   }
