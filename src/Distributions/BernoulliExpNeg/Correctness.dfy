@@ -177,8 +177,9 @@ module BernoulliExpNeg.Correctness {
     ensures Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(true, k + 1)})) == gamma.ToReal() / (k + 1) as real
     ensures Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(false, k + 1)})) == 1.0 - gamma.ToReal() / (k + 1) as real
   {
-    var k' := k + 1;
-    var denom := k' * gamma.denom;
+    var k': nat := k + 1;
+    var denom: nat := k' * gamma.denom;
+    assert denom >= 1;
     var eventTrue := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(true, k')});
     var eventTrue2 := iset s | Bernoulli.Model.Sample(gamma.numer, denom)(s).Equals(true);
     assert eventTrue == eventTrue2;
