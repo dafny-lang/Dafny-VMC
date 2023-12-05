@@ -172,6 +172,11 @@ module BernoulliExpNeg.Correctness {
     ensures Independence.IsIndep(Model.SampleLe1(gamma))
 
 
+  // Proves the correctness of `Model.Le1LoopIter`.
+  // Correctness means that when run on an initial value of `(true, k)` it produces
+  // (true, k + 1) with probability gamma / (k + 1)
+  // (false, k + 1) with probability 1 - gamma / (k + 1)
+  // and (implicitly) all other probabilities are zero.
   lemma Le1LoopIterCorrectness(gamma: Rationals.Rational, k: nat)
     requires 0 <= gamma.numer <= gamma.denom
     ensures Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(true, k + 1)})) == gamma.ToReal() / (k + 1) as real
@@ -185,12 +190,14 @@ module BernoulliExpNeg.Correctness {
     assert eventTrue == eventTrue2;
     assert Rand.prob(eventTrue2) == gamma.numer as real / denom as real by {
       Bernoulli.Correctness.BernoulliCorrectness(gamma.numer, denom, true);
+      reveal Bernoulli.Correctness.BernoulliMass();
     }
     var eventFalse := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(false, k')});
     var eventFalse2 := iset s | Bernoulli.Model.Sample(gamma.numer, denom)(s).Equals(false);
     assert eventFalse == eventFalse2;
     assert Rand.prob(eventFalse2) == 1.0 - gamma.numer as real / denom as real by {
       Bernoulli.Correctness.BernoulliCorrectness(gamma.numer, denom, false);
+      reveal Bernoulli.Correctness.BernoulliMass();
     }
     assert gamma.numer as real / denom as real == gamma.ToReal() / k' as real by {
       calc {
@@ -204,13 +211,15 @@ module BernoulliExpNeg.Correctness {
   }
 
   // ExpTerm(gamma, n) is gamma^n / n!, i.e. the n-th term in the power series of the exponential function.
-  function ExpTerm(gamma: real, n: nat, start: nat := 1): real
+  // The start parameter is useful for inductive proofs.
+  opaque function ExpTerm(gamma: real, n: nat, start: nat := 1): real
     requires 1 <= start
   {
     NatArith.FactoralPositive(n, start);
     RealArith.Pow(gamma, n) / NatArith.Factorial(n, start) as real
   }
 
+  // Decomposition of ExpTerm useful in inductive proofs.
   lemma ExpTermStep(gamma: real, n: nat, start: nat := 1)
     requires start >= 1
     requires n >= 1
@@ -222,14 +231,19 @@ module BernoulliExpNeg.Correctness {
     var numer := RealArith.Pow(gamma, n);
     var numer2 := gamma * RealArith.Pow(gamma, n - 1);
     calc {
+      ExpTerm(gamma, n, start);
+      { reveal ExpTerm(); }
       numer / denom;
-      { assert numer == numer2; }
+      { reveal RealArith.Pow(); assert numer == numer2; }
       numer2 / denom;
-      { assert denom == denom2; }
+      { reveal NatArith.Factorial(); assert denom == denom2; }
       numer2 / denom2;
+      { reveal ExpTerm(); }
+      ExpTerm(gamma, n - 1, start + 1) * (gamma / start as real);
     }
   }
 
+  // A bounded version of `Model.Le1Loop`.
   opaque ghost function Le1LoopCut(gamma: Rationals.Rational, ak: (bool, nat)): nat -> Monad.Hurd<(bool, nat)>
     requires 0 <= gamma.numer <= gamma.denom
   {
@@ -241,6 +255,8 @@ module BernoulliExpNeg.Correctness {
       )
   }
 
+  // Decomposes the probability of `Le1LoopCut(gamma, (true, k))(fuel)` producing a value (false, m) with m <= k + n,
+  // by branching on the result of the sample `a` from the first loop iteration.
   lemma Le1LoopCutDecomposeProb(gamma: Rationals.Rational, k: nat, n: int, fuel: nat)
     requires 0 <= gamma.numer <= gamma.denom
     requires fuel >= 1
@@ -262,14 +278,14 @@ module BernoulliExpNeg.Correctness {
     assert firstIterTrue == firstIterTrue2 by {
       forall s ensures s in Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)(init), iset m: nat :: (true, m)) <==> s in Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)(init), iset{(true, k + 1)}) {}
     }
+    var resultAfterFirstTrue := Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, k + 1))(fuel - 1), resultSet);
+    var seedsWithResultAfterFirstTrue := Monad.BitstreamsWithRestIn(Model.Le1LoopIter(gamma)(init), resultAfterFirstTrue);
     // first loop iteration returns `a == false`
     var firstIterFalse := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)(init), iset m: nat :: (false, m));
     var firstIterFalse2 := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)(init), iset{(false, k + 1)});
     assert firstIterFalse == firstIterFalse2 by {
       forall s ensures s in Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)(init), iset m: nat :: (false, m)) <==> s in Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)(init), iset{(false, k + 1)}) {}
     }
-    var resultAfterFirstTrue := Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, k + 1))(fuel - 1), resultSet);
-    var seedsWithResultAfterFirstTrue := Monad.BitstreamsWithRestIn(Model.Le1LoopIter(gamma)(init), resultAfterFirstTrue);
     var resultAfterFirstFalse := Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (false, k + 1))(fuel - 1), resultSet);
     var seedsWithResultAfterFirstFalse := Monad.BitstreamsWithRestIn(Model.Le1LoopIter(gamma)(init), resultAfterFirstFalse);
     assert decomposeEvent: event == firstIterFalse * seedsWithResultAfterFirstFalse + firstIterTrue * seedsWithResultAfterFirstTrue by {
@@ -315,6 +331,10 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
+  // Proves correctness of `Le1LoopCut`:
+  // i.e. that the probability of `Le1LoopCut(gamma, (true, k))(fuel)` producing a value (false, m) with m <= k + n is
+  // (a) 0 if n <= 0 (intuitvely because `k` only increases, so the bound of `k + n` is already passed)
+  // (b) 1.0 - gamma^l / (k + 1)^(l) where l = min(n, fuel) and (k + 1)^(l) is the rising factorial (k + 1) * (k + 2) * ... * (k + l)
   lemma Le1LoopCutCorrectness(gamma: Rationals.Rational, k: nat, n: int, fuel: nat)
     decreases fuel
     requires 0 <= gamma.numer <= gamma.denom
@@ -334,7 +354,11 @@ module BernoulliExpNeg.Correctness {
       assert Rand.prob(event) == 0.0 by {
         Rand.ProbIsProbabilityMeasure();
       }
-      assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
+      assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1) by {
+        reveal ExpTerm();
+        reveal RealArith.Pow();
+        reveal NatArith.Factorial();
+      }
     } else {
       var k': nat := k + 1;
       var firstIterTrue := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(true, k + 1)});
@@ -393,7 +417,9 @@ module BernoulliExpNeg.Correctness {
             Rand.prob(firstIterFalse) * Rand.prob(desiredResultAfterFirstIterFalse) + Rand.prob(firstIterTrue) * Rand.prob(desiredResultAfterFirstIterTrue);
             { reveal probFirstFalse; reveal probResultAfterFirstFalse; reveal probFirstTrue; reveal probResultAfterFirstTrue; }
             1.0 - gamma.ToReal() / k' as real;
+            { reveal RealArith.Pow(); reveal NatArith.Factorial(); }
             1.0 - RealArith.Pow(gamma.ToReal(), 1) / NatArith.Factorial(1, k') as real;
+            { reveal ExpTerm(); }
             1.0 - ExpTerm(gamma.ToReal(), n, k + 1);
           }
           assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
@@ -416,13 +442,15 @@ module BernoulliExpNeg.Correctness {
     assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
   }
 
+  // Proves the first version of correctness of `Model.Le1Loop`:
+  // i.e. that the probability of `Model.Le1Loop(gamma)((true, 0))` producing a value (_, m) with m <= n is
+  // 1.0 - gamma^n / n!
   lemma Le1LoopCorrectnessLe(gamma: Rationals.Rational, n: nat)
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 <= n))
       == 1.0 - ExpTerm(gamma.ToReal(), n)
   {
-
     var resultSet := iset ak: (bool, nat) | ak.1 <= n;
     var resultSetRestricted := iset m: nat | m <= n :: (false, m);
     var limit := 1.0 - ExpTerm(gamma.ToReal(), n);
@@ -435,7 +463,7 @@ module BernoulliExpNeg.Correctness {
           Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted)(fuel);
           { reveal Le1LoopCut(); }
           Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, 0))(fuel), resultSetRestricted));
-          { Le1LoopCutCorrectness(gamma, 0, n, fuel); }
+          { Le1LoopCutCorrectness(gamma, 0, n, fuel); reveal ExpTerm(); reveal RealArith.Pow(); reveal NatArith.Factorial(); }
           1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel));
           limit;
         }
@@ -448,11 +476,15 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
+  // Proves the second version of correctness of `Model.Le1Loop`:
+  // i.e. that the probability of `Model.Le1Loop(gamma)((true, 0))` producing a value (_, n) is
+  // 0 if n == 0
+  // gamma^(n - 1) / (n - 1)! - gamma^n / n!
   lemma Le1LoopCorrectnessEq(gamma: Rationals.Rational, n: nat := 0)
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 == n))
-      == if n == 0 then 1.0 - ExpTerm(gamma.ToReal(), n) else ExpTerm(gamma.ToReal(), n - 1) - ExpTerm(gamma.ToReal(), n)
+      == if n == 0 then 0.0 else ExpTerm(gamma.ToReal(), n - 1) - ExpTerm(gamma.ToReal(), n)
   {
     var resultEqN := iset ak: (bool, nat) | ak.1 == n;
     var eventEqN := Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultEqN);
@@ -465,6 +497,8 @@ module BernoulliExpNeg.Correctness {
         Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultLeN));
         { Le1LoopCorrectnessLe(gamma, n); }
         1.0 - ExpTerm(gamma.ToReal(), n);
+        { reveal ExpTerm(); reveal RealArith.Pow(); reveal NatArith.Factorial(); }
+        0.0;
       }
     } else {
       var resultLeN1 := iset ak: (bool, nat) | ak.1 <= n - 1;

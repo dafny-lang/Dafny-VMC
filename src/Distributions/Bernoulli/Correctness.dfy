@@ -33,7 +33,7 @@ module Bernoulli.Correctness {
   }
 
   // The probability mass function (PMF) of the bernoulli distribution
-  function BernoulliMass(numer: nat, denom: nat): bool -> real
+  opaque function BernoulliMass(numer: nat, denom: nat): bool -> real
     requires denom > 0
     requires numer <= denom
   {
@@ -48,6 +48,7 @@ module Bernoulli.Correctness {
       && event in Rand.eventSpace
       && Rand.prob(event) == BernoulliMass(m, n)(b)
   {
+    reveal BernoulliMass();
     if b {
       BernoulliCorrectnessCaseTrue(m, n);
     } else {

@@ -20,7 +20,7 @@ module RealArith {
     Abs(x - y)
   }
 
-  function Pow(base: real, exponent: nat): real {
+  opaque function Pow(base: real, exponent: nat): real {
     if exponent == 0 then 1.0 else base * Pow(base, exponent - 1)
   }
 
