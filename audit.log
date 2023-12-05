@@ -7,7 +7,8 @@ src/Distributions/BernoulliExpNeg/Correctness.dfy(376,8): Le1LoopCutCorrectness:
 src/Distributions/BernoulliExpNeg/Correctness.dfy(377,8): Le1LoopCutCorrectness: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(381,8): Le1LoopCutCorrectness: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(382,8): Le1LoopCutCorrectness: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(454,17): Le1LoopCorrectnessEq: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(481,8): Le1LoopCorrectnessEq: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/BernoulliExpNeg/Correctness.dfy(482,8): Le1LoopCorrectnessEq: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(112,10): Le1LoopTerminatesAlmostSurely: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(148,4): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Model.dfy(161,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 

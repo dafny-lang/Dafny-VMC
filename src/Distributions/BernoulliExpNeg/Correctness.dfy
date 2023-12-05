@@ -451,7 +451,7 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
-  lemma {:axiom} Le1LoopCorrectnessEq(gamma: Rationals.Rational, n: nat := 0)
+  lemma Le1LoopCorrectnessEq(gamma: Rationals.Rational, n: nat := 0)
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 == n))
