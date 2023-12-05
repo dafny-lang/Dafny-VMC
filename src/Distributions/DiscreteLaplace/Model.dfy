@@ -23,20 +23,41 @@ module DiscreteLaplace.Model {
     Monad.Map(SampleLoop(scale), f)
   }
 
-  ghost opaque function SampleLoop(scale: Rationals.Rational): Monad.Hurd<(bool, int)>
+  ghost opaque function SampleLoop(scale: Rationals.Rational, x: (bool, int) := (true, 0)): Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
-    Loops.While(SampleLoopCondition, SampleLoopBody(scale))((true, 0))
+    Loops.While(SampleLoopCondition, SampleLoopBody(scale))(x)
   }
 
-  // TODO: replace with correct version later
-  ghost function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
+  ghost opaque function SampleLoopBody(scale: Rationals.Rational): ((bool, int)) -> Monad.Hurd<(bool, int)>
     requires scale.numer >= 1
   {
-    (x: (bool, int)) => Monad.Return(x)
+    (bY: (bool, int)) =>
+      Monad.Bind(
+        Uniform.Model.Sample(scale.numer),
+        (u: nat) =>
+          Monad.Bind(
+            BernoulliExpNeg.Model.Sample(Rationals.Rational(u, scale.numer)),
+            (d: bool) =>
+              if d then
+                Monad.Bind(
+                  SampleInnerLoopFull(),
+                  (v: int) =>
+                    Monad.Bind(
+                      Coin.Model.Sample,
+                      (b: bool) =>
+                        var x := u + scale.numer * v;
+                        var y := x / scale.denom;
+                        Monad.Return((b, y))
+                    )
+                )
+              else
+                Monad.Return(bY)
+          )
+      )
   }
 
-  ghost function SampleLoopCondition(x: (bool, int)): bool {
+  ghost opaque function SampleLoopCondition(x: (bool, int)): bool {
     x.0 && (x.1 == 0)
   }
 
@@ -68,4 +89,8 @@ module DiscreteLaplace.Model {
   lemma {:axiom} SampleInnerLoopTerminatesAlmostSurely()
     ensures Loops.WhileTerminatesAlmostSurely(SampleInnerLoopCondition, SampleInnerLoopBody)
 
+  // TODO: add later
+  lemma {:axiom} SampleLoopTerminatesAlmostSurely(scale: Rationals.Rational)
+    requires scale.numer >= 1
+    ensures Loops.WhileTerminatesAlmostSurely(SampleLoopCondition, SampleLoopBody(scale))
 }

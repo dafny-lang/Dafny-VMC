@@ -22,30 +22,48 @@ module DiscreteLaplace.Implementation {
       modifies this
       requires scale.numer >= 1
       decreases *
-      ensures Monad.Result(z, s) == Model.Sample(scale)(old(s))
+      ensures Model.Sample(scale)(old(s)) == Monad.Result(z, s)
+    {
+      var x := DiscreteLaplaceSampleLoop(scale);
+      Equivalence.SampleLiftToEnsures(scale, s, old(s), x);
+      z := if x.0 then -x.1 else x.1;
+    }
+
+    method {:rlimit 100000} DiscreteLaplaceSampleLoop(scale: Rationals.Rational) returns (bY: (bool, int))
+      modifies this
+      requires scale.numer >= 1
+      decreases *
+      ensures Model.SampleLoop(scale)(old(s)) == Monad.Result(bY, s)
     {
       var b := true;
       var y := 0;
+
+
       while b && y == 0
         decreases *
+        invariant Model.SampleLoop(scale)(old(s)) == Model.SampleLoop(scale, (b, y))(s)
       {
+        Equivalence.SampleLoopTailRecursiveEquivalence(scale, s, (b, y));
+
         var u := UniformSample(scale.numer);
         var d := BernoulliExpNegSample(Rationals.Rational(u, scale.numer));
         if d {
-          var v := DisceteLaplaceInnerLoop();
+          var v := DisceteLaplaceSampleInnerLoop();
+          b := CoinSample();
           var x := u + scale.numer * v;
           y := x / scale.denom;
-          b := CoinSample();
         }
       }
-      z := if b then -y else y;
-      assume {:axiom} false; // fix later
+
+      Equivalence.SampleLoopLiftToEnsures(scale, old(s), s, (b, y));
+
+      return (b, y);
     }
 
-    method DisceteLaplaceInnerLoop() returns (v: int)
+    method DisceteLaplaceSampleInnerLoop() returns (v: int)
       modifies this
       decreases *
-      ensures Monad.Result(v, s) == Model.SampleInnerLoopFull()(old(s))
+      ensures Model.SampleInnerLoopFull()(old(s)) == Monad.Result(v, s)
     {
       var a := true;
       v := 0;
