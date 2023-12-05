@@ -6,6 +6,8 @@
 module BernoulliExpNeg.Correctness {
   import Measures
   import Rationals
+  import Sequences
+  import Limits
   import Helper
   import NatArith
   import RealArith
@@ -240,7 +242,6 @@ module BernoulliExpNeg.Correctness {
 
   lemma Le1LoopCutCorrectness(gamma: Rationals.Rational, k: nat, n: int, fuel: nat)
     decreases fuel
-    requires 1 <= k
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, k))(fuel), iset m: nat | m <= k + n :: (false, m)))
@@ -249,7 +250,6 @@ module BernoulliExpNeg.Correctness {
     var resultSet := iset m: nat | m <= k + n :: (false, m);
     var init: (bool, nat) := (true, k);
     var event := Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, init)(fuel), resultSet);
-    var prob := if n < 0 then 0.0 else if n <= fuel then 1.0 - ExpTerm(gamma.ToReal(), n, k) else 1.0;
     if fuel == 0 {
       assert event == iset{} by {
         forall s ensures s !in event {
@@ -418,10 +418,76 @@ module BernoulliExpNeg.Correctness {
     assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
   }
 
-  lemma {:axiom} Le1LoopCorrectness(gamma: Rationals.Rational, k: nat := 0, n: nat := 0)
+  lemma Le1LoopCorrectnessLe(gamma: Rationals.Rational, n: nat)
     requires 0 <= gamma.numer <= gamma.denom
-    ensures Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)((true, k)), iset m: nat :: (true, m))) == 0.0
     ensures
-      Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)((true, k)), iset m: nat | m > n :: (false, n)))
-      == ExpTerm(gamma.ToReal(), n)
+      Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 <= n))
+      == 1.0 - ExpTerm(gamma.ToReal(), n)
+    {
+
+      var resultSet := iset ak: (bool, nat) | ak.1 <= n;
+      var resultSetRestricted := iset m: nat | m <= n :: (false, m);
+      var limit := 1.0 - ExpTerm(gamma.ToReal(), n);
+      assert resultSetRestricted == iset a <- resultSet | !Model.Le1LoopCondition(a);
+      var sequence: nat -> real := Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted);
+      assert Limits.ConvergesTo(sequence, limit) by {
+        forall fuel: nat | fuel >= n ensures sequence(fuel) == limit {
+          calc {
+            sequence(fuel);
+            Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted)(fuel);
+            { reveal Le1LoopCut(); }
+            Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, 0))(fuel), resultSetRestricted));
+            { Le1LoopCutCorrectness(gamma, 0, n, fuel); }
+            1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel));
+            limit;
+          }
+        }
+        Limits.ConstantSequenceConverges(sequence, limit, n);
+      }
+      reveal Model.Le1Loop();
+      assert Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultSet)) == limit by {
+        Loops.WhileProbabilityViaLimit(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSet, resultSetRestricted, limit);
+      }
+    }
+
+  lemma {:axiom} Le1LoopCorrectnessEq(gamma: Rationals.Rational, n: nat := 0)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures
+      Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 == n))
+      == if n == 0 then 1.0 - ExpTerm(gamma.ToReal(), n) else ExpTerm(gamma.ToReal(), n - 1) - ExpTerm(gamma.ToReal(), n)
+  {
+    var resultEqN := iset ak: (bool, nat) | ak.1 == n;
+    var eventEqN := Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultEqN);
+    var resultLeN := iset ak: (bool, nat) | ak.1 <= n;
+    var eventLeN := Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultLeN);
+    if n == 0 {
+      assert resultEqN == resultLeN;
+      calc {
+        Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultEqN));
+        Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultLeN));
+        { Le1LoopCorrectnessLe(gamma, n); }
+        1.0 - ExpTerm(gamma.ToReal(), n);
+      }
+    } else {
+      var resultLeN1 := iset ak: (bool, nat) | ak.1 <= n - 1;
+      assert resultLeN1 * resultEqN == iset{};
+      assert resultLeN1 + resultEqN == resultLeN;
+      var eventLeN1 := Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultLeN1);
+      assert eventLeN1 * eventEqN == iset{};
+      assert eventLeN1 + eventEqN == eventLeN;
+      assert Rand.prob(eventLeN) == Rand.prob(eventLeN1) + Rand.prob(eventEqN) by {
+        Rand.ProbIsProbabilityMeasure();
+        assume eventLeN1 in Rand.eventSpace;
+        assume eventEqN in Rand.eventSpace;
+        Measures.MeasureOfDisjointUnionIsSum(Rand.eventSpace, Rand.prob, eventLeN1, eventEqN);
+      }
+      calc {
+        Rand.prob(eventEqN);
+        Rand.prob(eventLeN) - Rand.prob(eventLeN1);
+        { Le1LoopCorrectnessLe(gamma, n); Le1LoopCorrectnessLe(gamma, n - 1); }
+        (1.0 - ExpTerm(gamma.ToReal(), n)) - (1.0 - ExpTerm(gamma.ToReal(), n - 1));
+        ExpTerm(gamma.ToReal(), n - 1) - ExpTerm(gamma.ToReal(), n);
+      }
+    }
+  }
 }

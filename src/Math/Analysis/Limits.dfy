@@ -120,12 +120,12 @@ module Limits {
     requires Sequences.IsLeq(middle, upper)
     ensures ConvergesTo(middle, limit)
 
-  lemma ConstantSequenceConverges(sequence: nat -> real, constant: real)
-    requires forall n: nat :: sequence(n) == constant
+  lemma ConstantSequenceConverges(sequence: nat -> real, constant: real, offset: nat := 0)
+    requires forall n: nat | n >= offset :: sequence(n) == constant
     ensures ConvergesTo(sequence, constant)
   {
     forall epsilon: real | epsilon > 0.0 ensures ExistsCloseSuffix(sequence, constant, epsilon) {
-      assert SuffixIsClose(sequence, constant, epsilon, 0);
+      assert SuffixIsClose(sequence, constant, epsilon, offset);
     }
   }
 
