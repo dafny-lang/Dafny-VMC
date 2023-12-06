@@ -26,9 +26,9 @@ src/Math/Exponential.dfy(11,17): EvalOne: Declaration has explicit `{:axiom}` at
 src/Math/Exponential.dfy(2,26): Exp: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(4,17): FunctionalEquation: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(7,17): Increasing: Declaration has explicit `{:axiom}` attribute. 
+src/Math/Helper.dfy(42,17): ArrayToSeqIsInjective: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(125,17): ProbabilityLe1: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(130,17): IsMonotonic: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Permutations.dfy(169,45): type parameter T of ghost lemma CalculateAllPermutationsOfIsNonEmpty is declared (==), which is unnecessary because the lemma doesn't contain any compiled code
 src/ProbabilisticProgramming/Independence.dfy(105,17): BindIsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(30,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(55,6): ResultsIndependent: Definition has `assume {:axiom}` statement in body. 
@@ -47,4 +47,5 @@ src/ProbabilisticProgramming/RandomSource.dfy(50,17): ProbIsProbabilityMeasure: 
 src/ProbabilisticProgramming/RandomSource.dfy(54,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(61,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(67,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
-src/Utilities/FisherYates/Correctness.dfy(11,17): CorrectnessFisherYates: Declaration has explicit `{:axiom}` attribute. 
+src/Utilities/FisherYates/Correctness.dfy(11,17): CorrectnessFisherYatesOne: Declaration has explicit `{:axiom}` attribute. 
+src/Utilities/FisherYates/Correctness.dfy(17,17): CorrectnessFisherTwo: Declaration has explicit `{:axiom}` attribute. 

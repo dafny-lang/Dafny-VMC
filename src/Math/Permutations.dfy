@@ -166,7 +166,7 @@ module Permutations {
     ensures s == InsertAt(DeleteAt(s, i), s[i], i)
   {}
 
-  lemma CalculateAllPermutationsOfIsNonEmpty<T(==)>(s: seq<T>)
+  lemma CalculateAllPermutationsOfIsNonEmpty<T>(s: seq<T>)
     ensures s in CalculateAllPermutationsOf(s)
     ensures |CalculateAllPermutationsOf(s)| > 0
   {
