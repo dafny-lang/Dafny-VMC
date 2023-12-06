@@ -7,6 +7,7 @@ module TestsFoundational {
   import NatArith
   import DafnyVMC
   import Tests
+  import Helper
 
   method {:test} TestCoin() {
     var r := new DafnyVMC.DRandomFoundational();
@@ -104,5 +105,13 @@ module TestsFoundational {
   {
     var r := new DafnyVMC.DRandomFoundational();
     Tests.TestDiscreteGaussian(1_000_000, r);
+  }
+
+  method {:test} TestFisherYates()
+    decreases *
+  {
+    var a: array<nat> := new nat[3](i => i);
+    var r := new DafnyVMC.DRandomFoundational();
+    Tests.TestFisherYates(1_000, a, r, Helper.NatToString);
   }
 }

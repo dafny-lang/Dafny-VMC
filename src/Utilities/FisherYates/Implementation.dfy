@@ -6,13 +6,14 @@
 module FisherYates.Implementation {
   import Uniform
   import Model
+  import Interface
 
-  trait {:termination false} Trait extends Uniform.Interface.Trait {
+  trait {:termination false} Trait extends Interface.Trait {
 
-    method Shuffle<T>(a: array<T>) returns (b: array<T>)
+    method Shuffle<T>(a: array<T>)
       modifies this, a
       decreases *
-//    ensures Model.Shuffle(Helper.ArrayToSeq(a))(old(s)) == Monad.Result(Helper.ArrayToSeq(b), s)
+      //    ensures Model.Shuffle(Helper.ArrayToSeq(old(a)))(old(s)) == Monad.Result(Helper.ArrayToSeq(a), s)
     {
       for i := a.Length downto 0 {
         assert 0 <= i <= a.Length - 1;
@@ -20,7 +21,6 @@ module FisherYates.Implementation {
         assert 0 <= j <= i;
         Swap(a, i, j);
       }
-      return a;
     }
 
     method Swap<T>(a: array<T>, i: nat, j: nat)
@@ -32,4 +32,4 @@ module FisherYates.Implementation {
     }
 
   }
- }
+}

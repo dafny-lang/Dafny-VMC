@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- module Permutations {
+module Permutations {
 
   /************
    Definitions
@@ -57,11 +57,11 @@
     assert (iset p | p in CalculateAllPermutationsOf(s)) == AllPermutationsOf(s) by {
       assert forall p :: p in CalculateAllPermutationsOf(s) <==> p in AllPermutationsOf(s) by {
         forall p
-          ensures p in CalculateAllPermutationsOf(s) <==> p in AllPermutationsOf(s) 
-          {
-            CorrectnessImplicationOne(s, p);
-            CorrectnessImplicationTwo(s, p);
-          }
+          ensures p in CalculateAllPermutationsOf(s) <==> p in AllPermutationsOf(s)
+        {
+          CorrectnessImplicationOne(s, p);
+          CorrectnessImplicationTwo(s, p);
+        }
       }
     }
   }

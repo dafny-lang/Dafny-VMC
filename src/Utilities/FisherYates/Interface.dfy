@@ -9,10 +9,10 @@ module FisherYates.Interface {
 
   trait {:termination false} Trait extends Uniform.Interface.Trait {
 
-    method Shuffle<T>(a: array<T>) returns (b: array<T>)
-      modifies this
+    method Shuffle<T>(a: array<T>)
+      modifies this, a
       decreases *
-//    ensures Model.Shuffle(Helper.ArrayToSeq(a))(old(s)) == Monad.Result(Helper.ArrayToSeq(b), s)
+    //    ensures Model.Shuffle(Helper.ArrayToSeq(old(a)))(old(s)) == Monad.Result(Helper.ArrayToSeq(a), s)
 
   }
- }
+}

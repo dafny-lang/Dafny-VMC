@@ -3,14 +3,14 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
- module FisherYates.Model {
+module FisherYates.Model {
   import Monad
   import Rand
 
   // TODO: add correct version
   function Shuffle<T>(xs: seq<T>): Monad.Hurd<seq<T>> {
-    (s: Rand.Bitstream) => 
+    (s: Rand.Bitstream) =>
       Monad.Result(xs, s)
   }
 
- }
+}
