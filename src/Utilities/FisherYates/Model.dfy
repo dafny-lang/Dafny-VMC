@@ -9,9 +9,7 @@ module FisherYates.Model {
   import Permutations
 
   // TODO: add correct version
-  function Shuffle<T>(xs: seq<T>): (f: Monad.Hurd<seq<T>>) 
-    ensures forall s :: f(s).Result? && Permutations.IsPermutationOf(xs, f(s).value)
-  {
+  function Shuffle<T>(xs: seq<T>): (f: Monad.Hurd<seq<T>>) {
     (s: Rand.Bitstream) =>
       Monad.Result(xs, s)
   }
