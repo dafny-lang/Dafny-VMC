@@ -40,7 +40,7 @@ module Helper {
 
   // TODO: try to prove
   lemma {:axiom} ArrayToSeqIsInjective<T>(a: array<T>, b: array<T>)
-    requires a != b 
+    requires a != b
     ensures ArrayToSeq(a) != ArrayToSeq(b)
 
 }

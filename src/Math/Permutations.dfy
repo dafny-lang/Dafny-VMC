@@ -4,6 +4,7 @@
  *******************************************************************************/
 
 module Permutations {
+  import NatArith
 
   /************
    Definitions
@@ -17,11 +18,13 @@ module Permutations {
     iset p | IsPermutationOf(p, s)
   }
 
-  function CalculateAllPermutationsOf<T(==)>(s: seq<T>): set<seq<T>> {
+  function CalculateAllPermutationsOf<T(==)>(s: seq<T>): (x: set<seq<T>>)
+    ensures forall p | p in x :: |p| == |s|
+  {
     if |s| == 0 then
       {s}
     else
-      set p, i | p in CalculateAllPermutationsOf(s[1..]) && 0 <= i <= |p| :: InsertAt(p, s[0], i)
+      set p, i | p in CalculateAllPermutationsOf(s[1..]) && 0 <= i <= |s|-1 :: InsertAt(p, s[0], i)
   }
 
   function InsertAt<T>(s: seq<T>, x: T, i: nat): seq<T>
@@ -180,4 +183,16 @@ module Permutations {
       }
     }
   }
+
+  lemma NumberOfPermutations(s: seq<nat>)
+    requires IsPermutationOf(seq(|s|, i => i), s)
+    ensures |CalculateAllPermutationsOf(s)| == NatArith.Factorial(|s|)
+  {
+    if |s| == 0 {
+      reveal NatArith.Factorial();
+    } else {
+      assume {:axiom} false;
+    }
+  }
+
 }

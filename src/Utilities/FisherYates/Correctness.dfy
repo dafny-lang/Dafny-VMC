@@ -9,7 +9,7 @@ module FisherYates.Correctness {
   import Rand
 
   lemma {:axiom} CorrectnessFisherYatesOne<T>(xs: seq<T>, s: Rand.Bitstream)
-    ensures 
+    ensures
       var r := Model.Shuffle(xs)(s);
       && r.Result?
       && Permutations.IsPermutationOf(xs, r.value)
