@@ -10,6 +10,7 @@ module FisherYates.Correctness {
 
   lemma {:axiom} CorrectnessFisherYates<T>(xs: seq<T>, p: seq<T>)
     requires Permutations.IsPermutationOf(p, xs)
+    ensures |Permutations.CalculateAllPermutationsOf(xs)| > 0
     ensures 
       var e := iset s | Model.Shuffle(xs)(s).Equals(p);
       && e in Rand.eventSpace

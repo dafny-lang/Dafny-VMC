@@ -13,13 +13,11 @@
     multiset(p) == multiset(s)
   }
 
-  ghost function AllPermutationsOf<T(!new)>(s: seq<T>): (x: iset<seq<T>>) 
-    ensures x != iset{}
-  {
+  ghost function AllPermutationsOf<T(!new)>(s: seq<T>): iset<seq<T>> {
     iset p | IsPermutationOf(p, s)
   }
 
-  function CalculateAllPermutationsOf<T(==)>(s: seq<T>): (x: set<seq<T>>) {
+  function CalculateAllPermutationsOf<T(==)>(s: seq<T>): set<seq<T>> {
     if |s| == 0 then
       {s}
     else
@@ -167,4 +165,19 @@
     requires i < |s|
     ensures s == InsertAt(DeleteAt(s, i), s[i], i)
   {}
+
+  lemma CalculateAllPermutationsOfIsNonEmpty<T(==)>(s: seq<T>)
+    ensures s in CalculateAllPermutationsOf(s)
+    ensures |CalculateAllPermutationsOf(s)| > 0
+  {
+    assert s in CalculateAllPermutationsOf(s) by {
+      if |s| == 0 {
+      } else {
+        assert s[1..] in CalculateAllPermutationsOf(s[1..]) by {
+          CalculateAllPermutationsOfIsNonEmpty(s[1..]);
+        }
+        assert  InsertAt(s[1..], s[0], 0) == s;
+      }
+    }
+  }
 }
