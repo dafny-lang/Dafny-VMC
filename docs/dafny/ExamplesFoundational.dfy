@@ -6,6 +6,7 @@
 module RandomExamples.Foundational {
   import Rationals
   import DafnyVMC
+  import Helper
 
   method Main()
     decreases *
@@ -124,5 +125,14 @@ module RandomExamples.Foundational {
     // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+0%2C+%CF%83+-%3E+1.4%7D%5D
     // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+1%2C+%CF%83+-%3E+1.4%7D%5D
     print "Estimated probabilities for DiscreteGaussianSample(1.4): ", count0 as real / n as real, " (should be around 0.284959) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.220797)\n";
+  
+    // Fisher-Yates Example
+    var arr: array<nat> := new nat[3](i => i);
+    for i := 0 to 20 {
+      var arrCopy := arr;
+      r.Shuffle(arrCopy);
+      print Helper.SeqToString(Helper.ArrayToSeq(arrCopy), Helper.NatToString), "\n";
+    }
+
   }
 }

@@ -12,7 +12,7 @@ To run the examples in the `docs` directory, use one of the following commands:
 # Java ExamplesFoundational
 $ dafny build docs/dafny/ExamplesFoundational.dfy --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java dfyconfig.toml --no-verify
 $ java -jar docs/dafny/ExamplesFoundational.jar
-# Java ExamplesExternUniform
+# Java ExamplesExternUniformPowerOfTwo
 $ dafny build docs/dafny/ExamplesExternUniformPowerOfTwo.dfy --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java dfyconfig.toml --no-verify
 $ java -jar docs/dafny/ExamplesExternUniformPowerOfTwo.jar
 ```
@@ -23,7 +23,7 @@ To run the statistical tests in the `tests` diretory, use one of the following c
 
 ```bash
 # Java TestsFoundational
-$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java tests/TestsFoundationalPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml --no-verify
-# Java TestsExternUniform
+$ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
+# Java TestsExternUniformPowerOfTwo
 $ dafny test --target:java src/interop/java/DRandomCoin.java src/interop/java/DRandomUniformPowerOfTwo.java tests/TestsExternUniformPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 ```
