@@ -146,6 +146,17 @@ module Measures {
     }
   }
 
+  lemma MeasureOfCountableDisjointUnionIsSum<T(!new)>(eventSpace: iset<iset<T>>, mu: iset<T> -> real, parts: nat -> iset<T>, muParts: nat -> real)
+    requires IsMeasure(eventSpace, mu)
+    requires forall n: nat :: parts(n) in eventSpace
+    requires PairwiseDisjoint(parts)
+    requires forall n: nat :: muParts(n) == mu(parts(n))
+    ensures Series.SumsTo(muParts, mu(CountableUnion(parts)))
+  {
+    assert Series.SumsTo((n: nat) => mu(parts(n)), mu(CountableUnion(parts)));
+    Series.SumOfEqualsIsEqual((n: nat) => mu(parts(n)), muParts, mu(CountableUnion(parts)));
+  }
+
   // Equation (2.18)
   lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real)
     requires IsSigmaAlgebra(eventSpace)

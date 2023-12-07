@@ -33,6 +33,48 @@ module Series {
     Limits.Limit(PartialSums(summands))
   }
 
+  // This would be trivial if Dafny had function extensionality
+  lemma SumFromToOfEqualsIsEqual(s1: nat -> real, s2: nat -> real, start: nat, end: nat)
+    decreases end - start
+    requires forall n: nat | start <= n < end :: s1(n) == s2(n)
+    ensures SumFromTo(s1, start, end) == SumFromTo(s2, start, end)
+  {
+    if end <= start {
+      calc {
+        SumFromTo(s1, start, end);
+        0.0;
+        SumFromTo(s2, start, end);
+      }
+    } else {
+      calc {
+        SumFromTo(s1, start, end);
+        s1(start) + SumFromTo(s1, start + 1, end);
+        s2(start) + SumFromTo(s1, start + 1, end);
+        { SumFromToOfEqualsIsEqual(s1, s2, start + 1, end); }
+        s2(start) + SumFromTo(s1, start + 1, end);
+        SumFromTo(s2, start, end);
+      }
+    }
+  }
+
+  // This would be trivial if Dafny had function extensionality
+  lemma SumOfEqualsIsEqual(summands1: nat -> real, summands2: nat -> real, sum: real)
+    requires forall n: nat :: summands1(n) == summands2(n)
+    requires SumsTo(summands1, sum)
+    ensures SumsTo(summands2, sum)
+  {
+    forall n: nat ensures PartialSums(summands1)(n) == PartialSums(summands2)(n) {
+      calc {
+        PartialSums(summands1)(n);
+        SumTo(summands1, n);
+        { SumFromToOfEqualsIsEqual(summands1, summands2, 0, n); }
+        SumTo(summands2, n);
+        PartialSums(summands2)(n);
+      }
+    }
+    Limits.LimitOfEqualsIsEqual(PartialSums(summands1), PartialSums(summands2), sum);
+  }
+
   lemma SumIsUnique(summands: nat -> real, sum1: real, sum2: real)
     requires SumsTo(summands, sum1)
     requires SumsTo(summands, sum2)
