@@ -108,7 +108,10 @@ module Loops {
       var reject := (a: A) => !accept(a);
       var body := (a: A) => proposal;
       forall s :: f(s) == proposal(s).Bind(While(reject, body))
+    ensures 
+      forall s | f(s).Result? :: accept(f(s).value)
   {
+    reveal While();
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
     Monad.Bind(proposal, While(reject, body))

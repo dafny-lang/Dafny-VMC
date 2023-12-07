@@ -28,7 +28,9 @@ module Monad {
       case Result(value, rest) => Result(f(value), rest)
     }
 
-    function Bind<B>(f: A -> Hurd<B>): Result<B> {
+    function Bind<B>(f: A --> Hurd<B>): Result<B> 
+      requires this.Result? ==> f.requires(this.value)
+    {
       match this
       case Diverging => Diverging
       case Result(value, rest) => f(value)(rest)
@@ -92,7 +94,9 @@ module Monad {
   }
 
   // Equation (3.4)
-  function Bind<A,B>(f: Hurd<A>, g: A -> Hurd<B>): Hurd<B> {
+  function Bind<A,B>(f: Hurd<A>, g: A --> Hurd<B>): Hurd<B> 
+    requires forall s | f(s).Result? :: g.requires(f(s).value)
+  {
     (s: Rand.Bitstream) => f(s).Bind(g)
   }
 

@@ -50,6 +50,17 @@ module Permutations {
       FirstOccurrence(p[1..], x) + 1
   }
 
+  function Swap<T>(s: seq<T>, i: nat, j: nat): seq<T>
+    requires i <= j
+    requires 0 <= i < |s|
+    requires 0 <= j < |s|
+  {
+    if i == j then 
+      s 
+    else 
+      s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..]
+  }
+
   /*******
    Lemmas
   *******/

@@ -14,8 +14,9 @@ module Uniform.Model {
   import UniformPowerOfTwo
 
   // Definition 49
-  opaque ghost function Sample(n: nat): Monad.Hurd<nat>
+  opaque ghost function Sample(n: nat): (f: Monad.Hurd<nat>)
     requires n > 0
+    ensures forall s | f(s).Result? :: 0 <= f(s).value < n
   {
     SampleTerminates(n);
     Loops.Until(Proposal(n), Accept(n))
@@ -35,6 +36,7 @@ module Uniform.Model {
 
   ghost function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
+    ensures forall s | f(s).Result? :: a <= f(s).value <= b
   {
     Monad.Map(Sample(b - a), x => a + x)
   }
