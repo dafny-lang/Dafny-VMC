@@ -80,7 +80,8 @@ module DiscreteLaplace.Equivalence {
     }
   }
 
-  lemma {:rlimit 100000} SampleLoopTailRecursiveEquivalence(scale: Rationals.Rational, s: Rand.Bitstream, bY: (bool, int) := (true, 0))
+  // TODO: Reduce rlimit
+  lemma {:rlimit 1000000} SampleLoopTailRecursiveEquivalence(scale: Rationals.Rational, s: Rand.Bitstream, bY: (bool, int) := (true, 0))
     requires scale.numer >= 1
     ensures
       Model.SampleLoop(scale, bY)(s) ==
