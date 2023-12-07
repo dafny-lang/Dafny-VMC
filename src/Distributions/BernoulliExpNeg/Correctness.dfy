@@ -8,6 +8,7 @@ module BernoulliExpNeg.Correctness {
   import Rationals
   import Sequences
   import Limits
+  import Series
   import Helper
   import NatArith
   import RealArith
@@ -131,10 +132,6 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
-  lemma {:axiom} CorrectnessLe1(gamma: Rationals.Rational)
-    requires 0 <= gamma.numer <= gamma.denom
-    ensures Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Exponential.Exp(-gamma.ToReal())
-
   lemma SampleIsIndep(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
     decreases gamma.numer
@@ -165,6 +162,70 @@ module BernoulliExpNeg.Correctness {
         Independence.BindIsIndep(Model.SampleLe1(Rationals.Int(1)), f);
       }
     }
+  }
+
+  lemma CorrectnessLe1(gamma: Rationals.Rational)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Exponential.Exp(-gamma.ToReal())
+  {
+    var event := Monad.BitstreamsWithValueIn(Model.SampleLe1(gamma), iset{true});
+    var resultSeq := (k: nat) => if k % 2 == 0 then iset{} else iset ak: (bool, nat) | ak.1 == k;
+    var resultSet := Measures.CountableUnion(resultSeq);
+    var partEvent := (k: nat) => Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)((true, 0)), resultSeq(k));
+    var probPartEvent := (k: nat) => Rand.prob(partEvent(k));
+    assert event == Measures.CountableUnion(partEvent) by {
+      forall s ensures s in event <==> s in Measures.CountableUnion(partEvent) {
+        forall k: nat ensures s in partEvent(k) <==> Model.Le1Loop(gamma)((true, 0))(s).In(resultSeq(k)) {}
+        var oddNats := iset ak: (bool, nat) | ak.1 % 2 == 1;
+        var oddNats2 := iset k: nat, ak <- resultSeq(k) :: ak;
+        assert oddNats == oddNats2 by {
+          forall ak: (bool, nat) ensures ak in oddNats <==> ak in oddNats2 {
+            calc {
+              ak in oddNats;
+              ak.1 % 2 == 1;
+              ak in resultSeq(ak.1);
+            }
+          }
+        }
+        calc {
+          s in event;
+          Model.SampleLe1(gamma)(s).Equals(true);
+          Model.Le1Loop(gamma)((true, 0))(s).Satisfies((ak: (bool, nat)) => ak.1 % 2 == 1);
+          Model.Le1Loop(gamma)((true, 0))(s).In(oddNats);
+          Model.Le1Loop(gamma)((true, 0))(s).In(oddNats2);
+          exists k: nat :: Model.Le1Loop(gamma)((true, 0))(s).In(resultSeq(k));
+          exists k: nat :: s in partEvent(k);
+        }
+      }
+    }
+    assert Measures.PairwiseDisjoint(partEvent) by {
+      forall m: nat, n: nat | m != n ensures partEvent(m) * partEvent(n) == iset{} {}
+    }
+    forall k: nat ensures probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) {
+      if k % 2 == 0 {
+        assert partEvent(k) == iset{};
+        assert probPartEvent(k) == 0.0 by {
+          Rand.ProbIsProbabilityMeasure();
+        }
+      } else {
+        assert probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) by {
+          Le1LoopCorrectnessEq(gamma, k);
+        }
+      }
+    }
+    assert Series.SumsTo(probPartEvent, Rand.prob(event)) by {
+      Rand.ProbIsProbabilityMeasure();
+      assume {:axiom} forall k: nat :: partEvent(k) in Rand.eventSpace;
+      Measures.MeasureOfCountableDisjointUnionIsSum(Rand.eventSpace, Rand.prob, partEvent, probPartEvent);
+    }
+    assert Series.SumsTo(probPartEvent, Exponential.Exp(-gamma.ToReal())) by {
+      assert Series.SumsTo(Le1SeriesTerm(gamma.ToReal()), Exponential.Exp(-gamma.ToReal())) by {
+        Le1SeriesConvergesToExpNeg(gamma.ToReal());
+      }
+      Series.SumOfEqualsIsEqual(Le1SeriesTerm(gamma.ToReal()), probPartEvent, Exponential.Exp(-gamma.ToReal()));
+    }
+    Series.SumIsUnique(probPartEvent, Rand.prob(event), Exponential.Exp(-gamma.ToReal()));
+    assert event == iset s | Model.SampleLe1(gamma)(s).Equals(true);
   }
 
   lemma {:axiom} SampleLe1IsIndep(gamma: Rationals.Rational)
@@ -210,38 +271,13 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
-  // ExpTerm(gamma, n) is gamma^n / n!, i.e. the n-th term in the power series of the exponential function.
-  // The start parameter is useful for inductive proofs.
-  opaque function ExpTerm(gamma: real, n: nat, start: nat := 1): real
-    requires 1 <= start
-  {
-    NatArith.FactoralPositive(n, start);
-    RealArith.Pow(gamma, n) / NatArith.Factorial(n, start) as real
+  // Sequence of terms of the infinite series used in the correctness proof.
+  function Le1SeriesTerm(gamma: real): nat -> real {
+    (n: nat) => if n % 2 == 0 then 0.0 else Exponential.ExpTerm(gamma, n - 1) - Exponential.ExpTerm(gamma, n)
   }
 
-  // Decomposition of ExpTerm useful in inductive proofs.
-  lemma ExpTermStep(gamma: real, n: nat, start: nat := 1)
-    requires start >= 1
-    requires n >= 1
-    ensures ExpTerm(gamma, n, start) == ExpTerm(gamma, n - 1, start + 1) * (gamma / start as real)
-  {
-    NatArith.FactoralPositive(n, start);
-    var denom := NatArith.Factorial(n, start) as real;
-    var denom2 := (start * NatArith.Factorial(n - 1, start + 1)) as real;
-    var numer := RealArith.Pow(gamma, n);
-    var numer2 := gamma * RealArith.Pow(gamma, n - 1);
-    calc {
-      ExpTerm(gamma, n, start);
-      { reveal ExpTerm(); }
-      numer / denom;
-      { reveal RealArith.Pow(); assert numer == numer2; }
-      numer2 / denom;
-      { reveal NatArith.Factorial(); assert denom == denom2; }
-      numer2 / denom2;
-      { reveal ExpTerm(); }
-      ExpTerm(gamma, n - 1, start + 1) * (gamma / start as real);
-    }
-  }
+  lemma {:axiom} Le1SeriesConvergesToExpNeg(gamma: real)
+    ensures Series.SumsTo(Le1SeriesTerm(gamma), Exponential.Exp(-gamma))
 
   // A bounded version of `Model.Le1Loop`.
   opaque ghost function Le1LoopCut(gamma: Rationals.Rational, ak: (bool, nat)): nat -> Monad.Hurd<(bool, nat)>
@@ -340,7 +376,7 @@ module BernoulliExpNeg.Correctness {
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, k))(fuel), iset m: nat | m <= k + n :: (false, m)))
-      == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1)
+      == if n <= 0 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1)
   {
     var resultSet := iset m: nat | m <= k + n :: (false, m);
     var event := Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, k))(fuel), resultSet);
@@ -354,8 +390,8 @@ module BernoulliExpNeg.Correctness {
       assert Rand.prob(event) == 0.0 by {
         Rand.ProbIsProbabilityMeasure();
       }
-      assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1) by {
-        reveal ExpTerm();
+      assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1) by {
+        reveal Exponential.ExpTerm();
         reveal RealArith.Pow();
         reveal NatArith.Factorial();
       }
@@ -396,7 +432,7 @@ module BernoulliExpNeg.Correctness {
       assert probFirstTrue: Rand.prob(firstIterTrue) == gamma.ToReal() / k' as real by {
         Le1LoopIterCorrectness(gamma, k);
       }
-      assert probResultAfterFirstTrue: Rand.prob(desiredResultAfterFirstIterTrue) == if n <= 1 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel) - 1, k' + 1) by {
+      assert probResultAfterFirstTrue: Rand.prob(desiredResultAfterFirstIterTrue) == if n <= 1 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel) - 1, k' + 1) by {
         Le1LoopCutCorrectness(gamma, k', n - 1, fuel - 1);
         assert n >= 1 ==> NatArith.Min(n, fuel) - 1 == NatArith.Min(n - 1, fuel - 1);
       }
@@ -419,27 +455,27 @@ module BernoulliExpNeg.Correctness {
             1.0 - gamma.ToReal() / k' as real;
             { reveal RealArith.Pow(); reveal NatArith.Factorial(); }
             1.0 - RealArith.Pow(gamma.ToReal(), 1) / NatArith.Factorial(1, k') as real;
-            { reveal ExpTerm(); }
-            1.0 - ExpTerm(gamma.ToReal(), n, k + 1);
+            { reveal Exponential.ExpTerm(); }
+            1.0 - Exponential.ExpTerm(gamma.ToReal(), n, k + 1);
           }
-          assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
+          assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
         } else {
           calc {
             Rand.prob(event);
             { Le1LoopCutDecomposeProb(gamma, k, n, fuel); }
             Rand.prob(firstIterFalse) * Rand.prob(desiredResultAfterFirstIterFalse) + Rand.prob(firstIterTrue) * Rand.prob(desiredResultAfterFirstIterTrue);
             { reveal probFirstFalse; reveal probResultAfterFirstFalse; reveal probFirstTrue; reveal probResultAfterFirstTrue; }
-            (1.0 - gamma.ToReal() / k' as real) * 1.0 + (gamma.ToReal() / k' as real) * (1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel) - 1, k' + 1));
-            1.0 - gamma.ToReal() / k' as real * ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel) - 1, k' + 1);
-            { ExpTermStep(gamma.ToReal(), NatArith.Min(n, fuel), k'); }
-            1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
+            (1.0 - gamma.ToReal() / k' as real) * 1.0 + (gamma.ToReal() / k' as real) * (1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel) - 1, k' + 1));
+            1.0 - gamma.ToReal() / k' as real * Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel) - 1, k' + 1);
+            { Exponential.ExpTermStep(gamma.ToReal(), NatArith.Min(n, fuel), k'); }
+            1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
           }
         }
-        assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
+        assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
       }
-      assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
+      assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
     }
-    assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
+    assert Rand.prob(event) == if n <= 0 then 0.0 else 1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel), k + 1);
   }
 
   // Proves the first version of correctness of `Model.Le1Loop`:
@@ -449,11 +485,11 @@ module BernoulliExpNeg.Correctness {
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 <= n))
-      == 1.0 - ExpTerm(gamma.ToReal(), n)
+      == 1.0 - Exponential.ExpTerm(gamma.ToReal(), n)
   {
     var resultSet := iset ak: (bool, nat) | ak.1 <= n;
     var resultSetRestricted := iset m: nat | m <= n :: (false, m);
-    var limit := 1.0 - ExpTerm(gamma.ToReal(), n);
+    var limit := 1.0 - Exponential.ExpTerm(gamma.ToReal(), n);
     assert resultSetRestricted == iset a <- resultSet | !Model.Le1LoopCondition(a);
     var sequence: nat -> real := Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted);
     assert Limits.ConvergesTo(sequence, limit) by {
@@ -463,8 +499,8 @@ module BernoulliExpNeg.Correctness {
           Loops.WhileCutProbability(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (true, 0), resultSetRestricted)(fuel);
           { reveal Le1LoopCut(); }
           Rand.prob(Monad.BitstreamsWithValueIn(Le1LoopCut(gamma, (true, 0))(fuel), resultSetRestricted));
-          { Le1LoopCutCorrectness(gamma, 0, n, fuel); reveal ExpTerm(); reveal RealArith.Pow(); reveal NatArith.Factorial(); }
-          1.0 - ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel));
+          { Le1LoopCutCorrectness(gamma, 0, n, fuel); reveal Exponential.ExpTerm(); reveal RealArith.Pow(); reveal NatArith.Factorial(); }
+          1.0 - Exponential.ExpTerm(gamma.ToReal(), NatArith.Min(n, fuel));
           limit;
         }
       }
@@ -484,7 +520,7 @@ module BernoulliExpNeg.Correctness {
     requires 0 <= gamma.numer <= gamma.denom
     ensures
       Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), iset ak: (bool, nat) | ak.1 == n))
-      == if n == 0 then 0.0 else ExpTerm(gamma.ToReal(), n - 1) - ExpTerm(gamma.ToReal(), n)
+      == if n == 0 then 0.0 else Exponential.ExpTerm(gamma.ToReal(), n - 1) - Exponential.ExpTerm(gamma.ToReal(), n)
   {
     var resultEqN := iset ak: (bool, nat) | ak.1 == n;
     var eventEqN := Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultEqN);
@@ -496,8 +532,8 @@ module BernoulliExpNeg.Correctness {
         Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultEqN));
         Rand.prob(Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)(((true, 0))), resultLeN));
         { Le1LoopCorrectnessLe(gamma, n); }
-        1.0 - ExpTerm(gamma.ToReal(), n);
-        { reveal ExpTerm(); reveal RealArith.Pow(); reveal NatArith.Factorial(); }
+        1.0 - Exponential.ExpTerm(gamma.ToReal(), n);
+        { reveal Exponential.ExpTerm(); reveal RealArith.Pow(); reveal NatArith.Factorial(); }
         0.0;
       }
     } else {
@@ -517,8 +553,8 @@ module BernoulliExpNeg.Correctness {
         Rand.prob(eventEqN);
         Rand.prob(eventLeN) - Rand.prob(eventLeN1);
         { Le1LoopCorrectnessLe(gamma, n); Le1LoopCorrectnessLe(gamma, n - 1); }
-        (1.0 - ExpTerm(gamma.ToReal(), n)) - (1.0 - ExpTerm(gamma.ToReal(), n - 1));
-        ExpTerm(gamma.ToReal(), n - 1) - ExpTerm(gamma.ToReal(), n);
+        (1.0 - Exponential.ExpTerm(gamma.ToReal(), n)) - (1.0 - Exponential.ExpTerm(gamma.ToReal(), n - 1));
+        Exponential.ExpTerm(gamma.ToReal(), n - 1) - Exponential.ExpTerm(gamma.ToReal(), n);
       }
     }
   }

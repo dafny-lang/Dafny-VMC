@@ -93,6 +93,16 @@ module Limits {
     }
   }
 
+  // This would be trivial if Dafny had function extensionality
+  lemma LimitOfEqualsIsEqual(sequence1: nat -> real, sequence2: nat -> real, limit: real)
+    requires forall n: nat :: sequence1(n) == sequence2(n)
+    requires ConvergesTo(sequence1, limit)
+    ensures ConvergesTo(sequence2, limit)
+  {
+    assert Sequences.IsSuffixOf(sequence2, sequence1, 0);
+    SuffixConvergesToSame(sequence1, sequence2, 0, limit);
+  }
+
   lemma SuffixConvergesToSame(sequence: nat -> real, suffix: nat -> real, prefix: nat, limit: real)
     requires Sequences.IsSuffixOf(suffix, sequence, prefix)
     ensures ConvergesTo(suffix, limit) <==> ConvergesTo(sequence, limit)
