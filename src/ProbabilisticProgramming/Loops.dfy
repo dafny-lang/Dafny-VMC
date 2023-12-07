@@ -51,6 +51,7 @@ module Loops {
   // Equation (3.25), but modified to use `Monad.Diverging` instead of HOL's `arb` in case of nontermination
   opaque ghost function While<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>): (loop: A -> Monad.Hurd<A>)
     ensures forall s: Rand.Bitstream, init: A :: !condition(init) ==> loop(init)(s) == Monad.Return(init)(s)
+    ensures forall s: Rand.Bitstream, init: A | loop(init)(s).Result? :: !condition(loop(init)(s).value)
   {
     var f :=
       (init: A) =>
