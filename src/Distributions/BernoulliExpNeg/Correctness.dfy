@@ -164,6 +164,7 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
+  // Proves the correctness of Model.SampleLe1
   lemma CorrectnessLe1(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
     ensures Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Exponential.Exp(-gamma.ToReal())
@@ -173,13 +174,14 @@ module BernoulliExpNeg.Correctness {
     var resultSet := Measures.CountableUnion(resultSeq);
     var partEvent := (k: nat) => Monad.BitstreamsWithValueIn(Model.Le1Loop(gamma)((true, 0)), resultSeq(k));
     var probPartEvent := (k: nat) => Rand.prob(partEvent(k));
-    assert event == Measures.CountableUnion(partEvent) by {
+    // The strategy is to decompose event into parts depending on the `k` returned from `Model.Le1Loop`.
+    // Then we sum over all possible `k`s and obtain a series converging to the exponential function at -gamma.
+    assert decomposeEvent: event == Measures.CountableUnion(partEvent) by {
       forall s ensures s in event <==> s in Measures.CountableUnion(partEvent) {
-        forall k: nat ensures s in partEvent(k) <==> Model.Le1Loop(gamma)((true, 0))(s).In(resultSeq(k)) {}
         var oddNats := iset ak: (bool, nat) | ak.1 % 2 == 1;
-        var oddNats2 := iset k: nat, ak <- resultSeq(k) :: ak;
-        assert oddNats == oddNats2 by {
-          forall ak: (bool, nat) ensures ak in oddNats <==> ak in oddNats2 {
+        var resultSeqUnion := iset k: nat, ak <- resultSeq(k) :: ak;
+        assert oddNatsEquiv: oddNats == resultSeqUnion by {
+          forall ak: (bool, nat) ensures ak in oddNats <==> ak in resultSeqUnion {
             calc {
               ak in oddNats;
               ak.1 % 2 == 1;
@@ -187,45 +189,61 @@ module BernoulliExpNeg.Correctness {
             }
           }
         }
+        assert partEventCharacterization: forall k: nat :: s in partEvent(k) <==> Model.Le1Loop(gamma)((true, 0))(s).In(resultSeq(k)) by {
+          forall k: nat ensures s in partEvent(k) <==> Model.Le1Loop(gamma)((true, 0))(s).In(resultSeq(k)) {}
+        }
         calc {
           s in event;
           Model.SampleLe1(gamma)(s).Equals(true);
           Model.Le1Loop(gamma)((true, 0))(s).Satisfies((ak: (bool, nat)) => ak.1 % 2 == 1);
           Model.Le1Loop(gamma)((true, 0))(s).In(oddNats);
-          Model.Le1Loop(gamma)((true, 0))(s).In(oddNats2);
+          { reveal oddNatsEquiv; }
+          Model.Le1Loop(gamma)((true, 0))(s).In(resultSeqUnion);
           exists k: nat :: Model.Le1Loop(gamma)((true, 0))(s).In(resultSeq(k));
+          { reveal partEventCharacterization; }
           exists k: nat :: s in partEvent(k);
         }
       }
     }
-    assert Measures.PairwiseDisjoint(partEvent) by {
-      forall m: nat, n: nat | m != n ensures partEvent(m) * partEvent(n) == iset{} {}
-    }
-    forall k: nat ensures probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) {
-      if k % 2 == 0 {
-        assert partEvent(k) == iset{};
-        assert probPartEvent(k) == 0.0 by {
-          Rand.ProbIsProbabilityMeasure();
-        }
-      } else {
-        assert probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) by {
-          Le1LoopCorrectnessEq(gamma, k);
+    assert probPart: forall k: nat :: probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) by {
+      forall k: nat ensures probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) {
+        if k % 2 == 0 {
+          assert partEvent(k) == iset{};
+          assert probPartEvent(k) == 0.0 by {
+            Rand.ProbIsProbabilityMeasure();
+          }
+        } else {
+          assert probPartEvent(k) == Le1SeriesTerm(gamma.ToReal())(k) by {
+            Le1LoopCorrectnessEq(gamma, k);
+          }
         }
       }
     }
-    assert Series.SumsTo(probPartEvent, Rand.prob(event)) by {
+    assert probPartsSum1: Series.SumsTo(probPartEvent, Rand.prob(event)) by {
+      reveal decomposeEvent;
       Rand.ProbIsProbabilityMeasure();
+      // TODO: prove measurability
       assume {:axiom} forall k: nat :: partEvent(k) in Rand.eventSpace;
+      assert Measures.PairwiseDisjoint(partEvent) by {
+        forall m: nat, n: nat | m != n ensures partEvent(m) * partEvent(n) == iset{} {}
+      }
       Measures.MeasureOfCountableDisjointUnionIsSum(Rand.eventSpace, Rand.prob, partEvent, probPartEvent);
     }
-    assert Series.SumsTo(probPartEvent, Exponential.Exp(-gamma.ToReal())) by {
+    assert probPartsSum2: Series.SumsTo(probPartEvent, Exponential.Exp(-gamma.ToReal())) by {
       assert Series.SumsTo(Le1SeriesTerm(gamma.ToReal()), Exponential.Exp(-gamma.ToReal())) by {
         Le1SeriesConvergesToExpNeg(gamma.ToReal());
       }
+      reveal probPart;
       Series.SumOfEqualsIsEqual(Le1SeriesTerm(gamma.ToReal()), probPartEvent, Exponential.Exp(-gamma.ToReal()));
     }
-    Series.SumIsUnique(probPartEvent, Rand.prob(event), Exponential.Exp(-gamma.ToReal()));
-    assert event == iset s | Model.SampleLe1(gamma)(s).Equals(true);
+    assert Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Exponential.Exp(-gamma.ToReal()) by {
+      assert Rand.prob(iset s | Model.SampleLe1(gamma)(s).Equals(true)) == Rand.prob(event) by {
+        assert event == iset s | Model.SampleLe1(gamma)(s).Equals(true);
+      }
+      reveal probPartsSum1;
+      reveal probPartsSum2;
+      Series.SumIsUnique(probPartEvent, Rand.prob(event), Exponential.Exp(-gamma.ToReal()));
+    }
   }
 
   lemma {:axiom} SampleLe1IsIndep(gamma: Rationals.Rational)
@@ -272,10 +290,14 @@ module BernoulliExpNeg.Correctness {
   }
 
   // Sequence of terms of the infinite series used in the correctness proof.
+  // It's like the exponential series of exp(-gamma) except that pairs of terms are moved to the odd positions,
+  // so it's 0.0 + (ExpTerm(gamma, 0) - ExpTerm(gamma, 1)) + 0.0 + (ExpTerm(gamma, 2) - ExpTerm(gamma, 3))
   function Le1SeriesTerm(gamma: real): nat -> real {
     (n: nat) => if n % 2 == 0 then 0.0 else Exponential.ExpTerm(gamma, n - 1) - Exponential.ExpTerm(gamma, n)
   }
 
+  // Proves that the Le1SeriesTerm sequence is summable and has the same sum as the normal exponential series.
+  // On paper the proof is trivial (just move the summands around), but it's not as easy to formalize.
   lemma {:axiom} Le1SeriesConvergesToExpNeg(gamma: real)
     ensures Series.SumsTo(Le1SeriesTerm(gamma), Exponential.Exp(-gamma))
 
