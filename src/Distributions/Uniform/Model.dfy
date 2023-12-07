@@ -36,7 +36,7 @@ module Uniform.Model {
 
   ghost function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b
-    ensures forall s | f(s).Result? :: a <= f(s).value <= b
+    ensures forall s | f(s).Result? :: a <= f(s).value < b
   {
     Monad.Map(Sample(b - a), x => a + x)
   }
