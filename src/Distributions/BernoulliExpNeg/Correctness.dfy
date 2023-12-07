@@ -205,6 +205,9 @@ module BernoulliExpNeg.Correctness {
         (gamma.numer as real / gamma.denom as real) / k' as real;
         { RealArith.DivMulEqualsDivDiv(gamma.numer as real, gamma.denom as real, k' as real); }
         gamma.numer as real / (gamma.denom as real * k' as real);
+        { assert (gamma.denom as real * k' as real) == (gamma.denom * k') as real; }
+        gamma.numer as real / (gamma.denom * k') as real;
+        { assert (gamma.denom * k') as real == (denom as real); }
         gamma.numer as real / (denom as real);
       }
     }
