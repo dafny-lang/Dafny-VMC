@@ -48,37 +48,58 @@ module FisherYates.Equivalence {
          reveal Model.ShuffleWhileLoopCondition(); 
          reveal Model.ShuffleLoop(); }
       if i < |xs| then 
-        Monad.Bind<(seq<T>, nat), (seq<T>, nat)>(
-          Monad.Bind<int, (seq<T>, nat)>(
-            Uniform.Model.IntervalSample(i as int, |xs| as int),
-            (j: int) requires i as int <= j < |xs| as int => 
-              var xs := Permutations.Swap(xs, i, j as nat); 
-              Monad.Return((xs, i + 1 as nat))
-          ),
+        var h: Monad.Hurd<(seq<T>, nat)> := 
+          (if i < |xs| then 
+            Monad.Bind(
+              Uniform.Model.IntervalSample(i, |xs|),
+              (j: int) requires i <= j < |xs| => 
+                var xs := Permutations.Swap(xs, i, j); 
+                Monad.Return((xs, i + 1))
+            )
+          else 
+            Monad.Return((xs, i)));
+        Monad.Bind(
+          h,
           (xsI: (seq<T>, nat)) => Model.ShuffleLoop(xsI.0, xsI.1)
         )(s)
       else 
         Monad.Return((xs, i))(s);  
     ==
       if i < |xs| then 
-        Monad.Bind<int, (seq<T>, nat)>(
-          Uniform.Model.IntervalSample(i as int, |xs| as int),
-          (j: int) requires i as int <= j < |xs| as int => 
-            var xs := Permutations.Swap(xs, i, j as nat); 
-            Monad.Bind<(seq<T>, nat), (seq<T>, nat)>(
-              Monad.Return((xs, i + 1 as nat)),
-              (xsI: (seq<T>, nat)) => Model.ShuffleLoop(xsI.0, xsI.1)
-            )
+        var h: Monad.Hurd<(seq<T>, nat)> := 
+          Monad.Bind(
+            Uniform.Model.IntervalSample(i, |xs|),
+            (j: int) requires i <= j < |xs| => 
+              var xs := Permutations.Swap(xs, i, j); 
+              Monad.Return((xs, i + 1))
+          );
+        Monad.Bind(
+          h,
+          (xsI: (seq<T>, nat)) => Model.ShuffleLoop(xsI.0, xsI.1)
         )(s)
       else 
         Monad.Return((xs, i))(s);  
-  == { forall xsI: (seq<T>, nat), s: Rand.Bitstream { Monad.UnitalityBindReturn(xsI, (xsI: (seq<T>, nat)) => Model.ShuffleLoop(xsI.0, xsI.1), s); } }
+    ==
+      if i < |xs| then 
+        Monad.Bind(
+          Uniform.Model.IntervalSample(i, |xs|),
+          (j: int) requires i <= j < |xs| => 
+            var xs := Permutations.Swap(xs, i, j); 
+            var h: Monad.Hurd<(seq<T>, nat)> := Monad.Return((xs, i + 1));
+            Monad.Bind(
+              h,
+              (xsI: (seq<T>, nat)) => Model.ShuffleLoop(xsI.0, xsI.1)
+            )
+          )(s)
+      else 
+        Monad.Return((xs, i))(s);
+    == { forall xsI: (seq<T>, nat), s: Rand.Bitstream { Monad.UnitalityBindReturn(xsI, (xsI: (seq<T>, nat)) => Model.ShuffleLoop(xsI.0, xsI.1), s); } }
       if i < |xs| then
-        Monad.Bind<int, (seq<T>, nat)>(
-          Uniform.Model.IntervalSample(i as int, |xs| as int),
-          (j: int) requires i as int <= j < |xs| as int => 
-            var xs := Permutations.Swap(xs, i, j as nat);
-            Model.ShuffleLoop(xs, i + 1 as nat)
+        Monad.Bind(
+          Uniform.Model.IntervalSample(i, |xs|),
+          (j: int) requires i <= j < |xs| => 
+            var xs := Permutations.Swap(xs, i, j);
+            Model.ShuffleLoop(xs, i + 1)
         )(s)
       else 
         Monad.Return((xs, i))(s);
@@ -88,7 +109,7 @@ module FisherYates.Equivalence {
 
   lemma ShuffleLiftToEnsures<T(!new)>(s: Rand.Bitstream, t: Rand.Bitstream, xs: seq<T>, ys: seq<T>, i: nat)
     requires R1: Model.ShuffleLoop(xs)(s) == Model.ShuffleLoop(ys, i)(t)
-    requires R2: i == |ys|
+    requires R2: !(i < |ys|)
     ensures Model.Shuffle(xs)(s) == Monad.Result(ys, t)
   {
     var f := (xsI: (seq<T>, nat)) => xsI.0;
@@ -104,9 +125,9 @@ module FisherYates.Equivalence {
         reveal Model.ShuffleWhileLoopCondition(); 
         reveal Model.ShuffleWhileLoopBody(); }
       Loops.While(Model.ShuffleWhileLoopCondition, Model.ShuffleWhileLoopBody)((ys, i))(t).Map(f);
-      { reveal Model.ShuffleWhileLoopCondition(); }
-      Loops.While((xsI: (seq<T>, nat)) => xsI.1 < |xsI.0|, Model.ShuffleWhileLoopBody)((ys, i))(t).Map(f);
       { reveal Loops.While(); 
+        reveal Model.ShuffleWhileLoopCondition(); 
+        reveal Model.ShuffleWhileLoopBody(); 
         reveal R2; }
       Monad.Return((ys, i))(t).Map(f);
       Monad.Result((ys, i), t).Map(f);
