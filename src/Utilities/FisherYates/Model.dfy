@@ -10,54 +10,40 @@ module FisherYates.Model {
   import Uniform
   import Loops
 
-  ghost function Shuffle<T>(xs: seq<T>, i: nat := 0): (f: Monad.Hurd<seq<T>>) 
-    requires 0 <= i <= |xs|
+  /************
+   Definitions
+  ************/
+  
+  opaque ghost function Shuffle<T(!new)>(xs: seq<T>): (f: Monad.Hurd<seq<T>>) {
+    var f := (xsI: (seq<T>, nat)) => xsI.0;
+    Monad.Map(ShuffleLoop(xs), f)
+  }
+
+  opaque ghost function ShuffleLoop<T(!new)>(xs: seq<T>, i: nat := 0): (f: Monad.Hurd<(seq<T>, nat)>) 
   {
-    assume {:axiom} false; // assume termination
-    if i == |xs| then
-      Monad.Return(xs)
-    else 
+    Loops.While(ShuffleWhileLoopCondition, ShuffleWhileLoopBody)((xs, i))
+  }
+
+  opaque function ShuffleWhileLoopCondition<T>(xsI: (seq<T>, nat)): bool {
+    xsI.1 < |xsI.0|
+  }
+
+  opaque ghost function ShuffleWhileLoopBody<T>(xsI: (seq<T>, nat)): Monad.Hurd<(seq<T>, nat)> {
+    if xsI.1 < |xsI.0| then
       Monad.Bind(
-        Uniform.Model.IntervalSample(i, |xs|),
-        (j: nat) requires i <= j < |xs| => 
-          var ys := Permutations.Swap(xs, i, j);
-          Shuffle(ys, i + 1)
+        Uniform.Model.IntervalSample(xsI.1, |xsI.0|), 
+        (j: int) requires xsI.1 <= j < |xsI.0| => 
+          Monad.Return((Permutations.Swap(xsI.0, xsI.1, j), xsI.1 + 1))
       )
-  }
-  // TODO: add correct version
-/*   function Shuffle<T>(xs: seq<T>): (f: Monad.Hurd<seq<T>>) {
-    Monad.Map(
-      Loops.While(ShuffleWhileLoopCondition, ShuffleWhileLoopBody)((xs, 0)), 
-      (x: (seq<T>, nat)) => x.0
-    )
-  }
-
-  function ShuffleWhileLoopCondition<T>(x: (seq<T>, nat)): bool {
-    x.1 < |x.0|
-  }
-
-  function ShuffleWhileLoopBody<T>(x: (seq<T>, nat)): Monad.Hurd<(seq<T>, nat)> {
-    Monad.Bind(
-      Uniform.Model.IntervalSample(x.1, |x.0|),
-      (j: nat) => 
-        var ys := Permutations.Swap(x.0, 0, j); 
-        Monad.Return((ys, x.1 + 1))
-    )
-  } */
-
-/*   ghost function ShuffleTailRecursive<T>(xs: seq<T>): Monad.Hurd<seq<T>> 
-    decreases |xs|
-  {
-    if |xs| == 0 then 
-      Monad.Return(xs)
     else 
-      Monad.Bind(
-        Uniform.Model.Sample(|xs|),
-        (j: nat) requires 0 <= j < |xs| => 
-          var ys := Permutations.Swap(xs, 0, j);          
-          Monad.Map(ShuffleTailRecursive(ys[1..]), (zs: seq<T>) => [ys[0]] + zs)
-          // ShuffleTailRecursiveCurried(ShuffleTailRecursiveCurried(Permutations.Substitute(xs[1..], j-1, xs[0])).Map((zs: set<T>) => [xs[j]] + zs))
-      )
-  } */
+      Monad.Return(xsI)
+  }
+
+  /*******
+   Lemmas
+  *******/
+
+  lemma {:axiom} ShuffleTerminatesAlmostSurely<T>()
+    ensures Loops.WhileTerminatesAlmostSurely<(seq<T>, nat)>(ShuffleWhileLoopCondition, ShuffleWhileLoopBody)
 
 }

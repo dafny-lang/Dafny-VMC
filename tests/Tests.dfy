@@ -288,7 +288,7 @@ module Tests {
     TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
   }
 
-  method TestFisherYates<T(==)>(n: nat, a: array<T>, r: FisherYates.Interface.Trait, printer: T -> string) 
+  method TestFisherYates<T(==, !new)>(n: nat, a: array<T>, r: FisherYates.Interface.Trait, printer: T -> string) 
     decreases *
     modifies r
     modifies a
