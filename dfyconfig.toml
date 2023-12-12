@@ -3,3 +3,5 @@ excludes = []
 
 [options]
 enforce-determinism = true
+type-system-refresh = true
+general-traits = datatypes
