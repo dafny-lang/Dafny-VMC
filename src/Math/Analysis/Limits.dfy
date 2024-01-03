@@ -264,7 +264,7 @@ module Limits {
       RealArith.Abs(s1) * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2 * (s1 - limit1));
     == { RealArith.AbsMul(limit2, s1 - limit1); }
       RealArith.Abs(s1) * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2) * RealArith.Abs(s1 - limit1);
-    <=
+    <= { RealArith.MultiplicationIsMonotonic(RealArith.Abs(s1), bound1, RealArith.Abs(s2 - limit2)); }
       bound1 * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2) * RealArith.Abs(s1 - limit1);
     ==
       bound1 * RealArith.Dist(s2, limit2) + RealArith.Abs(limit2) * RealArith.Dist(s1, limit1);

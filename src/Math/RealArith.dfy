@@ -83,11 +83,18 @@ module RealArith {
     ensures a / c <= b / c
   {}
 
+  lemma MultiplicationIsMonotonic(a: real, b: real, c: real)
+    requires a <= b
+    requires c >= 0.0
+    ensures a * c <= b * c
+  {}
+
   lemma DivisionIsMonotonicStrict(a: real, b: real, c: real)
     requires c > 0.0
     requires a < b
     ensures a / c < b / c
   {}
+
 
   lemma DivisionIsAntiMonotonic(a: real, b: real, c: real)
     requires a >= 0.0
