@@ -122,6 +122,41 @@ module Measures {
     ensures PreImage(f, e) == PreImage(f', e')
   {}
 
+  lemma {:axiom} ProbabilityLe1<T>(event: iset<T>, eventSpace: iset<iset<T>>, prob: iset<T> -> real)
+    requires IsProbability(eventSpace, prob)
+    requires event in eventSpace
+    ensures 0.0 <= prob(event) <= 1.0
+
+  lemma {:axiom} IsMonotonic<T>(eventSpace: iset<iset<T>>, mu: iset<T> -> real, set1: iset<T>, set2: iset<T>)
+    requires IsMeasure(eventSpace, mu)
+    requires set1 in eventSpace
+    requires set2 in eventSpace
+    requires set1 <= set2
+    ensures mu(set1) <= mu(set2)
+
+  lemma MeasureOfDisjointUnionIsSum<T(!new)>(eventSpace: iset<iset<T>>, mu: iset<T> -> real, set1: iset<T>, set2: iset<T>)
+    requires IsMeasure(eventSpace, mu)
+    requires set1 in eventSpace
+    requires set2 in eventSpace
+    requires set1 * set2 == iset{}
+    ensures mu(set1 + set2) == mu(set1) + mu(set2)
+  {
+    assert IsAdditive(eventSpace, mu) by {
+      PosCountAddImpliesAdd(eventSpace, mu);
+    }
+  }
+
+  lemma MeasureOfCountableDisjointUnionIsSum<T(!new)>(eventSpace: iset<iset<T>>, mu: iset<T> -> real, parts: nat -> iset<T>, muParts: nat -> real)
+    requires IsMeasure(eventSpace, mu)
+    requires forall n: nat :: parts(n) in eventSpace
+    requires PairwiseDisjoint(parts)
+    requires forall n: nat :: muParts(n) == mu(parts(n))
+    ensures Series.SumsTo(muParts, mu(CountableUnion(parts)))
+  {
+    assert Series.SumsTo((n: nat) => mu(parts(n)), mu(CountableUnion(parts)));
+    Series.SumOfEqualsIsEqual((n: nat) => mu(parts(n)), muParts, mu(CountableUnion(parts)));
+  }
+
   // Equation (2.18)
   lemma PosCountAddImpliesAdd<T(!new)>(eventSpace: iset<iset<T>>, Prob: iset<T> -> real)
     requires IsSigmaAlgebra(eventSpace)

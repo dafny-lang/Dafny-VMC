@@ -4,6 +4,8 @@
  *******************************************************************************/
 
 module RealArith {
+  import NatArith
+
   function Abs(r: real): real {
     if r >= 0.0 then r else -r
   }
@@ -18,6 +20,10 @@ module RealArith {
 
   function Dist(x: real, y: real): real {
     Abs(x - y)
+  }
+
+  opaque function Pow(base: real, exponent: nat): real {
+    if exponent == 0 then 1.0 else base * Pow(base, exponent - 1)
   }
 
   lemma TriangleInequality(a: real, b: real, c: real)
@@ -97,4 +103,35 @@ module RealArith {
     requires c > 0.0
     ensures (c < b) <==> (a / b < a / c)
   {}
+
+  lemma AdditionOfFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    ensures (x / z) + (y / z) == (x + y) / z
+  {}
+
+  lemma DivDivToDivMul(x: real, y: real, z: real)
+    requires y != 0.0
+    requires z != 0.0
+    ensures (x / y) / z == x / (y * z)
+  {}
+
+  lemma SimplifyFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    requires y != 0.0
+    ensures (x / z) / (y / z) == x / y
+  {}
+
+  lemma PowerOfTwoLemma(k: nat)
+    ensures (1.0 / NatArith.Power(2, k) as real) / 2.0 == 1.0 / (NatArith.Power(2, k + 1) as real)
+  {
+    calc {
+      (1.0 / NatArith.Power(2, k) as real) / 2.0;
+    == { DivDivToDivMul(1.0, NatArith.Power(2, k) as real, 2.0); }
+      1.0 / (NatArith.Power(2, k) as real * 2.0);
+    ==
+      1.0 / (NatArith.Power(2, k) * 2) as real;
+    ==
+      1.0 / (NatArith.Power(2, k + 1) as real);
+    }
+  }
 }

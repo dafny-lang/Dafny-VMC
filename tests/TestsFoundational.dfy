@@ -4,7 +4,7 @@
  *******************************************************************************/
 
 module TestsFoundational {
-  import Helper
+  import NatArith
   import DafnyVMC
   import Tests
 
@@ -32,7 +32,7 @@ module TestsFoundational {
     decreases *
   {
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestUniformPowerOfTwoMean(100_000, Helper.Power(10, 100), r);
+    Tests.TestUniformPowerOfTwoMean(100_000, NatArith.Power(10, 100), r);
   }
 
   method {:test} TestUniform_10()
@@ -54,7 +54,7 @@ module TestsFoundational {
     decreases *
   {
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestUniformMean(100_000, Helper.Power(10, 100), r);
+    Tests.TestUniformMean(100_000, NatArith.Power(10, 100), r);
   }
 
   method {:test} TestUniformInterval()

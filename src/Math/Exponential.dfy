@@ -1,5 +1,53 @@
 module Exponential {
-  ghost function {:axiom} Exp(x: real): real
+  import NatArith
+  import RealArith
+  import Series
+
+  ghost function Exp(x: real): real {
+    ExpSeriesConverges(x);
+    Series.Sum(ExpSeries(x))
+  }
+
+  // The sequence of summands of the exponential series
+  function ExpSeries(gamma: real): nat -> real {
+    (n: nat) => ExpTerm(gamma, n)
+  }
+
+  // ExpTerm(gamma, n) is gamma^n / n!, i.e. the n-th term in the power series of the exponential function.
+  // The start parameter is useful for inductive proofs.
+  opaque function ExpTerm(gamma: real, n: nat, start: nat := 1): real
+    requires 1 <= start
+  {
+    NatArith.FactoralPositive(n, start);
+    RealArith.Pow(gamma, n) / NatArith.Factorial(n, start) as real
+  }
+
+  // Decomposition of ExpTerm useful in inductive proofs.
+  lemma ExpTermStep(gamma: real, n: nat, start: nat := 1)
+    requires start >= 1
+    requires n >= 1
+    ensures ExpTerm(gamma, n, start) == ExpTerm(gamma, n - 1, start + 1) * (gamma / start as real)
+  {
+    NatArith.FactoralPositive(n, start);
+    var denom := NatArith.Factorial(n, start) as real;
+    var denom2 := (start * NatArith.Factorial(n - 1, start + 1)) as real;
+    var numer := RealArith.Pow(gamma, n);
+    var numer2 := gamma * RealArith.Pow(gamma, n - 1);
+    calc {
+      ExpTerm(gamma, n, start);
+      { reveal ExpTerm(); }
+      numer / denom;
+      { reveal RealArith.Pow(); assert numer == numer2; }
+      numer2 / denom;
+      { reveal NatArith.Factorial(); assert denom == denom2; }
+      numer2 / denom2;
+      { reveal ExpTerm(); }
+      ExpTerm(gamma, n - 1, start + 1) * (gamma / start as real);
+    }
+  }
+
+  lemma {:axiom} ExpSeriesConverges(x: real)
+    ensures Series.IsSummable(ExpSeries(x))
 
   lemma {:axiom} FunctionalEquation(x: real, y: real)
     ensures Exp(x + y) == Exp(x) * Exp(y)
