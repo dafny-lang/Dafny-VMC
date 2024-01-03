@@ -111,7 +111,7 @@ module BernoulliExpNeg.Correctness {
       (numer - denom) / denom;
       { RealArith.DivideSubtraction(numer, denom, denom); }
       numer / denom - denom / denom;
-      { RealArith.FractionAsOne(denom); }  
+      { RealArith.FractionAsOne(denom); }
       numer / denom - 1.0;
       gamma.ToReal() - 1.0;
     }

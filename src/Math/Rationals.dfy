@@ -143,7 +143,7 @@ module Rationals {
         (r.numer / r.denom) as real;
       == { assert r.numer / r.denom == (r.numer as real / r.denom as real).Floor by { FractionAsFloor(r.numer, r.denom); } }
         (r.numer as real / r.denom as real).Floor as real;
-      <= 
+      <=
         r.numer as real / r.denom as real;
       ==
         r.ToReal();

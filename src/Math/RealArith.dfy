@@ -138,7 +138,7 @@ module RealArith {
     ensures (a * b) / (c * d) == (a / c) * (b / d)
   {}
 
-  lemma DivideSubtraction(x: real, y: real, z: real) 
+  lemma DivideSubtraction(x: real, y: real, z: real)
     requires z != 0.0
     ensures (x - y) / z == (x / z) - (y / z)
   {}
