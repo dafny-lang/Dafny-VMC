@@ -109,6 +109,11 @@ module RealArith {
     ensures (x / z) + (y / z) == (x + y) / z
   {}
 
+  lemma DivisionOfFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    ensures (x / z) - (y / z) == (x - y) / z
+  {}
+
   lemma DivDivToDivMul(x: real, y: real, z: real)
     requires y != 0.0
     requires z != 0.0
@@ -121,6 +126,12 @@ module RealArith {
     ensures (x / z) / (y / z) == x / y
   {}
 
+  lemma ExpandFraction(x: real, y: real, z: real)
+    requires z != 0.0
+    requires y != 0.0
+    ensures x / y == (x * z) / (y * z)
+  {}
+  
   lemma PowerOfTwoLemma(k: nat)
     ensures (1.0 / NatArith.Power(2, k) as real) / 2.0 == 1.0 / (NatArith.Power(2, k + 1) as real)
   {

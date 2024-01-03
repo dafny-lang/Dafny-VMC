@@ -351,6 +351,12 @@ module Limits {
     calc {
       RealArith.Dist(1.0 / s, 1.0 / limit);
     ==
+      RealArith.Abs((1.0 / s) - (1.0 / limit));
+    == { RealArith.ExpandFraction(1.0, s, limit); RealArith.ExpandFraction(1.0, limit, s); }
+      RealArith.Abs(((limit * 1.0) / (limit * s)) - ((1.0 * s) / (limit * s)));
+    ==
+      RealArith.Abs((limit / (limit * s)) - (s / (limit * s)));
+    == { RealArith.DivisionOfFractions(limit, s, limit * s); }
       RealArith.Abs((limit - s) / (limit * s));
     == { RealArith.DivMulEqualsDivDiv((limit - s), limit, s); }
       RealArith.Abs((limit - s) / limit / s);

@@ -115,6 +115,20 @@ module Rationals {
     ensures lhs.Div(rhs).ToReal() == lhs.ToReal() / rhs.ToReal()
   {}
 
+  lemma RelationshipWithFloor(a: int, b: nat)
+    requires b != 0
+    ensures a / b == (a as real / b as real).Floor
+  {
+    assert a as real / b as real == (a / b) as real + (a % b) as real / b as real by {
+      assert a as real == (a / b) as real * b as real + (a % b) as real by {
+        assert a == (a / b) * b + (a % b);
+      }
+    }
+    if a < 0 {
+    } else {
+    }
+  }
+
   lemma FloorIsCorrect(r: Rational)
     ensures r.Floor() == r.ToReal().Floor
   {
@@ -122,7 +136,19 @@ module Rationals {
     var multiple := floor * r.denom;
     assert r.numer == multiple + r.numer % r.denom;
     var nextMultiple := multiple + r.denom;
-    assert r.Floor() as real <= r.ToReal();
+    assert r.Floor() as real <= r.ToReal() by {
+      calc {
+        r.Floor() as real;
+      ==
+        (r.numer / r.denom) as real;
+      == { assert r.numer / r.denom == (r.numer as real / r.denom as real).Floor by { RelationshipWithFloor(r.numer, r.denom); } }
+        (r.numer as real / r.denom as real).Floor as real;
+      <= 
+        r.numer as real / r.denom as real;
+      ==
+        r.ToReal();
+      }
+    }
     assert r.ToReal() < r.Floor() as real + 1.0 by {
       assert r.numer < nextMultiple;
       calc {
