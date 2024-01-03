@@ -115,7 +115,7 @@ module Rationals {
     ensures lhs.Div(rhs).ToReal() == lhs.ToReal() / rhs.ToReal()
   {}
 
-  lemma RelationshipWithFloor(a: int, b: nat)
+  lemma FractionAsFloor(a: int, b: nat)
     requires b != 0
     ensures a / b == (a as real / b as real).Floor
   {
@@ -141,7 +141,7 @@ module Rationals {
         r.Floor() as real;
       ==
         (r.numer / r.denom) as real;
-      == { assert r.numer / r.denom == (r.numer as real / r.denom as real).Floor by { RelationshipWithFloor(r.numer, r.denom); } }
+      == { assert r.numer / r.denom == (r.numer as real / r.denom as real).Floor by { FractionAsFloor(r.numer, r.denom); } }
         (r.numer as real / r.denom as real).Floor as real;
       <= 
         r.numer as real / r.denom as real;
