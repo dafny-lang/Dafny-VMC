@@ -295,7 +295,8 @@ module Tests {
     var aAsSeq: seq<T> := Helper.ArrayToSeq(a);
     var numberOfPermutations: nat := Permutations.NumberOfPermutationsOf(aAsSeq);
     var numberOfObservedPermutations: map<seq<T>, nat> := map[];
-
+    Permutations.CalculateAllPermutationsOfIsNonEmpty(aAsSeq);
+    
     for i := 0 to n {
       var aCopy := a;
       r.Shuffle(aCopy);

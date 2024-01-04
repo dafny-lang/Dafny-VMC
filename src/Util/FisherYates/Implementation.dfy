@@ -12,10 +12,8 @@ module FisherYates.Implementation {
       decreases *
       modifies this, a
     {
-      var i := 0; 
-      while i < a.Length 
-        decreases a.Length - i
-      {        
+      var i := 0;
+      while i < a.Length {
         var j := UniformIntervalSample(i, a.Length);
         Swap(a, i, j);
         i := i + 1;

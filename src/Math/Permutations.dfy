@@ -9,7 +9,7 @@ module Permutations {
   /************
    Definitions
   ************/
-  
+
   function NumberOfPermutationsOf<T(==)>(s: seq<T>): nat {
     |CalculateAllPermutationsOf(s)|
   }
@@ -29,4 +29,22 @@ module Permutations {
     s[..i] + [x] + s[i..]
   }
 
+  /*******
+   Lemmas
+  *******/
+
+  lemma CalculateAllPermutationsOfIsNonEmpty<T>(s: seq<T>)
+    ensures s in CalculateAllPermutationsOf(s)
+    ensures NumberOfPermutationsOf(s) > 0
+  {
+    assert s in CalculateAllPermutationsOf(s) by {
+      if |s| == 0 {
+      } else {
+        assert s[1..] in CalculateAllPermutationsOf(s[1..]) by {
+          CalculateAllPermutationsOfIsNonEmpty(s[1..]);
+        }
+        assert InsertAt(s[1..], s[0], 0) == s;
+      }
+    }
+  }
 }
