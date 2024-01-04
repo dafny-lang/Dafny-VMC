@@ -127,11 +127,12 @@ module RandomExamples.Foundational {
     print "Estimated probabilities for DiscreteGaussianSample(1.4): ", count0 as real / n as real, " (should be around 0.284959) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.220797)\n";
   
     // Fisher-Yates Example
+    print "Ten permutations of 012: ";
     var arr: array<nat> := new nat[3](i => i); // [0, 1, 2]
     for i := 0 to 10 {
       var arrCopy := arr;
       r.Shuffle(arrCopy);
-      print Helper.SeqToString(Helper.ArrayToSeq(arrCopy), Helper.NatToString), "\n";
+      print Helper.SeqToString(Helper.ArrayToSeq(arrCopy), Helper.NatToString), ", ";
     }
   }
 }
