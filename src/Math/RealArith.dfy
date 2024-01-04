@@ -83,11 +83,18 @@ module RealArith {
     ensures a / c <= b / c
   {}
 
+  lemma MultiplicationIsMonotonic(a: real, b: real, c: real)
+    requires a <= b
+    requires c >= 0.0
+    ensures a * c <= b * c
+  {}
+
   lemma DivisionIsMonotonicStrict(a: real, b: real, c: real)
     requires c > 0.0
     requires a < b
     ensures a / c < b / c
   {}
+
 
   lemma DivisionIsAntiMonotonic(a: real, b: real, c: real)
     requires a >= 0.0
@@ -109,6 +116,11 @@ module RealArith {
     ensures (x / z) + (y / z) == (x + y) / z
   {}
 
+  lemma SubtractionOfFractions(x: real, y: real, z: real)
+    requires z != 0.0
+    ensures (x / z) - (y / z) == (x - y) / z
+  {}
+
   lemma DivDivToDivMul(x: real, y: real, z: real)
     requires y != 0.0
     requires z != 0.0
@@ -119,6 +131,28 @@ module RealArith {
     requires z != 0.0
     requires y != 0.0
     ensures (x / z) / (y / z) == x / y
+  {}
+
+  lemma ExpandFraction(x: real, y: real, z: real)
+    requires z != 0.0
+    requires y != 0.0
+    ensures x / y == (x * z) / (y * z)
+  {}
+
+  lemma FractionOfMul(a: real, b: real, c: real, d: real)
+    requires c != 0.0
+    requires d != 0.0
+    ensures (a * b) / (c * d) == (a / c) * (b / d)
+  {}
+
+  lemma DivideSubtraction(x: real, y: real, z: real)
+    requires z != 0.0
+    ensures (x - y) / z == (x / z) - (y / z)
+  {}
+
+  lemma FractionAsOne(x: real)
+    requires x != 0.0
+    ensures x / x == 1.0
   {}
 
   lemma PowerOfTwoLemma(k: nat)
