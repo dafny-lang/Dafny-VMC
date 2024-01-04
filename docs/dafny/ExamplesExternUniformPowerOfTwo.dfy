@@ -134,5 +134,6 @@ module RandomExamples.ExternUniform {
       r.Shuffle(arrCopy);
       print Helper.SeqToString(Helper.ArrayToSeq(arrCopy), Helper.NatToString), ", ";
     }
+    print "\n";
   }
 }
