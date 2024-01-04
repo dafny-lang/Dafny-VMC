@@ -31,6 +31,7 @@ module Exponential {
     NatArith.FactoralPositive(n, start);
     var denom := NatArith.Factorial(n, start) as real;
     var denom2 := (start * NatArith.Factorial(n - 1, start + 1)) as real;
+    var denom3 := (start as real) * (NatArith.Factorial(n - 1, start + 1) as real);
     var numer := RealArith.Pow(gamma, n);
     var numer2 := gamma * RealArith.Pow(gamma, n - 1);
     calc {
@@ -41,7 +42,12 @@ module Exponential {
       numer2 / denom;
       { reveal NatArith.Factorial(); assert denom == denom2; }
       numer2 / denom2;
+      { assert denom2 == denom3; }
+      numer2 / denom3;
+      { RealArith.FractionOfMul(gamma, RealArith.Pow(gamma, n - 1), start as real, NatArith.Factorial(n - 1, start + 1) as real); }
+      (gamma / start as real) * (RealArith.Pow(gamma, n - 1) / NatArith.Factorial(n - 1, start + 1) as real);
       { reveal ExpTerm(); }
+      (gamma / start as real) * ExpTerm(gamma, n - 1, start + 1);
       ExpTerm(gamma, n - 1, start + 1) * (gamma / start as real);
     }
   }

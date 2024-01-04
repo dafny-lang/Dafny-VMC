@@ -8,7 +8,7 @@ module Coin.Interface {
   import Rand
   import Model
 
-  method {:extern "DRandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
+  method {:extern "Coin_mInterface.DRandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
 
   trait {:termination false} Trait {
     ghost var s: Rand.Bitstream

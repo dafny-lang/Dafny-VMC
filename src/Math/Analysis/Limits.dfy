@@ -264,7 +264,7 @@ module Limits {
       RealArith.Abs(s1) * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2 * (s1 - limit1));
     == { RealArith.AbsMul(limit2, s1 - limit1); }
       RealArith.Abs(s1) * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2) * RealArith.Abs(s1 - limit1);
-    <=
+    <= { RealArith.MultiplicationIsMonotonic(RealArith.Abs(s1), bound1, RealArith.Abs(s2 - limit2)); }
       bound1 * RealArith.Abs(s2 - limit2) + RealArith.Abs(limit2) * RealArith.Abs(s1 - limit1);
     ==
       bound1 * RealArith.Dist(s2, limit2) + RealArith.Abs(limit2) * RealArith.Dist(s1, limit1);
@@ -351,6 +351,12 @@ module Limits {
     calc {
       RealArith.Dist(1.0 / s, 1.0 / limit);
     ==
+      RealArith.Abs((1.0 / s) - (1.0 / limit));
+    == { RealArith.ExpandFraction(1.0, s, limit); RealArith.ExpandFraction(1.0, limit, s); }
+      RealArith.Abs(((limit * 1.0) / (limit * s)) - ((1.0 * s) / (limit * s)));
+    ==
+      RealArith.Abs((limit / (limit * s)) - (s / (limit * s)));
+    == { RealArith.SubtractionOfFractions(limit, s, limit * s); }
       RealArith.Abs((limit - s) / (limit * s));
     == { RealArith.DivMulEqualsDivDiv((limit - s), limit, s); }
       RealArith.Abs((limit - s) / limit / s);
