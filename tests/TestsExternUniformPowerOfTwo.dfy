@@ -7,6 +7,7 @@ module TestsExternUniform {
   import NatArith
   import DafnyVMC
   import Tests
+  import Helper
 
   method {:test} TestCoin() {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
@@ -105,5 +106,29 @@ module TestsExternUniform {
   {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
     Tests.TestDiscreteGaussian(1_000_000, r);
+  }
+
+  method {:test} TestFisherYatesIdentity()
+    decreases *
+  {
+    var a: array<nat> := new nat[4](i => i); // [0, 1, 2, 3]
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+  }
+
+  method {:test} TestFisherYatesConstant()
+    decreases *
+  {
+    var a: array<nat> := new nat[4](i => 0); // [0, 0, 0, 0]
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+  }
+
+  method {:test} TestFisherYatesMixed()
+    decreases *
+  {
+    var a: array<nat> := new nat[] [0, 1, 1, 2]; // [0, 1, 1, 2]
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
   }
 }
