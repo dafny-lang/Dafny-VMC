@@ -3,4 +3,3 @@ excludes = []
 
 [options]
 enforce-determinism = false
-standard-libraries = true

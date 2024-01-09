@@ -1,24 +1,3 @@
-DafnyStandardLibraries-notarget.dfy(34,4): _ctor: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy(8,4): _ctor: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](16,30): Keys: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](18,30): HasKey: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](20,30): Values: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](22,30): Items: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](24,30): Put: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](26,30): Get: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](28,30): Remove: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](30,30): Size: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](43,30): Get: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](45,30): Put: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](51,30): Lock: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](53,30): Unlock: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries-notarget.dfy[Concurrent](71,4): _ctor: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries.dfy(10798,4): Members: Definition has `assume {:axiom}` statement in body. 
-DafnyStandardLibraries.dfy(10808,4): Items: Definition has `assume {:axiom}` statement in body. 
-DafnyStandardLibraries.dfy(11724,4): CharIsUnicodeScalarValue: Definition has `assume {:axiom}` statement in body. 
-DafnyStandardLibraries.dfy(8075,4): ToNat16: Definition has `assume {:axiom}` statement in body. 
-DafnyStandardLibraries.dfy[HexConversion](11404,19): CharsConsistent: Declaration has explicit `{:axiom}` attribute. 
-DafnyStandardLibraries.dfy[Uint16StrConversion](8187,19): CharsConsistent: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Bernoulli/Correctness.dfy(59,17): BernoulliCorrectnessCaseFalse: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(228,6): CorrectnessLe1: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(251,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 

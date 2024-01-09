@@ -6,8 +6,8 @@
 module TestsExternUniform {
   import NatArith
   import DafnyVMC
+  import Helper
   import Tests
-  import Std.Strings
 
   method {:test} TestCoin() {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
@@ -113,7 +113,7 @@ module TestsExternUniform {
   {
     var a: array<nat> := new nat[4](i => i); // [0, 1, 2, 3]
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestFisherYates(1_000_000, a, r, Strings.DecimalConversion.OfNat);
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
   }
 
   method {:test} TestFisherYatesConstant()
@@ -121,7 +121,7 @@ module TestsExternUniform {
   {
     var a: array<nat> := new nat[4](i => 0); // [0, 0, 0, 0]
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestFisherYates(1_000_000, a, r, Strings.DecimalConversion.OfNat);
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
   }
 
   method {:test} TestFisherYatesMixed()
@@ -129,6 +129,6 @@ module TestsExternUniform {
   {
     var a: array<nat> := new nat[] [0, 1, 1, 2]; // [0, 1, 1, 2]
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
-    Tests.TestFisherYates(1_000_000, a, r, Strings.DecimalConversion.OfNat);
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
   }
 }
