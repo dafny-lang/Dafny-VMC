@@ -7,6 +7,8 @@ module RandomExamples.ExternUniform {
   import Rationals
   import DafnyVMC
   import Helper
+  import Std.Strings
+
 
   method Main()
     decreases *
@@ -132,7 +134,7 @@ module RandomExamples.ExternUniform {
     for i := 0 to 10 {
       var arrCopy := arr;
       r.Shuffle(arrCopy);
-      print Helper.SeqToString(Helper.ArrayToSeq(arrCopy), Helper.NatToString), ", ";
+      print Helper.SeqToString(Helper.ArrayToSeq(arrCopy), Std.Strings.DecimalConversion.OfNat), ", ";
     }
     print "\n";
   }

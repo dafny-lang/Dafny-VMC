@@ -12,21 +12,10 @@ module FisherYates.Implementation {
       decreases *
       modifies this, a
     {
-      var i := 0;
-      while i < a.Length {
+      for i := 0 to a.Length {
         var j := UniformIntervalSample(i, a.Length);
-        Swap(a, i, j);
-        i := i + 1;
+        a[i], a[j] := a[j], a[i];
       }
-    }
-
-    method Swap<T>(a: array<T>, i: nat, j: nat)
-      modifies a
-      requires i <= j
-      requires 0 <= i < a.Length
-      requires 0 <= j < a.Length
-    {
-      a[i], a[j] := a[j], a[i];
     }
 
   }

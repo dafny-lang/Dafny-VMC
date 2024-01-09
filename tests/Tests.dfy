@@ -17,6 +17,7 @@ module Tests {
   import Permutations
   import FisherYates
   import Helper
+  import Std.Strings
 
   method TestBernoulliIsWithin4SigmaOfTrueMean(
     n: nat,
@@ -83,9 +84,9 @@ module Tests {
       sum := sum + l;
     }
     for i := 0 to NatArith.Power(2, k) {
-      TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (m as real), "p(" + Helper.NatToString(i) + ")");
+      TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (m as real), "p(" + Std.Strings.DecimalConversion.OfNat(i) + ")");
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
+    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Std.Strings.DecimalConversion.OfNat(u) + ")");
   }
 
   method TestUniformPowerOfTwoMean(n: nat, u: nat, r: UniformPowerOfTwo.Interface.Trait)
@@ -102,7 +103,7 @@ module Tests {
       expect 0 <= l < m, "sample not in the right bound";
       sum := sum + l;
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
+    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Std.Strings.DecimalConversion.OfNat(u) + ")");
   }
 
   method TestUniform(n: nat, u: nat, r: Uniform.Interface.Trait)
@@ -121,9 +122,9 @@ module Tests {
       sum := sum + l;
     }
     for i := 0 to u {
-      TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (u as real), "p(" + Helper.NatToString(i) + ")");
+      TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (u as real), "p(" + Std.Strings.DecimalConversion.OfNat(i) + ")");
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
+    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Std.Strings.DecimalConversion.OfNat(u) + ")");
   }
 
   method TestUniformMean(n: nat, u: nat, r: Uniform.Interface.Trait)
@@ -139,7 +140,7 @@ module Tests {
       expect 0 <= l < u, "sample not in the right bound";
       sum := sum + l;
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
+    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Std.Strings.DecimalConversion.OfNat(u) + ")");
   }
 
   method TestUniformInterval(n: nat, r: Uniform.Interface.Trait)
