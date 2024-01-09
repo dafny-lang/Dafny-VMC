@@ -7,6 +7,7 @@ module TestsFoundational {
   import NatArith
   import DafnyVMC
   import Tests
+  import Std.Strings
 
   method {:test} TestCoin() {
     var r := new DafnyVMC.DRandomFoundational();
@@ -111,7 +112,7 @@ module TestsFoundational {
   {
     var a: array<nat> := new nat[4](i => i); // [0, 1, 2, 3]
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestFisherYates(1_000_000, a, r, Std.Strings.DecimalConversion.OfNat);
+    Tests.TestFisherYates(1_000_000, a, r, Strings.DecimalConversion.OfNat);
   }
 
   method {:test} TestFisherYatesConstant()
@@ -119,7 +120,7 @@ module TestsFoundational {
   {
     var a: array<nat> := new nat[4](i => 0); // [0, 0, 0, 0]
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestFisherYates(1_000_000, a, r, Std.Strings.DecimalConversion.OfNat);
+    Tests.TestFisherYates(1_000_000, a, r, Strings.DecimalConversion.OfNat);
   }
 
   method {:test} TestFisherYatesMixed()
@@ -127,7 +128,7 @@ module TestsFoundational {
   {
     var a: array<nat> := new nat[] [0, 1, 1, 2]; // [0, 1, 1, 2]
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestFisherYates(1_000_000, a, r, Std.Strings.DecimalConversion.OfNat);
+    Tests.TestFisherYates(1_000_000, a, r, Strings.DecimalConversion.OfNat);
   }
 
 
