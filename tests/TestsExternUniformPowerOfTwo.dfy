@@ -131,4 +131,37 @@ module TestsExternUniform {
     var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
     Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
   }
+
+  method {:test} TestFisherYatesLengthZero()
+    decreases *
+  {
+    var a: array<nat> := new nat[] []; // length 0
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+  }
+
+  method {:test} TestFisherYatesLengthOne()
+    decreases *
+  {
+    var a: array<nat> := new nat[] [0]; // length 1
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+  }
+
+  method {:test} TestFisherYatesLengthEven()
+    decreases *
+  {
+    var a: array<nat> := new nat[] [2, 1, 18, 2, 3, 4, 5, 18]; // length 8
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(100, a, r, Helper.NatToString);
+  }
+
+  method {:test} TestFisherYatesLengthOdd()
+    decreases *
+  {
+    var a: array<nat> := new nat[] [11, 38, 18492, 2, 2, 4, 5, 83, 4]; // length 9
+    var r := new DafnyVMC.DRandomExternUniformPowerOfTwo();
+    Tests.TestFisherYates(100, a, r, Helper.NatToString);
+  }
+
 }
