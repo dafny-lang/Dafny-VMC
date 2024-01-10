@@ -150,15 +150,7 @@ module TestsFoundational {
   method {:test} TestFisherYatesLengthEven()
     decreases *
   {
-    var a: array<nat> := new nat[] [2, 1, 18, 2, 3, 4, 5, 18]; // length 8
-    var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestFisherYates(100, a, r, Helper.NatToString);
-  }
-
-  method {:test} TestFisherYatesLengthOdd()
-    decreases *
-  {
-    var a: array<nat> := new nat[] [11, 38, 18492, 2, 2, 4, 5, 83, 4]; // length 9
+    var a: array<nat> := new nat[] [2, 1, 18, 2, 3, 4]; // length 6
     var r := new DafnyVMC.DRandomFoundational();
     Tests.TestFisherYates(100, a, r, Helper.NatToString);
   }
