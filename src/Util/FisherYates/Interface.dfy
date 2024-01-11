@@ -12,5 +12,18 @@ module FisherYates.Interface {
       decreases *
       modifies this, a
 
+    method ShuffleBigInteger(a: array<int>)
+      decreases *
+      modifies this, a
+    {
+      Shuffle<int>(a);
+    }
+
+    method ShuffleBool(a: array<bool>)
+      decreases *
+      modifies this, a
+    {
+      Shuffle<bool>(a);
+    }
   }
 }
