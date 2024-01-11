@@ -8,7 +8,7 @@ module FisherYates.Implementation {
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method Shuffle<T(!new)>(a: array<T>)
+    method Shuffle<T>(a: array<T>)
       decreases *
       modifies this, a
     {
