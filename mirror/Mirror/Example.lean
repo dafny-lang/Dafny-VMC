@@ -1,4 +1,6 @@
-import Mirror.Extract
+import Mirror.Export
+import Mirror.Align
+import Mirror.Print
 
 -- Map a Lean concept to Dafny
 attribute [align_dafny "nat"] Nat
