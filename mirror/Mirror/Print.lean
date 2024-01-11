@@ -1,5 +1,5 @@
 import Lean
-import Mirror.Translate
+import Mirror.Extension
 
 namespace Lean.ToDafny
 
