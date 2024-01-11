@@ -2,8 +2,8 @@
 namespace Lean.ToDafny
 
 inductive Typ where
-  | Nat
-  | Arrow (domain range : Typ)
+  | nat
+  | arrow (domain range : Typ)
 
 inductive BinOp where
   | equality
@@ -28,7 +28,7 @@ inductive Expression where
 inductive Declaration where
   | axiom (name: String) (body: Expression)
   | constant (name: String) (t : Typ) (body : Expression)
-  | function (name: String)
+  | function (name: String) (inparams : String) (inparamstyp : Typ) (outparam : Typ) (body : Expression)
   | predicate (name: String)
   | datatype (name: String)
   | type (name: String)
@@ -41,8 +41,8 @@ def join (s : List String) : String :=
 
 def Typ.print (t : Typ): String :=
   match t with
-  | Nat => "nat"
-  | Arrow t1 t2 => s!"{t1.print} -> {t2.print}"
+  | nat => "nat"
+  | arrow t1 t2 => s!"{t1.print} -> {t2.print}"
 
 def BinOp.print (o : BinOp) : String :=
   match o with
@@ -68,9 +68,9 @@ partial def Expression.print (e : Expression) : String :=
 
 def Declaration.print (d : Declaration) : String :=
   match d with
-  | .axiom name form => s!"lemma {name} {form.print}"
+  | .axiom name form => s!"lemma {name}() \n  ensures {form.print}"
   | .constant name typ body => s!"const {name} : {typ.print} := {body.print}"
-  | .function name => s!"function {name}"
+  | .function name inp intyp outyp body => s!"function {name} ({inp} : {intyp.print}) : {outyp.print} \n {body.print} "
   | .predicate name => s!"predicate {name}"
   | .datatype name => s!"datatype {name}"
   | .type name => s!"type {name}"
