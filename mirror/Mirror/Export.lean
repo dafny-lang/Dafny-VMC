@@ -25,7 +25,8 @@ def processDecl (declName: Name): MetaM Unit :=
       else throwError "defn {info.name} {info.type}"
     | ConstantInfo.axiomInfo _ => throwError "Missing decl: axiom"
     | ConstantInfo.thmInfo _ =>
-      saveAxiom declName.toString (← toDafnyForm info.type)
+      -- saveAxiom declName.toString (← toDafnyForm info.type)
+      saveDeclaration (← toDafnyDeclIn declName)
     | ConstantInfo.opaqueInfo _ => throwError "Missing decl: opaque"
     | ConstantInfo.quotInfo _ => throwError "Missing decl: quot"
     | ConstantInfo.inductInfo v => -- Could be structure, class, inductive

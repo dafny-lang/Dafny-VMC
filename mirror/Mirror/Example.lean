@@ -6,9 +6,12 @@ import Mirror.Print
 attribute [align_dafny "nat"] Nat
 
 -- Translate to Dafny
+
+def k := 2
+
 -- Exporter currently ignores custom name
 @[export_dafny "simple1D"]
-theorem simple1 : 2 = 2 := by
+theorem simple1 : 2 = k := by
   rfl
 
 -- Get result

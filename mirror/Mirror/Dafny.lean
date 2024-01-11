@@ -8,7 +8,7 @@ inductive Term where
   | num (val : Nat)
   | add (lhs rhs : Term)
   | app (f : String) (args : List Term)
-  -- TODO: extend
+  | name (s: String)
 
 /--
 A Dafny formula
@@ -19,6 +19,14 @@ inductive Formula where
   | and (lhs rhs : Formula)
   | forall (body: Formula)
   -- TODO: extend
+
+inductive Declaration where
+  | axiom (name: String) (body: Formula)
+  | constant (name: String)
+  | function (name: String)
+  | predicate (name: String)
+  | datatype (name: String)
+  | type (name: String)
 
 def join (s : List String) : String :=
   match s with
@@ -31,6 +39,7 @@ partial def Term.print (e : Term) : String :=
   | .num val => toString val
   | .add lhs rhs => s!"{lhs.print} + {rhs.print}"
   | .app f args => s!"{f}({join (args.map (·.print))})"
+  | .name n => n
 
 def Formula.print (f : Formula) : String :=
   match f with
@@ -38,5 +47,14 @@ def Formula.print (f : Formula) : String :=
   | .eq lhs rhs => s!"{lhs.print} == {rhs.print}"
   | .ne lhs rhs => s!"{lhs.print} != {rhs.print}"
   | .forall body => s!"{body.print}"
+
+def Declaration.print (d : Declaration) : String :=
+  match d with
+  | .axiom name form => s!"lemma {name} {form.print}"
+  | .constant name => s!"constant {name}"
+  | .function name => s!"function {name}"
+  | .predicate name => s!"predicate {name}"
+  | .datatype name => s!"datatype {name}"
+  | .type name => s!"type {name}"
 
 end Lean.ToDafny
