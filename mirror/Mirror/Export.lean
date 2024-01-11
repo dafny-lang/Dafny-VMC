@@ -5,8 +5,8 @@ namespace Lean.ToDafny
 
 syntax (name := export_dafny) "export_dafny" str : attr
 
-def saveAxiom (declName : String) (form : Formula) : CoreM Unit :=
-  modifyEnv fun env => extension.addEntry env (.toExport s!"axiom {declName} : {form.print}")
+def saveAxiom (declName : String) (expr : Expression) : CoreM Unit :=
+  modifyEnv fun env => extension.addEntry env (.toExport s!"axiom {declName} : {expr.print}")
 
 open Meta
 
