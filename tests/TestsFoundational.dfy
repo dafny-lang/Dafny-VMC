@@ -152,7 +152,7 @@ module TestsFoundational {
   {
     var a: array<nat> := new nat[] [2, 1, 18, 2, 3, 4]; // length 6
     var r := new DafnyVMC.DRandomFoundational();
-    Tests.TestFisherYates(100, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
   }
 
 }
