@@ -3,9 +3,6 @@ import Mirror.Extension
 
 namespace Lean.ToDafny
 
-/--
-Declare syntax for the `align_dafny` attribute
--/
 syntax (name := align_dafny) "align_dafny" str : attr
 
 initialize
