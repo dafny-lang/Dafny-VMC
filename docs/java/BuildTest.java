@@ -1,4 +1,6 @@
-import DafnyVMC.*;
+import DafnyVMC.Random;
+import DafnyVMC.RandomCoin;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
