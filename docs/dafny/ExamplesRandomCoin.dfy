@@ -12,7 +12,7 @@ module RandomExamples.Foundational {
     decreases *
   {
     var n := 100000;
-    var r: DafnyVMC.DRandomFoundational := new DafnyVMC.DRandomFoundational();
+    var r: DafnyVMC.RandomCoin := new DafnyVMC.RandomCoin();
 
     var t := 0;
     for i := 0 to n {

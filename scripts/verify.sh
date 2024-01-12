@@ -9,4 +9,4 @@ then
 fi
 
 echo Verifying the proofs...
-time $DAFNY verify dfyconfig.toml docs/dafny/ExamplesExternUniformPowerOfTwo.dfy docs/dafny/ExamplesFoundational.dfy tests/Tests.dfy tests/TestsExternUniformPowerOfTwo.dfy tests/TestsFoundational.dfy --resource-limit 20000 # 20M resource usage
+time $DAFNY verify dfyconfig.toml docs/dafny/ExamplesRandom.dfy docs/dafny/ExamplesRandomCoin.dfy tests/Tests.dfy tests/TestsRandom.dfy tests/TestsRandomCoin.dfy --resource-limit 20000 # 20M resource usage

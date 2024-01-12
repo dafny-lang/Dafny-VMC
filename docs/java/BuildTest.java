@@ -1,66 +1,83 @@
 import DafnyVMC.*;
-import dafny.TypeDescriptor;
 import java.math.BigInteger;
 import java.util.Arrays;
-import FisherYatesTest.DRandomExternUniformPowerOfTwoPlus;
 
 class Check {
     public static void main(String[] args) {
-        DRandomExternUniformPowerOfTwoPlus d = new DRandomExternUniformPowerOfTwoPlus();
+        BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
+        int[] arr2 = {0, 1, 2};
+        String[] arr3 = {"aa", "bb", "cc"};
+        char[] arr4 = {'a', 'b', 'c'};
+        boolean[] arr5 = {true, false, false, true};
+        long[] arr6 = {111111L, 333333L, 999999L};
+        short[] arr7 = {-3, 0, 3};
+        
+        // Tests with UniformPowerOfTwo as primitive
+        DafnyVMC.Random r = new DafnyVMC.Random();
 
         System.out.println("Example of Uniform sampling");
-        System.out.println(d.UniformSample(BigInteger.valueOf(4)));
+        System.out.println(r.UniformSample(BigInteger.valueOf(4)));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
-        BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
-
-        d.Shuffle(TypeDescriptor.BIG_INTEGER, arr1);
-        System.out.println(Arrays.toString(arr1));
-
-        d.ShuffleBigInteger(arr1);
-        System.out.println(Arrays.toString(arr1));
-
-        d.DShuffle(arr1);
+        r.Shuffle(arr1);
         System.out.println(Arrays.toString(arr1));
 
         System.out.println("Example of Fisher-Yates: int");
-        int[] arr2 = {0, 1, 2};
-        d.Shuffle(TypeDescriptor.INT, arr2);
+        r.Shuffle(arr2);
         System.out.println(Arrays.toString(arr2));
 
         System.out.println("Example of Fisher-Yates: String");
-        String[] arr3 = {"aa", "bb", "cc"};
-
-        d.Shuffle(TypeDescriptor.CHAR_ARRAY, arr3);
-        System.out.println(Arrays.toString(arr3));
-
-        d.DShuffle(arr3);
+        r.Shuffle(arr3);
         System.out.println(Arrays.toString(arr3));
 
         System.out.println("Example of Fisher-Yates: char");
-        char[] arr4 = {'a', 'b', 'c'};
-
-        d.Shuffle(TypeDescriptor.CHAR, arr4);
+        r.Shuffle(arr4);
         System.out.println(Arrays.toString(arr4));
 
         System.out.println("Example of Fisher-Yates: boolean");
-        boolean[] arr5 = {true, false, false, true};
-
-        d.Shuffle(TypeDescriptor.BOOLEAN, arr5);
-        System.out.println(Arrays.toString(arr5));
-
-        d.ShuffleBool(arr5);
+        r.Shuffle(arr5);
         System.out.println(Arrays.toString(arr5));
 
         System.out.println("Example of Fisher-Yates: long");
-        long[] arr6 = {111111L, 333333L, 999999L};
-
-        d.Shuffle(TypeDescriptor.LONG, arr6);
+        r.Shuffle(arr6);
         System.out.println(Arrays.toString(arr6));
 
         System.out.println("Example of Fisher-Yates: short");
-        short[] arr7 = {-3, 0, 3};
-        d.Shuffle(TypeDescriptor.SHORT, arr7);
+        r.Shuffle(arr7);
+        System.out.println(Arrays.toString(arr7));
+
+        // Tests with Coin as primitive
+        DafnyVMC.RandomCoin s = new DafnyVMC.RandomCoin();
+
+        System.out.println("Example of Uniform sampling");
+        System.out.println(s.UniformSample(BigInteger.valueOf(4)));
+
+        System.out.println("Example of Fisher-Yates: BigInteger");
+        s.Shuffle(arr1);
+        System.out.println(Arrays.toString(arr1));
+
+        System.out.println("Example of Fisher-Yates: int");
+        s.Shuffle(arr2);
+        System.out.println(Arrays.toString(arr2));
+
+        System.out.println("Example of Fisher-Yates: String");
+        s.Shuffle(arr3);
+        System.out.println(Arrays.toString(arr3));
+
+        System.out.println("Example of Fisher-Yates: char");
+        s.Shuffle(arr4);
+        System.out.println(Arrays.toString(arr4));
+
+        System.out.println("Example of Fisher-Yates: boolean");
+        s.Shuffle(arr5);
+        System.out.println(Arrays.toString(arr5));
+
+        System.out.println("Example of Fisher-Yates: long");
+        s.Shuffle(arr6);
+        System.out.println(Arrays.toString(arr6));
+
+        System.out.println("Example of Fisher-Yates: short");
+        s.Shuffle(arr7);
         System.out.println(Arrays.toString(arr7));
 
     }

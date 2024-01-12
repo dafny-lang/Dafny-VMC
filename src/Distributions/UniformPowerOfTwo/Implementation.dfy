@@ -30,7 +30,7 @@ module UniformPowerOfTwo.Implementation {
     }
   }
 
-  method {:extern "UniformPowerOfTwo_mImplementation.DRandomUniformPowerOfTwo", "UniformPowerOfTwo"} ExternUniformPowerOfTwoSample(n: nat) returns (u: nat)
+  method {:extern "Extern.Random", "UniformPowerOfTwo"} ExternUniformPowerOfTwoSample(n: nat) returns (u: nat)
 
   trait {:termination false} TraitExtern extends Interface.Trait {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)

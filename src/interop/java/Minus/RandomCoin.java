@@ -1,14 +1,14 @@
-package Coin_mInterface;
+package Extern;
 
 import java.security.SecureRandom;
 import java.math.BigInteger;
 import java.lang.Thread;
 
-public final class DRandomCoin {
+public final class RandomCoin {
 
-  private static final ThreadLocal<SecureRandom> RNG = ThreadLocal.withInitial(DRandomCoin::createSecureRandom);
+  private static final ThreadLocal<SecureRandom> RNG = ThreadLocal.withInitial(RandomCoin::createSecureRandom);
 
-  private DRandomCoin() {} // Prevent instantiation
+  private RandomCoin() {} // Prevent instantiation
 
   private static final SecureRandom createSecureRandom() {
     final SecureRandom rng = new SecureRandom();

@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module DafnyVMC {
+module {:extern "DafnyVMCMinus"} DafnyVMC {
   import Coin
   import Bernoulli
   import UniformPowerOfTwo
@@ -13,11 +13,11 @@ module DafnyVMC {
   import DiscreteLaplace
   import FisherYates
 
-  class DRandomFoundational extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, FisherYates.Implementation.Trait  {
-    constructor {:extern} ()
+  class Random extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, FisherYates.Implementation.Trait  {
+    constructor {:extern } ()
   }
 
-  class DRandomExternUniformPowerOfTwo extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.TraitExtern, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, FisherYates.Implementation.Trait  {
+  class RandomCoin extends Coin.Interface.Trait, UniformPowerOfTwo.Implementation.TraitExtern, Bernoulli.Implementation.Trait, Uniform.Implementation.TraitFoundational, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, FisherYates.Implementation.Trait  {
     constructor {:extern} ()
   }
 }
