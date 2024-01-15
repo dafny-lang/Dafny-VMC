@@ -50,10 +50,13 @@ def strongly_independent (f : Hurd T) : Prop :=
     ∧ ∀ (l : List Bool) (s : BitStream), l ∈ C ∧ s ∈ prefix_set l
       → f s = (Prod.fst (f (prefix_seq l)), sdrop (List.length l) s)
 
+@[simp]
 theorem indep (f : Hurd T) : strongly_independent f → independent f := sorry
 
+@[simp]
 theorem Indep1 (x : T) : strongly_independent (H.pure x)  := sorry
 
+@[simp]
 theorem Indep2 (f: Hurd T) (g : T → Hurd U) :
   strongly_independent f → ∀ x : T, strongly_independent (g x) →
   strongly_independent (H.bind f g) := sorry
