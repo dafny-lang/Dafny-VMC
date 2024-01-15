@@ -48,8 +48,13 @@ instance Cl4 : MeasureSpace BitStream :=
     apply MeasureSpace.mk Cl3
 
 
-#check OuterMeasure.caratheodory
+-- Constructing measures
+
+#check Measure.ofMeasurable
 #check OuterMeasure.toMeasure
+
+#check OuterMeasure.caratheodory
+
 
 def Head (s : BitStream) : Bool :=
   s 0
