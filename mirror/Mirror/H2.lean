@@ -40,6 +40,22 @@ theorem Meas2 (f: Hurd T) (g : T → Hurd U) :
 def independent (f : Hurd T) : Prop :=
   IndepSets ((λ A : Set T => (Prod.fst ∘ f)⁻¹' A) '' univ) ((λ A : Set BitStream => (Prod.snd ∘ f)⁻¹' A) '' univ) Prob.volume
 
+def prefix_cover (C : Set (List Bool)) : Prop :=
+  (∀ l₁ l₂ : List Bool, l₁ ∈ C ∧ l₂ ∈ C ∧ l₁ ≠ l₂ → ¬ l₁ <+: l₂)
+  ∧ Prob.volume (⋃ l ∈ C, prefix_set l) = 1
 
+def strongly_independent (f : Hurd T) : Prop :=
+  strongly_measurable f
+  ∧ exists C : Set (List Bool), prefix_cover C
+    ∧ ∀ (l : List Bool) (s : BitStream), l ∈ C ∧ s ∈ prefix_set l
+      → f s = (Prod.fst (f (prefix_seq l)), sdrop (List.length l) s)
+
+theorem indep (f : Hurd T) : strongly_independent f → independent f := sorry
+
+theorem Indep1 (x : T) : strongly_independent (H.pure x)  := sorry
+
+theorem Indep2 (f: Hurd T) (g : T → Hurd U) :
+  strongly_independent f → ∀ x : T, strongly_independent (g x) →
+  strongly_independent (H.bind f g) := sorry
 
 end Hurd

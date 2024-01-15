@@ -40,6 +40,11 @@ theorem Basic7 (s : BitStream) : stl (mirror s) = stl s := sorry
 
 def prefix_set (l : List Bool) : Set BitStream := { s : BitStream | stake (List.length l) s = l }
 
+def prefix_seq (l : List Bool) : BitStream :=
+  match l with
+  | [] => λ _ : Nat => False
+  | hd :: tl => scons hd (prefix_seq tl)
+
 def embed (l : List (List Bool)) : Set BitStream :=
   match l with
   | [] => ∅
