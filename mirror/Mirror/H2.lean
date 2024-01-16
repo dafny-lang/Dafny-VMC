@@ -20,6 +20,7 @@ instance H : Monad Hurd where
   pure := λ { T : Type } => λ x : T => λ s : BitStream => (x,s)
   bind := λ { T U : Type } => λ f : Hurd T => λ g : T → Hurd U => λ s : BitStream => let (v,s') := f s ; (g v) s'
 
+theorem Pure1 (x : T) (s : BitStream) : (H.pure x s).1 = x := sorry
 
 def Coin : Hurd Bool := λ s : BitStream => (s 0, λ n : Nat => s (n + 1))
 
@@ -31,11 +32,16 @@ def Coin : Hurd Bool := λ s : BitStream => (s 0, λ n : Nat => s (n + 1))
 def strongly_measurable (f : Hurd T) : Prop :=
   Countable { y : T | exists x, y = (Prod.fst ∘ f) x } ∧ Measurable (Prod.fst ∘ f) ∧ Measurable (Prod.snd ∘ f)
 
+@[simp]
 theorem Meas1 (x : T) : strongly_measurable (H.pure x)  := sorry
 
+@[simp]
 theorem Meas2 (f: Hurd T) (g : T → Hurd U) :
-  strongly_measurable f → ∀ x : T, strongly_measurable (g x) →
+  strongly_measurable f → (∀ x : T, strongly_measurable (g x)) →
   strongly_measurable (H.bind f g) := sorry
+
+@[simp]
+theorem Meas3 : strongly_measurable Coin := sorry
 
 def independent (f : Hurd T) : Prop :=
   IndepSets ((λ A : Set T => (Prod.fst ∘ f)⁻¹' A) '' univ) ((λ A : Set BitStream => (Prod.snd ∘ f)⁻¹' A) '' univ) Prob.volume
@@ -58,7 +64,10 @@ theorem Indep1 (x : T) : strongly_independent (H.pure x)  := sorry
 
 @[simp]
 theorem Indep2 (f: Hurd T) (g : T → Hurd U) :
-  strongly_independent f → ∀ x : T, strongly_independent (g x) →
+  strongly_independent f → (∀ x : T, strongly_independent (g x)) →
   strongly_independent (H.bind f g) := sorry
+
+@[simp]
+theorem Indep3 : strongly_independent Coin := sorry
 
 end Hurd

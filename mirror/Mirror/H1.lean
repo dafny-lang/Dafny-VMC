@@ -173,13 +173,14 @@ theorem Event8 (E : Set BitStream) : mirror ⁻¹' E ∈ Prob ↔ E ∈ Prob := 
 
 #check ofMeasurable
 
+syntax "custom_tactic" : tactic
+
+macro_rules
+| `(tactic| custom_tactic) => `(tactic| unfold volume ; simp ; unfold μ ; rw [ofMeasurable_apply] ; unfold μ')
+
 theorem Prob1 (b : Bool) : Prob.volume { s : BitStream | shd s = b } = 1 / 2 :=
   by
-    unfold volume
-    simp
-    unfold μ
-    rw [ofMeasurable_apply]
-    unfold μ'
+    custom_tactic
     have H : μ₀ [[b]] = 1 / 2 :=
       by
       unfold μ₀
