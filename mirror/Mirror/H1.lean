@@ -10,34 +10,76 @@ open MeasureTheory MeasurableSpace Measure
 
 def BitStream : Type := Nat → Bool
 
-def shd (s : BitStream) : Bool := s 0
-def stl (s : BitStream) : BitStream := λ n : Nat => s (n + 1)
-def scons (a : Bool) (s : BitStream) : BitStream := λ n : Nat => if n = 0 then a else s (n - 1)
+@[simp] def shd (s : BitStream) : Bool := s 0
+@[simp] def stl (s : BitStream) : BitStream := λ n : Nat => s (n + 1)
+@[simp] def scons (a : Bool) (s : BitStream) : BitStream := λ n : Nat => if n = 0 then a else s (n - 1)
 def stake (n : Nat) (s : BitStream) : List Bool := if n = 0 then [] else shd s :: stake (n - 1) (stl s)
-def sdrop (n : Nat) (s : BitStream) : BitStream := if n = 0 then s else sdrop (n - 1) (stl s)
-def sdest (s : BitStream) : Bool × BitStream := (shd s, stl s)
-def mirror (s : BitStream) : BitStream := scons (! (shd s)) (stl s)
+@[simp] def sdrop (n : Nat) (s : BitStream) : BitStream := if n = 0 then s else sdrop (n - 1) (stl s)
+@[simp] def sdest (s : BitStream) : Bool × BitStream := (shd s, stl s)
+@[simp] def mirror (s : BitStream) : BitStream := scons (! (shd s)) (stl s)
 
+@[simp]
 theorem Basic1 (h : Bool) (t : BitStream) : shd (scons h t) = h :=
   by
-    unfold shd
-    unfold scons
     simp
 
-theorem Basic2 (h : Bool) (t : BitStream) : stl (scons h t) = t := sorry
+@[simp]
+theorem Basic2 (h : Bool) (t : BitStream) : stl (scons h t) = t :=
+  by
+    unfold stl
+    simp
 
-theorem Basic3 (s : BitStream) : exists h : Bool, exists t : BitStream, s = scons h t := sorry
+@[simp]
+theorem Basic3 (s : BitStream) : exists h : Bool, exists t : BitStream, s = scons h t :=
+  by
+    unfold scons
+    exists shd s
+    exists stl s
+    funext
+    rename_i x
+    induction x <;> simp
 
-theorem Basic4 (s : BitStream) : scons (shd s) (stl s) = s := sorry
+@[simp]
+theorem Basic4 (s : BitStream) : scons (shd s) (stl s) = s :=
+  by
+    unfold shd
+    unfold stl
+    unfold scons
+    simp
+    funext
+    rename_i x
+    induction x <;> simp
 
-theorem Basic5 (h h' : Bool) (t t' : BitStream) : (scons h t = scons h' t) ↔ (h = h' ∧ t = t') := sorry
+@[simp]
+theorem Basic5 (h h' : Bool) (t t' : BitStream) : (scons h t = scons h' t) ↔ (h = h' ∧ t = t') :=
+  by
+    apply Iff.intro
+    . intro H
+      have H1 : h = (scons h t) 0 := by simp
+      have H2 : h' = (scons h' t') 0 := by simp
+      apply And.intro
+      . rw [H1, H2, H]
+        simp
+      . sorry
+    . intro H
+      cases H
+      rename_i left right
+      rw [left, right]
 
-theorem Basic6 (s : BitStream) : mirror (mirror s) = s := sorry
+@[simp]
+theorem Basic6 (s : BitStream) : mirror (mirror s) = s :=
+  by
+    simp
+    eapply Basic4
 
-theorem Basic7 (s : BitStream) : stl (mirror s) = stl s := sorry
+@[simp]
+theorem Basic7 (s : BitStream) : stl (mirror s) = stl s :=
+  by
+    simp
 
 -- 2.3.2
 
+@[simp]
 def prefix_set (l : List Bool) : Set BitStream := { s : BitStream | stake (List.length l) s = l }
 
 def prefix_seq (l : List Bool) : BitStream :=
@@ -59,26 +101,68 @@ noncomputable def μ₀ (l : List (List Bool)) : ℝ≥0∞ :=
 
 -- 2.3.4
 
+@[simp]
 instance Eps : MeasurableSpace BitStream := generateFrom BernoulliAlgebra
 
 noncomputable def μ' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := ⨅ (l : List (List Bool)) (_ : A = embed l) , μ₀ l
 
-theorem Measure1' : μ' ∅ MeasurableSet.empty = 0 := sorry
+-- Exploring
+
+noncomputable def test1 := sInf { n : ℝ | n > 0 }
+noncomputable def test2 := ⨅ (n : ℝ), n
+noncomputable def test3 := ⨅ (n : ℝ) (_ : n > 0), n
+
+#check iInf_congr
+
+
+theorem plop : test1 = test3 :=
+  by
+    unfold test1
+    unfold test3
+    simp
+    rw [sInf_eq_iInf']
+    sorry
+
+noncomputable def μ'' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := sInf { r : ℝ≥0∞ | exists l : List (List Bool), embed l = A ∧ μ₀ l = r }
+
+
+-- End Exploring
+
+theorem Measure1' : μ' ∅ MeasurableSet.empty = 0 :=
+  by
+    unfold μ'
+    sorry
 
 theorem Measure3' : ∀ ⦃f : ℕ → Set BitStream⦄ (h : ∀ i, MeasurableSet (f i)),
   Pairwise (Disjoint on f) → μ' (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, μ' (f i) (h i) := sorry
 
 noncomputable instance μ : Measure BitStream := ofMeasurable μ' Measure1' Measure3'
 
+@[simp]
 noncomputable instance Prob : MeasureSpace BitStream where
   volume := μ
 
 -- 2.4.2
 
+@[simp]
 instance : Membership (Set BitStream) (MeasureSpace BitStream) where
   mem := λ (A : Set BitStream) (F : MeasureSpace BitStream) => F.MeasurableSet' A
 
-theorem Event1 (b: Bool) : { s : BitStream | shd s = b } ∈ Prob := sorry
+theorem Event1 (b: Bool) : { s : BitStream | shd s = b } ∈ Prob :=
+  by
+    simp
+    apply measurableSet_generateFrom
+    unfold BernoulliAlgebra
+    simp
+    exists [[b]]
+    unfold embed
+    unfold Set.union
+    unfold embed
+    simp
+    unfold stake
+    simp
+    unfold stake
+    simp
 
 theorem Event2 (E : Set BitStream) : stl⁻¹' E ∈ Prob ↔ E ∈ Prob := sorry
 
