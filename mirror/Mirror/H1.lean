@@ -104,34 +104,27 @@ noncomputable def μ₀ (l : List (List Bool)) : ℝ≥0∞ :=
 @[simp]
 instance Eps : MeasurableSpace BitStream := generateFrom BernoulliAlgebra
 
-noncomputable def μ' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := ⨅ (l : List (List Bool)) (_ : A = embed l) , μ₀ l
+--noncomputable def μ'' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := ⨅ (l : List (List Bool)) (_ : A = embed l) , μ₀ l
 
--- Exploring
+noncomputable def μ' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := sInf { r : ℝ≥0∞ | exists l : List (List Bool), embed l = A ∧ μ₀ l = r }
 
-noncomputable def test1 := sInf { n : ℝ | n > 0 }
-noncomputable def test2 := ⨅ (n : ℝ), n
-noncomputable def test3 := ⨅ (n : ℝ) (_ : n > 0), n
-
-#check iInf_congr
-
-
-theorem plop : test1 = test3 :=
-  by
-    unfold test1
-    unfold test3
-    simp
-    rw [sInf_eq_iInf']
-    sorry
-
-noncomputable def μ'' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := sInf { r : ℝ≥0∞ | exists l : List (List Bool), embed l = A ∧ μ₀ l = r }
-
-
--- End Exploring
+#check sInf_le
+#check sInf_singleton
+#check sInf_le_sInf_of_forall_exists_le
 
 theorem Measure1' : μ' ∅ MeasurableSet.empty = 0 :=
   by
     unfold μ'
-    sorry
+    have H : 0 ∈ {r : ℝ≥0∞ | ∃ l, embed l = ∅ ∧ μ₀ l = r} :=
+      by
+        rw [mem_setOf]
+        exists []
+    have H1 := sInf_le H
+    have H2 : 0 ≤ sInf {r | ∃ l, embed l = ∅ ∧ μ₀ l = r} :=
+      by
+        simp
+
+    sorry -- should be doable, ENNReal
 
 theorem Measure3' : ∀ ⦃f : ℕ → Set BitStream⦄ (h : ∀ i, MeasurableSet (f i)),
   Pairwise (Disjoint on f) → μ' (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, μ' (f i) (h i) := sorry
@@ -178,7 +171,24 @@ theorem Event7 (E : Set BitStream) (b : Bool) : (scons b) '' E ∈ Prob ↔ E �
 
 theorem Event8 (E : Set BitStream) : mirror ⁻¹' E ∈ Prob ↔ E ∈ Prob := sorry
 
-theorem Prob1 (b : Bool) : Prob.volume { s : BitStream | shd s = b } = 1 / 2 := sorry
+#check ofMeasurable
+
+theorem Prob1 (b : Bool) : Prob.volume { s : BitStream | shd s = b } = 1 / 2 :=
+  by
+    unfold volume
+    simp
+    unfold μ
+    rw [ofMeasurable_apply]
+    unfold μ'
+    have H : μ₀ [[b]] = 1 / 2 :=
+      by
+      unfold μ₀
+      unfold μ₀
+      simp
+    sorry
+    apply Event1
+
+
 
 def measure_preserving (f: BitStream → BitStream) : Prop :=
   Measurable f ∧ ∀ A : Set BitStream, A ∈ Prob → Prob.volume A = Prob.volume (f ⁻¹' A)
