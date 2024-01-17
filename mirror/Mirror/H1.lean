@@ -2,11 +2,10 @@ import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.Analysis.SpecificLimits.Basic
+import KolmogorovExtension4.CaratheodoryExtension
 
 open Set Classical ENNReal Function
 open MeasureTheory MeasurableSpace Measure
-
--- 2.3.1
 
 def BitStream : Type := Nat → Bool
 
@@ -77,8 +76,6 @@ theorem Basic7 (s : BitStream) : stl (mirror s) = stl s :=
   by
     simp
 
--- 2.3.2
-
 @[simp]
 def prefix_set (l : List Bool) : Set BitStream := { s : BitStream | stake (List.length l) s = l }
 
@@ -94,54 +91,95 @@ def embed (l : List (List Bool)) : Set BitStream :=
 
 def BernoulliAlgebra : Set (Set BitStream) := { A : Set BitStream | exists l : List (List Bool), embed l = A}
 
+theorem BernoulliAlgebraEmptyMem : ∅ ∈ BernoulliAlgebra := by
+  have H : exists l : List (List Bool), embed l = ∅ := by
+    exists []
+  assumption
+
+theorem BernoulliAlgebraInterMem : ∀ (s : Set BitStream), s ∈ BernoulliAlgebra → ∀ (t : Set BitStream), t ∈ BernoulliAlgebra → s ∩ t ∈ BernoulliAlgebra := sorry
+
+theorem BernoulliDiffEqUnion :
+  ∀ (s : Set BitStream), s ∈ BernoulliAlgebra →
+  ∀ (t : Set BitStream), t ∈ BernoulliAlgebra →
+  ∃ (I : Finset (Set BitStream)) (_h_ss : ↑I ⊆ BernoulliAlgebra) (_h_dis : PairwiseDisjoint (I : Set (Set BitStream)) id), t \ s = ⋃₀ ↑I := sorry
+
+instance BASR : MeasureTheory.SetSemiring BernoulliAlgebra where
+  empty_mem := BernoulliAlgebraEmptyMem
+  inter_mem := BernoulliAlgebraInterMem
+  diff_eq_Union' := BernoulliDiffEqUnion
+
+@[simp]
+instance Eps : MeasurableSpace BitStream := generateFrom BernoulliAlgebra
+
+theorem EpsIsBernoulliAlbegra : Eps = generateFrom BernoulliAlgebra :=
+  by
+    simp
+
 noncomputable def μ₀ (l : List (List Bool)) : ℝ≥0∞ :=
   match l with
   | [] => 0
   | hd :: tl => 1 / 2 ^ ((List.length hd)) + μ₀ tl
 
--- 2.3.4
+noncomputable def μ₁ (A : Set BitStream) : ℝ≥0∞ := sInf { r : ℝ≥0∞ | exists l : List (List Bool), embed l = A ∧ μ₀ l = r }
+
+theorem MeasEmpty : μ₁ ∅ = 0 := by
+  unfold μ₁
+  have H : 0 ∈ {r : ℝ≥0∞ | ∃ l, embed l = ∅ ∧ μ₀ l = r} := by
+    rw [mem_setOf]
+    exists []
+  have H1 := sInf_le H
+  have H2 : 0 ≤ sInf {r | ∃ l, embed l = ∅ ∧ μ₀ l = r} := by
+    simp
+  sorry
+
+theorem MeasAdd :
+  ∀ (I : Finset (Set BitStream)) (_h_ss : ↑I ⊆ BernoulliAlgebra)
+  (_h_dis : PairwiseDisjoint (I : Set (Set BitStream)) id)
+  (_h_mem : ⋃₀ ↑I ∈ BernoulliAlgebra),
+    μ₁ (⋃₀ I) = Finset.sum I (fun u => μ₁ u) := sorry
+
+noncomputable instance cont : AddContent BernoulliAlgebra where
+  toFun := μ₁
+  empty' := MeasEmpty
+  add' := MeasAdd
+
+theorem CountAdd : ∀ ⦃f : ℕ → Set BitStream⦄,
+      (∀ (i : ℕ), f i ∈ BernoulliAlgebra) →
+        ⋃ (i : ℕ), f i ∈ BernoulliAlgebra →
+          (fun s => AddContent.toFun cont s) (⋃ (i : ℕ), f i) ≤ ∑' (i : ℕ), (fun s => AddContent.toFun cont s) (f i) := sorry
+
+noncomputable instance μ : Measure BitStream := Measure.ofAddContent BASR EpsIsBernoulliAlbegra cont CountAdd
 
 @[simp]
-instance Eps : MeasurableSpace BitStream := generateFrom BernoulliAlgebra
-
---noncomputable def μ'' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := ⨅ (l : List (List Bool)) (_ : A = embed l) , μ₀ l
-
-noncomputable def μ' (A : Set BitStream) (_ : Eps.MeasurableSet' A) : ℝ≥0∞ := sInf { r : ℝ≥0∞ | exists l : List (List Bool), embed l = A ∧ μ₀ l = r }
-
-#check sInf_le
-#check sInf_singleton
-#check sInf_le_sInf_of_forall_exists_le
-
-theorem Measure1' : μ' ∅ MeasurableSet.empty = 0 :=
+theorem TrimMeasure (s : Set BitStream) (_ : s ∈ BernoulliAlgebra) :  μ s = μ₁ s :=
   by
-    unfold μ'
-    have H : 0 ∈ {r : ℝ≥0∞ | ∃ l, embed l = ∅ ∧ μ₀ l = r} :=
-      by
-        rw [mem_setOf]
-        exists []
-    have H1 := sInf_le H
-    have H2 : 0 ≤ sInf {r | ∃ l, embed l = ∅ ∧ μ₀ l = r} :=
-      by
-        simp
-
-    sorry -- should be doable, ENNReal
-
-theorem Measure3' : ∀ ⦃f : ℕ → Set BitStream⦄ (h : ∀ i, MeasurableSet (f i)),
-  Pairwise (Disjoint on f) → μ' (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, μ' (f i) (h i) := sorry
-
-noncomputable instance μ : Measure BitStream := ofMeasurable μ' Measure1' Measure3'
+    apply Measure.ofAddContent_eq
+    assumption
 
 @[simp]
 noncomputable instance Prob : MeasureSpace BitStream where
   volume := μ
 
--- 2.4.2
-
 @[simp]
 instance : Membership (Set BitStream) (MeasureSpace BitStream) where
   mem := λ (A : Set BitStream) (F : MeasureSpace BitStream) => F.MeasurableSet' A
 
-theorem Event1 (b: Bool) : { s : BitStream | shd s = b } ∈ Prob :=
+theorem Event1 (b: Bool) : { s : BitStream | shd s = b } ∈ BernoulliAlgebra :=
+  by
+    simp
+    unfold BernoulliAlgebra
+    simp
+    exists [[b]]
+    unfold embed
+    unfold Set.union
+    unfold embed
+    simp
+    unfold stake
+    simp
+    unfold stake
+    simp
+
+theorem Event1' (b: Bool) : { s : BitStream | shd s = b } ∈ Prob :=
   by
     simp
     apply measurableSet_generateFrom
@@ -171,16 +209,11 @@ theorem Event7 (E : Set BitStream) (b : Bool) : (scons b) '' E ∈ Prob ↔ E �
 
 theorem Event8 (E : Set BitStream) : mirror ⁻¹' E ∈ Prob ↔ E ∈ Prob := sorry
 
-#check ofMeasurable
-
-syntax "custom_tactic" : tactic
-
-macro_rules
-| `(tactic| custom_tactic) => `(tactic| unfold volume ; simp ; unfold μ ; rw [ofMeasurable_apply] ; unfold μ')
-
 theorem Prob1 (b : Bool) : Prob.volume { s : BitStream | shd s = b } = 1 / 2 :=
   by
-    custom_tactic
+    unfold volume
+    simp
+    rw [TrimMeasure]
     have H : μ₀ [[b]] = 1 / 2 :=
       by
       unfold μ₀

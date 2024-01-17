@@ -34,7 +34,7 @@ theorem uniformP2_correct (k : Nat) (n : Nat) (_ : 0 ≤ n ∧ n < 2 ^ k) :
     induction k
     . intro n H
       simp at H
-      rw [H]
+      subst H
       simp
       unfold μ
       rw [ofMeasurable_apply]
@@ -62,6 +62,7 @@ theorem uniformP2_correct (k : Nat) (n : Nat) (_ : 0 ≤ n ∧ n < 2 ^ k) :
         have RES2 := RES left
         sorry
 
+@[simp]
 noncomputable def UniformDist (k : Nat) : Measure Nat := Push (uniformP2 k)
 
 theorem correct (k : Nat) (n : Nat) (_ : 0 ≤ n ∧ n < 2 ^ k) : UniformDist k { m : Nat | m = n } = 1 / 2 ^ k := sorry
