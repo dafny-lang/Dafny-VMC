@@ -10,7 +10,7 @@ module Uniform.Implementation {
   import Interface
   import Equivalence
 
-  trait {:termination false} TraitFoundational extends Interface.Trait {
+  trait {:termination false} Trait extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
       modifies this
       decreases *

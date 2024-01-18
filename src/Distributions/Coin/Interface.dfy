@@ -7,19 +7,13 @@ module Coin.Interface {
   import Monad
   import Rand
   import Model
+  import UniformPowerOfTwo
 
-  method {:extern "Extern.RandomCoin", "Coin"} ExternCoinSample() returns (b: bool)
-
-  trait {:termination false} Trait {
-    ghost var s: Rand.Bitstream
+  trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
 
     method CoinSample() returns (b: bool)
       modifies this
       ensures Model.Sample(old(s)) == Monad.Result(b, s)
-    {
-      b := ExternCoinSample();
-      assume {:axiom} false; // assume correctness of extern implementation
-    }
 
   }
 }
