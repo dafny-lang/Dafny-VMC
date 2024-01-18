@@ -14,4 +14,4 @@ then
   exit 1
 fi
 
-$DAFNY build --target:$TARGET_LANG src/interop/$TARGET_LANG/Random.$TARGET_LANG src/Dafny-VMC.dfy -o build/$TARGET_LANG/Dafny-VMC dfyconfig.toml --no-verify
+$DAFNY build --target:$TARGET_LANG src/interop/$TARGET_LANG/DafnyVMC.$TARGET_LANG src/interop/$TARGET_LANG/Random.$TARGET_LANG src/DafnyVMC.dfy -o build/$TARGET_LANG/DafnyVMC dfyconfig.toml --no-verify

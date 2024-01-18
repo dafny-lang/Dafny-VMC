@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module {:extern "DafnyVMCMinus"} DafnyVMC {
+module DafnyVMCTrait {
   import Coin
   import Bernoulli
   import UniformPowerOfTwo
@@ -12,8 +12,8 @@ module {:extern "DafnyVMCMinus"} DafnyVMC {
   import DiscreteGaussian
   import DiscreteLaplace
   import FisherYates
+  import Monad
 
-  trait Random extends Coin.Implementation.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.Trait, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, FisherYates.Implementation.Trait  {
+  trait {:termination false} RandomTrait extends Coin.Implementation.Trait, UniformPowerOfTwo.Implementation.Trait, Bernoulli.Implementation.Trait, Uniform.Implementation.Trait, BernoulliExpNeg.Implementation.Trait, DiscreteGaussian.Implementation.Trait, DiscreteLaplace.Implementation.Trait, FisherYates.Implementation.Trait  {
   }
-
 }

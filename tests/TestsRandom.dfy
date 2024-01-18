@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module TestsExternUniform {
+module TestsRandom {
   import NatArith
   import DafnyVMC
   import Helper

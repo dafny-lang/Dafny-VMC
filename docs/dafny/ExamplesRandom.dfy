@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module RandomExamples.ExternUniform {
+module ExamplesRandom {
   import Rationals
   import DafnyVMC
   import Helper
