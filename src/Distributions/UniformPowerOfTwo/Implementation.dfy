@@ -14,6 +14,6 @@ module UniformPowerOfTwo.Implementation {
       requires n >= 1
       modifies this
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
-  
+
   }
 }
