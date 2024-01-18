@@ -35,15 +35,15 @@ def prob_while_cut (cond : T → Bool) (body : T → Hurd T) (n : Nat) (a : T) :
 noncomputable def minimal (f : Nat → Bool) : Nat := sorry
 
 noncomputable def prob_while (cond : T → Bool) (body : T → Hurd T) (a : T) : Hurd T :=
-  λ s : BitStream =>
+  λ s : BitStream => do
   if (∃ n : Nat, ∃ v : T × BitStream, prob_while_cut cond body n a s = some v ∧ ¬ cond (v.1))
   then prob_while_cut cond body (minimal (λ n : Nat =>  ∃ v : T × BitStream, prob_while_cut cond body n a s = some v ∧ ¬ cond (v.1))) a s
   else none
 
 noncomputable def prob_until (body : Hurd T) (cond : T → Bool) : Hurd T :=
-  λ s : BitStream =>
-    do let v ← body s
-       prob_while (λ v : T => ¬ cond v) (λ _ : T => body) v.1 s
+  λ s : BitStream => do
+    let v ← body s
+    prob_while (λ v : T => ¬ cond v) (λ _ : T => body) v.1 s
 
 -- Sample from [0..2^k - 1]
 
@@ -77,26 +77,20 @@ noncomputable def bernoulli_EN (gamma : Rat) : Hurd Bool := do
     let B ← NEB_main (-1)
     if B then NEB_main (floor gamma - gamma) else return false
 
-noncomputable def lap_loop' (K : Bool × Nat) : Hurd (Bool × Nat) := do
+noncomputable def lap_loop (K : Bool × Nat) : Hurd (Bool × Nat) := do
   let A ← NEB_main (-1)
   return (A, K.2 + 1)
 
-noncomputable def lap_loop : Hurd Nat := do
-  let r ← prob_while (λ K : Bool × Nat => K.1) lap_loop' (true,1)
-  return r.2
-
-noncomputable def lap_prepre (t : Nat) :  Hurd (Nat × Bool) := do
+noncomputable def lap_pre (t : Nat) :  Hurd (Nat × Bool) := do
   let U ← uniform t
   let D ← bernoulli_EN (U / t)
   return (U,D)
 
-noncomputable def Lap_pre (t : Nat) : Hurd Nat := do
-  let r ← prob_until (lap_prepre t) (λ x : Nat × Bool => x.2)
-  return r.1
-
 noncomputable def Lap_body (t s : Nat) : Hurd (Bool × Nat × Int) := do
-  let U ← Lap_pre t
-  let V ← lap_loop
+  let r ← prob_until (lap_pre t) (λ x : Nat × Bool => x.2)
+  let U := r.1
+  let r ← prob_while (λ K : Bool × Nat => K.1) lap_loop (true,1)
+  let V := r.2
   let X := U + t * V
   let Y := floor (X / s)
   let B ← bernoulli 0.5
