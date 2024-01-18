@@ -4,6 +4,7 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.Analysis.SpecificLimits.Basic
 import KolmogorovExtension4.CaratheodoryExtension
 
+open Classical
 open Set Classical ENNReal Function
 open MeasureTheory MeasurableSpace Measure
 
@@ -50,16 +51,19 @@ theorem Basic4 (s : BitStream) : scons (shd s) (stl s) = s :=
     induction x <;> simp
 
 @[simp]
-theorem Basic5 (h h' : Bool) (t t' : BitStream) : (scons h t = scons h' t) ↔ (h = h' ∧ t = t') :=
+theorem Basic5 (h h' : Bool) (t t' : BitStream) : (scons h t = scons h' t') ↔ (h = h' ∧ t = t') :=
   by
     apply Iff.intro
     . intro H
-      have H1 : h = (scons h t) 0 := by simp
-      have H2 : h' = (scons h' t') 0 := by simp
-      apply And.intro
-      . rw [H1, H2, H]
-        simp
-      . sorry
+      have Eq : (scons h t) 0 = (scons h' t') 0 := by
+        rw [H]
+      simp at Eq
+      rw [← Eq] at H
+      rw [← Eq]
+      simp
+      clear Eq h'
+      by_contra Contra
+      sorry
     . intro H
       cases H
       rename_i left right
@@ -96,12 +100,30 @@ theorem BernoulliAlgebraEmptyMem : ∅ ∈ BernoulliAlgebra := by
     exists []
   assumption
 
-theorem BernoulliAlgebraInterMem : ∀ (s : Set BitStream), s ∈ BernoulliAlgebra → ∀ (t : Set BitStream), t ∈ BernoulliAlgebra → s ∩ t ∈ BernoulliAlgebra := sorry
+theorem BernoulliAlgebraInterMem : ∀ (s : Set BitStream), s ∈ BernoulliAlgebra → ∀ (t : Set BitStream), t ∈ BernoulliAlgebra → s ∩ t ∈ BernoulliAlgebra := by
+  intro s Ins t Int
+  unfold BernoulliAlgebra at *
+  rw [mem_setOf] at *
+  cases Ins
+  rename_i ls Hs
+  cases Int
+  rename_i lt Ht
+  rw [← Hs, ← Ht]
+  sorry -- list of longest common prefix for every pair
 
 theorem BernoulliDiffEqUnion :
   ∀ (s : Set BitStream), s ∈ BernoulliAlgebra →
   ∀ (t : Set BitStream), t ∈ BernoulliAlgebra →
-  ∃ (I : Finset (Set BitStream)) (_h_ss : ↑I ⊆ BernoulliAlgebra) (_h_dis : PairwiseDisjoint (I : Set (Set BitStream)) id), t \ s = ⋃₀ ↑I := sorry
+  ∃ (I : Finset (Set BitStream)) (_h_ss : ↑I ⊆ BernoulliAlgebra) (_h_dis : PairwiseDisjoint (I : Set (Set BitStream)) id), t \ s = ⋃₀ ↑I := by
+    intro s Ins t Int
+    unfold BernoulliAlgebra at *
+    rw [mem_setOf] at *
+    cases Ins
+    rename_i ls Hs
+    cases Int
+    rename_i lt Ht
+    rw [← Hs, ← Ht]
+    sorry -- [11] \ [1101] -> [1111] u [1100] u [1110] -- In BA, pairwise disjoint
 
 instance BASR : MeasureTheory.SetSemiring BernoulliAlgebra where
   empty_mem := BernoulliAlgebraEmptyMem
