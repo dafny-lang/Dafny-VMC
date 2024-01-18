@@ -4,14 +4,14 @@ import dafny.TypeDescriptor;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class DafnyVMC implements DafnyVMCTrait.RandomTrait {
+public class Random implements DafnyVMCTrait.RandomTrait {
   static ThreadLocal<SecureRandom> rng;
   
-  public DafnyVMC() {
-    this.rng = ThreadLocal.withInitial(DafnyVMC::createSecureRandom);
+  public Random() {
+    this.rng = ThreadLocal.withInitial(Random::createSecureRandom);
   }
 
-  public DafnyVMC(SecureRandom rng) {
+  public Random(SecureRandom rng) {
     this.rng = ThreadLocal.withInitial(() -> rng);
   }
 

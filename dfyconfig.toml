@@ -1,5 +1,5 @@
 includes = ["src/**/*.dfy"]
-excludes = []
+excludes = ["src/DafnyVMC.dfy", "src/DafnyVMCTrait.dfy"]
 
 [options]
 enforce-determinism = false
