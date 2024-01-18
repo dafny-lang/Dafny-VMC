@@ -1,9 +1,6 @@
 package Extern;
 
 import java.security.SecureRandom;
-
-import Random;
-
 import java.math.BigInteger;
 import java.lang.Thread;
 

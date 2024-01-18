@@ -16,12 +16,12 @@ fi
 
 echo Running $TARGET_LANG tests...
 echo "Running tests/TestsRandom.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Random.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Extern/Random.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy src/DafnyVMC.dfy src/DafnyVMCTrait.dfy dfyconfig.toml  --no-verify
 
 echo Running $TARGET_LANG documentation...
 
 echo "Building docs/dafny/ExamplesRandom.dfy..." 
-$DAFNY build docs/dafny/ExamplesRandom.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/Random.$TARGET_LANG dfyconfig.toml --no-verify
+$DAFNY build docs/dafny/ExamplesRandom.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/Extern/Random.$TARGET_LANG src/DafnyVMC.dfy src/DafnyVMCTrait.dfy  dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesRandom.dfy:" 
 if [ "$TARGET_LANG" = "java" ]
 then
