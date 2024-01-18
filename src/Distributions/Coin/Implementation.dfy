@@ -16,9 +16,10 @@ module Coin.Implementation {
       ensures Model.Sample(old(s)) == Monad.Result(b, s)
     {
       var x := UniformPowerOfTwoSample(2);
-      b := if x == 0 then false else true;
+      b := if x == 1 then true else false;
+      reveal UniformPowerOfTwo.Model.Sample();    
     }
-
+    
   }
 
 }
