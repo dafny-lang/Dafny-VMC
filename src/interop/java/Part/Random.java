@@ -1,4 +1,4 @@
-package Extern;
+package DafnyVMCPartMaterial;
 
 import java.security.SecureRandom;
 import java.math.BigInteger;
@@ -17,7 +17,7 @@ public final class Random {
     return rng;
   }
 
-  public static BigInteger UniformPowerOfTwo(BigInteger n) {
+  public static BigInteger UniformPowerOfTwoSample(BigInteger n) {
     if (n.compareTo(BigInteger.ONE) < 0) {
       throw new IllegalArgumentException("n must be positive");
     }
