@@ -4,7 +4,7 @@ The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At 
 
 # Java API Example
 
-```bash
+```java
 import DafnyVMC.Random;
 import java.math.BigInteger;
 
