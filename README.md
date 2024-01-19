@@ -7,6 +7,7 @@ The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At 
 ```java
 import DafnyVMC.Random;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 class Test {
   DafnyVMC.Random r = new DafnyVMC.Random();
