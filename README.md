@@ -13,14 +13,13 @@ class Test {
   public static void main(String[] args) {
     DafnyVMC.Random r = new DafnyVMC.Random();
 
-    char[] arr = {'a', 'b', 'c'};
-    Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
-  
     System.out.println("Example of Fisher-Yates: char");
+    char[] arr = {'a', 'b', 'c'};
     r.Shuffle(arr);
     System.out.println(Arrays.toString(arr));
   
     System.out.println("Example of Bernoulli sampling");
+    Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
     System.out.println(r.BernoulliSample(gamma));
   }
 }
