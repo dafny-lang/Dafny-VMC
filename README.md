@@ -4,7 +4,7 @@ The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At 
 
 # Java API Example
 
-````
+```bash
 import DafnyVMC.Random;
 import java.math.BigInteger;
 
@@ -21,7 +21,6 @@ class Test {
   System.out.println("Example of Bernoulli sampling");
   System.out.println(r.BernoulliSample(gamma));
 }
-
 ```
 
 # Dafny Examples
