@@ -62,34 +62,41 @@ noncomputable def bernoulli (r : Rat) : Hurd Bool := do
   let d ← uniform r.den
   return d < r.num
 
-noncomputable def NEB_loop (gamma : Rat) (K : Bool × Nat) : Hurd (Bool × Nat) := do
+noncomputable def bernoulli_exp_neg_loop1 (gamma : Rat) (K : Bool × Nat) : Hurd (Bool × Nat) := do
   let A ← bernoulli (gamma / (K.2))
   return (A, K.2 + 1)
 
-noncomputable def NEB_main (gamma : Rat) : Hurd Bool := do
-  let r ← prob_while (λ K : Bool × Nat => K.1) (NEB_loop gamma) (true,1)
+noncomputable def bernoulli_exp_neg_le1 (gamma : Rat) : Hurd Bool := do
+  let r ← prob_while (λ K : Bool × Nat => K.1) (bernoulli_exp_neg_loop1 gamma) (true,1)
   return r.1
 
-noncomputable def bernoulli_EN (gamma : Rat) : Hurd Bool := do
-  if 0 ≤ gamma && gamma <= 1
-  then NEB_main gamma
+noncomputable def bernoulli_exp_neg_loop2 (iter : Nat) : Hurd Bool := do
+  if iter = 0 then return true
   else
-    let B ← NEB_main (-1)
-    if B then NEB_main (floor gamma - gamma) else return false
+    let B ← bernoulli_exp_neg_le1 (-1)
+    let R ← bernoulli_exp_neg_loop2 (iter - 1)
+    return (B && R)
 
-noncomputable def lap_loop (K : Bool × Nat) : Hurd (Bool × Nat) := do
-  let A ← NEB_main (-1)
-  return (A, K.2 + 1)
+noncomputable def bernoulli_exp_neg (gamma : Rat) : Hurd Bool := do
+  if 0 ≤ gamma && gamma <= 1
+  then bernoulli_exp_neg_le1 gamma
+  else
+    let B ← bernoulli_exp_neg_loop2 (floor gamma)
+    if B then bernoulli_exp_neg_le1 (gamma - floor gamma) else return false
 
-noncomputable def lap_pre (t : Nat) :  Hurd (Nat × Bool) := do
+noncomputable def laplace_loop1 (t : Nat) :  Hurd (Nat × Bool) := do
   let U ← uniform t
-  let D ← bernoulli_EN (U / t)
+  let D ← bernoulli_exp_neg (U / t)
   return (U,D)
 
-noncomputable def Lap_body (t s : Nat) : Hurd (Bool × Nat × Int) := do
-  let r ← prob_until (lap_pre t) (λ x : Nat × Bool => x.2)
+noncomputable def laplace_loop2 (K : Bool × Nat) : Hurd (Bool × Nat) := do
+  let A ← bernoulli_exp_neg_le1 (-1)
+  return (A, K.2 + 1)
+
+noncomputable def laplace_body (t s : Nat) : Hurd (Bool × Nat × Int) := do
+  let r ← prob_until (laplace_loop1 t) (λ x : Nat × Bool => x.2)
   let U := r.1
-  let r ← prob_while (λ K : Bool × Nat => K.1) lap_loop (true,1)
+  let r ← prob_while (λ K : Bool × Nat => K.1) laplace_loop2 (true,1)
   let V := r.2
   let X := U + t * V
   let Y := floor (X / s)
@@ -99,12 +106,12 @@ noncomputable def Lap_body (t s : Nat) : Hurd (Bool × Nat × Int) := do
   return (B,Y,Z)
 
 noncomputable def laplace (t s : Nat) : Hurd Int := do
-  let r ← prob_until (Lap_body t s) (λ x : Bool × Nat × Int => ¬ x.1 || x.2.1 ≠ 0)
+  let r ← prob_until (laplace_body t s) (λ x : Bool × Nat × Int => ¬ x.1 || x.2.1 ≠ 0)
   return r.2.2
 
 noncomputable def gaussian_loop (sigmasquared : Rat) (t : Nat) : Hurd (Int × Bool) := do
   let Y ← laplace t 1
-  let C ← bernoulli_EN ((abs Y - sigmasquared / t)^2 / (2 * sigmasquared))
+  let C ← bernoulli_exp_neg ((abs Y - sigmasquared / t)^2 / (2 * sigmasquared))
   return (Y,C)
 
 noncomputable def gaussian (sigma : Rat) : Hurd Int := do
