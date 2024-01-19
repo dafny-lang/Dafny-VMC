@@ -15,7 +15,7 @@ class Test {
   Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
 
   System.out.println("Example of Fisher-Yates: char");
-  r.Shuffle(arr4);
+  r.Shuffle(arr);
   System.out.println(Arrays.toString(arr));
 
   System.out.println("Example of Bernoulli sampling");
