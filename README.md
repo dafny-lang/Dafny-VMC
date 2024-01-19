@@ -10,17 +10,19 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 class Test {
-  DafnyVMC.Random r = new DafnyVMC.Random();
+  public static void main(String[] args) {
+    DafnyVMC.Random r = new DafnyVMC.Random();
 
-  char[] arr = {'a', 'b', 'c'};
-  Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
-
-  System.out.println("Example of Fisher-Yates: char");
-  r.Shuffle(arr);
-  System.out.println(Arrays.toString(arr));
-
-  System.out.println("Example of Bernoulli sampling");
-  System.out.println(r.BernoulliSample(gamma));
+    char[] arr = {'a', 'b', 'c'};
+    Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
+  
+    System.out.println("Example of Fisher-Yates: char");
+    r.Shuffle(arr);
+    System.out.println(Arrays.toString(arr));
+  
+    System.out.println("Example of Bernoulli sampling");
+    System.out.println(r.BernoulliSample(gamma));
+  }
 }
 ```
 
