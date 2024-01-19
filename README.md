@@ -2,7 +2,7 @@
 
 The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At the moment, the API is intentionally limited in scope, and only supports compilation to Java. For the future, we plan to extend both the functionality and the range of supported languages.
 
-# Java API Example
+## Java API Example
 
 ```java
 import DafnyVMC.Random;
@@ -23,7 +23,7 @@ class Test {
 }
 ```
 
-# Dafny Examples
+## Dafny Examples
 
 To run the examples in the `docs/dafny` directory, use the following commands:
 
@@ -33,7 +33,7 @@ $ dafny build docs/dafny/ExamplesRandom.dfy --target:java src/interop/java/Full/
 $ java -jar docs/dafny/ExamplesRandom.jar
 ```
 
-# Java Examples
+## Java Examples
 
 To run the examples in the `docs/java` directory, use the following commands:
 
@@ -43,7 +43,7 @@ $ bash scripts/build.sh
 $ bash build/java/run.sh  
 ```
 
-# Testing
+## Dafny Testing
 
 To run the statistical tests in the `tests` directory, use the following commands:
 
