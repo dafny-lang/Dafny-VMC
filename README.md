@@ -29,7 +29,6 @@ class Test {
 To run the examples in the `docs/dafny` directory, use the following commands:
 
 ```bash
-# Dafny Examples
 $ dafny build docs/dafny/ExamplesRandom.dfy --target:java src/interop/java/Full/Random.java src/interop/java/Part/Random.java dfyconfig.toml --no-verify
 $ java -jar docs/dafny/ExamplesRandom.jar
 ```
@@ -39,7 +38,6 @@ $ java -jar docs/dafny/ExamplesRandom.jar
 To run the examples in the `docs/java` directory, use the following commands:
 
 ```bash
-# Java Examples
 $ bash scripts/build.sh 
 $ bash build/java/run.sh  
 ```
@@ -49,7 +47,6 @@ $ bash build/java/run.sh
 To run the statistical tests in the `tests` directory, use the following commands:
 
 ```bash
-# Dafny Tests
 $ dafny test --target:java src/interop/java/Full/Random.java src/interop/java/Part/Random.java tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml --no-verify
 ```
 
