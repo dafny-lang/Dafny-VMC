@@ -13,7 +13,7 @@ class Test {
   public static void main(String[] args) {
     DafnyVMC.Random r = new DafnyVMC.Random();
 
-    System.out.println("Example of Fisher-Yates: char");
+    System.out.println("Example of Fisher-Yates shuffling");
     char[] arr = {'a', 'b', 'c'};
     r.Shuffle(arr);
     System.out.println(Arrays.toString(arr));
