@@ -1,3 +1,4 @@
+src/DafnyVMC.dfy(23,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Bernoulli/Correctness.dfy(59,17): BernoulliCorrectnessCaseFalse: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(228,6): CorrectnessLe1: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/BernoulliExpNeg/Correctness.dfy(251,17): SampleLe1IsIndep: Declaration has explicit `{:axiom}` attribute. 

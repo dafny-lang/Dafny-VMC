@@ -1,8 +1,8 @@
-import DafnyVMC.Random;
 import java.security.SecureRandom;
-
 import java.math.BigInteger;
 import java.util.Arrays;
+
+import DafnyVMC.Random;
 
 class Check {
     public static void main(String[] args) {
@@ -13,12 +13,30 @@ class Check {
         boolean[] arr5 = {true, false, false, true};
         long[] arr6 = {111111L, 333333L, 999999L};
         short[] arr7 = {-3, 0, 3};
+        Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
         
-        // Tests with UniformPowerOfTwo as primitive
+        /* STANDARD RNG */
+        System.out.println("\nSTANDARD RNG TESTS\n");
+        
         DafnyVMC.Random r = new DafnyVMC.Random();
+
+        System.out.println("Example of Coin sampling");
+        System.out.println(r.CoinSample());
 
         System.out.println("Example of Uniform sampling");
         System.out.println(r.UniformSample(BigInteger.valueOf(4)));
+
+        System.out.println("Example of Bernoulli sampling");
+        System.out.println(r.BernoulliSample(gamma));
+
+        System.out.println("Example of BernoulliExpNeg sampling");
+        System.out.println(r.BernoulliExpNegSample(gamma));
+
+        System.out.println("Example of DiscreteGaussian sampling");
+        System.out.println(r.DiscreteGaussianSample(gamma));
+
+        System.out.println("Example of DiscreteLaplace sampling");
+        System.out.println(r.DiscreteLaplaceSample(gamma));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         r.Shuffle(arr1);
@@ -48,13 +66,29 @@ class Check {
         r.Shuffle(arr7);
         System.out.println(Arrays.toString(arr7));
 
-        // Tests with Coin as primitive and custom rng
+        /* CUSTOM RNG */
+        System.out.println("\nCUSTOM RNG TESTS\n");
 
         SecureRandom rng = new SecureRandom();
         DafnyVMC.Random t = new DafnyVMC.Random(rng);
 
+        System.out.println("Example of Coin sampling");
+        System.out.println(t.CoinSample());
+
         System.out.println("Example of Uniform sampling");
         System.out.println(t.UniformSample(BigInteger.valueOf(4)));
+
+        System.out.println("Example of Bernoulli sampling");
+        System.out.println(t.BernoulliSample(gamma));
+
+        System.out.println("Example of BernoulliExpNeg sampling");
+        System.out.println(r.BernoulliExpNegSample(gamma));
+
+        System.out.println("Example of DiscreteGaussian sampling");
+        System.out.println(t.DiscreteGaussianSample(gamma));
+
+        System.out.println("Example of DiscreteLaplace sampling");
+        System.out.println(t.DiscreteLaplaceSample(gamma));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         t.Shuffle(arr1);
