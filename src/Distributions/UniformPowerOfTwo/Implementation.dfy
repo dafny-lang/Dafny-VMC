@@ -6,7 +6,6 @@
 module UniformPowerOfTwo.Implementation {
   import Monad
   import Model
-  import Equivalence
   import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
