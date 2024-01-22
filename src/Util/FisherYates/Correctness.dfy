@@ -33,77 +33,69 @@ module FisherYates.Correctness {
    Lemmas
   *******/
 
-  lemma {:axiom} CorrectnessFisherYates<T(!new)>(xs: seq<T>, p: seq<T>)
+  lemma {:axiom} CorrectnessMultiset<T>(xs: seq<T>, x: T, i: nat := 0)
+    requires i < |xs|
+    requires x in xs[i..]
+    ensures 
+      var A := iset j | i <= j < |xs| && xs[j] == x;
+      var e := Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
+      var multiplicity := multiset(xs[i..])[x];
+      var length := |xs[i..]|;
+      && e in Rand.eventSpace
+      && Rand.prob(e) == (multiplicity as real) / (length as real)
+
+  lemma CorrectnessFisherYates<T(!new)>(xs: seq<T>, p: seq<T>)
     requires multiset(p) == multiset(xs)
+    requires |p| == |xs|
     ensures
       var e := iset s | Model.Shuffle(xs)(s).Equals(p);
       && e in Rand.eventSpace
       && Rand.prob(e) == 1.0 / (NumberOfPermutationsOf(xs) as real)
-  /*   {
+    {
       CorrectnessFisherYatesGeneral(xs, p, 0);
-    } */
+    }
 
-  /*   lemma {:axiom} CorrectnessFisherYatesGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
-      requires multiset(p) == multiset(xs)
-      ensures
-        var e := iset s | Model.Shuffle(xs, i)(s)[i..].Equals(p[i..]);
-        && e in Rand.eventSpace
-        && Rand.prob(e) == 1.0 / (NumberOfPermutationsOf(xs, i) as real) */
-  /* {
-    var e := iset s | Model.Shuffle(xs)(s).Equals(p);
-    assume {:axiom} e in Rand.eventSpace; // todo later
-
-    if |xs| != 0 {
-      var h := Uniform.Model.IntervalSample(0, |xs|); 
-      var f :=        
-        (j: int) requires 0 <= j < |xs| => 
-          var zs := Permutations.Swap(xs, 0, j);
-          Monad.Map(Model.Shuffle(zs[1..]), (ys: seq<T>) => [zs[0]] + ys);
-      var j: int := Permutations.FirstOccurrence(xs, p[0]);
-      var A: iset<int> := iset{j};
-      var B: iset<seq<T>> := iset xs | xs[1..] == p[1..];
-      var E: iset<Rand.Bitstream> := Monad.BitstreamsWithValueIn(f(j), B);
-      var zs := Permutations.Swap(xs, 0, j)[1..];
+  lemma CorrectnessFisherYatesGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+    requires i <= |xs|
+    requires multiset(p) == multiset(xs)
+    requires |p| == |xs|
+    decreases |xs| - i
+    ensures
+      var e := iset s | Model.Shuffle(xs, i)(s).Map(ys => ys[i..]).Equals(p[i..]);
+      && e in Rand.eventSpace
+      && Rand.prob(e) == 1.0 / (NumberOfPermutationsOf(xs, i) as real)
+  {
+    var e := iset s | Model.Shuffle(xs, i)(s).Map(ys => ys[i..]).Equals(p[i..]);
+    if |xs| == 0 {
+      assert e == iset s | true;
+      assert NumberOfPermutationsOf(xs, i) == 1;
+    } else {
       assume {:axiom} false;
+      var h := Uniform.Model.IntervalSample(i, |xs|);
       assert Independence.IsIndep(h) by {
-        Uniform.Correctness.IntervalSampleIsIndep(0, |xs|);
-      }    
-      assert Eq1: Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A)) == 1.0 / |xs| as real by {
-        calc {
-          Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A));
-          Rand.prob(iset s | Uniform.Model.IntervalSample(0, |xs|)(s).Equals(j));
-          { Uniform.Correctness.UniformFullIntervalCorrectness(0, |xs|, j); }
-          1.0 / |xs| as real;
-        }
+        Uniform.Correctness.IntervalSampleIsIndep(i, |xs|);
       }
-      assert Eq2: Rand.prob(E) == 1.0 / (|Permutations.CalculateAllPermutationsOf(zs)| as real) by {
-        calc {
-          Rand.prob(E);
-          Rand.prob(Monad.BitstreamsWithValueIn(f(j), B));
-          Rand.prob(iset s | f(j)(s).Result? && f(j)(s).value[1..] == p[1..]);
-          Rand.prob(iset s | Model.Shuffle(zs)(s).Equals(p[1..]));
-          1.0 / (|Permutations.CalculateAllPermutationsOf(zs)| as real);
-        }
-      }
+      var multiplicity := multiset(xs[i..])[p[i]];
+      var length := |xs[i..]|;
+      var A := iset j | i <= j < |xs| && xs[j] == p[i];
+      var j :| j in A;
+      var ys := Model.Swap(xs, i, j);
+      var E := iset s | Model.Shuffle(ys, i+1)(s).Map(ys => ys[i+1..]).Equals(p[i+1..]);
+
       calc {
         Rand.prob(e);
-        Rand.prob(iset s | Model.Shuffle(xs)(s).Equals(p));
-        Rand.prob(iset s | Monad.Bind(h, f)(s).Equals(p));
+        Rand.prob(iset s | Model.Shuffle(xs, i)(s).Map(ys => ys[i..]).Equals(p[i..]));
         Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A) && s in Monad.BitstreamsWithRestIn(h, E));
-        { Independence.ResultsIndependent(h, A, E); }
         Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(E);
-        { reveal Eq1; reveal Eq2; }
-        (1.0 / |xs| as real) * (1.0 / |Permutations.CalculateAllPermutationsOf(zs)| as real);
-        { RealArith.SimplifyFractionsMultiplication(1.0, |xs| as real, 1.0, |Permutations.CalculateAllPermutationsOf(zs)| as real); }
-        (1.0 * 1.0) / (|xs| as real * |Permutations.CalculateAllPermutationsOf(zs)| as real);
-        { assert 1.0 * 1.0 == 1.0; assert |xs| as real * |Permutations.CalculateAllPermutationsOf(zs)| as real == (|xs| * |Permutations.CalculateAllPermutationsOf(zs)|) as real; }
-        1.0 / ((|xs| * |Permutations.CalculateAllPermutationsOf(zs)|) as real);
-        { assume {:axiom} |xs| * |Permutations.CalculateAllPermutationsOf(zs)| == |Permutations.CalculateAllPermutationsOf(xs)|; } // todo later
-        1.0 / |Permutations.CalculateAllPermutationsOf(xs)| as real;
+        { CorrectnessMultiset(xs, p[i], i); CorrectnessFisherYatesGeneral(ys, p, i+1); }
+        (multiplicity as real / length as real) * (1.0 / (NumberOfPermutationsOf(xs, i+1) as real));
+        (1.0 / ((length as real) / (multiplicity as real))) *  (1.0 / (NumberOfPermutationsOf(xs, i+1) as real));
+        (1.0 / ((length / multiplicity) as real)) *  (1.0 / (NumberOfPermutationsOf(xs, i+1) as real));
+        { assert 1.0 * 1.0 == 1.0; assert ((length / multiplicity) as real) * (NumberOfPermutationsOf(xs, i+1) as real) == ((length / multiplicity) * NumberOfPermutationsOf(xs, i+1)) as real; }
+        1.0 / ((length / multiplicity) * NumberOfPermutationsOf(xs, i+1)) as real;
+        1.0 / (NumberOfPermutationsOf(xs, i) as real);
       }
-    } else { 
-      assume {:axiom} false; // todo later
     }
-  } */
+  }
 
 }
