@@ -14,7 +14,6 @@ module Tests {
   import DiscreteGaussian
   import NatArith
   import RealArith
-  import Permutations
   import FisherYates
   import Helper
 
@@ -293,9 +292,8 @@ module Tests {
     requires n > 0
   {
     var aAsSeq: seq<T> := a[..];
-    var numberOfPermutations: nat := Permutations.NumberOfPermutationsOf(aAsSeq);
+    var numberOfPermutations: nat := FisherYates.Correctness.NumberOfPermutationsOf(aAsSeq);
     var numberOfObservedPermutations: map<seq<T>, nat> := map[];
-    Permutations.CalculateAllPermutationsOfIsNonEmpty(aAsSeq);
     
     for i := 0 to n {
       var aCopy := a;
