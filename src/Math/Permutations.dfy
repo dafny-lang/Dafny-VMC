@@ -10,6 +10,10 @@ module Permutations {
    Definitions
   ************/
 
+  predicate IsPermutationOf<T(==)>(p: seq<T>, s: seq<T>) {
+    multiset(p) == multiset(s)
+  }
+
   function NumberOfPermutationsOf<T(==)>(s: seq<T>): nat {
     |CalculateAllPermutationsOf(s)|
   }
@@ -39,6 +43,17 @@ module Permutations {
       s 
     else 
       s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..]
+  }
+
+  function FirstOccurrence<T(==)>(p: seq<T>, x: T): (i: nat)
+    requires x in multiset(p)
+    ensures i < |p|
+    ensures p[i] == x
+  {
+    if p[0] == x then
+      0
+    else
+      FirstOccurrence(p[1..], x) + 1
   }
 
   /*******
