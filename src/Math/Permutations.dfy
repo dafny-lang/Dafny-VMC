@@ -29,6 +29,18 @@ module Permutations {
     s[..i] + [x] + s[i..]
   }
 
+  function Swap<T>(s: seq<T>, i: nat, j: nat): (t: seq<T>)
+    requires i <= j
+    requires 0 <= i < |s|
+    requires 0 <= j < |s|
+    ensures |s| == |t|
+  {
+    if i == j then 
+      s 
+    else 
+      s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..]
+  }
+
   /*******
    Lemmas
   *******/
