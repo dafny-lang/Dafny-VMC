@@ -10,6 +10,8 @@ module FisherYates.Correctness {
   import Monad
   import Independence
   import RealArith
+  import Measures
+  import Loops
 
   /************
    Definitions
@@ -33,16 +35,114 @@ module FisherYates.Correctness {
    Lemmas
   *******/
 
-  lemma {:axiom} CorrectnessMultiset<T>(xs: seq<T>, x: T, i: nat := 0)
-    requires i < |xs|
+  lemma CorrectnessMultiset<T>(xs: seq<T>, x: T, i: nat := 0)
+    requires i <= |xs| - 1
     requires x in xs[i..]
+    decreases |xs| - i
     ensures 
-      var A := iset j | i <= j < |xs| && xs[j] == x;
+      var A := iset j: int | i <= j < |xs| && xs[j] == x;
       var e := Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
       var multiplicity := multiset(xs[i..])[x];
       var length := |xs[i..]|;
       && e in Rand.eventSpace
       && Rand.prob(e) == (multiplicity as real) / (length as real)
+  {
+    var A := iset j: int | i <= j < |xs| && xs[j] == x;
+    var e := Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
+    var multiplicity := multiset(xs[i..])[x];
+    var length := |xs[i..]|;
+    if i == |xs| - 1 {
+      assert A == iset{ |xs| - 1 };
+      assert e == Uniform.Correctness.SampleEquals(1, 0);
+      Uniform.Correctness.UniformFullCorrectness(1, 0);    
+      assert multiplicity == 1;
+      assert length == 1;
+    } else {
+      var A' := iset j: int | i+1 <= j < |xs| && xs[j] == x;
+      var e' := Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i+1, |xs|), A');
+      var multiplicity' := multiset(xs[i+1..])[x];
+      var length' := |xs[i+1..]|;
+      assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == (multiplicity' as real) / (length' as real) by {
+        CorrectnessMultiset(xs, x, i+1);
+      }
+      assert length == 1 + length';
+      if x == xs[i] {
+        assert multiplicity == 1 + multiplicity' by {
+          calc {
+            multiplicity;
+            multiset(xs[i..])[x];
+            { assert xs[i..] == [xs[i]] + xs[i+1..]; }
+            multiset([xs[i]] + xs[i+1..])[x];
+            (multiset([xs[i]]) + multiset(xs[i+1..]))[x];
+            multiset([xs[i]])[x] + multiset(xs[i+1..])[x];
+            1 + multiset(xs[i+1..])[x];
+            1 + multiplicity';
+          }
+        }
+        calc {
+          e;
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
+          { assert A == A' + iset{i as int}; }
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A' + iset{i as int});
+          { Monad.BitstreamsWithValueInJoin(Uniform.Model.IntervalSample(i, |xs|), A', iset{i as int}); }
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A') + Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), iset{i as int});
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i+1, |xs|), A') + (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(i as int));
+          e' + (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(i as int));
+        }
+        var e'':= (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(i as int));
+        assert e''inEventSpace: e'' in Rand.eventSpace by {
+          Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, i);
+        }
+        assert MultProb: Rand.prob(e' + e'') == Rand.prob(e') + Rand.prob(e'') by {
+          assume {:axiom} e' * e'' == iset{};
+          reveal e''inEventSpace; 
+          reveal InductionHypothesis; 
+          Rand.ProbIsProbabilityMeasure();
+          Measures.MeasureOfDisjointUnionIsSum(Rand.eventSpace, Rand.prob, e', e'');
+        }
+        calc {
+          Rand.prob(e);
+          Rand.prob(e' + e'');
+          { reveal MultProb; }
+          Rand.prob(e') + Rand.prob(e'');
+          { reveal InductionHypothesis; Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, i as int); }
+          ((multiplicity' as real) / (length' as real)) + (1.0 / (|xs| - i) as real);
+          ((multiplicity' as real) / (length' as real)) + 1.0 / length as real;
+          ((multiplicity' as real) / (length' as real)) + 1.0 / (1 + length') as real;
+          { assume {:axiom} false; }
+          ((1 + multiplicity') as real) / ((1 + length') as real);
+          (multiplicity as real) / (length as real);
+        }
+      } else {
+        assert multiplicity == multiplicity' by {
+          calc {
+            multiplicity;
+            multiset(xs[i..])[x];
+            { assert xs[i..] == [xs[i]] + xs[i+1..]; }
+            multiset([xs[i]] + xs[i+1..])[x];
+            (multiset([xs[i]]) + multiset(xs[i+1..]))[x];
+            multiset([xs[i]])[x] + multiset(xs[i+1..])[x];
+            multiset(xs[i+1..])[x];
+            multiplicity';
+          }
+        }
+        calc {
+          e; 
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
+          { assert A == A'; }
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A');
+          Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i+1, |xs|), A');
+          e';
+        }
+        calc {
+          Rand.prob(e);
+          Rand.prob(e');
+          (multiplicity' as real) / ((1 + length') as real);
+          (multiplicity as real) / (length as real);
+        }
+      }
+    }
+  }
 
   lemma CorrectnessFisherYates<T(!new)>(xs: seq<T>, p: seq<T>)
     requires multiset(p) == multiset(xs)
@@ -51,9 +151,9 @@ module FisherYates.Correctness {
       var e := iset s | Model.Shuffle(xs)(s).Equals(p);
       && e in Rand.eventSpace
       && Rand.prob(e) == 1.0 / (NumberOfPermutationsOf(xs) as real)
-    {
-      CorrectnessFisherYatesGeneral(xs, p, 0);
-    }
+  {
+    CorrectnessFisherYatesGeneral(xs, p, 0);
+  }
 
   lemma CorrectnessFisherYatesGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     requires i <= |xs|

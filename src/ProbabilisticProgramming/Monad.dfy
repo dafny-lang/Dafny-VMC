@@ -237,5 +237,10 @@ module Monad {
       }
     }
   }
+
+  lemma BitstreamsWithValueInJoin<A(!new)>(h: Hurd<A>, aSet1: iset<A>, aSet2: iset<A>)
+    ensures BitstreamsWithValueIn(h, aSet1 + aSet2) == BitstreamsWithValueIn(h, aSet1) + BitstreamsWithValueIn(h, aSet2)
+  {}
+
 }
 
