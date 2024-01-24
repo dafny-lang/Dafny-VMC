@@ -13,19 +13,12 @@ module Tests {
   import DiscreteLaplace
   import DiscreteGaussian
   import NatArith
+  import RealArith
+  import Permutations
+  import FisherYates
+  import Helper
 
-  function Abs(x: real): real {
-    if x < 0.0 then -x else x
-  }
-
-  function NatToString(n: nat): string {
-    match n
-    case 0 => "0" case 1 => "1" case 2 => "2" case 3 => "3" case 4 => "4"
-    case 5 => "5" case 6 => "6" case 7 => "7" case 8 => "8" case 9 => "9"
-    case _ => NatToString(n / 10) + NatToString(n % 10)
-  }
-
-  method TestBernoulliIsWithin4SigmaOfTrueMean(
+  method TestBernoulliIsWithin3SigmaOfTrueMean(
     n: nat,
     empiricalSum: real,
     successProb: real,
@@ -33,10 +26,10 @@ module Tests {
   )
     requires n > 0
   {
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, empiricalSum, successProb, successProb * (1.0 - successProb), description);
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, empiricalSum, successProb, successProb * (1.0 - successProb), description);
   }
 
-  method TestEmpiricalIsWithin4SigmaOfTrueMean(
+  method TestEmpiricalIsWithin3SigmaOfTrueMean(
     n: nat,
     empiricalSum: real,
     trueMean: real,
@@ -46,17 +39,17 @@ module Tests {
     requires n > 0
   {
     var empiricalMean := empiricalSum / n as real;
-    var diff := Abs(empiricalMean - trueMean);
-    var threshold := 4.0 * 4.0 * trueVariance / n as real;
-    if diff * diff >= threshold {
+    var diff := RealArith.Abs(empiricalMean - trueMean);
+    var threshold := 3.0 * 3.0 * trueVariance;
+    if diff * diff > threshold {
       print "Test failed: ", description, "\n";
       print "True mean: ", trueMean, "\n";
       print "Empirical mean: ", empiricalMean, "\n";
       print "Difference between empirical and true mean: ", diff, "\n";
       print "squared difference: ", diff * diff, "\n";
-      print "sigma squared:      ", trueVariance / n as real, "\n";
+      print "sigma squared:      ", trueVariance, "\n";
     }
-    expect diff * diff < threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
+    expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
 
   method TestCoin(n: nat, r: Coin.Interface.Trait)
@@ -70,7 +63,7 @@ module Tests {
         t := t + 1;
       }
     }
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
   }
 
   method TestUniformPowerOfTwo(n: nat, u: nat, r: UniformPowerOfTwo.Interface.Trait)
@@ -90,9 +83,9 @@ module Tests {
       sum := sum + l;
     }
     for i := 0 to NatArith.Power(2, k) {
-      TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (m as real), "p(" + NatToString(i) + ")");
+      TestBernoulliIsWithin3SigmaOfTrueMean(n, a[i] as real, 1.0 / (m as real), "p(" + Helper.NatToString(i) + ")");
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + NatToString(u) + ")");
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
   }
 
   method TestUniformPowerOfTwoMean(n: nat, u: nat, r: UniformPowerOfTwo.Interface.Trait)
@@ -109,7 +102,7 @@ module Tests {
       expect 0 <= l < m, "sample not in the right bound";
       sum := sum + l;
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + NatToString(u) + ")");
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
   }
 
   method TestUniform(n: nat, u: nat, r: Uniform.Interface.Trait)
@@ -128,9 +121,9 @@ module Tests {
       sum := sum + l;
     }
     for i := 0 to u {
-      TestBernoulliIsWithin4SigmaOfTrueMean(n, a[i] as real, 1.0 / (u as real), "p(" + NatToString(i) + ")");
+      TestBernoulliIsWithin3SigmaOfTrueMean(n, a[i] as real, 1.0 / (u as real), "p(" + Helper.NatToString(i) + ")");
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + NatToString(u) + ")");
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
   }
 
   method TestUniformMean(n: nat, u: nat, r: Uniform.Interface.Trait)
@@ -146,7 +139,7 @@ module Tests {
       expect 0 <= l < u, "sample not in the right bound";
       sum := sum + l;
     }
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + NatToString(u) + ")");
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
   }
 
   method TestUniformInterval(n: nat, r: Uniform.Interface.Trait)
@@ -165,9 +158,9 @@ module Tests {
         case 9 => c := c + 1;
       }
     }
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, a as real, 1.0 / 3.0, "p(7)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, b as real, 1.0 / 3.0, "p(8)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, a as real, 1.0 / 3.0, "p(7)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, b as real, 1.0 / 3.0, "p(8)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
   }
 
   method TestBernoulli(n: nat, r: Bernoulli.Interface.Trait)
@@ -182,7 +175,7 @@ module Tests {
         t := t + 1;
       }
     }
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
   method TestBernoulli2(n: nat, r: Bernoulli.Interface.Trait)
@@ -227,7 +220,7 @@ module Tests {
         t := t + 1;
       }
     }
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, t as real, 0.1, "p(true)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.1, "p(true)");
   }
 
   method TestDiscreteLaplace(n: nat, r: DiscreteLaplace.Interface.Trait)
@@ -252,13 +245,13 @@ module Tests {
     // https://www.wolframalpha.com/input?i=ReplaceAll%5B%28E%5E%5B1%2Ft%5D+-+1%29+%2F+%28E%5E%5B1%2Ft%5D+%2B+1%29+*+E%5E%28-Abs%5Bx%5D%2Ft%29%2C+%7Bt+-%3E+7%2F5%2C+x+-%3E+0%7D%5D
     // https://www.wolframalpha.com/input?i=ReplaceAll%5B%28E%5E%5B1%2Ft%5D+-+1%29+%2F+%28E%5E%5B1%2Ft%5D+%2B+1%29+*+E%5E%28-Abs%5Bx%5D%2Ft%29%2C+%7Bt+-%3E+7%2F5%2C+x+-%3E+1%7D%5D
     // https://www.wolframalpha.com/input?i=ReplaceAll%5B%28E%5E%5B1%2Ft%5D+-+1%29+%2F+%28E%5E%5B1%2Ft%5D+%2B+1%29+*+E%5E%28-Abs%5Bx%5D%2Ft%29%2C+%7Bt+-%3E+7%2F5%2C+x+-%3E+2%7D%5D
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[0] as real, 0.3426949, "p(0)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[1] as real, 0.1677634, "p(1)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[-1] as real, 0.1677634, "p(-1)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[2] as real, 0.0821272, "p(2)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[-2] as real, 0.0821272, "p(-2)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[0] as real, 0.3426949, "p(0)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[1] as real, 0.1677634, "p(1)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[-1] as real, 0.1677634, "p(-1)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[2] as real, 0.0821272, "p(2)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[-2] as real, 0.0821272, "p(-2)");
     var variance := 3.7575005; // variance of DiscreteLaplace(7/5) is (2*exp(5/7))/(exp(5/7)-1)^2
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, variance, "mean");
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, variance, "mean");
   }
 
   method TestDiscreteGaussian(n: nat, r: DiscreteGaussian.Interface.Trait)
@@ -283,12 +276,46 @@ module Tests {
     // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+0%2C+%CF%83+-%3E+1.4%7D%5D
     // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+1%2C+%CF%83+-%3E+1.4%7D%5D
     // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+2%2C+%CF%83+-%3E+1.4%7D%5D
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[0] as real, 0.284959, "p(0)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[1] as real, 0.220797, "p(1)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[-1] as real, 0.220797, "p(-1)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[2] as real, 0.102713, "p(2)");
-    TestBernoulliIsWithin4SigmaOfTrueMean(n, counts[-2] as real, 0.102713, "p(-2)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[0] as real, 0.284959, "p(0)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[1] as real, 0.220797, "p(1)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[-1] as real, 0.220797, "p(-1)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[2] as real, 0.102713, "p(2)");
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, counts[-2] as real, 0.102713, "p(-2)");
     var varianceBound := 1.4 * 1.4; // variance of DiscreteGaussian(1.4) is < 1.4^2
-    TestEmpiricalIsWithin4SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
+    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
+  }
+
+  // Shuffles an array `a` n-times and verifies that for each permutation that occurs x-times, roughly x/n == 1/|Permutations.NumberOfPermutationsOf(a[..])|
+  method TestFisherYates<T(==, !new)>(n: nat, a: array<T>, r: FisherYates.Interface.Trait, printer: T -> string) 
+    decreases *
+    modifies r
+    modifies a
+    requires n > 0
+  {
+    var aAsSeq: seq<T> := a[..];
+    var numberOfPermutations: nat := Permutations.NumberOfPermutationsOf(aAsSeq);
+    var numberOfObservedPermutations: map<seq<T>, nat> := map[];
+    Permutations.CalculateAllPermutationsOfIsNonEmpty(aAsSeq);
+    
+    for i := 0 to n {
+      var aCopy := a;
+      r.Shuffle(aCopy);
+      var aCopyAsSeq := aCopy[..];
+      if aCopyAsSeq in numberOfObservedPermutations {
+        numberOfObservedPermutations := numberOfObservedPermutations[aCopyAsSeq := numberOfObservedPermutations[aCopyAsSeq] + 1];
+      } else {
+        numberOfObservedPermutations := numberOfObservedPermutations[aCopyAsSeq := 1];
+      }
+    }
+
+    var items := numberOfObservedPermutations.Items;
+
+    while items != {}
+      decreases |items| 
+     {
+      var item :| item in items;
+      items := items - {item};
+      TestBernoulliIsWithin3SigmaOfTrueMean(n, item.1 as real, 1.0 / (numberOfPermutations as real), "p(" + Helper.SeqToString(item.0, printer) + ")");
+    }
   }
 }

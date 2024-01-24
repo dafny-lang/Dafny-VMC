@@ -15,25 +15,15 @@ then
 fi
 
 echo Running $TARGET_LANG tests...
-echo "Running tests/TestsFoundational.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsFoundational.dfy tests/Tests.dfy dfyconfig.toml --no-verify
-echo "Running tests/TestsExternUniform.dfy:"
-time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG tests/TestsExternUniformPowerOfTwo.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
+echo "Running tests/TestsRandom.dfy:"
+time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
 
 echo Running $TARGET_LANG documentation...
 
-echo "Building docs/dafny/ExamplesFoundational.dfy..." 
-$DAFNY build docs/dafny/ExamplesFoundational.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG dfyconfig.toml --no-verify
-echo "Executing compiled docs/dafny/ExamplesFoundational.dfy:" 
+echo "Building docs/dafny/ExamplesRandom.dfy..." 
+$DAFNY build docs/dafny/ExamplesRandom.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG dfyconfig.toml --no-verify
+echo "Executing compiled docs/dafny/ExamplesRandom.dfy:" 
 if [ "$TARGET_LANG" = "java" ]
 then
-  java -jar docs/dafny/ExamplesFoundational.jar
-fi
-
-echo "Building docs/dafny/ExamplesExternUniformPowerOfTwo.dfy..." 
-$DAFNY build docs/dafny/ExamplesExternUniformPowerOfTwo.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/DRandomCoin.$TARGET_LANG src/interop/$TARGET_LANG/DRandomUniformPowerOfTwo.$TARGET_LANG dfyconfig.toml --no-verify
-echo "Executing compiled docs/dafny/ExamplesExternUniformPowerOfTwo.dfy:" 
-if [ "$TARGET_LANG" = "java" ]
-then
-  java -jar docs/dafny/ExamplesExternUniformPowerOfTwo.jar
+  java -jar docs/dafny/ExamplesRandom.jar
 fi

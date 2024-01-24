@@ -3,16 +3,20 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module UniformPowerOfTwo.Implementation {
-  import Monad
-  import Model
+module FisherYates.Implementation {
   import Interface
 
   trait {:termination false} Trait extends Interface.Trait {
-    method UniformPowerOfTwoSample(n: nat) returns (u: nat)
-      requires n >= 1
-      modifies this
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+
+    method Shuffle<T>(a: array<T>)
+      decreases *
+      modifies this, a
+    {
+      for i := 0 to a.Length {
+        var j := UniformIntervalSample(i, a.Length);
+        a[i], a[j] := a[j], a[i];
+      }
+    }
 
   }
 }

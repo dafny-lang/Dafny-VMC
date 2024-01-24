@@ -3,16 +3,23 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-module UniformPowerOfTwo.Implementation {
-  import Monad
+module Coin.Implementation {
   import Model
+  import Monad
   import Interface
+  import UniformPowerOfTwo
 
   trait {:termination false} Trait extends Interface.Trait {
-    method UniformPowerOfTwoSample(n: nat) returns (u: nat)
-      requires n >= 1
+
+    method CoinSample() returns (b: bool)
       modifies this
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
+      ensures Model.Sample(old(s)) == Monad.Result(b, s)
+    {
+      var x := UniformPowerOfTwoSample(2);
+      b := if x == 1 then true else false;
+      reveal UniformPowerOfTwo.Model.Sample();
+    }
 
   }
+
 }
