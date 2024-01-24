@@ -17,23 +17,65 @@ module FisherYates.Correctness {
    Definitions
   ************/
 
-  // Number of permutations of s[i..] == [s[i], s[i+1], ..., s[|s|-1]]
-  function NumberOfPermutationsOf<T(==)>(s: seq<T>, i: nat := 0): (n: nat)
-    requires |s| != 0 ==> i <= |s| - 1
-    decreases |s| - i
+
+  // Calculates the number n of permutations of a sequence s
+  function NumberOfPermutationsOf<T(==)>(s: seq<T>): (n: nat)
     ensures n != 0
   {
-    if |s| == 0 || i == |s| - 1 then
+    if |s| <= 1 then
+      1
+    else
+      var multiplicity := multiset(s)[s[0]];
+      var length := |s|;
+      (length / multiplicity) * NumberOfPermutationsOf(s[1..])
+  }  
+  /*
+  Proof of correctness sketch:
+  Let set(s) = { x_0, ..., x_n } and |x_k| == multiplicity of x_k in s. W.l.o.g. assume s[0] == x_0, then:
+
+    |Perm(s)| 
+  == // Well-known formula
+    |s|! / (|x_0|! * ... * |x_n|!) 
+  == 
+    |s| * (|s|-1)! 
+    / 
+    |x_0| * (|x_0|-1)! * ... * |x_n|!   // if |x_0| >= 1, otherwise |x_0| * |x_1|! * ... * |x_n|! 
+  == 
+    |s| / |x_0|
+    * 
+    (|s|-1)! / (|x_0|-1)! * ... * |x_n|!  // if |x_0| >= 1, otherwise (|s|-1)!  * |x_1|! * ... * |x_n|! 
+  ==
+    length / multiplicity
+    *
+    |Perm(s[1..])| // since |s[1..]| == |s| - 1 and multiplicity of x_0 in s[1..] is one less than in s, and the multiplicity of x_k != x_0 in s[1..] is the same as in s
+  */
+
+  function NumberOfPermutationsOfAlternative<T(==)>(s: seq<T>, i: nat := 0): (n: nat)
+    requires i <= |s|
+    decreases |s| - i
+  {
+    if |s| <= 1 || i == |s| then
       1
     else
       var multiplicity := multiset(s[i..])[s[i]];
       var length := |s[i..]|;
-      (length / multiplicity) * NumberOfPermutationsOf(s, i+1)
+      (length / multiplicity) * NumberOfPermutationsOfAlternative(s, i+1)
   }
 
   /*******
    Lemmas
   *******/
+
+  lemma NumberOfPermutationsEquivalence<T(==)>(s: seq<T>, i: nat)
+    requires i <= |s|
+    ensures NumberOfPermutationsOfAlternative(s, i) == NumberOfPermutationsOf(s[i..])
+    decreases |s| - i
+  {
+    if |s| <= 1 || i == |s| {
+    } else {
+      NumberOfPermutationsEquivalence(s, i+1);
+    }
+  }
 
   lemma CorrectnessMultiset<T>(xs: seq<T>, x: T, i: nat := 0)
     requires i <= |xs| - 1
@@ -163,12 +205,12 @@ module FisherYates.Correctness {
     ensures
       var e := iset s | Model.Shuffle(xs, i)(s).Map(ys => ys[i..]).Equals(p[i..]);
       && e in Rand.eventSpace
-      && Rand.prob(e) == 1.0 / (NumberOfPermutationsOf(xs, i) as real)
+      && Rand.prob(e) == 1.0 / (NumberOfPermutationsOfAlternative(xs, i) as real)
   {
     var e := iset s | Model.Shuffle(xs, i)(s).Map(ys => ys[i..]).Equals(p[i..]);
     if |xs| == 0 {
       assert e == iset s | true;
-      assert NumberOfPermutationsOf(xs, i) == 1;
+      assert NumberOfPermutationsOfAlternative(xs, i) == 1;
     } else {
       assume {:axiom} false;
       var h := Uniform.Model.IntervalSample(i, |xs|);
@@ -188,12 +230,12 @@ module FisherYates.Correctness {
         Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A) && s in Monad.BitstreamsWithRestIn(h, E));
         Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(E);
         { CorrectnessMultiset(xs, p[i], i); CorrectnessFisherYatesGeneral(ys, p, i+1); }
-        (multiplicity as real / length as real) * (1.0 / (NumberOfPermutationsOf(xs, i+1) as real));
-        (1.0 / ((length as real) / (multiplicity as real))) *  (1.0 / (NumberOfPermutationsOf(xs, i+1) as real));
-        (1.0 / ((length / multiplicity) as real)) *  (1.0 / (NumberOfPermutationsOf(xs, i+1) as real));
-        { assert 1.0 * 1.0 == 1.0; assert ((length / multiplicity) as real) * (NumberOfPermutationsOf(xs, i+1) as real) == ((length / multiplicity) * NumberOfPermutationsOf(xs, i+1)) as real; }
-        1.0 / ((length / multiplicity) * NumberOfPermutationsOf(xs, i+1)) as real;
-        1.0 / (NumberOfPermutationsOf(xs, i) as real);
+        (multiplicity as real / length as real) * (1.0 / (NumberOfPermutationsOfAlternative(xs, i+1) as real));
+        (1.0 / ((length as real) / (multiplicity as real))) *  (1.0 / (NumberOfPermutationsOfAlternative(xs, i+1) as real));
+        (1.0 / ((length / multiplicity) as real)) *  (1.0 / (NumberOfPermutationsOfAlternative(xs, i+1) as real));
+        { assert 1.0 * 1.0 == 1.0; assert ((length / multiplicity) as real) * (NumberOfPermutationsOfAlternative(xs, i+1) as real) == ((length / multiplicity) * NumberOfPermutationsOfAlternative(xs, i+1)) as real; }
+        1.0 / ((length / multiplicity) * NumberOfPermutationsOfAlternative(xs, i+1)) as real;
+        1.0 / (NumberOfPermutationsOfAlternative(xs, i) as real);
       }
     }
   }
