@@ -16,6 +16,7 @@ module Tests {
   import RealArith
   import FisherYates
   import Helper
+  import Permutations
 
   method TestBernoulliIsWithin3SigmaOfTrueMean(
     n: nat,

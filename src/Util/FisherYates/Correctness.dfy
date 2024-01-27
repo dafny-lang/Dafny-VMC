@@ -32,7 +32,7 @@ module FisherYates.Correctness {
       var multiplicity := multiset(s)[s[0]];
       var length := |s|;
       (length / multiplicity) * NumberOfPermutationsOf(s[1..])
-  }  
+  }
 
   /*******
    Lemmas
@@ -53,7 +53,7 @@ module FisherYates.Correctness {
 
   lemma CorrectnessFisherYatesGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     requires i <= |xs|
-    requires i <= |p| 
+    requires i <= |p|
     requires IsPermutationOf(p[i..], xs[i..])
     decreases |xs| - i
     ensures
@@ -64,7 +64,7 @@ module FisherYates.Correctness {
     var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
     if |xs[i..]| <= 1 {
       assert e == Measures.SampleSpace() by {
-        forall s 
+        forall s
           ensures s in e
         {
           calc {
@@ -99,39 +99,39 @@ module FisherYates.Correctness {
       var j :| j in A;
       var ys := Model.Swap(xs, i, j);
       var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
-            assume {:axiom} false;
-        /*
-      assert DecomposeE: e == (iset s | s in Monad.BitstreamsWithValueIn(h, A) && s in Monad.BitstreamsWithRestIn(h, e')) by {
-        assume {:axiom} false;
-      } 
-             calc {
-        Rand.prob(e);
-        Rand.prob(iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]);
-        { reveal DecomposeE; }
-        Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A) && s in Monad.BitstreamsWithRestIn(h, e'));
-        { reveal HIsIndependent; Independence.ResultsIndependent(h, A, e'); }
-        Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(e');
-        { assume {:axiom} false; }
-        //{ CorrectnessMultiset(xs, p[i], i); CorrectnessFisherYatesGeneral(xs, p, i+1); }
-        (multiplicity as real / length as real) * (1.0 / (NumberOfPermutationsOf(xs[i+1..]) as real));
-        { assume {:axiom} false; }
-        (1.0 / ((length as real) / (multiplicity as real))) *  (1.0 / (NumberOfPermutationsOf(xs[i+1..]) as real));
-        { assume {:axiom} false; }
-        (1.0 / ((length / multiplicity) as real)) *  (1.0 / (NumberOfPermutationsOf(xs[i+1..]) as real));
-        { assume {:axiom} false; assert 1.0 * 1.0 == 1.0; assert ((length / multiplicity) as real) * (NumberOfPermutationsOf(xs[i+1..]) as real) == (((length / multiplicity) * NumberOfPermutationsOf(xs[i+1..])) as real); }
-        1.0 / (((length / multiplicity) * NumberOfPermutationsOf(xs[i+1..])) as real);    
-        { assume {:axiom} false; assert xs[i+1..] == xs[i..][1..]; }        
-        1.0 / (((length / multiplicity) * NumberOfPermutationsOf(xs[i..][1..])) as real);  
-        { assume {:axiom} false; }      
-        1.0 / (NumberOfPermutationsOf(xs[i..]) as real);
-      } */
+      assume {:axiom} false;
+      /*
+    assert DecomposeE: e == (iset s | s in Monad.BitstreamsWithValueIn(h, A) && s in Monad.BitstreamsWithRestIn(h, e')) by {
+      assume {:axiom} false;
+    } 
+           calc {
+      Rand.prob(e);
+      Rand.prob(iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]);
+      { reveal DecomposeE; }
+      Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A) && s in Monad.BitstreamsWithRestIn(h, e'));
+      { reveal HIsIndependent; Independence.ResultsIndependent(h, A, e'); }
+      Rand.prob(iset s | s in Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(e');
+      { assume {:axiom} false; }
+      //{ CorrectnessMultiset(xs, p[i], i); CorrectnessFisherYatesGeneral(xs, p, i+1); }
+      (multiplicity as real / length as real) * (1.0 / (NumberOfPermutationsOf(xs[i+1..]) as real));
+      { assume {:axiom} false; }
+      (1.0 / ((length as real) / (multiplicity as real))) *  (1.0 / (NumberOfPermutationsOf(xs[i+1..]) as real));
+      { assume {:axiom} false; }
+      (1.0 / ((length / multiplicity) as real)) *  (1.0 / (NumberOfPermutationsOf(xs[i+1..]) as real));
+      { assume {:axiom} false; assert 1.0 * 1.0 == 1.0; assert ((length / multiplicity) as real) * (NumberOfPermutationsOf(xs[i+1..]) as real) == (((length / multiplicity) * NumberOfPermutationsOf(xs[i+1..])) as real); }
+      1.0 / (((length / multiplicity) * NumberOfPermutationsOf(xs[i+1..])) as real);    
+      { assume {:axiom} false; assert xs[i+1..] == xs[i..][1..]; }        
+      1.0 / (((length / multiplicity) * NumberOfPermutationsOf(xs[i..][1..])) as real);  
+      { assume {:axiom} false; }      
+      1.0 / (NumberOfPermutationsOf(xs[i..]) as real);
+    } */
     }
   }
 
   lemma CorrectnessMultiset<T>(xs: seq<T>, x: T, i: nat := 0)
     requires i <= |xs| - 1
     decreases |xs| - i
-    ensures 
+    ensures
       var A := iset j: int | i <= j < |xs| && xs[j] == x;
       var e := Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
       var multiplicity := multiset(xs[i..])[x];
@@ -198,8 +198,8 @@ module FisherYates.Correctness {
         }
         assert MultProb: Rand.prob(e' + e'') == Rand.prob(e') + Rand.prob(e'') by {
           assume {:axiom} e' * e'' == iset{};
-          reveal e''inEventSpace; 
-          reveal InductionHypothesis; 
+          reveal e''inEventSpace;
+          reveal InductionHypothesis;
           Rand.ProbIsProbabilityMeasure();
           Measures.MeasureOfDisjointUnionIsSum(Rand.eventSpace, Rand.prob, e', e'');
         }
@@ -230,7 +230,7 @@ module FisherYates.Correctness {
           }
         }
         calc {
-          e; 
+          e;
           Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A);
           { assert A == A'; }
           Monad.BitstreamsWithValueIn(Uniform.Model.IntervalSample(i, |xs|), A');

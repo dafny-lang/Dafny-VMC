@@ -11,7 +11,7 @@ module FisherYates.Model {
   ghost function Shuffle<T>(xs: seq<T>, i: nat := 0): (h: Monad.Hurd<seq<T>>)
     requires i <= |xs|
     decreases |xs| - i
-  //  ensures forall s :: h(s).Result? ==> multiset(h(s).value) == multiset(xs)
+    //  ensures forall s :: h(s).Result? ==> multiset(h(s).value) == multiset(xs)
     ensures forall s :: h(s).Result? ==> |h(s).value| == |xs|
   {
     (s: Rand.Bitstream) =>
