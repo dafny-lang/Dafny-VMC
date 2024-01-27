@@ -294,6 +294,7 @@ module Tests {
     var aAsSeq: seq<T> := a[..];
     var numberOfPermutations: nat := FisherYates.Correctness.NumberOfPermutationsOf(aAsSeq);
     var numberOfObservedPermutations: map<seq<T>, nat> := map[];
+    Permutations.CalculateAllPermutationsOfIsNonEmpty(aAsSeq);
     
     for i := 0 to n {
       var aCopy := a;
