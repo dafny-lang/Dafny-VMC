@@ -12,25 +12,13 @@ module FisherYates.Correctness {
   import Uniform
   import Independence
 
-  /************
-   Definitions
-  ************/
-
-  predicate IsPermutationOf<T(==)>(p: seq<T>, s: seq<T>) {
-    multiset(p) == multiset(s)
-  }
-
-  predicate HasUniqueElements<T(==)>(xs: seq<T>) {
-    forall x | x in xs :: multiset(xs)[x] == 1
-  }
-
   /*******
    Lemmas
   *******/
 
   lemma CorrectnessFisherYatesUniqueElements<T(!new)>(xs: seq<T>, p: seq<T>)
-    requires HasUniqueElements(xs)
-    requires IsPermutationOf(p, xs)
+    requires forall x | x in xs :: multiset(xs)[x] == 1
+    requires multiset(p) == multiset(xs)
     ensures NatArith.Factorial(|xs|) != 0
     ensures
       var e := iset s | Model.Shuffle(xs)(s).Equals(p);
@@ -47,14 +35,15 @@ module FisherYates.Correctness {
   lemma CorrectnessFisherYatesUniqueElementsGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     requires i <= |xs|
     requires i <= |p|
-    requires HasUniqueElements(xs[i..])
-    requires IsPermutationOf(p[i..], xs[i..])
+    requires forall x | x in xs[i..] :: multiset(xs[i..])[x] == 1
+    requires multiset(p[i..]) == multiset(xs[i..])
     ensures NatArith.Factorial(|xs[i..]|) != 0
     ensures
       var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
       && e in Rand.eventSpace
       && Rand.prob(e) == 1.0 / (NatArith.Factorial(|xs|-i) as real)
   {
+    Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
     var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
     if |xs[i..]| <= 1 {
       assert e == Measures.SampleSpace() by {
