@@ -36,13 +36,17 @@ src/ProbabilisticProgramming/Independence.dfy(77,17): IsIndepImpliesMeasurableNa
 src/ProbabilisticProgramming/Independence.dfy(82,17): IsIndepImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(87,17): CoinIsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(91,17): ReturnIsIndep: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(372,17): EnsureWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(377,17): EnsureWhileTerminatesAlmostSurelyViaLimit: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(395,17): WhileProbabilityViaLimit: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(412,17): UntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
-src/ProbabilisticProgramming/Loops.dfy(444,4): EnsureUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
-src/ProbabilisticProgramming/Loops.dfy(467,4): WhileIsIndep: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Loops.dfy(376,17): EnsureWhileTerminates: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(381,17): EnsureWhileTerminatesAlmostSurelyViaLimit: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(399,17): WhileProbabilityViaLimit: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(416,17): UntilProbabilityFraction: Declaration has explicit `{:axiom}` attribute. 
+src/ProbabilisticProgramming/Loops.dfy(448,4): EnsureUntilTerminatesAndForAll: Definition has `assume {:axiom}` statement in body. 
+src/ProbabilisticProgramming/Loops.dfy(471,4): WhileIsIndep: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/RandomSource.dfy(50,17): ProbIsProbabilityMeasure: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(54,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(61,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(67,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
+src/Util/FisherYates/Correctness.dfy(100,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
+src/Util/FisherYates/Correctness.dfy(83,6): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
+src/Util/FisherYates/Correctness.dfy(90,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
+src/Util/FisherYates/Correctness.dfy(95,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 

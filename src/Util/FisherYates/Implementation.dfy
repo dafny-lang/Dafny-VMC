@@ -12,9 +12,11 @@ module FisherYates.Implementation {
       decreases *
       modifies this, a
     {
-      for i := 0 to a.Length {
-        var j := UniformIntervalSample(i, a.Length);
-        a[i], a[j] := a[j], a[i];
+      if a.Length > 1 {
+        for i := 0 to a.Length - 1 {
+          var j := UniformIntervalSample(i, a.Length);
+          a[i], a[j] := a[j], a[i];
+        }
       }
     }
 
