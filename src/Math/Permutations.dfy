@@ -84,8 +84,23 @@ module Permutations {
    Lemmas
   *******/
 
-  lemma {:axiom} CorrectnessOfNumberOfPermutationsOf<T(==)>(s: seq<T>)
+  lemma CorrectnessOfNumberOfPermutationsOf<T(==)>(s: seq<T>)
     ensures NumberOfPermutationsOf(s) == |CalculateAllPermutationsOf(s)|
+  {
+    if |s| == 0 {
+    } else {
+      var multiplicity := multiset(s)[s[0]];
+      var length := |s|;
+      calc {
+        NumberOfPermutationsOf(s);
+        (length / multiplicity) * NumberOfPermutationsOf(s[1..]);
+        { CorrectnessOfNumberOfPermutationsOf(s[1..]); }
+        (length / multiplicity) * |CalculateAllPermutationsOf(s[1..])|;
+        { assume {:axiom} false; }
+        |CalculateAllPermutationsOf(s)|;
+      }
+    }
+  }
 
   lemma CalculateAllPermutationsOfIsNonEmpty<T>(s: seq<T>)
     ensures s in CalculateAllPermutationsOf(s)
