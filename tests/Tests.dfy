@@ -293,7 +293,7 @@ module Tests {
     requires n > 0
   {
     var aAsSeq: seq<T> := a[..];
-    var numberOfPermutations: nat := FisherYates.Correctness.NumberOfPermutationsOf(aAsSeq);
+    var numberOfPermutations: nat := Permutations.NumberOfPermutationsOf(aAsSeq);
     var numberOfObservedPermutations: map<seq<T>, nat> := map[];
     Permutations.CalculateAllPermutationsOfIsNonEmpty(aAsSeq);
     

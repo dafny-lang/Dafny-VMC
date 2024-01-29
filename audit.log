@@ -28,7 +28,6 @@ src/Math/Exponential.dfy(61,17): Increasing: Declaration has explicit `{:axiom}`
 src/Math/Exponential.dfy(65,17): EvalOne: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(125,17): ProbabilityLe1: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(130,17): IsMonotonic: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Permutations.dfy(87,44): type parameter T of ghost lemma CorrectnessOfNumberOfPermutationsOf is declared (==), which is unnecessary because the lemma doesn't contain any compiled code
 src/Math/Permutations.dfy(99,10): CorrectnessOfNumberOfPermutationsOf: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(105,17): BindIsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(30,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 

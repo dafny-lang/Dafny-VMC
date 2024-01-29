@@ -84,7 +84,7 @@ module Permutations {
    Lemmas
   *******/
 
-  lemma CorrectnessOfNumberOfPermutationsOf<T(==)>(s: seq<T>)
+  lemma CorrectnessOfNumberOfPermutationsOf<T>(s: seq<T>)
     ensures NumberOfPermutationsOf(s) == |CalculateAllPermutationsOf(s)|
   {
     if |s| == 0 {
