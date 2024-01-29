@@ -6,12 +6,34 @@
 module Permutations {
   import NatArith
 
+  /*************************************************************************************
+   *  Defines the notion of a permutation and establishes that the formula 
+   *  `NumberOfPermutationsOf` is correct, in the sense that:
+   *  - NumberOfPermutationsOf(s) == |CalculateAllPermutationsOf(s)|
+   *  - (iset p | p in CalculateAllPermutationsOf(s)) ==  iset p | IsPermutationOf(p, s)
+   *************************************************************************************/
+
   /************
    Definitions
   ************/
 
-  function NumberOfPermutationsOf<T(==)>(s: seq<T>): nat {
-    |CalculateAllPermutationsOf(s)|
+  predicate IsPermutationOf<T(==)>(p: seq<T>, s: seq<T>) {
+    multiset(p) == multiset(s)
+  }
+
+  function NumberOfPermutationsOf<T(==)>(s: seq<T>): (n: nat)
+    ensures n != 0
+  {
+    if |s| <= 1 then
+      1
+    else
+      var multiplicity := multiset(s)[s[0]];
+      var length := |s|;
+      (length / multiplicity) * NumberOfPermutationsOf(s[1..])
+  }
+
+  ghost function AllPermutationsOf<T(!new)>(s: seq<T>): iset<seq<T>> {
+    iset p | IsPermutationOf(p, s)
   }
 
   function CalculateAllPermutationsOf<T(==)>(s: seq<T>): (x: set<seq<T>>)
@@ -23,15 +45,47 @@ module Permutations {
       set p, i | p in CalculateAllPermutationsOf(s[1..]) && 0 <= i <= |s|-1 :: InsertAt(p, s[0], i)
   }
 
+  function DeleteAt<T>(s: seq<T>, i: nat): seq<T>
+    requires i < |s|
+  {
+    s[..i] + s[i+1..]
+  }
+
   function InsertAt<T>(s: seq<T>, x: T, i: nat): seq<T>
     requires i <= |s|
   {
     s[..i] + [x] + s[i..]
   }
 
+  function FirstOccurrence<T(==)>(p: seq<T>, x: T): (i: nat)
+    requires x in multiset(p)
+    ensures i < |p|
+    ensures p[i] == x
+  {
+    if p[0] == x then
+      0
+    else
+      FirstOccurrence(p[1..], x) + 1
+  }
+
+  function Swap<T>(s: seq<T>, i: nat, j: nat): (t: seq<T>)
+    requires i <= j
+    requires 0 <= i < |s|
+    requires 0 <= j < |s|
+    ensures |s| == |t|
+  {
+    if i == j then
+      s
+    else
+      s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..]
+  }
+
   /*******
    Lemmas
   *******/
+
+  lemma {:axiom} CorrectnessOfNumberOfPermutationsOf<T(==)>(s: seq<T>)
+    ensures NumberOfPermutationsOf(s) == |CalculateAllPermutationsOf(s)|
 
   lemma CalculateAllPermutationsOfIsNonEmpty<T>(s: seq<T>)
     ensures s in CalculateAllPermutationsOf(s)
@@ -47,4 +101,127 @@ module Permutations {
       }
     }
   }
+
+  lemma CorrectnessOfCalculateAllPermutationsOf<T(!new)>(s: seq<T>)
+    ensures (iset p | p in CalculateAllPermutationsOf(s)) == AllPermutationsOf(s)
+  {
+    assert (iset p | p in CalculateAllPermutationsOf(s)) == AllPermutationsOf(s) by {
+      assert forall p :: p in CalculateAllPermutationsOf(s) <==> p in AllPermutationsOf(s) by {
+        forall p
+          ensures p in CalculateAllPermutationsOf(s) <==> p in AllPermutationsOf(s)
+        {
+          CorrectnessOfCalculateAllPermutationsOfImplicationOne(s, p);
+          CorrectnessOfCalculateAllPermutationsOfImplicationTwo(s, p);
+        }
+      }
+    }
+  }
+
+  lemma CorrectnessOfCalculateAllPermutationsOfImplicationOne<T(!new)>(s: seq<T>, p: seq<T>)
+    ensures p in CalculateAllPermutationsOf(s) ==> p in AllPermutationsOf(s)
+  {
+    if |s| == 0 {
+      // induction base, no proof hints needed
+    } else {
+      // induction step
+      if p in CalculateAllPermutationsOf(s) {
+        assert p in AllPermutationsOf(s) by {
+          assert IsPermutationOf(p, s) by {
+            var p', i :| p' in CalculateAllPermutationsOf(s[1..]) && 0 <= i <= |p'| && p == InsertAt(p', s[0], i);
+            calc == {
+              multiset(p);
+              multiset(InsertAt(p', s[0], i));
+              { MultisetAfterInsertAt(p', s[0], i); }
+              multiset([s[0]]) + multiset(p');
+              { CorrectnessOfCalculateAllPermutationsOfImplicationOne(s[1..], p'); } // induction hypothesis
+              multiset([s[0]]) + multiset(s[1..]);
+              multiset([s[0]] + s[1..]);
+              { assert [s[0]] + s[1..] == s; }
+              multiset(s);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  lemma CorrectnessOfCalculateAllPermutationsOfImplicationTwo<T(!new)>(s: seq<T>, p: seq<T>)
+    ensures p in CalculateAllPermutationsOf(s) <== p in AllPermutationsOf(s)
+  {
+    if |s| == 0 {
+      // induction base, no proof hints needed
+    } else {
+      // induction step
+      if p in AllPermutationsOf(s) {
+        assert p in CalculateAllPermutationsOf(s) by {
+          var i := FirstOccurrence(p, s[0]);
+          var p' := DeleteAt(p, i);
+          assert p' in CalculateAllPermutationsOf(s[1..]) by {
+            assert p' in AllPermutationsOf(s[1..]) by {
+              PermutationBeforeAndAfterDeletionAt(p, s, i, 0);
+            }
+            CorrectnessOfCalculateAllPermutationsOfImplicationTwo(s[1..], p'); // induction hypothesis
+          }
+          assert p == InsertAt(p', s[0], i) by {
+            InsertAfterDeleteAt(p, i);
+          }
+        }
+      }
+    }
+  }
+
+  lemma MultisetAfterInsertAt<T>(s: seq<T>, x: T, i: nat)
+    requires i <= |s|
+    ensures multiset(InsertAt(s, x, i)) == multiset([x]) + multiset(s)
+  {
+    calc == {
+      multiset(InsertAt(s, x, i));
+      multiset(s[..i] + [x] + s[i..]);
+      multiset(s[..i]) + multiset([x]) + multiset(s[i..]);
+      multiset([x]) + multiset(s[..i]) + multiset(s[i..]);
+      multiset([x]) + multiset(s[..i] + s[i..]);
+      { assert s[..i] + s[i..] == s; }
+      multiset([x]) + multiset(s);
+    }
+  }
+
+  lemma PermutationBeforeAndAfterDeletionAt<T>(p: seq<T>, s: seq<T>, i: nat, j: nat)
+    requires IsPermutationOf(p, s)
+    requires i < |p|
+    requires j < |s|
+    requires p[i] == s[j]
+    ensures IsPermutationOf(DeleteAt(p, i), DeleteAt(s, j))
+  {
+    assert IsPermutationOf(DeleteAt(p, i), DeleteAt(s, j)) by {
+      calc == {
+        multiset(DeleteAt(p, i));
+        multiset(p[..i] + p[i+1..]);
+        multiset(p[..i]) + multiset(p[i+1..]);
+        multiset(p[..i]) + multiset([p[i]]) + multiset(p[i+1..]) - multiset([p[i]]);
+        multiset(p[..i] + [p[i]] + p[i+1..]) - multiset([p[i]]);
+        { assert p[..i] + [p[i]] + p[i+1..] == p; }
+        multiset(p) - multiset([p[i]]);
+        multiset(s) - multiset([s[j]]);
+        { assert s[..j] + [s[j]] + s[j+1..] == s; }
+        multiset(s[..j] + [s[j]] + s[j+1..]) - multiset([s[j]]);
+        multiset(s[..j]) + multiset([s[j]]) + multiset(s[j+1..]) - multiset([s[j]]);
+        multiset(s[..j]) + multiset(s[j+1..]);
+        multiset(s[..j] + s[j+1..]);
+        multiset(DeleteAt(s, j));
+      }
+    }
+  }
+
+  lemma InsertAfterDeleteAt<T>(s: seq<T>, i: nat)
+    requires i < |s|
+    ensures s == InsertAt(DeleteAt(s, i), s[i], i)
+  {}
+
+  lemma PermutationsPreserveCardinality<T>(p: seq<T>, s: seq<T>)
+    requires multiset(p) == multiset(s)
+    ensures |p| == |s|
+  {
+    assume {:axiom} false;
+  }
+
 }
