@@ -290,8 +290,9 @@ module Tests {
     modifies a
     requires n > 0
   {
-    var a := new (T, nat)[a.Length](i => (a[i], i));
-    var numberOfPermutations: nat := NatArith.Factorial(a.Length) ;
+    var a := new (T, nat)[a.Length](i reads a requires 0 <= i < a.Length => (a[i], i));
+    var numberOfPermutations: nat := NatArith.Factorial(a.Length);
+    assert numberOfPermutations != 0 by { NatArith.FactoralPositive(a.Length); }
     var numberOfObservedPermutations: map<seq<(T, nat)>, nat> := map[];
     
     for i := 0 to n {
