@@ -72,12 +72,24 @@ module Permutations {
     requires i <= j
     requires 0 <= i < |s|
     requires 0 <= j < |s|
+    ensures IsPermutationOf(t, s)
     ensures |s| == |t|
   {
     if i == j then
       s
     else
-      s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..]
+      var t := s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..];
+      calc {
+        multiset(t);
+        multiset(s[..i] + [s[j]] + s[i+1..j] + [s[i]] + s[j+1..]);
+        multiset(s[..i]) + multiset([s[j]]) + multiset(s[i+1..j]) + multiset([s[i]]) + multiset(s[j+1..]);
+        multiset(s[..i]) +  multiset([s[i]]) + multiset(s[i+1..j]) + multiset([s[j]]) + multiset(s[j+1..]);
+        multiset(s[..i] + [s[i]] + s[i+1..j] + [s[j]] + s[j+1..]);
+        { assert s[..i] + [s[i]] + s[i+1..j] + [s[j]] + s[j+1..] == s; }
+        multiset(s);
+      }
+      PermutationsPreserveCardinality(t, s);
+      t
   }
 
   /*******
