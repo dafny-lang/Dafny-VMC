@@ -117,7 +117,7 @@ module FisherYates.Correctness {
         { assert |xs|-(i+1) == |xs|-i-1; }
         (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.Factorial((|xs|-i)-1) as real));
         { RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.Factorial((|xs|-i)-1) as real); }
-        1.0 * 1.0 / ((|xs|-i) as real) * (NatArith.Factorial((|xs|-i)-1) as real);
+        (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.Factorial((|xs|-i)-1) as real));
         { assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.Factorial((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.Factorial((|xs|-i)-1)) as real; }
         1.0 / (((|xs|-i) * NatArith.Factorial((|xs|-i)-1)) as real);
         { assume {:axiom} (|xs|-i) * NatArith.Factorial((|xs|-i)-1) == NatArith.Factorial(|xs|-i); }
