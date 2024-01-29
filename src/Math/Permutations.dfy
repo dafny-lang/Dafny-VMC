@@ -217,11 +217,23 @@ module Permutations {
     ensures s == InsertAt(DeleteAt(s, i), s[i], i)
   {}
 
+  lemma MultisetAndSequenceCardinality<T>(s: seq<T>)
+    ensures |multiset(s)| == |s|
+  {}
+
   lemma PermutationsPreserveCardinality<T>(p: seq<T>, s: seq<T>)
-    requires multiset(p) == multiset(s)
+    requires R: IsPermutationOf(p, s)
     ensures |p| == |s|
   {
-    assume {:axiom} false;
+    calc {
+      |p|;
+      { MultisetAndSequenceCardinality(p); }
+      |multiset(p)|;
+      { assert multiset(p) == multiset(s) by { reveal R; }}
+      |multiset(s)|;
+      { MultisetAndSequenceCardinality(s); }
+      |s|;
+    }
   }
 
 }
