@@ -133,6 +133,12 @@ module RealArith {
     ensures (x / z) / (y / z) == x / y
   {}
 
+  lemma SimplifyFractionsMultiplication(a: real, b: real, c: real, d: real)
+    requires b != 0.0
+    requires d != 0.0
+    ensures (a / b) * (c / d) == (a * c) / (b * d)
+  {}
+
   lemma ExpandFraction(x: real, y: real, z: real)
     requires z != 0.0
     requires y != 0.0
