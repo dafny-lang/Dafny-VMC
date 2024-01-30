@@ -241,7 +241,7 @@ module FisherYates.Correctness {
     assert Monad.BitstreamsWithValueIn(h, A) in Rand.eventSpace;
     assert Monad.BitstreamsWithRestIn(h, e') in Rand.eventSpace;
     Rand.ProbIsProbabilityMeasure();
-    Measures.BinaryIntersectionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e')); 
+    Measures.BinaryIntersectionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e'));
     reveal DecomposeE;
   }
 
