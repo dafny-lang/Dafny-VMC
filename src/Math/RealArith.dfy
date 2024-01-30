@@ -174,4 +174,8 @@ module RealArith {
       1.0 / (NatArith.Power(2, k + 1) as real);
     }
   }
+
+  lemma AsRealOfMultiplication(a: nat, b: nat)
+    ensures (a as real) * (b as real) == (a * b) as real
+  {}
 }
