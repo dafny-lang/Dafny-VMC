@@ -74,12 +74,7 @@ module FisherYates.Correctness {
       Rand.ProbIsProbabilityMeasure();
       assert Measures.IsProbability(Rand.eventSpace, Rand.prob);
     } else {
-      calc {
-        true;
-        |xs[i..]| > 1;
-        |xs| - i > 1;
-        |xs| > i + 1;
-      }
+      assert |xs| > i + 1;
       var h := Uniform.Model.IntervalSample(i, |xs|);
       assert HIsIndependent: Independence.IsIndepFunction(h) by {
         Uniform.Correctness.IntervalSampleIsIndep(i, |xs|);
@@ -106,41 +101,8 @@ module FisherYates.Correctness {
       var ys := Model.Swap(xs, i, j);
       var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
       assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
-        assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
-          forall a, b | i+1 <= a < b < |ys|
-            ensures ys[a] != ys[b]
-          {
-            assume {:axiom} false;
-             /* if x == ys[i] {
-              calc {
-                multiset(ys[i+1..])[x];
-                multiset(ys[i..])[x] - multiset([ys[i]])(x);
-                multiset(ys[i..])[x] - 1;
-
-              }
-            }
-
-            calc {
-              1;
-            <= { assert x in ys[i+1..]; }
-              multiset(ys[i+1..])[x];
-            }
-            calc {
-              multiset(ys[i+1..])[x];
-            ==
-              (multiset(ys) - multiset(ys[..i]))[x];
-            ==
-              multiset(ys)[x] - multiset(ys[..i])[x];
-            ==
-              multiset(xs)[x] - multiset(xs[..i])[x];
-            == { }
-              1 - multiset(ys[..i])[x];
-            <=
-              1
-            } */
-          }
-        }
         InductionHypothesisPrecondition1(xs, ys, p, i, j);
+        InductionHypothesisPrecondition2(xs, ys, p, i, j);
         CorrectnessFisherYatesUniqueElementsGeneral(ys, p, i+1);
       }
       assert DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
@@ -224,6 +186,27 @@ module FisherYates.Correctness {
         multiset(p[i..]) - multiset(p[i..i+1]);
         { assert |p| == |xs|; MultisetOfSequence(p, i, i+1); }
         multiset(p[i+1..]);
+      }
+    }
+  }
+
+  lemma InductionHypothesisPrecondition2<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat)
+    requires i <= |xs|
+    requires i <= |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires |xs| == |p|
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires i <= j < |xs| && xs[j] == p[i]
+    requires ys == Model.Swap(xs, i, j)
+    requires |xs[i..]| > 1
+    ensures forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b]
+  {
+    assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
+      forall a, b | i+1 <= a < b < |ys|
+        ensures ys[a] != ys[b]
+      {
+        if a == i+1 {
+        }
       }
     }
   }
