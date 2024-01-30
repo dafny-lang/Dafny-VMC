@@ -64,7 +64,7 @@ module FisherYates.Correctness {
             if |xs[i..]| == 0 then [] == p[i..] else [xs[i]] == p[i..];
             { assert if |xs[i..]| == 0 then p[i..] == [] else p[i..] == [p[i]]; }
             if |xs[i..]| == 0 then true else [xs[i]] == [p[i]];
-            { assert multiset(p[i..]) == multiset(xs[i..]); }
+            { assert |xs[i..]| != 0 ==> [xs[i]] == [p[i]] by { assert |xs[i..]| != 0 ==> assert p[i..] == [p[i]]; assert xs[i..] == [xs[i]]; assert multiset(p[i..]) == multiset(xs[i..]); multiset([p[i]]) == multiset([xs[i]]); } }
             if |xs[i..]| == 0 then true else true;
             true;
           }
