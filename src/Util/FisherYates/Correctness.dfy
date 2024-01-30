@@ -35,7 +35,7 @@ module FisherYates.Correctness {
     CorrectnessFisherYatesUniqueElementsGeneral(xs, p, 0);
   }
 
-  lemma {:vcs_split_on_every_assert} CorrectnessFisherYatesUniqueElementsGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+  lemma CorrectnessFisherYatesUniqueElementsGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     decreases |xs| - i
     requires i <= |xs|
     requires i <= |p|
@@ -154,14 +154,10 @@ module FisherYates.Correctness {
         ProbabilityOfE(xs, p, i, j, h, A, e, e');
       }
       assert e in Rand.eventSpace by {
-        assume {:axiom} false;
-        /*       reveal DecomposeE;
-              reveal HIsIndependent;
-              reveal InductionHypothesis;
-              assert Independence.IsIndepFunctionCondition(h, A, e');
-              assert Monad.BitstreamsWithValueIn(h, A) in Rand.eventSpace;
-              assert Monad.BitstreamsWithRestIn(h, e') in Rand.eventSpace;
-              Measures.BinaryUnionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e')); */
+        reveal DecomposeE;
+        reveal HIsIndependent;
+        reveal InductionHypothesis;
+        EInEventSpace(xs, p, h, A, e, e');
       }
     }
   }
@@ -196,13 +192,6 @@ module FisherYates.Correctness {
         multiset(p[i+1..]);
       }
     } else {
-      assert i+1 <= j by {
-        assert i <= j;
-        assert i != j;
-        assert i < j;
-      }
-      assert |xs| > j;
-      assert |xs| == |ys|;
       calc {
         multiset(ys[i+1..]);
         { assert i+1 <= j; assert ys[i+1..] == ys[i+1..j] + ys[j..]; }
@@ -237,6 +226,23 @@ module FisherYates.Correctness {
         multiset(p[i+1..]);
       }
     }
+  }
+
+  lemma EInEventSpace<T(!new)>(xs: seq<T>, p: seq<T>, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+    requires |xs| == |p|
+    requires DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+    requires InductionHypothesis: e' in Rand.eventSpace
+    requires HIsIndependent: Independence.IsIndepFunction(h)
+    ensures e in Rand.eventSpace
+  {
+    reveal InductionHypothesis;
+    reveal HIsIndependent;
+    assert Independence.IsIndepFunctionCondition(h, A, e');
+    assert Monad.BitstreamsWithValueIn(h, A) in Rand.eventSpace;
+    assert Monad.BitstreamsWithRestIn(h, e') in Rand.eventSpace;
+    Rand.ProbIsProbabilityMeasure();
+    Measures.BinaryIntersectionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e')); 
+    reveal DecomposeE;
   }
 
   lemma ProbabilityOfE<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
