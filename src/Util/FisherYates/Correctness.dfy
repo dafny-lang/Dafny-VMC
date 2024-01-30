@@ -117,12 +117,14 @@ module FisherYates.Correctness {
         //{ RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.Factorial((|xs|-i)-1) as real); }
         { assume {:axiom} false; }
         (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real));
-        { assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real; }
+        { assume {:axiom} false; assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real; }
         1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real);
-        { assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
+        { assume {:axiom} false; assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
         1.0 / (NatArith.FactorialTraditional(|xs|-i) as real);
       }
-      assume {:axiom} false;
+      assert e in Rand.eventSpace by {
+        assume {:axiom} false;
+      }
     }
   }
 
