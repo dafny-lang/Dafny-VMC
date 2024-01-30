@@ -23,8 +23,7 @@ module FisherYates.Correctness {
     ensures
       var e := iset s | Model.Shuffle(xs)(s).Equals(p);
       && e in Rand.eventSpace
-      && NatArith.Factorial(|xs|) != 0
-      && Rand.prob(e) == 1.0 / (NatArith.Factorial(|xs|) as real)
+      && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|) as real)
   {
     var e := iset s | Model.Shuffle(xs)(s).Equals(p);
     var i := 0;
@@ -41,8 +40,7 @@ module FisherYates.Correctness {
     ensures
       var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
       && e in Rand.eventSpace
-      && NatArith.Factorial(|xs[i..]|) != 0
-      && Rand.prob(e) == 1.0 / (NatArith.Factorial(|xs|-i) as real)
+      && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
   {
     Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
     var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
@@ -66,7 +64,7 @@ module FisherYates.Correctness {
           }
         }
       }
-      reveal NatArith.Factorial();
+      reveal NatArith.FactorialTraditional();
       Rand.ProbIsProbabilityMeasure();
       assert Measures.IsProbability(Rand.eventSpace, Rand.prob);
     } else {
@@ -95,7 +93,7 @@ module FisherYates.Correctness {
       }
       var ys := Model.Swap(xs, i, j);
       var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
-      assert InductionHypothesis: e' in Rand.eventSpace && NatArith.Factorial(|xs|-(i+1)) != 0 && Rand.prob(e') == 1.0 / (NatArith.Factorial(|xs|-(i+1)) as real) by {
+      assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
         assume {:axiom} false;
         //CorrectnessFisherYatesUniqueElementsGeneral(ys, p, i+1);
       }
@@ -112,16 +110,17 @@ module FisherYates.Correctness {
         Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) * Rand.prob(e');
         { assert Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) ==  (1.0 / ((|xs|-i) as real)) by { Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, j); } }
         (1.0 / ((|xs|-i) as real)) * Rand.prob(e');
-        { assert Rand.prob(e') == (1.0 / (NatArith.Factorial(|xs|-(i+1)) as real)) by { reveal InductionHypothesis; } }
-        (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.Factorial(|xs|-(i+1)) as real));
+        { assert Rand.prob(e') == (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real)) by { reveal InductionHypothesis; } }
+        (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real));
         { assert |xs|-(i+1) == |xs|-i-1; }
-        (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.Factorial((|xs|-i)-1) as real));
-        { RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.Factorial((|xs|-i)-1) as real); }
-        (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.Factorial((|xs|-i)-1) as real));
-        { assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.Factorial((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.Factorial((|xs|-i)-1)) as real; }
-        1.0 / (((|xs|-i) * NatArith.Factorial((|xs|-i)-1)) as real);
-        { assume {:axiom} (|xs|-i) * NatArith.Factorial((|xs|-i)-1) == NatArith.Factorial(|xs|-i); }
-        1.0 / (NatArith.Factorial(|xs|-i) as real);
+        (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional((|xs|-i)-1) as real));
+        //{ RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.Factorial((|xs|-i)-1) as real); }
+        { assume {:axiom} false; }
+        (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real));
+        { assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real; }
+        1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real);
+        { assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
+        1.0 / (NatArith.FactorialTraditional(|xs|-i) as real);
       }
       assume {:axiom} false;
     }

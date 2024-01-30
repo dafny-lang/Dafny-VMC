@@ -50,6 +50,12 @@ module NatArith {
     reveal Factorial();
   }
 
+  opaque function FactorialTraditional(n: nat): (fact: nat) 
+    ensures fact != 0
+  {
+    if n == 0 then 1 else n * FactorialTraditional(n - 1)
+  }
+
   lemma PowerGreater0(base: nat, exponent: nat)
     requires base >= 1
     ensures Power(base, exponent) >= 1
