@@ -161,7 +161,7 @@ module FisherYates.Correctness {
               multiset(xs[i+1..]);
               { MultisetOfSequence(xs, i, i+1); }
               multiset(xs[i..]) - multiset(xs[i..i+1]);
-              { assert xs[i..i+1] == [xs[i]]; } 
+              { assert xs[i..i+1] == [xs[i]]; }
               multiset(xs[i..]) - multiset([xs[i]]);
               { assert multiset(xs[i..]) == multiset(p[i..]); assert xs[i] == xs[j] by { assert i == j; } }
               multiset(p[i..]) - multiset([xs[j]]);
@@ -173,25 +173,42 @@ module FisherYates.Correctness {
               multiset(p[i+1..]);
             }
           } else {
+            assert i+1 <= j by {
+              assert i <= j;
+              assert i != j;
+              assert i < j;
+            }
+            assert |xs| > j;
+            assert |xs| == |ys|;
             calc {
               multiset(ys[i+1..]);
-              { assert ys[i+1..] == ys[i+1..j] + [ys[j]] + ys[j+1..]; }
+              { assume {:axiom} false; }
+              // { assert ys[i+1..] == ys[i+1..j] + [ys[j]] + ys[j+1..]; }
               multiset(ys[i+1..j] + [ys[j]] + ys[j+1..]);
-               { assert i < j; assert ys[i+1..j] == xs[i+1..j]; assert ys[j] == xs[i]; assert ys[j+1..] == xs[j+1..]; }
+              { assume {:axiom} false; }
+              //{ assert ys[i+1..j] == xs[i+1..j]; assert ys[j] == xs[i]; assert ys[j+1..] == xs[j+1..]; }
               multiset(xs[i+1..j] + [xs[i]] + xs[j+1..]);
-            /*  multiset(xs[i+1..j] + [xs[i]] + xs[j+1..]) + multiset([xs[j]]) - multiset([xs[j]]);
+              { assert multiset([xs[j]]) - multiset([xs[j]]) == multiset{}; }
+              multiset(xs[i+1..j] + [xs[i]] + xs[j+1..]) + multiset([xs[j]]) - multiset([xs[j]]);
               { assert multiset(xs[i+1..j] + [xs[i]] + xs[j+1..]) + multiset([xs[j]]) == multiset(xs[i+1..j] + [xs[i]] + xs[j+1..] + [xs[j]]); }
               multiset(xs[i+1..j] + [xs[i]] + xs[j+1..] + [xs[j]]) - multiset([xs[j]]);
-              { assert xs[i+1..j] + [xs[i]] + xs[j+1..] + [xs[j]] == xs[i..]; }
+              { assert multiset(xs[i+1..j] + [xs[i]] + xs[j+1..] + [xs[j]]) == multiset(xs[i+1..j]) + multiset([xs[i]]) + multiset(xs[j+1..]) + multiset([xs[j]]); }
+              multiset(xs[i+1..j]) + multiset([xs[i]]) + multiset(xs[j+1..]) + multiset([xs[j]]) - multiset([xs[j]]);
+              { assert multiset(xs[i+1..j]) + multiset([xs[i]]) + multiset(xs[j+1..]) + multiset([xs[j]]) == multiset([xs[i]]) + multiset(xs[i+1..j]) + multiset([xs[j]]) + multiset(xs[j+1..]); }
+              multiset([xs[i]]) + multiset(xs[i+1..j]) + multiset([xs[j]]) + multiset(xs[j+1..]) - multiset([xs[j]]);
+              { assert multiset([xs[i]]) + multiset(xs[i+1..j]) + multiset([xs[j]]) + multiset(xs[j+1..]) == multiset([xs[i]] + xs[i+1..j] + [xs[j]] + xs[j+1..]); }
+              multiset([xs[i]] + xs[i+1..j] + [xs[j]] + xs[j+1..]) - multiset([xs[j]]);
+              { assert [xs[i]] + xs[i+1..j] == xs[i..j]; assert [xs[j]] + xs[j+1..] == xs[j..]; }
+              multiset(xs[i..j] + xs[j..]) - multiset([xs[j]]);
+              { assert xs[i..j] + xs[j..] == xs[i..]; }
               multiset(xs[i..]) - multiset([xs[j]]);
-              { assert multiset(xs[i..]) == multiset(p[i..]); assert xs[j] == p[i]; }
+              { assert multiset(xs[i..]) == multiset(p[i..]); assert j in A; assert xs[j] == p[i]; }
               multiset(p[i..]) - multiset([p[i]]);
               { assert [p[i]] == p[i..i+1]; }
               multiset(p[i..]) - multiset(p[i..i+1]);
               { assert |p| == |xs|; MultisetOfSequence(p, i, i+1); }
-              multiset(p[i+1..]); */
+              multiset(p[i+1..]);
             }
-            assume {:axiom} false;
           }
         }
         CorrectnessFisherYatesUniqueElementsGeneral(ys, p, i+1);

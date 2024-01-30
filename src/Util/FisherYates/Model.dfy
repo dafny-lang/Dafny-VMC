@@ -34,7 +34,7 @@ module FisherYates.Model {
     ensures |s| == |t|
     ensures i == j ==> s == t
     ensures t[..i] == s[..i]
-    ensures i < j ==> t[i+1..j] == s[i+1..j]
+    ensures i+1 <= j ==> t[i+1..j] == s[i+1..j]
     ensures t[j+1..] == s[j+1..]
     ensures t[j] == s[i]
   {
