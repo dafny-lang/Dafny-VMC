@@ -182,11 +182,15 @@ module FisherYates.Correctness {
             assert |xs| == |ys|;
             calc {
               multiset(ys[i+1..]);
-              { assume {:axiom} false; }
-              // { assert ys[i+1..] == ys[i+1..j] + [ys[j]] + ys[j+1..]; }
+              { assert i+1 <= j; assert ys[i+1..] == ys[i+1..j] + ys[j..]; }
+              multiset(ys[i+1..j] + ys[j..]);
+              { assert ys[j..] == [ys[j]] + ys[j+1..]; }
               multiset(ys[i+1..j] + [ys[j]] + ys[j+1..]);
-              { assume {:axiom} false; }
-              //{ assert ys[i+1..j] == xs[i+1..j]; assert ys[j] == xs[i]; assert ys[j+1..] == xs[j+1..]; }
+              { assert ys[i+1..j] == xs[i+1..j];}
+              multiset(xs[i+1..j] + [ys[j]] + ys[j+1..]);
+              { assert ys[j] == xs[i]; }
+              multiset(xs[i+1..j] + [xs[i]] + ys[j+1..]);
+              { assert ys[j+1..] == xs[j+1..]; }
               multiset(xs[i+1..j] + [xs[i]] + xs[j+1..]);
               { assert multiset([xs[j]]) - multiset([xs[j]]) == multiset{}; }
               multiset(xs[i+1..j] + [xs[i]] + xs[j+1..]) + multiset([xs[j]]) - multiset([xs[j]]);

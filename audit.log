@@ -48,8 +48,6 @@ src/ProbabilisticProgramming/RandomSource.dfy(61,17): MeasureHeadDrop: Declarati
 src/ProbabilisticProgramming/RandomSource.dfy(67,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
 src/Util/FisherYates/Correctness.dfy(117,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
 src/Util/FisherYates/Correctness.dfy(126,12): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
-src/Util/FisherYates/Correctness.dfy(185,16): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
-src/Util/FisherYates/Correctness.dfy(188,16): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
-src/Util/FisherYates/Correctness.dfy(217,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
-src/Util/FisherYates/Correctness.dfy(242,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
-src/Util/FisherYates/Correctness.dfy(245,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
+src/Util/FisherYates/Correctness.dfy(221,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
+src/Util/FisherYates/Correctness.dfy(246,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
+src/Util/FisherYates/Correctness.dfy(249,8): CorrectnessFisherYatesUniqueElementsGeneral: Definition has `assume {:axiom}` statement in body. 
