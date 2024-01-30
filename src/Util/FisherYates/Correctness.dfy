@@ -35,21 +35,7 @@ module FisherYates.Correctness {
     CorrectnessFisherYatesUniqueElementsGeneral(xs, p, 0);
   }
 
-  lemma MultisetOfSequence<T>(xs: seq<T>, i: nat, j: nat)
-    requires i <= j < |xs|
-    ensures multiset(xs[i..]) - multiset(xs[i..j]) == multiset(xs[j..])
-  {
-    calc {
-      multiset(xs[i..]) - multiset(xs[i..j]);
-      { assert xs[i..] == xs[i..j] + xs[j..]; }
-      multiset(xs[i..j] + xs[j..]) - multiset(xs[i..j]);
-      { assert  multiset(xs[i..j] + xs[j..]) == multiset(xs[i..j]) + multiset(xs[j..]); }
-      multiset(xs[i..j]) + multiset(xs[j..]) - multiset(xs[i..j]);
-      multiset(xs[j..]);
-    }
-  }
-
-  lemma CorrectnessFisherYatesUniqueElementsGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+  lemma {:vcs_split_on_every_assert} CorrectnessFisherYatesUniqueElementsGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     decreases |xs| - i
     requires i <= |xs|
     requires i <= |p|
@@ -79,6 +65,7 @@ module FisherYates.Correctness {
             { assert if |xs[i..]| == 0 then p[i..] == [] else p[i..] == [p[i]]; }
             if |xs[i..]| == 0 then true else [xs[i]] == [p[i]];
             { assert multiset(p[i..]) == multiset(xs[i..]); }
+            if |xs[i..]| == 0 then true else true;
             true;
           }
         }
@@ -221,28 +208,28 @@ module FisherYates.Correctness {
         assume {:axiom} false;
       }
       assert Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real) by {
-        /*         calc {
-                  Rand.prob(e);
-                  { reveal DecomposeE; }
-                  Rand.prob(Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e'));
-                  { reveal HIsIndependent; reveal InductionHypothesis; Independence.ResultsIndependent(h, A, e'); }
-                  Rand.prob(Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(e');
-                  { assert Rand.prob(Monad.BitstreamsWithValueIn(h, A)) == Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by { reveal BitStreamsInA; } }
-                  Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) * Rand.prob(e');
-                  { assert Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) ==  (1.0 / ((|xs|-i) as real)) by { Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, j); } }
-                  (1.0 / ((|xs|-i) as real)) * Rand.prob(e');
-                  { assert Rand.prob(e') == (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real)) by { reveal InductionHypothesis; } }
-                  (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real));
-                  { assert |xs|-(i+1) == |xs|-i-1; }
-                  (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional((|xs|-i)-1) as real));
-                  //{ RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.Factorial((|xs|-i)-1) as real); }
-                  { assume {:axiom} false; }
-                  (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real));
-                  { assume {:axiom} false; assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real; }
-                  1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real);
-                  { assume {:axiom} false; assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
-                  1.0 / (NatArith.FactorialTraditional(|xs|-i) as real);
-                } */
+        calc {
+          Rand.prob(e);
+          { reveal DecomposeE; }
+          Rand.prob(Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e'));
+          { reveal HIsIndependent; reveal InductionHypothesis; Independence.ResultsIndependent(h, A, e'); }
+          Rand.prob(Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(e');
+          /* { assert Rand.prob(Monad.BitstreamsWithValueIn(h, A)) == Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by { reveal BitStreamsInA; } }
+           Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) * Rand.prob(e');
+           { assert Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) ==  (1.0 / ((|xs|-i) as real)) by { Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, j); } }
+           (1.0 / ((|xs|-i) as real)) * Rand.prob(e');
+           { assert Rand.prob(e') == (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real)) by { reveal InductionHypothesis; } }
+           (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real));
+           { assert |xs|-(i+1) == |xs|-i-1; }
+           (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional((|xs|-i)-1) as real));
+           //{ RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.Factorial((|xs|-i)-1) as real); }
+           { assume {:axiom} false; }
+           (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real));
+           { assume {:axiom} false; assert 1.0 * 1.0 == 1.0; assert ((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real) == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real; }
+           1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real);
+           { assume {:axiom} false; assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
+           1.0 / (NatArith.FactorialTraditional(|xs|-i) as real); */
+        }
         assume {:axiom} false;
       }
       assert e in Rand.eventSpace by {
@@ -255,6 +242,20 @@ module FisherYates.Correctness {
               assert Monad.BitstreamsWithRestIn(h, e') in Rand.eventSpace;
               Measures.BinaryUnionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e')); */
       }
+    }
+  }
+
+  lemma MultisetOfSequence<T>(xs: seq<T>, i: nat, j: nat)
+    requires i <= j < |xs|
+    ensures multiset(xs[i..]) - multiset(xs[i..j]) == multiset(xs[j..])
+  {
+    calc {
+      multiset(xs[i..]) - multiset(xs[i..j]);
+      { assert xs[i..] == xs[i..j] + xs[j..]; }
+      multiset(xs[i..j] + xs[j..]) - multiset(xs[i..j]);
+      { assert  multiset(xs[i..j] + xs[j..]) == multiset(xs[i..j]) + multiset(xs[j..]); }
+      multiset(xs[i..j]) + multiset(xs[j..]) - multiset(xs[i..j]);
+      multiset(xs[j..]);
     }
   }
 
