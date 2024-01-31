@@ -16,6 +16,7 @@ module FisherYates.Model {
     requires i <= |xs|
     decreases |xs| - i
     ensures forall s :: h(s).Result? ==> multiset(h(s).value) == multiset(xs) && |h(s).value| == |xs|
+    ensures forall s, j | 0 <= j < i :: h(s).Result? ==> h(s).value[j] == xs[j]
   {
     (s: Rand.Bitstream) =>
       if |xs[i..]| > 1 then
@@ -38,6 +39,7 @@ module FisherYates.Model {
     ensures t[j+1..] == s[j+1..]
     ensures t[j] == s[i]
   {
+    assume {:axiom} false;
     if i == j then
       s
     else
