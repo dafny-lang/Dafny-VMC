@@ -22,7 +22,7 @@ module FisherYates.Correctness {
     requires multiset(p) == multiset(xs)
     ensures
       var e := iset s | Model.Shuffle(xs)(s).Equals(p);
-      && e in Rand.eventSpace
+      e in Rand.eventSpace
       && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|) as real)
   {
     var e := iset s | Model.Shuffle(xs)(s).Equals(p);
@@ -44,104 +44,179 @@ module FisherYates.Correctness {
     requires multiset(p[i..]) == multiset(xs[i..])
     ensures
       var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
-      && e in Rand.eventSpace
+      e in Rand.eventSpace
+      && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
+  {
+    var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    if |xs[i..]| <= 1 {
+      CorrectnessFisherYatesUniqueElementsGeneralLeq1(xs, p, i);
+    } else {
+      CorrectnessFisherYatesUniqueElementsGeneralGreater1(xs, p, i);
+    }
+  }
+
+  lemma CorrectnessFisherYatesUniqueElementsGeneralLeq1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+    decreases |xs| - i
+    requires i <= |xs|
+    requires i <= |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires |xs| == |p|
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires |xs[i..]| <= 1
+    ensures
+      var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+      e in Rand.eventSpace
       && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
   {
     Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
     var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
-    if |xs[i..]| <= 1 {
-      assert e == Measures.SampleSpace() by {
-        forall s
-          ensures s in e
-        {
-          calc {
-            s in e;
-            Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
-            { assert Model.Shuffle(xs, i)(s) == Monad.Return(xs)(s); }
-            Monad.Return(xs)(s).Result? && Monad.Return(xs)(s).value[i..] == p[i..];
-            { assert Monad.Return(xs)(s).value == xs; }
-            xs[i..] == p[i..];
-            if |xs[i..]| == 0 then [] == p[i..] else [xs[i]] == p[i..];
-            { assert if |xs[i..]| == 0 then p[i..] == [] else p[i..] == [p[i]]; }
-            if |xs[i..]| == 0 then true else [xs[i]] == [p[i]];
-            { assert |xs[i..]| != 0 ==> [xs[i]] == [p[i]] by { assert |xs[i..]| != 0 ==> assert p[i..] == [p[i]]; assert xs[i..] == [xs[i]]; assert multiset(p[i..]) == multiset(xs[i..]); multiset([p[i]]) == multiset([xs[i]]); } }
-            if |xs[i..]| == 0 then true else true;
-            true;
-          }
+    assert e == Measures.SampleSpace() by {
+      forall s
+        ensures s in e
+      {
+        calc {
+          s in e;
+          Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+          { assert Model.Shuffle(xs, i)(s) == Monad.Return(xs)(s); }
+          Monad.Return(xs)(s).Result? && Monad.Return(xs)(s).value[i..] == p[i..];
+          { assert Monad.Return(xs)(s).value == xs; }
+          xs[i..] == p[i..];
+          if |xs[i..]| == 0 then [] == p[i..] else [xs[i]] == p[i..];
+          { assert if |xs[i..]| == 0 then p[i..] == [] else p[i..] == [p[i]]; }
+          if |xs[i..]| == 0 then true else [xs[i]] == [p[i]];
+          { assert |xs[i..]| != 0 ==> [xs[i]] == [p[i]] by { assert |xs[i..]| != 0 ==> assert p[i..] == [p[i]]; assert xs[i..] == [xs[i]]; assert multiset(p[i..]) == multiset(xs[i..]); multiset([p[i]]) == multiset([xs[i]]); } }
+          if |xs[i..]| == 0 then true else true;
+          true;
         }
       }
+    }
+    assert e in Rand.eventSpace && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real) by {
       reveal NatArith.FactorialTraditional();
       Rand.ProbIsProbabilityMeasure();
       assert Measures.IsProbability(Rand.eventSpace, Rand.prob);
-    } else {
-      assert |xs| > i + 1;
-      var h := Uniform.Model.IntervalSample(i, |xs|);
-      assert HIsIndependent: Independence.IsIndepFunction(h) by {
-        Uniform.Correctness.IntervalSampleIsIndep(i, |xs|);
-        Independence.IsIndepImpliesIsIndepFunction(h);
+      assert Measures.SampleSpace() == Measures.Complement<Rand.Bitstream>(iset{});
+      calc {
+        Rand.prob(e);
+        1.0;
+        1.0 / 1.0;
+        1.0 / (1 as real);
+        1.0 / (NatArith.FactorialTraditional(|xs|-i) as real);
       }
-      var A := iset j | i <= j < |xs| && xs[j] == p[i];
-      assert A != iset{} by {
-        calc {
-          true;
-          p[i] in multiset(p[i..]);
-          { assert multiset(p[i..]) == multiset(xs[i..]); }
-          p[i] in multiset(xs[i..]);
-          p[i] in xs[i..];
-          exists j | 0 <= j < |xs[i..]| :: xs[i..][j] == p[i];
-          exists j | i <= j < |xs| :: xs[j] == p[i];
-          { assert forall j :: j in A <==> i <= j < |xs| && xs[j] == p[i]; }
-          exists j :: j in A;
-        }
+    }
+  }
+
+  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+    decreases |xs| - i
+    requires i <= |xs|
+    requires i <= |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires |xs| == |p|
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires |xs[i..]| > 1
+    ensures
+      var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+      e in Rand.eventSpace
+      && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
+  {
+    Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
+    var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    assert |xs| > i + 1;
+    var h := Uniform.Model.IntervalSample(i, |xs|);
+    assert HIsIndependent: Independence.IsIndepFunction(h) by {
+      Uniform.Correctness.IntervalSampleIsIndep(i, |xs|);
+      Independence.IsIndepImpliesIsIndepFunction(h);
+    }
+    var A := iset j | i <= j < |xs| && xs[j] == p[i];
+    assert A != iset{} by {
+      calc {
+        true;
+        p[i] in multiset(p[i..]);
+        { assert multiset(p[i..]) == multiset(xs[i..]); }
+        p[i] in multiset(xs[i..]);
+        p[i] in xs[i..];
+        exists j | 0 <= j < |xs[i..]| :: xs[i..][j] == p[i];
+        exists j | i <= j < |xs| :: xs[j] == p[i];
+        { assert forall j :: j in A <==> i <= j < |xs| && xs[j] == p[i]; }
+        exists j :: j in A;
       }
-      var j :| j in A;
-      assert A == iset{j} by {
-        assert forall k :: k in A <==> k in iset{j} by {
-          forall k
-            ensures k in A <==> k in iset{j}
-          {
-            if k in A {
-              assert xs[k] == p[i];
-              assert xs[j] == p[i];
-              assert xs[k] == xs[j];
-              assert k == j by {
-                assert forall a, b | i <= a < b < |xs| :: xs[a] != xs[b];
-              }
-              assert k in iset{j};
+    }
+    var j :| j in A;
+    assert A == iset{j} by {
+      assert forall k :: k in A <==> k in iset{j} by {
+        forall k
+          ensures k in A <==> k in iset{j}
+        {
+          if k in A {
+            assert xs[k] == p[i];
+            assert xs[j] == p[i];
+            assert xs[k] == xs[j];
+            assert k == j by {
+              assert forall a, b | i <= a < b < |xs| :: xs[a] != xs[b];
             }
-            if k in iset{j} {
-              assert k == j;
-              assert k in A;
-            }
+            assert k in iset{j};
+          }
+          if k in iset{j} {
+            assert k == j;
+            assert k in A;
           }
         }
       }
-      assert BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by {
-        BitStreamsInA(xs, p, i, j, h, A);
-      }
-      var ys := Model.Swap(xs, i, j);
-      var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
-      assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
+    }
+    assert BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by {
+      BitStreamsInA(xs, p, i, j, h, A);
+    }
+    var ys := Model.Swap(xs, i, j);
+    var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
+    assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
+      assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
         InductionHypothesisPrecondition1(xs, ys, p, i, j);
+      }
+      assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
         InductionHypothesisPrecondition2(xs, ys, p, i, j);
-        CorrectnessFisherYatesUniqueElementsGeneral(ys, p, i+1);
       }
-      assert DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
-        DecomposeE(xs, ys, p, i, j, h, A, e, e');
+      assert i+1 <= |ys| by {
+        calc {
+          i + 1;
+        <
+          |xs|;
+        ==
+          |ys|;
+        }
       }
-      assert Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real) by {
-        reveal DecomposeE;
-        reveal HIsIndependent;
-        reveal InductionHypothesis;
-        reveal BitStreamsInA;
-        ProbabilityOfE(xs, p, i, j, h, A, e, e');
+      assert i < |p| by {
+        calc {
+          i;
+        <
+          i+1;
+        <
+          |xs|;
+        ==
+          |p|;
+        }
       }
-      assert e in Rand.eventSpace by {
-        reveal DecomposeE;
-        reveal HIsIndependent;
-        reveal InductionHypothesis;
-        EInEventSpace(xs, p, h, A, e, e');
+      assert |ys| == |p| by {
+        calc {
+          |ys|;
+          |xs|;
+          |p|;
+        }
       }
+      if |ys[i+1..]| > 1 {
+        CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
+      } else {
+        CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
+      }
+    }
+    assert DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
+      DecomposeE(xs, ys, p, i, j, h, A, e, e');
+    }
+    assert e in Rand.eventSpace && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real) by {
+      reveal DecomposeE;
+      reveal HIsIndependent;
+      reveal InductionHypothesis;
+      reveal BitStreamsInA;
+      ProbabilityOfE(xs, p, i, j, h, A, e, e');
+      EInEventSpace(xs, p, h, A, e, e');
     }
   }
 
@@ -283,9 +358,9 @@ module FisherYates.Correctness {
     } else {
       calc {
         multiset(ys[i+1..]);
-        { assert i+1 <= j; assert ys[i+1..] == ys[i+1..j] + ys[j..]; }
+        { assert i+1 <= j; SliceOfSequencesVariation(ys, i+1, j); }
         multiset(ys[i+1..j] + ys[j..]);
-        { assert ys[j..] == [ys[j]] + ys[j+1..]; }
+        { SliceOfSequences(ys, j); }
         multiset(ys[i+1..j] + [ys[j]] + ys[j+1..]);
         { assert ys[i+1..j] == xs[i+1..j];}
         multiset(xs[i+1..j] + [ys[j]] + ys[j+1..]);
@@ -303,9 +378,9 @@ module FisherYates.Correctness {
         multiset([xs[i]]) + multiset(xs[i+1..j]) + multiset([xs[j]]) + multiset(xs[j+1..]) - multiset([xs[j]]);
         { assert multiset([xs[i]]) + multiset(xs[i+1..j]) + multiset([xs[j]]) + multiset(xs[j+1..]) == multiset([xs[i]] + xs[i+1..j] + [xs[j]] + xs[j+1..]); }
         multiset([xs[i]] + xs[i+1..j] + [xs[j]] + xs[j+1..]) - multiset([xs[j]]);
-        { assert [xs[i]] + xs[i+1..j] == xs[i..j]; assert [xs[j]] + xs[j+1..] == xs[j..]; }
+        { SliceOfSequencesGeneral(xs, i, j); SliceOfSequences(xs, j); }
         multiset(xs[i..j] + xs[j..]) - multiset([xs[j]]);
-        { assert xs[i..j] + xs[j..] == xs[i..]; }
+        { SliceOfSequencesVariation(xs, i, j); }
         multiset(xs[i..]) - multiset([xs[j]]);
         { assert multiset(xs[i..]) == multiset(p[i..]); assert xs[j] == p[i]; }
         multiset(p[i..]) - multiset([p[i]]);
@@ -412,6 +487,16 @@ module FisherYates.Correctness {
   lemma SliceOfSequences<T>(xs: seq<T>, i: nat)
     requires 0 <= i < |xs|
     ensures xs[i..] == [xs[i]] + xs[i+1..]
+  {}
+
+  lemma SliceOfSequencesGeneral<T>(xs: seq<T>, i: nat, j: nat)
+    requires 0 <= i < j < |xs|
+    ensures xs[i..j] == [xs[i]] + xs[i+1..j]
+  {}
+
+  lemma SliceOfSequencesVariation<T>(xs: seq<T>, i: nat, j: nat)
+    requires 0 <= i <= j < |xs|
+    ensures xs[i..] == xs[i..j] + xs[j..]
   {}
 
 }

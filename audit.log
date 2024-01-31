@@ -46,3 +46,4 @@ src/ProbabilisticProgramming/RandomSource.dfy(50,17): ProbIsProbabilityMeasure: 
 src/ProbabilisticProgramming/RandomSource.dfy(54,17): CoinHasProbOneHalf: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(61,17): MeasureHeadDrop: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(67,17): TailIsMeasurePreserving: Declaration has explicit `{:axiom}` attribute. 
+src/Util/FisherYates/Model.dfy(42,4): Swap: Definition has `assume {:axiom}` statement in body. 
