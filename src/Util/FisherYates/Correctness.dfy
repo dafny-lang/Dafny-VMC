@@ -117,7 +117,7 @@ module FisherYates.Correctness {
         }
       }
       assert BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by {
-        assume {:axiom} false;
+        BitStreamsInA(xs, p, i, j, h, A);
       }
       var ys := Model.Swap(xs, i, j);
       var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
@@ -141,6 +141,31 @@ module FisherYates.Correctness {
         reveal HIsIndependent;
         reveal InductionHypothesis;
         EInEventSpace(xs, p, h, A, e, e');
+      }
+    }
+  }
+
+  lemma BitStreamsInA<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
+    requires i <= |xs|
+    requires i <= |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires |xs| == |p|
+    requires |xs|-i > 1
+    requires i <= j < |xs| && xs[j] == p[i]
+    requires A == iset j | i <= j < |xs| && xs[j] == p[i]
+    requires A == iset{j}
+    requires h == Uniform.Model.IntervalSample(i, |xs|)
+    ensures Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j))
+  {
+    assert forall s :: s in Monad.BitstreamsWithValueIn(h, A) <==> s in (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by {
+      forall s
+        ensures s in Monad.BitstreamsWithValueIn(h, A) <==> s in (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j))
+      {
+        if s in Monad.BitstreamsWithValueIn(h, A) {
+          assert Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j);
+        }
+        if s in (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) {
+        }
       }
     }
   }
