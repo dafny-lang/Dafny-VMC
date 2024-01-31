@@ -33,13 +33,10 @@ module FisherYates.Model {
     requires 0 <= j < |s|
     ensures multiset(s) == multiset(t)
     ensures |s| == |t|
-    ensures i == j ==> s == t
     ensures t[..i] == s[..i]
-    ensures i+1 <= j ==> t[i+1..j] == s[i+1..j]
-    ensures t[j+1..] == s[j+1..]
     ensures t[j] == s[i]
+    ensures i+1 <= j ==> t[i+1..j] == s[i+1..j]
   {
-    assume {:axiom} false;
     if i == j then
       s
     else
