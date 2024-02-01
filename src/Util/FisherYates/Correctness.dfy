@@ -168,39 +168,8 @@ module FisherYates.Correctness {
     var ys := Model.Swap(xs, i, j);
     var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
     assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
-      assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
-        InductionHypothesisPrecondition1(xs, ys, p, i, j);
-      }
-      assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
-        InductionHypothesisPrecondition2(xs, ys, p, i, j);
-      }
-      assert i+1 <= |ys| by {
-        calc {
-          i + 1;
-        <
-          |xs|;
-        ==
-          |ys|;
-        }
-      }
-      assert i < |p| by {
-        calc {
-          i;
-        <
-          i+1;
-        <
-          |xs|;
-        ==
-          |p|;
-        }
-      }
-      assert |ys| == |p| by {
-        calc {
-          |ys|;
-          |xs|;
-          |p|;
-        }
-      }
+      InductionHypothesisPrecondition1(xs, ys, p, i, j);
+      InductionHypothesisPrecondition2(xs, ys, p, i, j);
       if |ys[i+1..]| > 1 {
         CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
       } else {
@@ -246,13 +215,13 @@ module FisherYates.Correctness {
   }
 
   lemma DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
-    requires i <= |xs|
     requires i <= |p|
-    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
     requires |xs| == |p|
+    requires |xs|-i > 1
+    requires i <= |xs|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
     requires multiset(p[i..]) == multiset(xs[i..])
     requires i <= j < |xs| && xs[j] == p[i]
-    requires |xs|-i > 1
     requires A == iset j | i <= j < |xs| && xs[j] == p[i]
     requires A == iset{j}
     requires h == Uniform.Model.IntervalSample(i, |xs|)
