@@ -248,10 +248,43 @@ module BernoulliExpNeg.Correctness {
     }
   }
 
-  lemma {:axiom} SampleLe1IsIndep(gamma: Rationals.Rational)
+  lemma SampleLe1IsIndep(gamma: Rationals.Rational)
     requires 0 <= gamma.numer <= gamma.denom
     ensures Independence.IsIndep(Model.SampleLe1(gamma))
+  {
+    Le1LoopIsIndep(gamma);
+    Independence.MapIsIndep(Model.Le1Loop(gamma)((true, 0)), (ak: (bool, nat)) => ak.1 % 2 == 1);
+  }
 
+  lemma Le1LoopIsIndep(gamma: Rationals.Rational)
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures Independence.IsIndep(Model.Le1Loop(gamma)((true, 0)))
+  {
+    Model.Le1LoopTerminatesAlmostSurely(gamma);
+    forall ak: (bool, nat) ensures Independence.IsIndep(Model.Le1LoopIter(gamma)(ak)) {
+      Le1LoopIterIsIndep(gamma, ak);
+    }
+    Loops.WhileIsIndep(
+      Model.Le1LoopCondition,
+      Model.Le1LoopIter(gamma),
+      (true, 0)
+    );
+    assert Independence.IsIndep(Model.Le1Loop(gamma)((true, 0))) by {
+      reveal Model.Le1Loop();
+    }
+  }
+
+  lemma Le1LoopIterIsIndep(gamma: Rationals.Rational, ak: (bool, nat))
+    requires 0 <= gamma.numer <= gamma.denom
+    ensures Independence.IsIndep(Model.Le1LoopIter(gamma)(ak))
+  {
+    var k': nat := ak.1 + 1;
+    Bernoulli.Correctness.SampleIsIndep(gamma.numer, k' * gamma.denom);
+    Independence.MapIsIndep(
+      Bernoulli.Model.Sample(gamma.numer, k' * gamma.denom),
+      a => (a, k')
+    );
+  }
 
   // Proves the correctness of `Model.Le1LoopIter`.
   // Correctness means that when run on an initial value of `(true, k)` it produces
