@@ -13,7 +13,7 @@ module FisherYates.Interface {
     method Shuffle<T>(a: array<T>)
       decreases *
       modifies `s, a
-    //ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
+      ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
 
   }
 }
