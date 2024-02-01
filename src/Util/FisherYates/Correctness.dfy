@@ -168,8 +168,39 @@ module FisherYates.Correctness {
     var ys := Model.Swap(xs, i, j);
     var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
     assert InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
-      InductionHypothesisPrecondition1(xs, ys, p, i, j);
-      InductionHypothesisPrecondition2(xs, ys, p, i, j);
+      assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
+        InductionHypothesisPrecondition1(xs, ys, p, i, j);
+      }
+      assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
+        InductionHypothesisPrecondition2(xs, ys, p, i, j);
+      }
+      assert i+1 <= |ys| by {
+        calc {
+          i + 1;
+        <
+          |xs|;
+        ==
+          |ys|;
+        }
+      }
+      assert i < |p| by {
+        calc {
+          i;
+        <
+          i+1;
+        <
+          |xs|;
+        ==
+          |p|;
+        }
+      }
+      assert |ys| == |p| by {
+        calc {
+          |ys|;
+          |xs|;
+          |p|;
+        }
+      }
       if |ys[i+1..]| > 1 {
         CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
       } else {
