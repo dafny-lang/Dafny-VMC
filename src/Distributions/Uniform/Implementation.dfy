@@ -12,7 +12,7 @@ module Uniform.Implementation {
 
   trait {:termination false} Trait extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
-      modifies this
+      modifies `s
       decreases *
       requires n > 0
       ensures u < n

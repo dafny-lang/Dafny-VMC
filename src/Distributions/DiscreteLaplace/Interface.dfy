@@ -13,7 +13,7 @@ module DiscreteLaplace.Interface {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method DiscreteLaplaceSample(scale: Rationals.Rational) returns (z: int)
-      modifies this
+      modifies `s
       requires scale.numer >= 1
       decreases *
 

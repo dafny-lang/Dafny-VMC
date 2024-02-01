@@ -12,14 +12,14 @@ module Uniform.Interface {
   trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
 
     method UniformSample(n: nat) returns (u: nat)
-      modifies this
+      modifies `s
       decreases *
       requires n > 0
       ensures u < n
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 
     method UniformIntervalSample(a: int, b: int) returns (u: int)
-      modifies this
+      modifies `s
       decreases *
       requires a < b
       ensures a <= u < b

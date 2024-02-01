@@ -12,7 +12,7 @@ module Bernoulli.Interface {
   trait {:termination false} Trait extends Uniform.Interface.Trait {
 
     method BernoulliSample(p: Rationals.Rational) returns (c: bool)
-      modifies this
+      modifies `s
       decreases *
       requires 0 <= p.numer <= p.denom
       ensures Model.Sample(p.numer, p.denom)(old(s)) == Monad.Result(c, s)

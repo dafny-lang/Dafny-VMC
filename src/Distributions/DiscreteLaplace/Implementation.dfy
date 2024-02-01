@@ -19,7 +19,7 @@ module DiscreteLaplace.Implementation {
 
     // Based on Algorithm 2 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method DiscreteLaplaceSample(scale: Rationals.Rational) returns (z: int)
-      modifies this
+      modifies `s
       requires scale.numer >= 1
       decreases *
       ensures Model.Sample(scale)(old(s)) == Monad.Result(z, s)
@@ -30,7 +30,7 @@ module DiscreteLaplace.Implementation {
     }
 
     method {:rlimit 100000} DiscreteLaplaceSampleLoop(scale: Rationals.Rational) returns (bY: (bool, int))
-      modifies this
+      modifies `s
       requires scale.numer >= 1
       decreases *
       ensures Model.SampleLoop(scale)(old(s)) == Monad.Result(bY, s)
@@ -61,7 +61,7 @@ module DiscreteLaplace.Implementation {
     }
 
     method DisceteLaplaceSampleInnerLoop() returns (v: int)
-      modifies this
+      modifies `s
       decreases *
       ensures Model.SampleInnerLoopFull()(old(s)) == Monad.Result(v, s)
     {

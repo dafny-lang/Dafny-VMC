@@ -11,7 +11,7 @@ module DiscreteGaussian.Interface {
   trait {:termination false} Trait extends DiscreteLaplace.Interface.Trait, BernoulliExpNeg.Interface.Trait {
     // Takes the sigma (not sigma^2!) as a fraction
     method DiscreteGaussianSample(sigma: Rationals.Rational) returns (y: int)
-      modifies this
+      modifies `s
       requires sigma.numer >= 1
       decreases *
   }

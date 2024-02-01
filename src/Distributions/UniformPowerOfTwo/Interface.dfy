@@ -14,7 +14,7 @@ module UniformPowerOfTwo.Interface {
     // The return value u is uniformly distributed between 0 <= u < 2^k where 2^k <= n < 2^(k + 1).
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
-      modifies this
+      modifies `s
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 
   }

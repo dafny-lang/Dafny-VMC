@@ -5,12 +5,15 @@
 
 module FisherYates.Interface {
   import Uniform
+  import Model
+  import Monad
 
   trait {:termination false} Trait extends Uniform.Interface.Trait {
 
     method Shuffle<T>(a: array<T>)
       decreases *
-      modifies this, a
+      modifies `s, a
+    //ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
 
   }
 }
