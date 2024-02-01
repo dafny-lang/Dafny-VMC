@@ -8,62 +8,25 @@ module FisherYates.Implementation {
   import Monad
   import Model
   import Uniform
+  import Equivalence
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method {:vcs_split_on_every_assert} Shuffle<T>(a: array<T>)
+    method Shuffle<T>(a: array<T>)
       decreases *
       modifies `s, a
       ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
     {
-      ghost var prevASeq := a[..];
-      ghost var prevI := 0;
-      ghost var prevS := s;
+      ghost var prevI, prevASeq, prevS := 0, a[..], s; // ghost
       if a.Length > 1 {
-        var i := 0;
-        while i < a.Length - 1
-          decreases a.Length - 1 - i
-          invariant prevI == if i == 0 then i else i - 1
-          invariant prevI <= |prevASeq|
-          invariant i <= |a[..]|
-          invariant i <= a.Length - 1
-          invariant |prevASeq| == |a[..]| == a.Length
-          invariant Model.Shuffle(old(a[..]))(old(s)) == Model.Shuffle(prevASeq, prevI)(prevS)
-          invariant Model.Shuffle(prevASeq, prevI)(prevS) == Model.Shuffle(a[..], i)(s)
+        for i := 0 to a.Length - 1
+          invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s)
         {
-          prevI := i;
-          prevASeq := a[..];
-          prevS := s;
+          prevI, prevASeq, prevS := i, a[..], s; // ghost
           var j := UniformIntervalSample(i, a.Length);
-          assert prevASeq == a[..];
+          assert prevASeq == a[..]; // ghost
           Swap(a, i, j);
-          i := i + 1;
-          assert Model.Shuffle(prevASeq, prevI)(prevS) == Model.Shuffle(a[..], i)(s) by {
-            calc {
-              Model.Shuffle(prevASeq, prevI)(prevS);
-              Model.Shuffle(Model.Swap(prevASeq, prevI, Uniform.Model.IntervalSample(prevI, |prevASeq|)(prevS).value), prevI + 1)(Uniform.Model.IntervalSample(prevI, |prevASeq|)(prevS).rest);
-              { assert Uniform.Model.IntervalSample(prevI, |prevASeq|)(prevS).value == j;
-                assert Uniform.Model.IntervalSample(prevI, |prevASeq|)(prevS).rest == s; }
-              Model.Shuffle(Model.Swap(prevASeq, prevI, j), prevI + 1)(s);
-              { assert i == prevI + 1;
-                assert Model.Swap(prevASeq, prevI, j) == a[..];
-              }
-              Model.Shuffle(a[..], i)(s);
-            }
-          }
         }
-
-        assert Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s) by {
-          assert i == a.Length - 1;
-          calc {
-            Model.Shuffle(old(a[..]))(old(s));
-            Model.Shuffle(prevASeq, prevI)(prevS);
-            Model.Shuffle(a[..], i)(s);
-            Monad.Return(a[..])(s);
-            Monad.Result(a[..], s);
-          }
-        }
-
       }
     }
 
