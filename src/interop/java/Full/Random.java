@@ -5,14 +5,14 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 public class Random implements DafnyVMCTrait.RandomTrait {
-  static ThreadLocal<SecureRandom> rng;
+  static ThreadLocal<SecureRandom> RNG;
   
   public Random() {
-    this.rng = ThreadLocal.withInitial(Random::createSecureRandom);
+    RNG = ThreadLocal.withInitial(Random::createSecureRandom);
   }
 
   public Random(SecureRandom rng) {
-    this.rng = ThreadLocal.withInitial(() -> rng);
+    RNG = ThreadLocal.withInitial(() -> rng);
   }
 
   private static final SecureRandom createSecureRandom() {
@@ -27,7 +27,7 @@ public class Random implements DafnyVMCTrait.RandomTrait {
       throw new IllegalArgumentException("n must be positive");
     }
 
-    return new BigInteger(n.bitLength()-1, rng.get());
+    return new BigInteger(n.bitLength()-1, RNG.get());
   }
 
   public java.math.BigInteger UniformIntervalSample(java.math.BigInteger a, java.math.BigInteger b) {

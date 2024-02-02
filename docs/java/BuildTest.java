@@ -82,7 +82,7 @@ class Check {
         System.out.println(t.BernoulliSample(gamma));
 
         System.out.println("Example of BernoulliExpNeg sampling");
-        System.out.println(r.BernoulliExpNegSample(gamma));
+        System.out.println(t.BernoulliExpNegSample(gamma));
 
         System.out.println("Example of DiscreteGaussian sampling");
         System.out.println(t.DiscreteGaussianSample(gamma));
