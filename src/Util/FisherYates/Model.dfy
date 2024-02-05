@@ -20,9 +20,10 @@ module FisherYates.Model {
   {
     (s: Rand.Bitstream) =>
       if |xs[i..]| > 1 then
-        var (j, s) :- Uniform.Model.IntervalSample(i, |xs|)(s);
+        var (j, s') :- Uniform.Model.IntervalSample(i, |xs|)(s);
+        Uniform.Model.IntervalSampleBound(i, |xs|, s);
         var ys := Swap(xs, i, j);
-        Shuffle(ys, i + 1)(s)
+        Shuffle(ys, i + 1)(s')
       else
         Monad.Return(xs)(s)
   }

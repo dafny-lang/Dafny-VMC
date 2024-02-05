@@ -49,10 +49,7 @@ module Loops {
   // This definition is opaque because the details are not very useful.
   // For proofs, use the lemma `WhileUnroll`.
   // Equation (3.25), but modified to use `Monad.Diverging` instead of HOL's `arb` in case of nontermination
-  opaque ghost function While<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>): (loop: A -> Monad.Hurd<A>)
-    ensures forall s: Rand.Bitstream, init: A :: !condition(init) ==> loop(init)(s) == Monad.Return(init)(s)
-    ensures forall s: Rand.Bitstream, init: A | loop(init)(s).Result? :: !condition(loop(init)(s).value)
-  {
+  opaque ghost function While<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>): (loop: A -> Monad.Hurd<A>) {
     var f :=
       (init: A) =>
         (s: Rand.Bitstream) =>
@@ -261,6 +258,7 @@ module Loops {
           unrolled;
         }
     } else {
+      WhileInitialConditionNegated(condition, body, init, s);
       calc {
         loop;
         Monad.Result(init, s);
@@ -276,6 +274,9 @@ module Loops {
     ensures loop == unrolled == Monad.Diverging
   {
     reveal While();
+    if !condition(init) {
+      WhileInitialConditionNegated(condition, body, init, s);
+    }
     match body(init)(s)
     case Diverging =>
       assert unrolled == Monad.Diverging;
@@ -482,5 +483,18 @@ module Loops {
       WhileIsIndep(reject, body, init);
     }
     Independence.BindIsIndep(proposal, While(reject, body));
+  }
+
+  lemma WhileNegatesCondition<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
+    requires While(condition, body)(init)(s).Result?
+    ensures !condition(While(condition, body)(init)(s).value)
+  {
+    reveal While();
+  }
+
+  lemma WhileInitialConditionNegated<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
+    ensures !condition(init) ==> While(condition, body)(init)(s) == Monad.Return(init)(s)
+  {
+    reveal While();
   }
 }
