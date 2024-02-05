@@ -113,7 +113,7 @@ module TestsRandom {
   {
     var a: array<nat> := new nat[4](i => i); // [0, 1, 2, 3]
     var r := new DafnyVMC.Random();
-    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r, (x: (nat, nat)) => Helper.NatToString(x.0));
   }
 
   method {:test} TestFisherYatesConstant()
@@ -121,7 +121,7 @@ module TestsRandom {
   {
     var a: array<nat> := new nat[4](i => 0); // [0, 0, 0, 0]
     var r := new DafnyVMC.Random();
-    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r, (x: (nat, nat)) => Helper.NatToString(x.0));
   }
 
   method {:test} TestFisherYatesMixed()
@@ -129,7 +129,7 @@ module TestsRandom {
   {
     var a: array<nat> := new nat[] [0, 1, 1, 2]; // [0, 1, 1, 2]
     var r := new DafnyVMC.Random();
-    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r, (x: (nat, nat)) => Helper.NatToString(x.0));
   }
 
   method {:test} TestFisherYatesLengthZero()
@@ -137,7 +137,7 @@ module TestsRandom {
   {
     var a: array<nat> := new nat[] []; // length 0
     var r := new DafnyVMC.Random();
-    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r, (x: (nat, nat)) => Helper.NatToString(x.0));
   }
 
   method {:test} TestFisherYatesLengthOne()
@@ -145,7 +145,7 @@ module TestsRandom {
   {
     var a: array<nat> := new nat[] [0]; // length 1
     var r := new DafnyVMC.Random();
-    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r,  (x: (nat, nat)) => Helper.NatToString(x.0));
   }
 
   method {:test} TestFisherYatesLengthEven()
@@ -153,7 +153,7 @@ module TestsRandom {
   {
     var a: array<nat> := new nat[] [2, 1, 18, 2, 3, 4]; // length 6
     var r := new DafnyVMC.Random();
-    Tests.TestFisherYates(1_000_000, a, r, Helper.NatToString);
+    Tests.TestFisherYates(1_000_000, a, r, (x: (nat, nat)) => Helper.NatToString(x.0));
   }
 
 }

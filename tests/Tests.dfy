@@ -14,7 +14,6 @@ module Tests {
   import DiscreteGaussian
   import NatArith
   import RealArith
-  import Permutations
   import FisherYates
   import Helper
 
@@ -285,17 +284,15 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
   }
 
-  // Shuffles an array `a` n-times and verifies that for each permutation that occurs x-times, roughly x/n == 1/|Permutations.NumberOfPermutationsOf(a[..])|
-  method TestFisherYates<T(==, !new)>(n: nat, a: array<T>, r: FisherYates.Interface.Trait, printer: T -> string) 
+  method TestFisherYates<T(==, !new)>(n: nat, a: array<T>, r: FisherYates.Interface.Trait, printer: ((T, nat)) -> string) 
     decreases *
     modifies r
     modifies a
     requires n > 0
   {
-    var aAsSeq: seq<T> := a[..];
-    var numberOfPermutations: nat := Permutations.NumberOfPermutationsOf(aAsSeq);
-    var numberOfObservedPermutations: map<seq<T>, nat> := map[];
-    Permutations.CalculateAllPermutationsOfIsNonEmpty(aAsSeq);
+    var a := new (T, nat)[a.Length](i reads a requires 0 <= i < a.Length => (a[i], i));
+    var numberOfPermutations: nat := NatArith.FactorialTraditional(a.Length);
+    var numberOfObservedPermutations: map<seq<(T, nat)>, nat> := map[];
     
     for i := 0 to n {
       var aCopy := a;
@@ -315,7 +312,7 @@ module Tests {
      {
       var item :| item in items;
       items := items - {item};
-      TestBernoulliIsWithin3SigmaOfTrueMean(n, item.1 as real, 1.0 / (numberOfPermutations as real), "p(" + Helper.SeqToString(item.0, printer) + ")");
+      TestBernoulliIsWithin3SigmaOfTrueMean(n, item.1 as real, 1.0 / numberOfPermutations as real, "p(" + Helper.SeqToString(item.0, printer) + ")");
     }
   }
 }
