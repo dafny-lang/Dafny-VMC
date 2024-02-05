@@ -269,6 +269,7 @@ module FisherYates.Correctness {
           var zs := Model.Shuffle(xs, i)(s).value;
           assert zs[i..] == p[i..];
           var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
+          Uniform.Model.IntervalSampleBound(i, |xs|, s);
           var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
           assert s in Monad.BitstreamsWithValueIn(h, A) by {
             var ys' := Model.Swap(xs, i, k);

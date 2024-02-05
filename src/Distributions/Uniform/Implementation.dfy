@@ -9,6 +9,7 @@ module Uniform.Implementation {
   import Model
   import Interface
   import Equivalence
+  import Loops
 
   trait {:termination false} Trait extends Interface.Trait {
     method UniformSample(n: nat) returns (u: nat)
@@ -29,7 +30,7 @@ module Uniform.Implementation {
         prevS := s;
         u := UniformPowerOfTwoSample(2 * n);
       }
-      reveal Model.Sample();
+      Equivalence.SampleLifts(n, u, old(s), prevS, s);
     }
   }
 }

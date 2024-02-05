@@ -19,6 +19,7 @@ module BernoulliExpNeg.Correctness {
   import Loops
   import Bernoulli
   import Model
+  import Uniform
 
   lemma Correctness(gamma: Rationals.Rational)
     requires 0 <= gamma.numer
@@ -301,7 +302,16 @@ module BernoulliExpNeg.Correctness {
     assert denom >= 1;
     var eventTrue := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(true, k')});
     var eventTrue2 := iset s | Bernoulli.Model.Sample(gamma.numer, denom)(s).Equals(true);
-    assert eventTrue == eventTrue2;
+    assert eventTrue == eventTrue2 by {
+      forall s
+        ensures s in eventTrue <==> s in eventTrue2
+      {
+        reveal Bernoulli.Model.Sample();
+        if Uniform.Model.Sample(denom)(s).Result? {
+          Uniform.Model.SampleBound(denom, s);
+        }
+      }
+    }
     assert Rand.prob(eventTrue2) == gamma.numer as real / denom as real by {
       Bernoulli.Correctness.BernoulliCorrectness(gamma.numer, denom, true);
       reveal Bernoulli.Correctness.BernoulliMass();

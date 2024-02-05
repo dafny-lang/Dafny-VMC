@@ -88,7 +88,7 @@ module BernoulliExpNeg.Equivalence {
       Model.Le1Loop(gamma)((true, 0))(oldS);
       { reveal CaseLe1LoopInvariant(); }
       Model.Le1Loop(gamma)((false, k))(s);
-      { reveal Model.Le1Loop(); }
+      { reveal Model.Le1Loop(); Loops.WhileInitialConditionNegated(Model.Le1LoopCondition, Model.Le1LoopIter(gamma), (false, k), s); }
       Monad.Result((false, k), s);
     }
   }
