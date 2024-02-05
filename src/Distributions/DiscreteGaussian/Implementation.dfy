@@ -12,7 +12,7 @@ module DiscreteGaussian.Implementation {
     // Based on Algorithm 3 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     // Note that we take sigma as a parameter, not sigma^2, to avoid square roots.
     method DiscreteGaussianSample(sigma: Rationals.Rational) returns (y: int)
-      modifies this
+      modifies `s
       requires sigma.numer >= 1
       decreases *
     {

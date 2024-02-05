@@ -12,7 +12,7 @@ module BernoulliExpNeg.Interface {
   trait {:termination false} Trait extends Bernoulli.Interface.Trait {
 
     method BernoulliExpNegSample(gamma: Rationals.Rational) returns (c: bool)
-      modifies this
+      modifies `s
       decreases *
       requires gamma.numer >= 0
       ensures Monad.Result(c, s) == Model.Sample(gamma)(old(s))

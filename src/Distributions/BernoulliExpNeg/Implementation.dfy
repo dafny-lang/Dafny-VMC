@@ -17,7 +17,7 @@ module BernoulliExpNeg.Implementation {
 
     // Based on Algorithm 1 in https://arxiv.org/pdf/2004.00010.pdf; unverified
     method BernoulliExpNegSample(gamma: Rationals.Rational) returns (c: bool)
-      modifies this
+      modifies `s
       requires gamma.numer >= 0
       decreases *
       ensures Monad.Result(c, s) == Model.Sample(gamma)(old(s))
@@ -42,7 +42,7 @@ module BernoulliExpNeg.Implementation {
     }
 
     method BernoulliExpNegSampleCaseLe1(gamma: Rationals.Rational) returns (c: bool)
-      modifies this
+      modifies `s
       requires 0 <= gamma.numer <= gamma.denom
       decreases *
       ensures Monad.Result(c, s) == Model.SampleLe1(gamma)(old(s))
