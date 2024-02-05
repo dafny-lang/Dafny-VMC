@@ -252,7 +252,7 @@ module Loops {
     }
   }
 
-  lemma WhileUnrollIfDiverges<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
+  lemma WhileUnrollIfDiverges<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream, loop: Monad.Result<A>, unrolled: Monad.Result<A>)
     requires !WhileTerminatesOn(condition, body, init, s)
     requires loop == While(condition, body)(init)(s)
     requires unrolled == (if condition(init) then Monad.Bind(body(init), While(condition, body)) else Monad.Return(init))(s)
@@ -478,7 +478,7 @@ module Loops {
     reveal While();
   }
 
-  lemma WhileInitialConditionNegated<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
+  lemma WhileInitialConditionNegated<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, s: Rand.Bitstream)
     requires !condition(init)
     ensures While(condition, body)(init)(s) == Monad.Return(init)(s)
   {
