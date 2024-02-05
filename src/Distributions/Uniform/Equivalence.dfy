@@ -17,4 +17,16 @@ module Uniform.Equivalence {
     reveal Model.Sample();
     Loops.UntilUnroll(Model.Proposal(n), Model.Accept(n), s);
   }
+
+  lemma SampleLifts(n: nat, u: nat, oldS: Rand.Bitstream, prevS: Rand.Bitstream, s: Rand.Bitstream)
+    requires n > 0
+    requires Model.Sample(n)(oldS) == Model.Sample(n)(prevS)
+    requires Monad.Result(u, s) == Model.Proposal(n)(prevS)
+    requires Model.Accept(n)(u)
+    ensures Model.Sample(n)(oldS) == Monad.Result(u, s)
+  {
+    reveal Model.Sample();
+    Model.SampleTerminates(n);
+    Loops.UntilUnroll(Model.Proposal(n), Model.Accept(n), prevS);
+  }
 }

@@ -303,8 +303,8 @@ module BernoulliExpNeg.Correctness {
     var eventTrue := Monad.BitstreamsWithValueIn(Model.Le1LoopIter(gamma)((true, k)), iset{(true, k')});
     var eventTrue2 := iset s | Bernoulli.Model.Sample(gamma.numer, denom)(s).Equals(true);
     assert eventTrue == eventTrue2 by {
-      forall s 
-        ensures s in eventTrue <==> s in eventTrue2 
+      forall s
+        ensures s in eventTrue <==> s in eventTrue2
       {
         reveal Bernoulli.Model.Sample();
         if Uniform.Model.Sample(denom)(s).Result? {

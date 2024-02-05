@@ -96,7 +96,7 @@ module Uniform.Model {
 
   lemma SampleBound(n: nat, s: Rand.Bitstream)
     requires n > 0
-    requires Sample(n)(s).Result?  
+    requires Sample(n)(s).Result?
     ensures 0 <= Sample(n)(s).value < n
   {
     reveal Sample();
@@ -106,7 +106,7 @@ module Uniform.Model {
 
   lemma IntervalSampleBound(a: int, b: int, s: Rand.Bitstream)
     requires a < b
-    requires IntervalSample(a, b)(s).Result?  
+    requires IntervalSample(a, b)(s).Result?
     ensures a <= IntervalSample(a, b)(s).value < b
   {
     SampleBound(b-a, s);

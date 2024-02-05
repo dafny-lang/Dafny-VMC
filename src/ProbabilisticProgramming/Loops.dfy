@@ -93,10 +93,6 @@ module Loops {
   // Definition 44
   ghost function Until<A(!new)>(proposal: Monad.Hurd<A>, accept: A -> bool): (f: Monad.Hurd<A>)
     requires UntilTerminatesAlmostSurely(proposal, accept)
-    ensures
-      var reject := (a: A) => !accept(a);
-      var body := (a: A) => proposal;
-      forall s :: f(s) == proposal(s).Bind(While(reject, body))
   {
     reveal While();
     var reject := (a: A) => !accept(a);
@@ -422,6 +418,7 @@ module Loops {
   {
     var reject := (a: A) => !accept(a);
     var body := (a: A) => proposal;
+    UntilAsWhile(proposal, accept, s);
     match proposal(s)
     case Diverging =>
     case Result(init, s') => WhileUnroll(reject, body, init, s');
@@ -489,7 +486,7 @@ module Loops {
     assert WhileCutTerminatesWithFuel(condition, body, init, s)(0);
   }
 
-  lemma UntilResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Rand.Bitstream) 
+  lemma UntilResultIsAccepted<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Rand.Bitstream)
     requires UntilTerminatesAlmostSurely(proposal, accept)
     requires Until(proposal, accept)(s).Result?
     ensures accept(Until(proposal, accept)(s).value)
@@ -497,4 +494,13 @@ module Loops {
     reveal While();
   }
 
+  lemma UntilAsWhile<A>(proposal: Monad.Hurd<A>, accept: A -> bool, s: Rand.Bitstream)
+    requires UntilTerminatesAlmostSurely(proposal, accept)
+    ensures
+      var reject := (a: A) => !accept(a);
+      var body := (a: A) => proposal;
+      Until(proposal, accept)(s) == proposal(s).Bind(While(reject, body))
+  {
+    reveal While();
+  }
 }
