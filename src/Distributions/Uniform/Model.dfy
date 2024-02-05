@@ -100,6 +100,8 @@ module Uniform.Model {
     ensures 0 <= Sample(n)(s).value < n
   {
     reveal Sample();
+    SampleTerminates(n);
+    Loops.UntilResultIsAccepted(Proposal(n), Accept(n), s);
   }
 
   lemma IntervalSampleBound(a: int, b: int, s: Rand.Bitstream)
