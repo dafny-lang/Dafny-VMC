@@ -70,7 +70,7 @@ class Check {
         System.out.println("\nCUSTOM RNG TESTS\n");
 
         SecureRandom rng = new SecureRandom();
-        DafnyVMC.Random t = new DafnyVMC.Random(rng);
+        DafnyVMC.Random t = new DafnyVMC.Random(() -> rng);
 
         System.out.println("Example of Coin sampling");
         System.out.println(t.CoinSample());
