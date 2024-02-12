@@ -17,6 +17,23 @@ module FisherYates.Correctness {
    Lemmas
   *******/
 
+  lemma CorrectnessFisherYates<T(!new)>(xs: seq<T>, p: seq<T>)
+    requires
+      var xs' := seq(|xs|, i requires 0 <= i < |xs| => (xs[i], i));
+      var p' := seq(|p|, i requires 0 <= i < |p| => (p[i], i));
+      multiset(p') == multiset(xs')
+    ensures
+      var xs' := seq(|xs|, i requires 0 <= i < |xs| => (xs[i], i));
+      var p' := seq(|p|, i requires 0 <= i < |p| => (p[i], i));
+      var e := iset s | Model.Shuffle(xs')(s).Equals(p');
+      e in Rand.eventSpace
+      && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|) as real)
+  {
+    var xs' := seq(|xs|, i requires 0 <= i < |xs| => (xs[i], i));
+    var p' := seq(|p|, i requires 0 <= i < |p| => (p[i], i));
+    CorrectnessFisherYatesUniqueElements(xs', p');
+  }
+
   lemma CorrectnessFisherYatesUniqueElements<T(!new)>(xs: seq<T>, p: seq<T>)
     requires forall a, b | 0 <= a < b < |xs| :: xs[a] != xs[b]
     requires multiset(p) == multiset(xs)
