@@ -3,6 +3,7 @@ package DafnyVMC;
 import dafny.TypeDescriptor;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.function.Supplier;
 
 public class Random implements DafnyVMCTrait.RandomTrait {
   static ThreadLocal<SecureRandom> rng;
@@ -11,8 +12,8 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     this.rng = ThreadLocal.withInitial(Random::createSecureRandom);
   }
 
-  public Random(SecureRandom rng) {
-    this.rng = ThreadLocal.withInitial(() -> rng);
+  public Random(Supplier<SecureRandom> supplier) {
+    this.rng = ThreadLocal.withInitial(supplier);
   }
 
   private static final SecureRandom createSecureRandom() {
