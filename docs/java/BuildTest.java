@@ -70,23 +70,20 @@ class Check {
         SecureRandom rng = new SecureRandom();
         DafnyVMC.Random t = new DafnyVMC.Random(() -> rng);
 
-        System.out.println("Example of Coin sampling");
-        System.out.println(t.CoinSample());
-
         System.out.println("Example of Uniform sampling");
         System.out.println(t.UniformSample(BigInteger.valueOf(4)));
 
         System.out.println("Example of Bernoulli sampling");
-        System.out.println(t.BernoulliSample(gamma));
+        System.out.println(t.BernoulliSample(num,den));
 
         System.out.println("Example of BernoulliExpNeg sampling");
-        System.out.println(r.BernoulliExpNegSample(gamma));
+        System.out.println(r.BernoulliExpNegSample(num,den));
 
         System.out.println("Example of DiscreteGaussian sampling");
-        System.out.println(t.DiscreteGaussianSample(gamma));
+        System.out.println(t.DiscreteGaussianSample(num,den));
 
         System.out.println("Example of DiscreteLaplace sampling");
-        System.out.println(t.DiscreteLaplaceSample(gamma));
+        System.out.println(t.DiscreteLaplaceSample(num,den));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         t.Shuffle(arr1);
