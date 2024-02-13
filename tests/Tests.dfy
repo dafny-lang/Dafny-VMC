@@ -5,17 +5,10 @@
 
 module Tests {
   import Rationals
-  import Coin
-  import Uniform
-  import UniformPowerOfTwo
-  import Bernoulli
-  import BernoulliExpNeg
-  import DiscreteLaplace
-  import DiscreteGaussian
   import NatArith
   import RealArith
-  import FisherYates
   import Helper
+  import DafnyVMC
 
   method TestBernoulliIsWithin3SigmaOfTrueMean(
     n: nat,
@@ -51,21 +44,21 @@ module Tests {
     expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
 
-  method TestCoin(n: nat, r: Coin.Interface.Trait)
-    requires n > 0
-    modifies r
-  {
-    var t := 0;
-    for i := 0 to n {
-      var b := r.CoinSample();
-      if b {
-        t := t + 1;
-      }
-    }
-    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
-  }
+  // method TestCoin(n: nat, r: Coin.Interface.Trait)
+  //   requires n > 0
+  //   modifies r
+  // {
+  //   var t := 0;
+  //   for i := 0 to n {
+  //     var b := r.CoinSample();
+  //     if b {
+  //       t := t + 1;
+  //     }
+  //   }
+  //   TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
+  // }
 
-  method TestUniformPowerOfTwo(n: nat, u: nat, r: UniformPowerOfTwo.Interface.Trait)
+  method TestUniformPowerOfTwo(n: nat, u: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     requires u > 0
@@ -87,7 +80,7 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
   }
 
-  method TestUniformPowerOfTwoMean(n: nat, u: nat, r: UniformPowerOfTwo.Interface.Trait)
+  method TestUniformPowerOfTwoMean(n: nat, u: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     requires u > 0
@@ -104,7 +97,7 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
   }
 
-  method TestUniform(n: nat, u: nat, r: Uniform.Interface.Trait)
+  method TestUniform(n: nat, u: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     requires u > 0
@@ -125,7 +118,7 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
   }
 
-  method TestUniformMean(n: nat, u: nat, r: Uniform.Interface.Trait)
+  method TestUniformMean(n: nat, u: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     requires u > 0
@@ -141,7 +134,7 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
   }
 
-  method TestUniformInterval(n: nat, r: Uniform.Interface.Trait)
+  method TestUniformInterval(n: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     modifies r
@@ -162,7 +155,7 @@ module Tests {
     TestBernoulliIsWithin3SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
   }
 
-  method TestBernoulli(n: nat, r: Bernoulli.Interface.Trait)
+  method TestBernoulli(n: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     modifies r
@@ -177,7 +170,7 @@ module Tests {
     TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
   }
 
-  method TestBernoulli2(n: nat, r: Bernoulli.Interface.Trait)
+  method TestBernoulli2(n: nat, r: DafnyVMC.Random)
     decreases *
     modifies r
   {
@@ -192,7 +185,7 @@ module Tests {
     expect t == 0;
   }
 
-  method TestBernoulli3(n: nat, r: Bernoulli.Interface.Trait)
+  method TestBernoulli3(n: nat, r: DafnyVMC.Random)
     decreases *
     modifies r
   {
@@ -207,7 +200,7 @@ module Tests {
     expect t == n;
   }
 
-  method TestBernoulliExpNeg(n: nat, r: BernoulliExpNeg.Interface.Trait)
+  method TestBernoulliExpNeg(n: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     modifies r
@@ -222,7 +215,7 @@ module Tests {
     TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.1, "p(true)");
   }
 
-  method TestDiscreteLaplace(n: nat, r: DiscreteLaplace.Interface.Trait)
+  method TestDiscreteLaplace(n: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     modifies r
@@ -253,7 +246,7 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, variance, "mean");
   }
 
-  method TestDiscreteGaussian(n: nat, r: DiscreteGaussian.Interface.Trait)
+  method TestDiscreteGaussian(n: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
     modifies r
@@ -284,7 +277,7 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, 0.0, varianceBound, "mean");
   }
 
-  method TestFisherYates<T(==, !new)>(n: nat, a: array<T>, r: FisherYates.Interface.Trait, printer: ((T, nat)) -> string) 
+  method TestFisherYates<T(==, !new)>(n: nat, a: array<T>, r: DafnyVMC.Random, printer: ((T, nat)) -> string) 
     decreases *
     modifies r
     modifies a

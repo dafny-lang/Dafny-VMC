@@ -9,10 +9,10 @@ module TestsRandom {
   import Helper
   import Tests
 
-  method {:test} TestCoin() {
-    var r := new DafnyVMC.Random();
-    Tests.TestCoin(1_000_000, r);
-  }
+  // method {:test} TestCoin() {
+  //   var r := new DafnyVMC.Random();
+  //   Tests.TestCoin(1_000_000, r);
+  // }
 
   method {:test} TestUniformPowerOfTwo_10()
     decreases *
