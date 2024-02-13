@@ -10,9 +10,10 @@ module Uniform.Implementation {
   import Interface
   import Equivalence
   import Loops
+  import Pos
 
   trait {:termination false} Trait extends Interface.Trait {
-    method UniformSample(n: nat) returns (u: nat)
+    method UniformSample(n: Pos.pos) returns (u: nat)
       modifies `s
       decreases *
       requires n > 0
