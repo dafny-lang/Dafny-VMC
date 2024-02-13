@@ -14,7 +14,7 @@ class Check {
         long[] arr6 = {111111L, 333333L, 999999L};
         short[] arr7 = {-3, 0, 3};
         BigInteger num = BigInteger.valueOf(3);
-        BigInteger deb = BigInteger.valueOf(5);
+        BigInteger den = BigInteger.valueOf(5);
         
         /* STANDARD RNG */
         System.out.println("\nSTANDARD RNG TESTS\n");
