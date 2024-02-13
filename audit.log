@@ -1,21 +1,4 @@
 src/DafnyVMC.dfy(23,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/Bernoulli/Correctness.dfy(59,17): BernoulliCorrectnessCaseFalse: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(229,6): CorrectnessLe1: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(346,17): Le1SeriesConvergesToExpNeg: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(411,6): Le1LoopCutDecomposeProb: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(412,6): Le1LoopCutDecomposeProb: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(419,6): Le1LoopCutDecomposeProb: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(420,6): Le1LoopCutDecomposeProb: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(424,6): Le1LoopCutDecomposeProb: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(425,6): Le1LoopCutDecomposeProb: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(615,8): Le1LoopCorrectnessEq: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Correctness.dfy(616,8): Le1LoopCorrectnessEq: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(112,10): Le1LoopTerminatesAlmostSurely: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(148,4): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(161,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(162,8): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(185,10): Le1LoopDivergenceProbabilityBound: Definition has `assume {:axiom}` statement in body. 
-src/Distributions/BernoulliExpNeg/Model.dfy(71,17): Le1LoopIterCorrectness: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Analysis/Limits.dfy(126,17): Sandwich: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Exponential.dfy(55,17): ExpSeriesConverges: Declaration has explicit `{:axiom}` attribute. 
