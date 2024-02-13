@@ -6,7 +6,6 @@
 module Loops {
   import Helper
   import Measures
-  //import Limits
   import Monad
   import Quantifier
   import Independence
@@ -364,39 +363,9 @@ module Loops {
     requires Quantifier.WithPosProb(WhileLoopGloballyExitsAfterOneIteration(condition, body))
     ensures WhileTerminatesAlmostSurely(condition, body)
 
-  // lemma {:axiom} EnsureWhileTerminatesAlmostSurelyViaLimit<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
-  //   requires Limits.ConvergesTo(WhileCutDivergenceProbability(condition, body, init), 0.0)
-  //   ensures WhileTerminatesAlmostSurelyInit(condition, body, init)
-  /*
-    Proof strategy:
-
-    Prove that the event that WhileCut terminates grows with the fuel.
-    By monotonicity of probability, the probability is increasing with the fuel.
-    The event that while terminates is the union of WhileCut terminating over all possible values for fuel.
-    By standard measure theory results and the monotonicity of the events,
-    the probability that while terminates is the supremum of the probabilities that WhileCut terminates over all possible values for fuel.
-    Since the probability is increasing, the supremum is the same as the limit.
-  */
-
   ghost function WhileCutProbability<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, resultSet: iset<A>): nat -> real {
     (fuel: nat) => Rand.prob(Monad.BitstreamsWithValueIn(WhileCut(condition, body, init, fuel), resultSet))
   }
-
-  // lemma {:axiom} WhileProbabilityViaLimit<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, resultSet: iset<A>, resultSetRestricted: iset<A>, limit: real)
-  //   // TODO: we should probably require measurability of condition and independence of body(a) for all a?
-  //   requires resultSetRestricted == iset a <- resultSet | !condition(a)
-  //   requires Limits.ConvergesTo(WhileCutProbability(condition, body, init, resultSetRestricted), limit)
-  //   ensures Rand.prob(Monad.BitstreamsWithValueIn(While(condition, body)(init), resultSet)) == limit
-  /*
-    Proof strategy (similar to EnsureWhileTerminates, can they be unified?):
-
-    Prove that the event that WhileCut yields a result in resultSet violating `condition` grows with the fuel.
-    By monotonicity of probability, the probability is increasing with the fuel.
-    The event that while yields a result in resultsSet (it always violates `condition`) is the union of the events of WhileCut yielding a value in `resultSetRestricted`, over all possible values for fuel.
-    By standard measure theory results and the monotonicity of the events,
-    the probability that while yields a result in resultSet is the supremum of the probabilities that WhileCut yields a result in resultSet violating `condition`, over all possible values for fuel.
-    Since the probability is increasing, the supremum is the same as the limit.
-  */
 
   // Theorem 45 (wrong!) / PROB_BERN_UNTIL (correct!)
   lemma {:axiom} UntilProbabilityFraction<A>(proposal: Monad.Hurd<A>, accept: A -> bool, d: A -> bool)
