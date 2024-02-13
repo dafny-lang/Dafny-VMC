@@ -5,6 +5,15 @@ import java.util.Arrays;
 import DafnyVMC.Random;
 
 class Check {
+
+    public static BigInteger UniformPowerOfTwoSample(BigInteger n, ThreadLocal<SecureRandom> rng) {
+        if (n.compareTo(BigInteger.ONE) < 0) {
+          throw new IllegalArgumentException("n must be positive");
+        }
+    
+        return new BigInteger(n.bitLength()-1, rng.get());
+    }
+
     public static void main(String[] args) {
         BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
         int[] arr2 = {0, 1, 2};
@@ -20,7 +29,7 @@ class Check {
 
         SecureRandom secRand = new SecureRandom();
         ThreadLocal<SecureRandom> rng = ThreadLocal.withInitial(() -> secRand);
-        DafnyVMC.Random t = new DafnyVMC.Random(n -> new BigInteger(n.bitLength()-1, rng.get()));
+        DafnyVMC.Random t = new DafnyVMC.Random(n -> UniformPowerOfTwoSample(n, rng));
 
         System.out.println("Example of Coin sampling");
         System.out.println(t.CoinSample());
