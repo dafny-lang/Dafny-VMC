@@ -1,5 +1,5 @@
 
-module NewVMCTrait {
+module DafnyVMCTrait {
 
   import UniformPowerOfTwo
 
