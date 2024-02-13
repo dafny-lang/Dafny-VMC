@@ -26,7 +26,7 @@ module NewVMCTrait {
 
     method {:verify false} BernoulliSample (num: nat, den: pos)
       returns (o: bool)
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -36,7 +36,7 @@ module NewVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnitLoop (num: nat, den: pos, state: (bool,pos))
       returns (o: (bool,pos))
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -46,7 +46,7 @@ module NewVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnitAux (num: nat, den: pos)
       returns (o: nat)
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -62,7 +62,7 @@ module NewVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnit (num: nat, den: pos)
       returns (o: bool)
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -136,7 +136,7 @@ module NewVMCTrait {
 
     method {:verify false} DiscreteLaplaceSampleLoopIn2Aux (num: nat, den: pos, K: (bool,pos))
       returns (o: (bool,pos))
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -222,6 +222,6 @@ module NewVMCTrait {
     }
 
 
-}
+  }
 
 }
