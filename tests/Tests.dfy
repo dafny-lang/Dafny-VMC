@@ -44,20 +44,6 @@ module Tests {
     expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
 
-  // method TestCoin(n: nat, r: Coin.Interface.Trait)
-  //   requires n > 0
-  //   modifies r
-  // {
-  //   var t := 0;
-  //   for i := 0 to n {
-  //     var b := r.CoinSample();
-  //     if b {
-  //       t := t + 1;
-  //     }
-  //   }
-  //   TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.5, "p(true)");
-  // }
-
   method TestUniformPowerOfTwo(n: nat, u: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0
@@ -198,6 +184,21 @@ module Tests {
     }
 
     expect t == n;
+  }
+
+  method TestBernoulliExpNegLe1(n: nat, r: DafnyVMC.Random)
+    decreases *
+    requires n > 0
+    modifies r
+  {
+    var t := 0;
+    for i := 0 to n {
+      var u := r.BernoulliExpNegSample(Rationals.Rational(5108256, 10000000)); // about -ln(0.6)
+      if u {
+        t := t + 1;
+      }
+    }
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.6, "p(true)");
   }
 
   method TestBernoulliExpNeg(n: nat, r: DafnyVMC.Random)
