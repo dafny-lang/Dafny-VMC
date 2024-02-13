@@ -4,14 +4,14 @@
  *******************************************************************************/
 
 module {:extern "DafnyVMCPart"} DafnyVMC {
-  import DafnyVMCTrait
+  import NewVMCTrait
   import Monad
   import UniformPowerOfTwo
 
   // For running Dafny native testing with standard SecureRandom rng
   method {:extern "DafnyVMCPartMaterial.Random", "UniformPowerOfTwoSample"} ExternUniformPowerOfTwoSample(n: nat) returns (u: nat)
 
-  class Random extends DafnyVMCTrait.RandomTrait {
+  class Random extends NewVMCTrait.RandomTrait {
     constructor {:extern} ()
 
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)

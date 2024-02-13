@@ -4,7 +4,6 @@
  *******************************************************************************/
 
 module Tests {
-  import Rationals
   import NatArith
   import RealArith
   import Helper
@@ -148,7 +147,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(Rationals.Rational(1, 5));
+      var b := r.BernoulliSample(1, 5);
       if b {
         t := t + 1;
       }
@@ -162,7 +161,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(Rationals.Rational(0, 5));
+      var b := r.BernoulliSample(0, 5);
       if b {
         t := t + 1;
       }
@@ -177,7 +176,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(Rationals.Rational(5, 5));
+      var b := r.BernoulliSample(5, 5);
       if b {
         t := t + 1;
       }
@@ -193,7 +192,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNegSample(Rationals.Rational(5108256, 10000000)); // about -ln(0.6)
+      var u := r.BernoulliExpNegSample(5108256, 10000000); // about -ln(0.6)
       if u {
         t := t + 1;
       }
@@ -208,7 +207,7 @@ module Tests {
   {
     var t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNegSample(Rationals.Rational(12381, 5377)); // about -ln(0.1)
+      var u := r.BernoulliExpNegSample(12381, 5377); // about -ln(0.1)
       if u {
         t := t + 1;
       }
@@ -226,7 +225,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteLaplaceSample(Rationals.Rational(7, 5));
+      var u := r.DiscreteLaplaceSample(7, 5);
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];
@@ -257,7 +256,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteGaussianSample(Rationals.Rational(7, 5));
+      var u := r.DiscreteGaussianSample(7, 5);
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];

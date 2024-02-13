@@ -4,7 +4,6 @@
  *******************************************************************************/
 
 module Examples {
-  import Rationals
   import DafnyVMC
   import Helper
 
@@ -15,13 +14,13 @@ module Examples {
     var r: DafnyVMC.Random := new DafnyVMC.Random();
 
     var t := 0;
-    for i := 0 to n {
-      var b := r.CoinSample();
-      if b {
-        t := t + 1;
-      }
-    }
-    print "Estimated parameter for CoinSample(): ", (t as real) / (n as real), " (should be around 0.5)\n";
+    // for i := 0 to n {
+    //   var b := r.CoinSample();
+    //   if b {
+    //     t := t + 1;
+    //   }
+    // }
+    // print "Estimated parameter for CoinSample(): ", (t as real) / (n as real), " (should be around 0.5)\n";
 
     var a := 0;
     var b := 0;
@@ -55,7 +54,7 @@ module Examples {
 
     t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(Rationals.Rational(1, 5));
+      var b := r.BernoulliSample(1, 5);
       if b {
         t := t + 1;
       }
@@ -65,7 +64,7 @@ module Examples {
 
     t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(Rationals.Rational(0, 5));
+      var b := r.BernoulliSample(0, 5);
       if b {
         t := t + 1;
       }
@@ -75,7 +74,7 @@ module Examples {
 
     t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(Rationals.Rational(5, 5));
+      var b := r.BernoulliSample(5, 5);
       if b {
         t := t + 1;
       }
@@ -85,7 +84,7 @@ module Examples {
 
     t := 0;
     for i := 0 to n {
-      var u := r.BernoulliExpNegSample(Rationals.Rational(12381, 5377)); // about -ln(0.1)
+      var u := r.BernoulliExpNegSample(12381, 5377); // about -ln(0.1)
       if u {
         t := t + 1;
       }
@@ -96,7 +95,7 @@ module Examples {
     var count1 := 0;
     var countneg1 := 0;
     for i := 0 to n {
-      var u := r.DiscreteLaplaceSample(Rationals.Rational(7, 5));
+      var u := r.DiscreteLaplaceSample(7, 5);
       match u {
         case -1 => countneg1 := countneg1 + 1;
         case 0 => count0 := count0 + 1;
@@ -113,7 +112,7 @@ module Examples {
     count1 := 0;
     countneg1 := 0;
     for i := 0 to n {
-      var u := r.DiscreteGaussianSample(Rationals.Rational(7, 5));
+      var u := r.DiscreteGaussianSample(7, 5);
       match u {
         case -1 => countneg1 := countneg1 + 1;
         case 0 => count0 := count0 + 1;
