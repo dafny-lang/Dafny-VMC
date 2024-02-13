@@ -14,13 +14,6 @@ module Examples {
     var r: DafnyVMC.Random := new DafnyVMC.Random();
 
     var t := 0;
-    // for i := 0 to n {
-    //   var b := r.CoinSample();
-    //   if b {
-    //     t := t + 1;
-    //   }
-    // }
-    // print "Estimated parameter for CoinSample(): ", (t as real) / (n as real), " (should be around 0.5)\n";
 
     var a := 0;
     var b := 0;
