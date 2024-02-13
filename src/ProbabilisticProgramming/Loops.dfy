@@ -6,7 +6,7 @@
 module Loops {
   import Helper
   import Measures
-  import Limits
+  //import Limits
   import Monad
   import Quantifier
   import Independence
@@ -364,9 +364,9 @@ module Loops {
     requires Quantifier.WithPosProb(WhileLoopGloballyExitsAfterOneIteration(condition, body))
     ensures WhileTerminatesAlmostSurely(condition, body)
 
-  lemma {:axiom} EnsureWhileTerminatesAlmostSurelyViaLimit<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
-    requires Limits.ConvergesTo(WhileCutDivergenceProbability(condition, body, init), 0.0)
-    ensures WhileTerminatesAlmostSurelyInit(condition, body, init)
+  // lemma {:axiom} EnsureWhileTerminatesAlmostSurelyViaLimit<A>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A)
+  //   requires Limits.ConvergesTo(WhileCutDivergenceProbability(condition, body, init), 0.0)
+  //   ensures WhileTerminatesAlmostSurelyInit(condition, body, init)
   /*
     Proof strategy:
 
@@ -382,11 +382,11 @@ module Loops {
     (fuel: nat) => Rand.prob(Monad.BitstreamsWithValueIn(WhileCut(condition, body, init, fuel), resultSet))
   }
 
-  lemma {:axiom} WhileProbabilityViaLimit<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, resultSet: iset<A>, resultSetRestricted: iset<A>, limit: real)
-    // TODO: we should probably require measurability of condition and independence of body(a) for all a?
-    requires resultSetRestricted == iset a <- resultSet | !condition(a)
-    requires Limits.ConvergesTo(WhileCutProbability(condition, body, init, resultSetRestricted), limit)
-    ensures Rand.prob(Monad.BitstreamsWithValueIn(While(condition, body)(init), resultSet)) == limit
+  // lemma {:axiom} WhileProbabilityViaLimit<A(!new)>(condition: A -> bool, body: A -> Monad.Hurd<A>, init: A, resultSet: iset<A>, resultSetRestricted: iset<A>, limit: real)
+  //   // TODO: we should probably require measurability of condition and independence of body(a) for all a?
+  //   requires resultSetRestricted == iset a <- resultSet | !condition(a)
+  //   requires Limits.ConvergesTo(WhileCutProbability(condition, body, init, resultSetRestricted), limit)
+  //   ensures Rand.prob(Monad.BitstreamsWithValueIn(While(condition, body)(init), resultSet)) == limit
   /*
     Proof strategy (similar to EnsureWhileTerminates, can they be unified?):
 
