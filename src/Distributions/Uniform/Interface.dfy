@@ -22,7 +22,7 @@ module Uniform.Interface {
   }
 
   trait {:termination false} Trait extends TraitMinus {
-  
+
     method UniformIntervalSample(a: int, b: int) returns (u: int)
       modifies `s
       decreases *

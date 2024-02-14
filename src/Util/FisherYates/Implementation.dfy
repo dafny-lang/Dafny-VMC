@@ -14,13 +14,13 @@ module FisherYates.Implementation {
 
     method Shuffle<T>(a: array<T>, t: Uniform.Interface.Trait := this)
       decreases *
-      modifies `s, a
-      ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
+      modifies this, a, t
+      ensures (t == this) ==> Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
     {
       ghost var prevI, prevASeq, prevS := 0, a[..], s; // ghost
       if a.Length > 1 {
         for i := 0 to a.Length - 1
-          invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s)
+          invariant (t == this) ==> Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s)
         {
           prevI, prevASeq, prevS := i, a[..], s; // ghost
           var j := t.UniformIntervalSample(i, a.Length);

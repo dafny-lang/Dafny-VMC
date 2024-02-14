@@ -12,8 +12,8 @@ module FisherYates.Interface {
 
     method Shuffle<T>(a: array<T>, t: Uniform.Interface.Trait := this)
       decreases *
-      modifies `s, a
-      ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
+      modifies this, a, t
+      ensures (t == this) ==> Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
 
   }
 }
