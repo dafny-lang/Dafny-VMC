@@ -8,10 +8,11 @@ module Uniform.Interface {
   import Coin
   import Model
   import UniformPowerOfTwo
+  import Pos
 
   trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
 
-    method UniformSample(n: nat) returns (u: nat)
+    method UniformSample(n: Pos.pos) returns (u: nat)
       modifies `s
       decreases *
       requires n > 0
