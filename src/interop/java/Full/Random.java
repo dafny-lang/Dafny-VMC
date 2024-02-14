@@ -32,39 +32,67 @@ public class Random implements DafnyVMCTrait.RandomTrait {
   }
 
   public java.math.BigInteger UniformSample(java.math.BigInteger n) {
-    return Uniform.Implementation._Companion_Trait.UniformSample(this, n);
+    return DafnyVMCTrait._Companion_RandomTrait.UniformSample(this, n);
   }
 
-  public boolean CoinSample() {
-    return Coin.Implementation._Companion_Trait.CoinSample(this);
-  }
-
-  public boolean BernoulliSample(Rationals.Rational p) {
-    return Bernoulli.Implementation._Companion_Trait.BernoulliSample(this, p);
+  public boolean BernoulliSample(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.BernoulliSample(this, num, den);
   }  
 
-  public boolean BernoulliExpNegSampleCaseLe1(Rationals.Rational gamma) {
-    return BernoulliExpNeg.Implementation._Companion_Trait.BernoulliExpNegSampleCaseLe1(this, gamma);
+  public dafny.Tuple2<Boolean, java.math.BigInteger> BernoulliExpNegSampleUnitLoop(java.math.BigInteger num, java.math.BigInteger den, dafny.Tuple2<Boolean, java.math.BigInteger> state) {
+    return DafnyVMCTrait._Companion_RandomTrait.BernoulliExpNegSampleUnitLoop(this, num, den, state);
   }
 
-  public boolean BernoulliExpNegSample(Rationals.Rational gamma) {
-    return BernoulliExpNeg.Implementation._Companion_Trait.BernoulliExpNegSample(this, gamma);
+  public java.math.BigInteger BernoulliExpNegSampleUnitAux(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.BernoulliExpNegSampleUnitAux(this, num, den);
   }
 
-  public java.math.BigInteger DiscreteGaussianSample(Rationals.Rational sigma) {
-    return DiscreteGaussian.Implementation._Companion_Trait.DiscreteGaussianSample(this, sigma);
+
+  public boolean BernoulliExpNegSampleUnit(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.BernoulliExpNegSampleUnit(this, num, den);
   }
 
-  public dafny.Tuple2<Boolean, java.math.BigInteger> DiscreteLaplaceSampleLoop(Rationals.Rational scale) {
-    return DiscreteLaplace.Implementation._Companion_Trait.DiscreteLaplaceSampleLoop(this, scale);
+
+  public boolean BernoulliExpNegSampleGenLoop(java.math.BigInteger iter) {
+    return DafnyVMCTrait._Companion_RandomTrait.BernoulliExpNegSampleGenLoop(this, iter);
   }
 
-  public java.math.BigInteger DisceteLaplaceSampleInnerLoop() {
-    return DiscreteLaplace.Implementation._Companion_Trait.DisceteLaplaceSampleInnerLoop(this);
+
+  public boolean BernoulliExpNegSample(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.BernoulliExpNegSample(this, num, den);
   }
 
-  public java.math.BigInteger DiscreteLaplaceSample(Rationals.Rational scale) {
-    return DiscreteLaplace.Implementation._Companion_Trait.DiscreteLaplaceSample(this, scale);
+  public dafny.Tuple2<java.math.BigInteger, Boolean> DiscreteGaussianSampleLoop(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger t) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSampleLoop(this, num, den, t);
+  }
+
+
+  public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den);
+  }
+
+  public dafny.Tuple2<java.math.BigInteger, Boolean> DiscreteLaplaceSampleLoopIn1Aux(java.math.BigInteger t) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoopIn1Aux(this ,t);
+  }
+
+  public java.math.BigInteger DiscreteLaplaceSampleLoopIn1(java.math.BigInteger t) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoopIn1(this, t);
+  }
+
+  public dafny.Tuple2<Boolean, java.math.BigInteger> DiscreteLaplaceSampleLoopIn2Aux(java.math.BigInteger num, java.math.BigInteger den, dafny.Tuple2<Boolean, java.math.BigInteger> K) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoopIn2Aux(this, num, den, K);
+  }
+
+  public java.math.BigInteger DiscreteLaplaceSampleLoopIn2(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoopIn2(this, num, den);
+  }
+
+  public dafny.Tuple2<Boolean, java.math.BigInteger> DiscreteLaplaceSampleLoop(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoop(this, num, den);
+  }
+
+  public java.math.BigInteger DiscreteLaplaceSample(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSample(this, num, den);
   }
 
   public <__T> void Shuffle(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, Uniform.Interface.Trait t) {
