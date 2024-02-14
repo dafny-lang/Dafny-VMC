@@ -24,6 +24,57 @@ class Check {
         short[] arr7 = {-3, 0, 3};
         Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
 
+        /* STANDARD RNG */
+        System.out.println("\nSTANDARD RNG TESTS\n");
+
+        DafnyVMC.Random r = new DafnyVMC.Random();
+
+        System.out.println("Example of Coin sampling");
+        System.out.println(r.CoinSample());
+
+        System.out.println("Example of Uniform sampling");
+        System.out.println(r.UniformSample(BigInteger.valueOf(4)));
+
+        System.out.println("Example of Bernoulli sampling");
+        System.out.println(r.BernoulliSample(gamma));
+
+        System.out.println("Example of BernoulliExpNeg sampling");
+        System.out.println(r.BernoulliExpNegSample(gamma));
+
+        System.out.println("Example of DiscreteGaussian sampling");
+        System.out.println(r.DiscreteGaussianSample(gamma));
+
+        System.out.println("Example of DiscreteLaplace sampling");
+        System.out.println(r.DiscreteLaplaceSample(gamma));
+
+        System.out.println("Example of Fisher-Yates: BigInteger");
+        r.Shuffle(arr1);
+        System.out.println(Arrays.toString(arr1));
+
+        System.out.println("Example of Fisher-Yates: int");
+        r.Shuffle(arr2);
+        System.out.println(Arrays.toString(arr2));
+
+        System.out.println("Example of Fisher-Yates: String");
+        r.Shuffle(arr3);
+        System.out.println(Arrays.toString(arr3));
+
+        System.out.println("Example of Fisher-Yates: char");
+        r.Shuffle(arr4);
+        System.out.println(Arrays.toString(arr4));
+
+        System.out.println("Example of Fisher-Yates: boolean");
+        r.Shuffle(arr5);
+        System.out.println(Arrays.toString(arr5));
+
+        System.out.println("Example of Fisher-Yates: long");
+        r.Shuffle(arr6);
+        System.out.println(Arrays.toString(arr6));
+
+        System.out.println("Example of Fisher-Yates: short");
+        r.Shuffle(arr7);
+        System.out.println(Arrays.toString(arr7));
+
         /* CUSTOM RNG */
         System.out.println("\nCUSTOM RNG TESTS\n");
 

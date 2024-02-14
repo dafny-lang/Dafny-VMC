@@ -2,17 +2,38 @@ package DafnyVMC;
 
 import dafny.TypeDescriptor;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.function.Function;
 
 public class Random implements DafnyVMCTrait.RandomTrait {  
   static Function<BigInteger, BigInteger> unif;
   
+  public Random() {
+    ThreadLocal<SecureRandom> rng = ThreadLocal.withInitial(Random::createSecureRandom); 
+    Random.unif = n -> UniformPowerOfTwoSample(n, rng);
+  }
+
   public Random(Function<BigInteger, BigInteger> unif) {
     Random.unif = unif;
   }
 
+  private static final SecureRandom createSecureRandom() {
+    final SecureRandom rng = new SecureRandom();
+    // Required for proper initialization
+    rng.nextBoolean(); 
+    return rng;
+  }
+
   public BigInteger UniformPowerOfTwoSample(BigInteger n) {
     return unif.apply(n);
+  }
+
+  public BigInteger UniformPowerOfTwoSample(BigInteger n, ThreadLocal<SecureRandom> rng) {
+    if (n.compareTo(BigInteger.ONE) < 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+
+    return new BigInteger(n.bitLength()-1, rng.get());
   }
 
   public java.math.BigInteger UniformIntervalSample(java.math.BigInteger a, java.math.BigInteger b) {
