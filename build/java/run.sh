@@ -1,3 +1,3 @@
 #1/bin/bash
-
-java -classpath build/java/DafnyVMC.jar docs/java/BuildTest.java
+javac -classpath "build/java/DafnyVMC.jar:docs/java/" docs/java/CustomUniformSample.java
+java -classpath "build/java/DafnyVMC.jar:docs/java/" docs/java/BuildTest.java 
