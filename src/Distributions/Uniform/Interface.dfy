@@ -9,7 +9,7 @@ module Uniform.Interface {
   import Model
   import UniformPowerOfTwo
 
-  trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
+  trait {:termination false} TraitMinus extends UniformPowerOfTwo.Interface.Trait {
 
     method UniformSample(n: nat) returns (u: nat)
       modifies `s
@@ -18,6 +18,10 @@ module Uniform.Interface {
       ensures u < n
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 
+  }
+
+  trait {:termination false} Trait extends TraitMinus {
+  
     method UniformIntervalSample(a: int, b: int) returns (u: int)
       modifies `s
       decreases *
@@ -32,4 +36,5 @@ module Uniform.Interface {
     }
 
   }
+
 }

@@ -12,7 +12,7 @@ module FisherYates.Implementation {
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method Shuffle<T>(a: array<T>)
+    method Shuffle<T>(a: array<T>, t: Uniform.Interface.Trait := this)
       decreases *
       modifies `s, a
       ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
@@ -23,7 +23,7 @@ module FisherYates.Implementation {
           invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s)
         {
           prevI, prevASeq, prevS := i, a[..], s; // ghost
-          var j := UniformIntervalSample(i, a.Length);
+          var j := t.UniformIntervalSample(i, a.Length);
           assert prevASeq == a[..]; // ghost
           Swap(a, i, j);
         }
