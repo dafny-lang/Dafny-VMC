@@ -2,7 +2,10 @@ import DafnyVMC
 
 def main():
     arr1 = [0, 1, 2]
+    arr2 = [float(0), float(1), float(2)]
     arr3 = ["aa", "bb", "cc"]
+    arr4 = ['a', 'b', 'c']
+    arr5 = [True, False, False, True]
     num = 3
     den = 5
 
@@ -26,13 +29,25 @@ def main():
     print("Example of DiscreteLaplace sampling")
     print(r.DiscreteLaplaceSample(num,den))
 
-    print("Example of Fisher-Yates: BigInteger")
+    print("Example of Fisher-Yates: int")
     r.Shuffle(arr1)
     print(arr1)
 
-    print("Example of Fisher-Yates: String")
+    print("Example of Fisher-Yates: float")
+    r.Shuffle(arr2)
+    print(arr2)
+
+    print("Example of Fisher-Yates: str")
     r.Shuffle(arr3)
     print(arr3)
+
+    print("Example of Fisher-Yates: char/str")
+    r.Shuffle(arr4)
+    print(arr4)
+
+    print("Example of Fisher-Yates: boolean")
+    r.Shuffle(arr5)
+    print(arr5)
 
 if __name__ == "__main__":
     main()
