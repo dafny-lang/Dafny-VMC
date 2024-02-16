@@ -53,6 +53,6 @@ module FisherYates.Implementation {
         print "\n";
       }
     }
-    
+
   }
 }
