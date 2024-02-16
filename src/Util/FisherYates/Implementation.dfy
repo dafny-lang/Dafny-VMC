@@ -41,5 +41,18 @@ module FisherYates.Implementation {
       a[i], a[j] := a[j], a[i];
     }
 
+    method PrintArray<A>(a: array?<A>) {
+      if (a == null) {
+        print "It's null\n";
+      } else {
+        var i := 0;
+        while i < a.Length {
+          print a[i], " ";
+          i := i + 1;
+        }
+        print "\n";
+      }
+    }
+    
   }
 }
