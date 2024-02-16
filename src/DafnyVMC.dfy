@@ -3,13 +3,18 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
+module {:extern} DafnyVMCPartMaterial {
+  class {:extern} Random {
+    // For running Dafny native testing with standard SecureRandom rng
+    static method {:extern "UniformPowerOfTwoSample"} ExternUniformPowerOfTwoSample(n: nat) returns (u: nat)
+  }
+}
+
 module {:extern "DafnyVMCPart"} DafnyVMC {
   import DafnyVMCTrait
+  import DafnyVMCPartMaterial
   import Monad
   import UniformPowerOfTwo
-
-  // For running Dafny native testing with standard SecureRandom rng
-  method {:extern "DafnyVMCPartMaterial.Random", "UniformPowerOfTwoSample"} ExternUniformPowerOfTwoSample(n: nat) returns (u: nat)
 
   class Random extends DafnyVMCTrait.RandomTrait {
     constructor {:extern} ()
@@ -19,7 +24,7 @@ module {:extern "DafnyVMCPart"} DafnyVMC {
       modifies this
       ensures UniformPowerOfTwo.Model.Sample(n)(old(s)) == Monad.Result(u, s)
     {
-      u := ExternUniformPowerOfTwoSample(n);
+      u := DafnyVMCPartMaterial.Random.ExternUniformPowerOfTwoSample(n);
       assume {:axiom} false; // assume correctness of extern implementation
     }
   }
