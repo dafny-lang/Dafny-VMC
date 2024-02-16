@@ -38,6 +38,6 @@ echo "Executing compiled docs/dafny/ExamplesRandom.dfy:"
 if [ "$TARGET_LANG" = "java" ]
 then
   java -jar docs/dafny/ExamplesRandom.jar
-elif [ "$TARGET_LANG" = "py" ]
+else
   python3 docs/dafny/ExamplesRandom-py/__main__.py
 fi
