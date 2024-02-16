@@ -134,5 +134,9 @@ public class Random implements DafnyVMCTrait.RandomTrait {
   public <__T> void Swap(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, java.math.BigInteger i, java.math.BigInteger j) {
     FisherYates.Implementation._Companion_Trait.Swap(_td___T, this, a, i, j);
   }
+
+  public <__T> void PrintArray(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a) {
+    FisherYates.Implementation._Companion_Trait.PrintArray(_td___T, this, a);
+  }
     
 }
