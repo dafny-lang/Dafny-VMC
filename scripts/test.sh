@@ -18,17 +18,22 @@ echo Running $TARGET_LANG tests...
 echo "Running tests/TestsRandom.dfy:"
 if [ "$TARGET_LANG" = "py" ]
 then
-  time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Part/DafnyVMCPartMaterial.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
+  time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/DafnyVMC.$TARGET_LANG src/interop/$TARGET_LANG/Part/DafnyVMCPartMaterial.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
 else
-  time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
+  time $DAFNY test --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG tests/TestsRandom.dfy tests/Tests.dfy dfyconfig.toml  --no-verify
 fi
 
 echo Running $TARGET_LANG documentation...
-
 echo "Building docs/dafny/ExamplesRandom.dfy..." 
-$DAFNY build docs/dafny/ExamplesRandom.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/Part/DafnyVMCPartMaterial.$TARGET_LANG dfyconfig.toml --no-verify
+if [ "$TARGET_LANG" = "py" ]
+then
+  time $DAFNY build docs/dafny/ExamplesRandom.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/DafnyVMC.$TARGET_LANG src/interop/$TARGET_LANG/Part/DafnyVMCPartMaterial.$TARGET_LANG dfyconfig.toml --no-verify
+else
+  time $DAFNY build docs/dafny/ExamplesRandom.dfy --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG dfyconfig.toml --no-verify
 echo "Executing compiled docs/dafny/ExamplesRandom.dfy:" 
 if [ "$TARGET_LANG" = "java" ]
 then
   java -jar docs/dafny/ExamplesRandom.jar
+elif [ "$TARGET_LANG" = "py" ]
+  python3 docs/dafny/ExamplesRandom-py/__main__.py
 fi
