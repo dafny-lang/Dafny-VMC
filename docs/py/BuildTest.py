@@ -1,5 +1,4 @@
 import DafnyVMC
-import _dafny
 
 def main():
     arr1 = [0, 1, 2]
