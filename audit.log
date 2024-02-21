@@ -1,4 +1,7 @@
 src/DafnyVMC.dfy(23,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(62,27): DiscreteLaplaceSampleLoop: Declaration has `{:verify false}` attribute. 
+src/Distributions/DiscreteLaplace/Implementation.dfy(76,27): DiscreteLaplaceSample: Declaration has `{:verify false}` attribute. 
+src/Distributions/Uniform/Implementation.dfy(13,27): UniformSample: Declaration has `{:verify false}` attribute. 
 src/Math/Analysis/Limits.dfy(126,17): Sandwich: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(125,17): ProbabilityLe1: Declaration has explicit `{:axiom}` attribute. 
