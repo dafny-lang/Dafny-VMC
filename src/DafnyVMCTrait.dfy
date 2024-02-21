@@ -10,7 +10,7 @@ module DafnyVMCTrait {
   import opened Pos
 
   trait {:termination false} RandomTrait extends
-      UniformPowerOfTwo.Implementation.Trait,
+      UniformPowerOfTwo.Interface.Trait,
       Uniform.Implementation.Trait,
       Bernoulli.Implementation.Trait,
       BernoulliExpNeg.Implementation.Trait,
