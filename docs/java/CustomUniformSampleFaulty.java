@@ -5,19 +5,6 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 class CustomUniformSampleFaultyMinus implements Uniform.Interface.TraitMinus {
-  static ThreadLocal<SecureRandom> rng;
-
-  public CustomUniformSampleFaultyMinus() {
-      CustomUniformSampleFaultyMinus.rng = ThreadLocal.withInitial(CustomUniformSampleFaultyMinus::createSecureRandom);
-  }
-
-  private static final SecureRandom createSecureRandom() {
-      final SecureRandom rng = new SecureRandom();
-      // Required for proper initialization
-      rng.nextBoolean(); 
-      return rng;
-  }
-  
   public BigInteger UniformSample(BigInteger n) {
     return BigInteger.valueOf(0); // Faulty; only for demonstration purposes
   }
