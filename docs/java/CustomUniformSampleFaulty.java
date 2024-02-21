@@ -1,8 +1,6 @@
 import Uniform.Interface.TraitMinus;
 import Uniform.Interface.Trait;
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Random;
 
 class CustomUniformSampleFaultyMinus implements Uniform.Interface.TraitMinus {
   public BigInteger UniformSample(BigInteger n) {
