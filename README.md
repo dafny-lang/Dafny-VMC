@@ -19,8 +19,9 @@ class Test {
     System.out.println(Arrays.toString(arr));
   
     System.out.println("Example of Bernoulli sampling");
-    Rationals.Rational gamma = new Rationals.Rational(BigInteger.valueOf(3), BigInteger.valueOf(5));
-    System.out.println(r.BernoulliSample(gamma));
+    BigInteger num = BigInteger.valueOf(3);
+    BigInteger den = BigInteger.valueOf(5);
+    System.out.println(r.BernoulliSample(num,den));
   }
 }
 ```
@@ -39,8 +40,9 @@ $ java -jar docs/dafny/ExamplesRandom.jar
 To run the examples in the `docs/java` directory, use the following commands:
 
 ```bash
-$ bash scripts/build.sh 
-$ bash build/java/run.sh  
+$ export TARGET_LANG=java
+$ bash scripts/build.sh
+$ bash build/java/run.sh 
 ```
 
 ## Dafny Testing
