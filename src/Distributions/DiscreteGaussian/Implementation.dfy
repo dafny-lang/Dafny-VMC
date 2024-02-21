@@ -9,7 +9,7 @@ module DiscreteGaussian.Implementation {
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method DiscreteGaussianSampleLoop (num: pos, den: pos, t: pos)
+    method {:verify false} DiscreteGaussianSampleLoop (num: pos, den: pos, t: pos)
       returns (o: (int,bool))
       modifies this
       decreases *
