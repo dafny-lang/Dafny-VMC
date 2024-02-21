@@ -12,6 +12,10 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     this.rng = ThreadLocal.withInitial(Random::createSecureRandom);
   }
 
+  public Random(Supplier<SecureRandom> supplier) {
+    this.rng = ThreadLocal.withInitial(supplier);
+  }
+
   private static final SecureRandom createSecureRandom() {
     final SecureRandom rng = new SecureRandom();
     // Required for proper initialization
