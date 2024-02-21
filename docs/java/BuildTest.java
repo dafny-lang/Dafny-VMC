@@ -9,6 +9,7 @@ import Uniform.Interface.Trait;
 public class BuildTest {
     public static void main(String[] args) {
         BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
+        BigInteger[] arr1b = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
         int[] arr2 = {0, 1, 2};
         String[] arr3 = {"aa", "bb", "cc"};
         char[] arr4 = {'a', 'b', 'c'};
@@ -20,6 +21,7 @@ public class BuildTest {
 
         DafnyVMC.Random r = new DafnyVMC.Random();
         Uniform.Interface.Trait t = new CustomUniformSample();
+        Uniform.Interface.Trait t_faulty = new CustomUniformSampleFaulty();
 
         System.out.println("Example of Uniform sampling");
         System.out.println(r.UniformSample(BigInteger.valueOf(4)));
@@ -43,6 +45,10 @@ public class BuildTest {
         System.out.println("Example of custom Fisher-Yates: BigInteger");
         r.Shuffle(arr1, t);
         System.out.println(Arrays.toString(arr1));
+
+        System.out.println("Example of faulty custom Fisher-Yates: BigInteger");
+        r.Shuffle(arr1b, t_faulty);
+        System.out.println(Arrays.toString(arr1b));
  
         System.out.println("Example of Fisher-Yates: int");
         r.Shuffle(arr2);

@@ -4,13 +4,14 @@
  *******************************************************************************/
 
 module Uniform.Interface {
+  import Bitstream
   import Monad
   import Coin
   import Model
   import UniformPowerOfTwo
   import Pos
 
-  trait {:termination false} TraitMinus extends UniformPowerOfTwo.Interface.Trait {
+  trait {:termination false} TraitMinus extends Bitstream.Interface.Trait {
 
     method UniformSample(n: Pos.pos) returns (u: nat)
       modifies `s
