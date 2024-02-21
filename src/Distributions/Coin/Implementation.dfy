@@ -12,7 +12,7 @@ module Coin.Implementation {
   trait {:termination false} Trait extends Interface.Trait {
 
     method CoinSample() returns (b: bool)
-      modifies this
+      modifies `s
       ensures Model.Sample(old(s)) == Monad.Result(b, s)
     {
       var x := UniformPowerOfTwoSample(2);

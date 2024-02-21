@@ -216,4 +216,20 @@ module Measures {
       }
     }
   }
+
+  lemma BinaryIntersectionIsMeasurable<T(!new)>(eventSpace: iset<iset<T>>, e1: iset<T>, e2: iset<T>)
+    requires IsSigmaAlgebra(eventSpace)
+    requires e1 in eventSpace
+    requires e2 in eventSpace
+    ensures e1 * e2 in eventSpace
+  {
+    assert Complement(e1) + Complement(e2) in eventSpace by {
+      assert Complement(e1) in eventSpace;
+      assert Complement(e2) in eventSpace;
+      BinaryUnionIsMeasurable(eventSpace, Complement(e1), Complement(e2));
+    }
+    assert Complement(Complement(e1) + Complement(e2)) in eventSpace;
+    assert e1 * e2 == Complement(Complement(e1) + Complement(e2));
+  }
+
 }

@@ -11,7 +11,7 @@ module UniformPowerOfTwo.Implementation {
   trait {:termination false} Trait extends Interface.Trait {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
-      modifies this
+      modifies `s
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 
   }

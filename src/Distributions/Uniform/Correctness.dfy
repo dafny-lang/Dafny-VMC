@@ -170,4 +170,12 @@ module Uniform.Correctness {
     Loops.UntilIsIndep(Model.Proposal(n), Model.Accept(n));
     reveal Model.Sample();
   }
+
+  lemma IntervalSampleIsIndep(a: int, b: int)
+    requires a < b
+    ensures Independence.IsIndep(Model.IntervalSample(a, b))
+  {
+    SampleIsIndep(b-a);
+    Independence.MapIsIndep(Model.Sample(b-a), x => a + x);
+  }
 }
