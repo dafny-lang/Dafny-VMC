@@ -1,9 +1,11 @@
-module Series {
+ module Series {
   import NatArith
   import RealArith
-  import Reals
-  import Sequences
   import Limits
+
+  ghost predicate SumsTo(summands: nat -> real, sum: real) {
+    Limits.ConvergesTo(PartialSums(summands), sum)
+  }
 
   function SumFromTo(sequence: nat -> real, start: nat, end: nat): real
     decreases end - start
@@ -19,9 +21,7 @@ module Series {
     (n: nat) => SumTo(sequence, n)
   }
 
-  ghost predicate SumsTo(summands: nat -> real, sum: real) {
-    Limits.ConvergesTo(PartialSums(summands), sum)
-  }
+
 
   ghost predicate IsSummable(summands: nat -> real) {
     exists sum: real :: SumsTo(summands, sum)
@@ -33,6 +33,7 @@ module Series {
     Limits.Limit(PartialSums(summands))
   }
 
+/*
   // This would be trivial if Dafny had function extensionality
   lemma SumFromToOfEqualsIsEqual(s1: nat -> real, s2: nat -> real, start: nat, end: nat)
     decreases end - start
@@ -223,5 +224,5 @@ module Series {
         RemoveFirstSummand(summands, rest, summands(0), restSum);
       }
     }
-  }
+  } */
 }

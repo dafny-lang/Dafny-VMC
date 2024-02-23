@@ -47,7 +47,7 @@ module Rand {
    Lemmas
   *******/
 
-   lemma {:axiom} ProbIsProbabilityMeasure()
+  lemma {:axiom} ProbIsProbabilityMeasure()
     ensures Measures.IsProbability(eventSpace, prob)
 
 }

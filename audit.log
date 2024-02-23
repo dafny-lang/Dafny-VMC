@@ -4,10 +4,6 @@ src/Distributions/Uniform/Correctness.dfy(37,17): SampleIsIndep: Declaration has
 src/Distributions/Uniform/Model.dfy(18,33): Sample: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Uniform/Model.dfy(31,17): SampleCoin: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Uniform/Model.dfy(34,17): SampleBound: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Analysis/Limits.dfy(126,17): Sandwich: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Measures.dfy(125,17): ProbabilityLe1: Declaration has explicit `{:axiom}` attribute. 
-src/Math/Measures.dfy(130,17): IsMonotonic: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(30,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(55,6): ResultsIndependent: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(60,17): IsIndepImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 
