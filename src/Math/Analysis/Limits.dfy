@@ -36,7 +36,6 @@ module Limits {
     limit
   }
 
-
   /************
    Lemmas
   ************/
@@ -124,4 +123,3 @@ module Limits {
   }
 
 }
- 
