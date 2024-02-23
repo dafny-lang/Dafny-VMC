@@ -5,17 +5,17 @@
 
 module Uniform.Interface {
   import Monad
-  import Coin
   import Model
-  import UniformPowerOfTwo
   import Pos
+  import Rand
 
-  trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
+  trait {:termination false} Trait {
+
+    ghost var s: Rand.Bitstream
 
     method UniformSample(n: Pos.pos) returns (u: nat)
       modifies `s
       decreases *
-      requires n > 0
       ensures u < n
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 

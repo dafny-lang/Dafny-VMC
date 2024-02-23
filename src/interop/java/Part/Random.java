@@ -24,4 +24,18 @@ public final class Random {
 
     return new BigInteger(n.bitLength()-1, RNG.get());
   }
+
+  public static BigInteger UniformSample(BigInteger n) {
+    if (n.compareTo(BigInteger.ONE) < 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+
+    BigInteger sampleValue;
+
+    do {
+      sampleValue = UniformPowerOfTwoSample(n);
+    } while (sampleValue.compareTo(n) >= 0);
+
+    return sampleValue;    
+  }
 }

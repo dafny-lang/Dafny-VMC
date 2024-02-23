@@ -43,45 +43,6 @@ module Tests {
     expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
 
-  method TestUniformPowerOfTwo(n: nat, u: nat, r: DafnyVMC.Random)
-    decreases *
-    requires n > 0
-    requires u > 0
-    modifies r
-  {
-    var k := NatArith.Log2Floor(u);
-    var m := NatArith.Power(2, k);
-    var a := new nat[m](i => 0);
-    var sum := 0;
-    for i := 0 to n {
-      var l := r.UniformPowerOfTwoSample(u);
-      expect 0 <= l < m, "sample not in the right bound";
-      a[l] := a[l] + 1;
-      sum := sum + l;
-    }
-    for i := 0 to NatArith.Power(2, k) {
-      TestBernoulliIsWithin3SigmaOfTrueMean(n, a[i] as real, 1.0 / (m as real), "p(" + Helper.NatToString(i) + ")");
-    }
-    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
-  }
-
-  method TestUniformPowerOfTwoMean(n: nat, u: nat, r: DafnyVMC.Random)
-    decreases *
-    requires n > 0
-    requires u > 0
-    modifies r
-  {
-    var k := NatArith.Log2Floor(u);
-    var m := NatArith.Power(2, k);
-    var sum := 0;
-    for i := 0 to n {
-      var l := r.UniformPowerOfTwoSample(u);
-      expect 0 <= l < m, "sample not in the right bound";
-      sum := sum + l;
-    }
-    TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (m - 1) as real / 2.0, (m * m - 1) as real / 12.0, "mean of UniformPowerOfTwo(" + Helper.NatToString(u) + ")");
-  }
-
   method TestUniform(n: nat, u: nat, r: DafnyVMC.Random)
     decreases *
     requires n > 0

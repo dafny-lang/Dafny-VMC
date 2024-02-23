@@ -3,5 +3,5 @@
 import secrets
 
 class Random:
-    def UniformPowerOfTwoSample(n):
-        return secrets.randbits(n.bit_length()-1)
+    def UniformSample(n):
+        return secrets.randbelow(n)

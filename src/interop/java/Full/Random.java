@@ -6,14 +6,14 @@ import java.security.SecureRandom;
 import java.util.function.Supplier;
 
 public class Random implements DafnyVMCTrait.RandomTrait {
-  static ThreadLocal<SecureRandom> rng;
+  static ThreadLocal<SecureRandom> RNG;
   
   public Random() {
-    this.rng = ThreadLocal.withInitial(Random::createSecureRandom);
+    this.RNG = ThreadLocal.withInitial(Random::createSecureRandom);
   }
 
   public Random(Supplier<SecureRandom> supplier) {
-    this.rng = ThreadLocal.withInitial(supplier);
+    this.RNG = ThreadLocal.withInitial(supplier);
   }
 
   private static final SecureRandom createSecureRandom() {
@@ -28,15 +28,25 @@ public class Random implements DafnyVMCTrait.RandomTrait {
       throw new IllegalArgumentException("n must be positive");
     }
 
-    return new BigInteger(n.bitLength()-1, rng.get());
+    return new BigInteger(n.bitLength()-1, RNG.get());
+  }
+
+  public BigInteger UniformSample(BigInteger n) {
+    if (n.compareTo(BigInteger.ONE) < 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+
+    BigInteger sampleValue;
+    
+    do {
+      sampleValue = UniformPowerOfTwoSample(n);
+    } while (sampleValue.compareTo(n) >= 0);
+
+    return sampleValue;    
   }
 
   public java.math.BigInteger UniformIntervalSample(java.math.BigInteger a, java.math.BigInteger b) {
     return Uniform.Interface._Companion_Trait.UniformIntervalSample(this, a, b);
-  }
-
-  public java.math.BigInteger UniformSample(java.math.BigInteger n) {
-    return DafnyVMCTrait._Companion_RandomTrait.UniformSample(this, n);
   }
 
   public boolean BernoulliSample(java.math.BigInteger num, java.math.BigInteger den) {

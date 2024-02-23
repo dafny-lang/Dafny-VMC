@@ -1,32 +1,17 @@
 
 module DafnyVMCTrait {
 
-  import UniformPowerOfTwo
+  import Uniform
 
   import FisherYates
 
   import opened Pos
 
-  trait {:termination false} RandomTrait extends  UniformPowerOfTwo.Implementation.Trait, FisherYates.Implementation.Trait {
-
-    method {:verify false} UniformSample (n: pos)
-      returns (o: nat)
-      modifies this
-      decreases *
-    {
-      var x := UniformPowerOfTwoSample(2 * n);
-      while ! (x < n)
-        decreases *
-      {
-        x := UniformPowerOfTwoSample(2 * n);
-      }
-      var r := x;
-      o := r;
-    }
+  trait {:termination false} RandomTrait extends Uniform.Interface.Trait, FisherYates.Implementation.Trait {
 
     method {:verify false} BernoulliSample (num: nat, den: pos)
       returns (o: bool)
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -36,7 +21,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnitLoop (num: nat, den: pos, state: (bool,pos))
       returns (o: (bool,pos))
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -46,7 +31,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnitAux (num: nat, den: pos)
       returns (o: nat)
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -62,7 +47,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnit (num: nat, den: pos)
       returns (o: bool)
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -136,7 +121,7 @@ module DafnyVMCTrait {
 
     method {:verify false} DiscreteLaplaceSampleLoopIn2Aux (num: nat, den: pos, K: (bool,pos))
       returns (o: (bool,pos))
-      requires num <= den 
+      requires num <= den
       modifies this
       decreases *
     {
@@ -222,6 +207,6 @@ module DafnyVMCTrait {
     }
 
 
-}
+  }
 
 }

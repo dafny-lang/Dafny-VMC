@@ -1,4 +1,9 @@
-src/DafnyVMC.dfy(28,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
+src/DafnyVMC.dfy(30,6): UniformSample: Definition has `assume {:axiom}` statement in body. 
+src/Distributions/Uniform/Correctness.dfy(33,17): UniformFullCorrectness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Correctness.dfy(39,17): SampleIsIndep: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Model.dfy(20,33): Sample: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Model.dfy(33,17): SampleCoin: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Model.dfy(36,17): SampleBound: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Analysis/Limits.dfy(126,17): Sandwich: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Analysis/Reals.dfy(35,17): LeastUpperBoundProperty: Declaration has explicit `{:axiom}` attribute. 
 src/Math/Measures.dfy(125,17): ProbabilityLe1: Declaration has explicit `{:axiom}` attribute. 
