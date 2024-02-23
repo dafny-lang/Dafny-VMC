@@ -9,8 +9,6 @@ module Uniform.Correctness {
   import Monad
   import Independence
   import Rand
-  import Quantifier
-  import Loops
   import Measures
   import Model
 
