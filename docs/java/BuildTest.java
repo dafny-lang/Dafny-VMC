@@ -13,8 +13,8 @@ class Check {
         boolean[] arr5 = {true, false, false, true};
         long[] arr6 = {111111L, 333333L, 999999L};
         short[] arr7 = {-3, 0, 3};
-        BigInteger num = BigInteger.valueOf(3);
-        BigInteger den = BigInteger.valueOf(5);
+        BigInteger num = BigInteger.valueOf(1);
+        BigInteger den = BigInteger.valueOf(1000);
         
         /* STANDARD RNG */
         System.out.println("\nSTANDARD RNG TESTS\n");

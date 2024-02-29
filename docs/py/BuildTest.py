@@ -6,8 +6,8 @@ def main():
     arr3 = ["aa", "bb", "cc"]
     arr4 = ['a', 'b', 'c']
     arr5 = [True, False, False, True]
-    num = 3
-    den = 5
+    num = 1
+    den = 1000
 
     # STANDARD RNG
     print("\nSTANDARD RNG TESTS\n")
