@@ -12,4 +12,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
       - run: DAFNY=dafny/dafny TARGET_LANG=py bash scripts/build.sh
-      - run: build/py/run.sh
+      - run: build/py/run_samplers.sh
+      - run: build/py/run_shuffling.sh
