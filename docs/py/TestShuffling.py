@@ -6,28 +6,11 @@ def main():
     arr3 = ["aa", "bb", "cc"]
     arr4 = ['a', 'b', 'c']
     arr5 = [True, False, False, True]
-    num = 3
-    den = 5
 
     # STANDARD RNG
     print("\nSTANDARD RNG TESTS\n")
         
     r = DafnyVMC.Random()
-
-    print("Example of Uniform sampling")
-    print(r.UniformSample(4))
-
-    print("Example of Bernoulli sampling")
-    print(r.BernoulliSample(num,den))
-
-    print("Example of BernoulliExpNeg sampling")
-    print(r.BernoulliExpNegSample(num,den))
-
-    print("Example of DiscreteGaussian sampling")
-    print(r.DiscreteGaussianSample(num,den))
-
-    print("Example of DiscreteLaplace sampling")
-    print(r.DiscreteLaplaceSample(num,den))
 
     print("Example of Fisher-Yates: int")
     arr1 = r.Shuffle(arr1)
