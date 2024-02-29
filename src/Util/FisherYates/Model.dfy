@@ -38,8 +38,8 @@ module FisherYates.Model {
       var ys := Swap(xs, i, j);
       var r := ShuffleCurried(ys, s', i + 1);
       assert forall j | 0 <= j < i :: ShuffleInvariancePredicatePointwise(xs, r, j) by {
-        forall j | 0 <= j < i 
-          ensures ShuffleInvariancePredicatePointwise(xs, r, j) 
+        forall j | 0 <= j < i
+          ensures ShuffleInvariancePredicatePointwise(xs, r, j)
         {
           assert ShuffleInvariancePredicatePointwise(ys, r, j);
         }

@@ -24,7 +24,7 @@ module FisherYates.Correctness {
     iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]
   }
 
-  ghost predicate CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat) 
+  ghost predicate CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     requires i <= |xs|
     requires i <= |p|
   {
@@ -244,7 +244,7 @@ module FisherYates.Correctness {
       reveal BitStreamsInA;
       assert e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
         assert e' in Rand.eventSpace by {
-          assert CorrectnessPredicate(ys, p, i+1) by { reveal InductionHypothesis; } 
+          assert CorrectnessPredicate(ys, p, i+1) by { reveal InductionHypothesis; }
           assert e' == CorrectnessConstructEvent(ys, p, i+1);
         }
         calc {
