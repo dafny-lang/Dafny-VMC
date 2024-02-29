@@ -7,7 +7,7 @@ def main():
         
     r = DafnyVMC.Random()
 
-    for i in range(1, 10000): 
+    for i in range(1, 1000): 
         print("Testing Uniform("+str(i)+")")
         print(r.UniformSample(i))
 

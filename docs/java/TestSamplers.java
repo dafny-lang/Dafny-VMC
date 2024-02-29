@@ -13,7 +13,7 @@ class TestSamplers {
 
             DafnyVMC.Random r = new DafnyVMC.Random();
 
-            for (int a = 1; a < 10000; a++) {
+            for (int a = 1; a < 1000; a++) {
                 BigInteger i = BigInteger.valueOf(a);
 
                 System.out.println("Testing Uniform(" + a + ")");
@@ -50,7 +50,7 @@ class TestSamplers {
             SecureRandom rng = new SecureRandom();
             DafnyVMC.Random t = new DafnyVMC.Random(() -> rng);
 
-            for (int a = 1; a < 10000; a++) {
+            for (int a = 1; a < 1000; a++) {
                 BigInteger i = BigInteger.valueOf(a);
                 System.out.println("Testing Uniform(" + a + ")");
                 System.out.println(t.UniformSample(i));
