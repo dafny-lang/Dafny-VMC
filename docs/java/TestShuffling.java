@@ -4,45 +4,8 @@ import java.util.Arrays;
 
 import DafnyVMC.Random;
 
-class TestInputs {
-
-    public static void TestUniform() {
-        DafnyVMC.Random r = new DafnyVMC.Random();
-
-        System.out.println("Testing Uniform sampling");
-
-        for (int i = 0; i < 10000; i++) {
-            System.out.println(r.UniformSample(BigInteger.valueOf(i)));
-        }
-    }
-
-    public static void TestBernoulli() {
-        DafnyVMC.Random r = new DafnyVMC.Random();
-
-        System.out.println("Testing Bernoulli <= 1 sampling");
-        
-        for (int i = 0; i < 1000; i++) {
-            for (int i = 0; i < 1000; i++) {
-            BigInteger num = BigInteger.valueOf(1);
-            BigInteger den = BigInteger.valueOf(i);
-            System.out.println(r.BernoulliSample(num, den));
-            }
-        }
-
-        System.out.println("Testing Bernoulli > 1 sampling");
-        
-        for (int i = 0; i < 1000; i++) {
-            BigInteger num = BigInteger.valueOf(i));
-            BigInteger den = BigInteger.valueOf(i);
-            System.out.println(r.BernoulliSample(num, den));
-        }
-
-    }
-
-
+class Check {
     public static void main(String[] args) {
-        TestUniform();
-
         BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
         int[] arr2 = {0, 1, 2};
         String[] arr3 = {"aa", "bb", "cc"};
@@ -50,19 +13,12 @@ class TestInputs {
         boolean[] arr5 = {true, false, false, true};
         long[] arr6 = {111111L, 333333L, 999999L};
         short[] arr7 = {-3, 0, 3};
-
         
 
-        System.out.println("Example of Bernoulli sampling");
+        /* STANDARD RNG */
+        System.out.println("\nSTANDARD RNG TESTS\n");
 
-        System.out.println("Example of BernoulliExpNeg sampling");
-        System.out.println(r.BernoulliExpNegSample(num,den));
-
-        System.out.println("Example of DiscreteGaussian sampling");
-        System.out.println(r.DiscreteGaussianSample(num,den));
-
-        System.out.println("Example of DiscreteLaplace sampling");
-        System.out.println(r.DiscreteLaplaceSample(num,den));
+        DafnyVMC.Random r = new DafnyVMC.Random();
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         r.Shuffle(arr1);
@@ -97,21 +53,6 @@ class TestInputs {
 
         SecureRandom rng = new SecureRandom();
         DafnyVMC.Random t = new DafnyVMC.Random(() -> rng);
-
-        System.out.println("Example of Uniform sampling");
-        System.out.println(t.UniformSample(BigInteger.valueOf(4)));
-
-        System.out.println("Example of Bernoulli sampling");
-        System.out.println(t.BernoulliSample(num,den));
-
-        System.out.println("Example of BernoulliExpNeg sampling");
-        System.out.println(r.BernoulliExpNegSample(num,den));
-
-        System.out.println("Example of DiscreteGaussian sampling");
-        System.out.println(t.DiscreteGaussianSample(num,den));
-
-        System.out.println("Example of DiscreteLaplace sampling");
-        System.out.println(t.DiscreteLaplaceSample(num,den));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         t.Shuffle(arr1);
