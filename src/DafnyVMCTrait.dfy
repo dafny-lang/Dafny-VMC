@@ -83,8 +83,12 @@ module DafnyVMCTrait {
         o := true;
       } else {
         var B := BernoulliExpNegSampleUnit(1, 1);
-        var R := BernoulliExpNegSampleGenLoop(iter - 1);
-        o := B == true && R == true;
+        if ! (B == true) {
+          o := B;
+        } else {
+          var R := BernoulliExpNegSampleGenLoop(iter - 1);
+          o := R;
+        }
       }
     }
 
