@@ -17,11 +17,18 @@ module FisherYates.Correctness {
    Definitions
   ************/
 
+  ghost function CorrectnessConstructEvent<T(!new)>(xs: seq<T>, p: seq<T>, i: nat): iset<Rand.Bitstream>
+    requires i <= |xs|
+    requires i <= |p|
+  {
+    iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]
+  }
+
   ghost opaque predicate CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat) 
     requires i <= |xs|
     requires i <= |p|
   {
-    var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    var e := CorrectnessConstructEvent(xs, p, i);
     e in Rand.eventSpace
     && Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
   }
@@ -189,7 +196,7 @@ module FisherYates.Correctness {
       BitStreamsInA(xs, p, i, j, h, A);
     }
     var ys := Model.Swap(xs, i, j);
-    var e' := iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..];
+    var e' := CorrectnessConstructEvent(ys, p, i+1);
     assert InductionHypothesis: CorrectnessPredicate(ys, p, i+1) by {
       assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
         InductionHypothesisPrecondition1(xs, ys, p, i, j);
@@ -238,11 +245,26 @@ module FisherYates.Correctness {
     assert CorrectnessPredicate(xs, p, i) by {
       reveal DecomposeE;
       reveal HIsIndependent;
-      reveal InductionHypothesis;
       reveal BitStreamsInA;
-      reveal CorrectnessPredicate();
-      ProbabilityOfE(xs, p, i, j, h, A, e, e');
+      assert e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
+        assert e' in Rand.eventSpace by {
+          assert CorrectnessPredicate(ys, p, i+1) by { reveal InductionHypothesis; } 
+          reveal CorrectnessPredicate();
+          assert e' == CorrectnessConstructEvent(ys, p, i+1);
+        }
+        calc {
+          Rand.prob(e');
+          { assert CorrectnessPredicate(ys, p, i+1) by { reveal InductionHypothesis; }
+            reveal CorrectnessPredicate();
+            assert e' == CorrectnessConstructEvent(ys, p, i+1); }
+          1.0 / (NatArith.FactorialTraditional(|ys|-(i+1)) as real);
+          { assert (NatArith.FactorialTraditional(|ys|-(i+1)) as real) == (NatArith.FactorialTraditional(|xs|-(i+1)) as real); }
+          1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real);
+        }
+      }
+      ProbabilityOfE(xs, ys, p, i, j, h, A, e, e');
       EInEventSpace(xs, p, h, A, e, e');
+      reveal CorrectnessPredicate();
     }
 
   }
@@ -307,6 +329,7 @@ module FisherYates.Correctness {
               p[i];
               zs[i];
               zs'[i];
+              { assert Model.ShuffleInvariancePredicatePointwise(ys', Model.Shuffle(ys', i+1)(s'), i); }
               ys'[i];
               xs[k];
             }
@@ -339,7 +362,7 @@ module FisherYates.Correctness {
                 Model.Shuffle(ys, i+1)(s').value[i..];
                 { SliceOfSequences(Model.Shuffle(ys, i+1)(s').value, i); }
                 [Model.Shuffle(ys, i+1)(s').value[i]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
-                { assert Model.Shuffle(ys, i+1)(s').value[i] == ys[i]; }
+                { assert Model.ShuffleInvariancePredicatePointwise(ys, Model.Shuffle(ys, i+1)(s'), i); assert Model.Shuffle(ys, i+1)(s').value[i] == ys[i]; }
                 [ys[i]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
                 { assert ys[i] == xs[k]; }
                 [xs[k]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
@@ -459,17 +482,20 @@ module FisherYates.Correctness {
     reveal DecomposeE;
   }
 
-  lemma ProbabilityOfE<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+  lemma ProbabilityOfE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
     requires i <= |xs|
     requires i <= |p|
     requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
     requires |xs| == |p|
     requires multiset(p[i..]) == multiset(xs[i..])
     requires i <= j < |xs| && xs[j] == p[i]
+    requires ys == Model.Swap(xs, i, j)
     requires |xs|-i > 1
+    requires e' in Rand.eventSpace
+    requires |xs| == |ys|
     requires DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
     requires HIsIndependent: Independence.IsIndepFunction(h)
-    requires InductionHypothesis: e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real)
+    requires InductionHypothesis: Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real)
     requires BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j))
     ensures
       Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
