@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import DafnyVMC.Random;
 
-class Check {
+class TestShuffling {
     public static void main(String[] args) {
         BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
         int[] arr2 = {0, 1, 2};
@@ -13,28 +13,12 @@ class Check {
         boolean[] arr5 = {true, false, false, true};
         long[] arr6 = {111111L, 333333L, 999999L};
         short[] arr7 = {-3, 0, 3};
-        BigInteger num = BigInteger.valueOf(3);
-        BigInteger den = BigInteger.valueOf(5);
         
+
         /* STANDARD RNG */
         System.out.println("\nSTANDARD RNG TESTS\n");
-        
+
         DafnyVMC.Random r = new DafnyVMC.Random();
-
-        System.out.println("Example of Uniform sampling");
-        System.out.println(r.UniformSample(BigInteger.valueOf(4)));
-
-        System.out.println("Example of Bernoulli sampling");
-        System.out.println(r.BernoulliSample(num,den));
-
-        System.out.println("Example of BernoulliExpNeg sampling");
-        System.out.println(r.BernoulliExpNegSample(num,den));
-
-        System.out.println("Example of DiscreteGaussian sampling");
-        System.out.println(r.DiscreteGaussianSample(num,den));
-
-        System.out.println("Example of DiscreteLaplace sampling");
-        System.out.println(r.DiscreteLaplaceSample(num,den));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         r.Shuffle(arr1);
@@ -69,21 +53,6 @@ class Check {
 
         SecureRandom rng = new SecureRandom();
         DafnyVMC.Random t = new DafnyVMC.Random(() -> rng);
-
-        System.out.println("Example of Uniform sampling");
-        System.out.println(t.UniformSample(BigInteger.valueOf(4)));
-
-        System.out.println("Example of Bernoulli sampling");
-        System.out.println(t.BernoulliSample(num,den));
-
-        System.out.println("Example of BernoulliExpNeg sampling");
-        System.out.println(r.BernoulliExpNegSample(num,den));
-
-        System.out.println("Example of DiscreteGaussian sampling");
-        System.out.println(t.DiscreteGaussianSample(num,den));
-
-        System.out.println("Example of DiscreteLaplace sampling");
-        System.out.println(t.DiscreteLaplaceSample(num,den));
 
         System.out.println("Example of Fisher-Yates: BigInteger");
         t.Shuffle(arr1);
