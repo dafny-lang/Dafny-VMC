@@ -79,12 +79,14 @@ module DafnyVMCTrait {
       modifies this
       decreases *
     {
-      if iter == 0 {
-        o := true;
-      } else {
-        var B := BernoulliExpNegSampleUnit(1, 1);
-        var R := BernoulliExpNegSampleGenLoop(iter - 1);
-        o := B == true && R == true;
+      o := BernoulliExpNegSampleUnit(1, 1);
+      for k := 2 to iter 
+      {
+        if o == false {
+          break;
+        } else {
+          o := BernoulliExpNegSampleUnit(1, 1);
+        }
       }
     }
 
