@@ -24,7 +24,7 @@ module FisherYates.Correctness {
     iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]
   }
 
-  ghost opaque predicate CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat) 
+  ghost predicate CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat) 
     requires i <= |xs|
     requires i <= |p|
   {
@@ -70,7 +70,6 @@ module FisherYates.Correctness {
       Model.PermutationsPreserveCardinality(xs, p);
     }
     CorrectnessFisherYatesUniqueElementsGeneral(xs, p, 0);
-    reveal CorrectnessPredicate();
   }
 
   lemma CorrectnessFisherYatesUniqueElementsGeneral<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
@@ -123,7 +122,6 @@ module FisherYates.Correctness {
       }
     }
     assert CorrectnessPredicate(xs, p, i) by {
-      reveal CorrectnessPredicate();
       reveal NatArith.FactorialTraditional();
       Rand.ProbIsProbabilityMeasure();
       assert Measures.IsProbability(Rand.eventSpace, Rand.prob);
@@ -233,10 +231,8 @@ module FisherYates.Correctness {
       }
       if |ys[i+1..]| > 1 {
         CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
-        reveal CorrectnessPredicate();
       } else {
         CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
-        reveal CorrectnessPredicate();
       }
     }
     assert DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
@@ -249,22 +245,22 @@ module FisherYates.Correctness {
       assert e' in Rand.eventSpace && Rand.prob(e') == 1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real) by {
         assert e' in Rand.eventSpace by {
           assert CorrectnessPredicate(ys, p, i+1) by { reveal InductionHypothesis; } 
-          reveal CorrectnessPredicate();
           assert e' == CorrectnessConstructEvent(ys, p, i+1);
         }
         calc {
           Rand.prob(e');
           { assert CorrectnessPredicate(ys, p, i+1) by { reveal InductionHypothesis; }
-            reveal CorrectnessPredicate();
             assert e' == CorrectnessConstructEvent(ys, p, i+1); }
           1.0 / (NatArith.FactorialTraditional(|ys|-(i+1)) as real);
-          { assert (NatArith.FactorialTraditional(|ys|-(i+1)) as real) == (NatArith.FactorialTraditional(|xs|-(i+1)) as real); }
+          { assert |xs| == |ys|;
+            assert |ys|-(i+1) == |xs|-(i+1);
+            assert NatArith.FactorialTraditional(|ys|-(i+1)) == NatArith.FactorialTraditional(|xs|-(i+1));
+            assert (NatArith.FactorialTraditional(|ys|-(i+1)) as real) == (NatArith.FactorialTraditional(|xs|-(i+1)) as real); }
           1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real);
         }
       }
       ProbabilityOfE(xs, ys, p, i, j, h, A, e, e');
       EInEventSpace(xs, p, h, A, e, e');
-      reveal CorrectnessPredicate();
     }
 
   }
