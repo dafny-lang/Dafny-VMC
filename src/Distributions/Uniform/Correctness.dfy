@@ -59,9 +59,10 @@ module Uniform.Correctness {
   }
 
   // Equation (4.10)
-  lemma {:axiom} SampleIsIndep(n: nat)
+  lemma SampleIsIndep(n: nat)
     requires n > 0
     ensures Independence.IsIndep(Model.Sample(n))
+  {}
 
   lemma IntervalSampleIsIndep(a: int, b: int)
     requires a < b
