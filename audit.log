@@ -1,7 +1,6 @@
-src/DafnyVMC.dfy(28,6): UniformPowerOfTwoSample: Definition has `assume {:axiom}` statement in body. 
 src/Distributions/Uniform/Correctness.dfy(31,17): UniformFullCorrectness: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Correctness.dfy(36,17): SampleCoin: Declaration has explicit `{:axiom}` attribute. 
 src/Distributions/Uniform/Model.dfy(19,33): Sample: Declaration has explicit `{:axiom}` attribute. 
-src/Distributions/UniformPowerOfTwo/Model.dfy(19,20): Sample: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(30,27): IsIndep: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/Independence.dfy(55,6): ResultsIndependent: Definition has `assume {:axiom}` statement in body. 
 src/ProbabilisticProgramming/Independence.dfy(60,17): IsIndepImpliesIsIndepFunction: Declaration has explicit `{:axiom}` attribute. 

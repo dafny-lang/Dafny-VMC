@@ -4,8 +4,6 @@
  *******************************************************************************/
 
 module UniformPowerOfTwo.Interface {
-  import Monad
-  import Model
   import Bitstream
 
   trait {:termination false} Trait extends Bitstream.Interface.Trait {
@@ -14,7 +12,6 @@ module UniformPowerOfTwo.Interface {
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
       modifies `s
-      ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 
   }
 }
