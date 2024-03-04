@@ -11,3 +11,4 @@ module Coin.Model {
     Monad.Coin(s)
   }
 }
+

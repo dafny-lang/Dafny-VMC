@@ -19,6 +19,6 @@ module UniformPowerOfTwo.Model {
   function {:axiom} Sample(n: nat): (h: Monad.Hurd<nat>)
     requires n >= 1
     ensures forall s :: Sample(n)(s).Result? // always terminates, not just almost surely
-    ensures n == 2 ==> forall s :: h(s)== Monad.Coin(s).Map(b => if b then 1 else 0)
+    ensures n == 2 ==> forall s :: h(s) == Monad.Coin(s).Map(b => if b then 1 else 0)
 
 }
