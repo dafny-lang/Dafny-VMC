@@ -31,7 +31,7 @@ module Uniform.Model {
    Lemmas
   *******/
 
-  
+
   lemma {:axiom} SampleBound(n: nat, s: Rand.Bitstream)
     requires n > 0
     requires Sample(n)(s).Result?
