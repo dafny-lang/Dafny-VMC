@@ -17,7 +17,6 @@ module Coin.Implementation {
     {
       var x := UniformPowerOfTwoSample(2);
       b := if x == 1 then true else false;
-      reveal UniformPowerOfTwo.Model.Sample();
     }
 
   }

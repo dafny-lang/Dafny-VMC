@@ -7,10 +7,8 @@ module Uniform.Model {
   import Measures
   import NatArith
   import Rand
-  import Quantifier
   import Monad
   import Independence
-  import Loops
   import UniformPowerOfTwo
 
   /************

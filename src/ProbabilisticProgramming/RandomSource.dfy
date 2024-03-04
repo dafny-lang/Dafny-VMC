@@ -50,20 +50,4 @@ module Rand {
   lemma {:axiom} ProbIsProbabilityMeasure()
     ensures Measures.IsProbability(eventSpace, prob)
 
-  // Equation (2.68) && (2.77)
-  lemma {:axiom} CoinHasProbOneHalf(b: bool)
-    ensures
-      var e := (iset s | Head(s) == b);
-      && e in eventSpace
-      && prob(e) == 0.5
-
-  // Equation (2.82)
-  lemma {:axiom} MeasureHeadDrop(n: nat, s: Bitstream)
-    ensures
-      && (iset s | Head(Drop(n, s))) in eventSpace
-      && prob(iset s | Head(Drop(n, s))) == 0.5
-
-  // Equation (2.78)
-  lemma {:axiom} TailIsMeasurePreserving()
-    ensures Measures.IsMeasurePreserving(eventSpace, prob, eventSpace, prob, Tail)
 }
