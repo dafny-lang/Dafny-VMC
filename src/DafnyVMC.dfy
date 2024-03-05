@@ -21,11 +21,9 @@ module {:extern "DafnyVMCPart"} DafnyVMC {
 
     method UniformPowerOfTwoSample(n: nat) returns (u: nat)
       requires n >= 1
-      modifies this
-      ensures UniformPowerOfTwo.Model.Sample(n)(old(s)) == Monad.Result(u, s)
+      modifies `s
     {
       u := DafnyVMCPartMaterial.Random.ExternUniformPowerOfTwoSample(n);
-      assume {:axiom} false; // assume correctness of extern implementation
     }
   }
 

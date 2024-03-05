@@ -9,10 +9,7 @@ module Uniform.Correctness {
   import Monad
   import Independence
   import Rand
-  import Quantifier
-  import Loops
   import Measures
-  import UniformPowerOfTwo
   import Model
 
   /************
@@ -35,6 +32,9 @@ module Uniform.Correctness {
     requires 0 <= i < n
     ensures SampleEquals(n, i) in Rand.eventSpace
     ensures Rand.prob(SampleEquals(n, i)) == 1.0 / (n as real)
+
+  lemma {:axiom} SampleCoin(s: Rand.Bitstream)
+    ensures Model.Sample(2)(s)== Monad.Coin(s).Map(b => if b then 1 else 0)
 
   // Correctness theorem for Model.IntervalSample
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)

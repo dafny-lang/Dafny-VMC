@@ -7,17 +7,18 @@ module Coin.Implementation {
   import Model
   import Monad
   import Interface
-  import UniformPowerOfTwo
+  import Uniform
 
   trait {:termination false} Trait extends Interface.Trait {
 
     method CoinSample() returns (b: bool)
       modifies `s
+      decreases *
       ensures Model.Sample(old(s)) == Monad.Result(b, s)
     {
-      var x := UniformPowerOfTwoSample(2);
+      var x := UniformSample(2);
       b := if x == 1 then true else false;
-      reveal UniformPowerOfTwo.Model.Sample();
+      Uniform.Correctness.SampleCoin(old(s));
     }
 
   }

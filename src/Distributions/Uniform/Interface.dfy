@@ -5,12 +5,11 @@
 
 module Uniform.Interface {
   import Monad
-  import Coin
   import Model
-  import UniformPowerOfTwo
   import Pos
+  import Bitstream
 
-  trait {:termination false} Trait extends UniformPowerOfTwo.Interface.Trait {
+  trait {:termination false} Trait extends Bitstream.Interface.Trait {
 
     method UniformSample(n: Pos.pos) returns (u: nat)
       modifies `s
