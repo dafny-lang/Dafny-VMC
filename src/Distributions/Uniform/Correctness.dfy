@@ -33,9 +33,6 @@ module Uniform.Correctness {
     ensures SampleEquals(n, i) in Rand.eventSpace
     ensures Rand.prob(SampleEquals(n, i)) == 1.0 / (n as real)
 
-  lemma {:axiom} SampleCoin(s: Rand.Bitstream)
-    ensures Model.Sample(2)(s)== Monad.Coin(s).Map(b => if b then 1 else 0)
-
   // Correctness theorem for Model.IntervalSample
   lemma UniformFullIntervalCorrectness(a: int, b: int, i: int)
     requires a <= i < b
