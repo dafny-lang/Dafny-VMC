@@ -143,7 +143,7 @@ module FisherYates.Correctness {
     requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
     requires multiset(p[i..]) == multiset(xs[i..])
     requires |xs[i..]| > 1
-    ensures 
+    ensures
       var A := iset j | i <= j < |xs| && xs[j] == p[i];
       A != iset{} && A == iset{j}
   {
@@ -194,50 +194,50 @@ module FisherYates.Correctness {
     requires multiset(p[i..]) == multiset(xs[i..])
     requires |xs[i..]| > 1
     requires i <= j < |xs| && xs[j] == p[i]
-    ensures 
+    ensures
       var ys := Model.Swap(xs, i, j);
       CorrectnessPredicate(ys, p, i+1)
-    {
-      var ys := Model.Swap(xs, i, j);
-      assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
-        InductionHypothesisPrecondition1(xs, ys, p, i, j);
-      }
-      assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
-        InductionHypothesisPrecondition2(xs, ys, p, i, j);
-      }
-      assert i+1 <= |ys| by {
-        calc {
-          i + 1;
-        <
-          |xs|;
-        ==
-          |ys|;
-        }
-      }
-      assert i < |p| by {
-        calc {
-          i;
-        <
-          i+1;
-        <
-          |xs|;
-        ==
-          |p|;
-        }
-      }
-      assert |ys| == |p| by {
-        calc {
-          |ys|;
-          |xs|;
-          |p|;
-        }
-      }
-      if |ys[i+1..]| > 1 {
-        CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
-      } else {
-        CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
+  {
+    var ys := Model.Swap(xs, i, j);
+    assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
+      InductionHypothesisPrecondition1(xs, ys, p, i, j);
+    }
+    assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
+      InductionHypothesisPrecondition2(xs, ys, p, i, j);
+    }
+    assert i+1 <= |ys| by {
+      calc {
+        i + 1;
+      <
+        |xs|;
+      ==
+        |ys|;
       }
     }
+    assert i < |p| by {
+      calc {
+        i;
+      <
+        i+1;
+      <
+        |xs|;
+      ==
+        |p|;
+      }
+    }
+    assert |ys| == |p| by {
+      calc {
+        |ys|;
+        |xs|;
+        |p|;
+      }
+    }
+    if |ys[i+1..]| > 1 {
+      CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
+    } else {
+      CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
+    }
+  }
 
   lemma {:vcs_split_on_every_assert} CorrectnessFisherYatesUniqueElementsGeneralGreater1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     decreases |xs| - i
@@ -463,7 +463,7 @@ module FisherYates.Correctness {
     requires ys == Model.Swap(xs, i, j)
     requires e == CorrectnessConstructEvent(xs, p, i)
     requires e' == CorrectnessConstructEvent(ys, p, i+1)
-    ensures 
+    ensures
       e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
   {
     assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
@@ -582,7 +582,7 @@ module FisherYates.Correctness {
     Rand.ProbIsProbabilityMeasure();
     Measures.BinaryIntersectionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e'));
     reveal DecomposeE;
-  } 
+  }
 
   lemma {:vcs_split_on_every_assert} ProbabilityOfE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
     requires i <= |xs|

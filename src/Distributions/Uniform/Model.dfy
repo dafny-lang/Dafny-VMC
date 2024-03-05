@@ -22,9 +22,9 @@ module Uniform.Model {
     ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest)
     ensures forall s :: 0 <= h(s).value < n
     ensures forall i | 0 <= i < n ::
-      var e := iset s | h(s).Equals(i);
-      && e in Rand.eventSpace 
-      && Rand.prob(e) == 1.0 / (n as real)
+              var e := iset s | h(s).Equals(i);
+              && e in Rand.eventSpace
+              && Rand.prob(e) == 1.0 / (n as real)
 
   ghost function IntervalSample(a: int, b: int): (f: Monad.Hurd<int>)
     requires a < b

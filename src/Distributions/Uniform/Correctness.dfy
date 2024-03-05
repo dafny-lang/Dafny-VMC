@@ -41,9 +41,9 @@ module Uniform.Correctness {
   // Equation (4.12) / PROB_BERN_UNIFORM
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
-    ensures 
+    ensures
       var e := iset s | Model.Sample(n)(s).Equals(i);
-      e in Rand.eventSpace && 
+      e in Rand.eventSpace &&
       Rand.prob(e) == 1.0 / (n as real)
   {}
 
@@ -87,11 +87,11 @@ module Uniform.Correctness {
               s in Monad.BitstreamsWithValueIn(Model.IntervalSample(a, b), A);
               Monad.Map(Model.Sample(b - a), x => a + x)(s).value in A;
               Monad.Bind(Model.Sample(b - a), x => Monad.Return(a+x))(s).value in A;
-              Model.Sample(b - a)(s).value + a in A; 
+              Model.Sample(b - a)(s).value + a in A;
               Model.Sample(b - a)(s).value in A';
               s in Monad.BitstreamsWithValueIn(Model.Sample(b - a), A');
             }
-          }  
+          }
         }
         assert Monad.BitstreamsWithRestIn(Model.IntervalSample(a, b), E) == Monad.BitstreamsWithRestIn(Model.Sample(b-a), E) by {
           forall s ensures s in Monad.BitstreamsWithRestIn(Model.IntervalSample(a, b), E) <==> s in Monad.BitstreamsWithRestIn(Model.Sample(b-a), E) {
@@ -156,8 +156,8 @@ module Uniform.Correctness {
     }
 
     forall e | e in Rand.eventSpace ensures Rand.prob(Measures.PreImage(f, e)) == Rand.prob(e) {
-        assert Measures.PreImage(f, e) == Measures.PreImage(f', e);
-        SampleIsMeasurePreserving(b-a);
+      assert Measures.PreImage(f, e) == Measures.PreImage(f', e);
+      SampleIsMeasurePreserving(b-a);
     }
 
   }
