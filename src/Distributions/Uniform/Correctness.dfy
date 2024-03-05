@@ -42,7 +42,7 @@ module Uniform.Correctness {
   lemma UniformFullCorrectness(n: nat, i: nat)
     requires 0 <= i < n
     ensures 
-      var e := SampleEquals(n, i);
+      var e := iset s | Model.Sample(n)(s).Equals(i);
       e in Rand.eventSpace && 
       Rand.prob(e) == 1.0 / (n as real)
   {}

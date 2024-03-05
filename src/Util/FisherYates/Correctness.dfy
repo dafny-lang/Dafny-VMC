@@ -136,26 +136,17 @@ module FisherYates.Correctness {
     }
   }
 
-  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
-    decreases |xs| - i
+  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1ASingleton<T(!new)>(xs: seq<T>, p: seq<T>, i: nat) returns (j: nat)
     requires i <= |xs|
     requires i <= |p|
-    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
     requires |xs| == |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
     requires multiset(p[i..]) == multiset(xs[i..])
     requires |xs[i..]| > 1
-    ensures CorrectnessPredicate(xs, p, i)
+    ensures 
+      var A := iset j | i <= j < |xs| && xs[j] == p[i];
+      A != iset{} && A == iset{j}
   {
-    Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
-    var e := iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..];
-    assert |xs| > i + 1;
-    var h := Uniform.Model.IntervalSample(i, |xs|);
-    assert hIsMeasurePreserving: Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest) by {
-      Uniform.Correctness.IntervalSampleIsMeasurePreserving(i, |xs|);
-    }
-    assert HIsIndependent: Independence.IsIndepFunction(h) by {
-      Uniform.Correctness.IntervalSampleIsIndepFunction(i, |xs|);
-    }
     var A := iset j | i <= j < |xs| && xs[j] == p[i];
     assert A != iset{} by {
       calc {
@@ -170,7 +161,7 @@ module FisherYates.Correctness {
         exists j :: j in A;
       }
     }
-    var j :| j in A;
+    j :| j in A;
     assert A == iset{j} by {
       assert forall k :: k in A <==> k in iset{j} by {
         forall k
@@ -192,12 +183,22 @@ module FisherYates.Correctness {
         }
       }
     }
-    assert BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by {
-      BitStreamsInA(xs, p, i, j, h, A);
-    }
-    var ys := Model.Swap(xs, i, j);
-    var e' := CorrectnessConstructEvent(ys, p, i+1);
-    assert InductionHypothesis: CorrectnessPredicate(ys, p, i+1) by {
+  }
+
+  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat)
+    decreases |xs| - i
+    requires i <= |xs|
+    requires i <= |p|
+    requires |xs| == |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires |xs[i..]| > 1
+    requires i <= j < |xs| && xs[j] == p[i]
+    ensures 
+      var ys := Model.Swap(xs, i, j);
+      CorrectnessPredicate(ys, p, i+1)
+    {
+      var ys := Model.Swap(xs, i, j);
       assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
         InductionHypothesisPrecondition1(xs, ys, p, i, j);
       }
@@ -237,22 +238,47 @@ module FisherYates.Correctness {
         CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
       }
     }
-    assert DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
-      DecomposeE(xs, ys, p, i, j, h, A, e, e');
-    }
 
+  lemma {:vcs_split_on_every_assert} CorrectnessFisherYatesUniqueElementsGeneralGreater1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+    decreases |xs| - i
+    requires i <= |xs|
+    requires i <= |p|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires |xs| == |p|
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires |xs[i..]| > 1
+    ensures CorrectnessPredicate(xs, p, i)
+  {
+    Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
+    var e := CorrectnessConstructEvent(xs, p, i);
+    assert |xs| > i + 1;
+    var h := Uniform.Model.IntervalSample(i, |xs|);
+    assert Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest) by {
+      Uniform.Correctness.IntervalSampleIsMeasurePreserving(i, |xs|);
+    }
+    assert Independence.IsIndepFunction(h) by {
+      Uniform.Correctness.IntervalSampleIsIndepFunction(i, |xs|);
+    }
+    var A := iset j | i <= j < |xs| && xs[j] == p[i];
+    var j := CorrectnessFisherYatesUniqueElementsGeneralGreater1ASingleton(xs, p, i);
+    assert A == iset{j};
+    assert Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by {
+      BitStreamsInA(xs, p, i, j, h, A);
+    }
+    var ys := Model.Swap(xs, i, j);
+    var e' := CorrectnessConstructEvent(ys, p, i+1);
+    assert CorrectnessPredicate(ys, p, i+1) by {
+      CorrectnessFisherYatesUniqueElementsGeneralGreater1CorrectnessPredicate(xs, p, i, j);
+    }
+    assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
+      DecomposeE(xs, ys, p, i, j, h, A);
+    }
     assert CorrectnessPredicate(xs, p, i) by {
-      reveal DecomposeE;
-      reveal HIsIndependent;
-      reveal BitStreamsInA;
-      reveal InductionHypothesis;
-      reveal hIsMeasurePreserving;
-      CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper(xs, ys, p, i, j, h, A, e, e');
+      CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper(xs, ys, p, i, j, h, A);
     }
-
   }
 
-  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
     decreases |xs| - i
     requires i <= |xs|
     requires i <= |p|
@@ -263,15 +289,18 @@ module FisherYates.Correctness {
     requires i <= j < |xs| && xs[j] == p[i]
     requires |xs| == |ys|
     requires ys == Model.Swap(xs, i, j)
-    requires e == CorrectnessConstructEvent(xs, p, i)
-    requires e' == CorrectnessConstructEvent(ys, p, i+1)
-    requires DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+    requires DecomposeE: 
+      var e := CorrectnessConstructEvent(xs, p, i);
+      var e' := CorrectnessConstructEvent(ys, p, i+1);
+      e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
     requires HIsIndependent: Independence.IsIndepFunction(h)
     requires BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j))
     requires InductionHypothesis: CorrectnessPredicate(ys, p, i+1)
     requires hIsMeasurePreserving: Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest)
     ensures CorrectnessPredicate(xs, p, i)
   {
+    var e := CorrectnessConstructEvent(xs, p, i);
+    var e' := CorrectnessConstructEvent(ys, p, i+1);
     reveal DecomposeE;
     reveal HIsIndependent;
     reveal BitStreamsInA;
@@ -301,7 +330,6 @@ module FisherYates.Correctness {
     }
   }
 
-
   lemma BitStreamsInA<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
     requires i <= |xs|
     requires i <= |p|
@@ -327,7 +355,7 @@ module FisherYates.Correctness {
     }
   }
 
-  lemma {:only} DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+  lemma DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
     requires i <= |p|
     requires |xs| == |p|
     requires |xs|-i > 1
@@ -339,10 +367,13 @@ module FisherYates.Correctness {
     requires A == iset{j}
     requires h == Uniform.Model.IntervalSample(i, |xs|)
     requires ys == Model.Swap(xs, i, j)
-    requires e == iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..]
-    requires e' == iset s | Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..]
-    ensures e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+    ensures 
+      var e := CorrectnessConstructEvent(xs, p, i);
+      var e' := CorrectnessConstructEvent(ys, p, i+1); 
+      e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
   {
+    var e := CorrectnessConstructEvent(xs, p, i);
+    var e' := CorrectnessConstructEvent(ys, p, i+1);
     assert forall s :: s in e <==> s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
       forall s
         ensures s in e <==> s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
@@ -511,9 +542,9 @@ module FisherYates.Correctness {
     Rand.ProbIsProbabilityMeasure();
     Measures.BinaryIntersectionIsMeasurable(Rand.eventSpace, Monad.BitstreamsWithValueIn(h, A), Monad.BitstreamsWithRestIn(h, e'));
     reveal DecomposeE;
-  }
+  } 
 
-  lemma ProbabilityOfE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+  lemma {:vcs_split_on_every_assert} ProbabilityOfE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
     requires i <= |xs|
     requires i <= |p|
     requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]

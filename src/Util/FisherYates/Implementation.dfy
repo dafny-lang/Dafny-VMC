@@ -12,7 +12,7 @@ module FisherYates.Implementation {
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method Shuffle<T>(a: array<T>)
+    method {:vcs_split_on_every_assert} Shuffle<T>(a: array<T>)
       decreases *
       modifies `s, a
       ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
