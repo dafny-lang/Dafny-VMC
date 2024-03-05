@@ -151,11 +151,10 @@ module FisherYates.Correctness {
     assert |xs| > i + 1;
     var h := Uniform.Model.IntervalSample(i, |xs|);
     assert hIsMeasurePreserving: Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest) by {
-      Uniform.Model.IntervalSampleIsMeasurePreserving(i, |xs|);
+      Uniform.Correctness.IntervalSampleIsMeasurePreserving(i, |xs|);
     }
     assert HIsIndependent: Independence.IsIndepFunction(h) by {
-      Uniform.Correctness.IntervalSampleIsIndep(i, |xs|);
-      Independence.IsIndepImpliesIsIndepFunction(h);
+      Uniform.Correctness.IntervalSampleIsIndepFunction(i, |xs|);
     }
     var A := iset j | i <= j < |xs| && xs[j] == p[i];
     assert A != iset{} by {
@@ -328,7 +327,7 @@ module FisherYates.Correctness {
     }
   }
 
-  lemma DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+  lemma {:only} DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
     requires i <= |p|
     requires |xs| == |p|
     requires |xs|-i > 1
@@ -352,7 +351,7 @@ module FisherYates.Correctness {
           var zs := Model.Shuffle(xs, i)(s).value;
           assert zs[i..] == p[i..];
           var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
-          Uniform.Model.IntervalSampleBound(i, |xs|, s);
+          Uniform.Correctness.IntervalSampleBound(i, |xs|, s);
           var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
           assert s in Monad.BitstreamsWithValueIn(h, A) by {
             var ys' := Model.Swap(xs, i, k);

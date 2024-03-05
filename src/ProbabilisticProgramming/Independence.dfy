@@ -26,9 +26,6 @@ module Independence {
     forall A: iset<A>, E: iset<Rand.Bitstream> | E in Rand.eventSpace :: IsIndepFunctionCondition(f, A, E)
   }
 
-  // Definition 35: (strong) independence
-  ghost predicate {:axiom} IsIndep<A(!new)>(f: Monad.Hurd<A>)
-
   /*******
    Lemmas
   *******/
@@ -65,15 +62,6 @@ module Independence {
       }
     }
   }
-
-  // Equation (3.14)
-  lemma {:axiom} IsIndepImpliesIsIndepFunction<A(!new)>(f: Monad.Hurd<A>)
-    requires IsIndep(f)
-    ensures IsIndepFunction(f)
-
-  lemma {:axiom} MapIsIndep<A, B(!new)>(f: Monad.Hurd<A>, g: A -> B)
-    requires IsIndep(f)
-    ensures IsIndep(Monad.Map(f, g))
 
   lemma AreIndepEventsConjunctElimination(e1: iset<Rand.Bitstream>, e2: iset<Rand.Bitstream>)
     requires Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, e1, e2)
