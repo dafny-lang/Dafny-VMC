@@ -20,7 +20,6 @@ module FisherYates.Implementation {
       ghost var prevI, prevASeq, prevS := 0, a[..], s; // ghost
       if a.Length > 1 {
         for i := 0 to a.Length - 1
-          invariant i < a.Length
           invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s)
         {
           prevI, prevASeq, prevS := i, a[..], s; // ghost
@@ -28,7 +27,10 @@ module FisherYates.Implementation {
           assert prevASeq == a[..]; // ghost
           Swap(a, i, j);
         }
+      } else {
+        assert prevASeq == a[..]; // ghost
       }
+
     }
 
     method Swap<T>(a: array<T>, i: nat, j: nat)
