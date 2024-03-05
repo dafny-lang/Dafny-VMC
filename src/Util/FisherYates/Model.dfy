@@ -13,9 +13,10 @@ module FisherYates.Model {
   ************/
 
   ghost predicate ShuffleInvariancePredicatePointwise<T>(xs: seq<T>, r: Monad.Result<seq<T>>, j: int)
+    requires |r.value| == |xs|
     requires 0 <= j < |xs|
   {
-    |r.value| == |xs| && r.value[j] == xs[j]
+    r.value[j] == xs[j]
   }
 
   ghost function Shuffle<T>(xs: seq<T>, i: nat := 0): (h: Monad.Hurd<seq<T>>)
