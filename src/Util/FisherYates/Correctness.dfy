@@ -21,7 +21,7 @@ module FisherYates.Correctness {
     requires i <= |xs|
     requires i <= |p|
   {
-    iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]
+    iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..]
   }
 
   ghost predicate CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
@@ -64,7 +64,7 @@ module FisherYates.Correctness {
   {
     var e := iset s | Model.Shuffle(xs)(s).Equals(p);
     var i := 0;
-    var e' := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    var e' := iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..];
     assert e == e';
     assert |xs| == |p| by {
       Model.PermutationsPreserveCardinality(xs, p);
@@ -81,7 +81,7 @@ module FisherYates.Correctness {
     requires multiset(p[i..]) == multiset(xs[i..])
     ensures CorrectnessPredicate(xs, p, i)
   {
-    var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    var e := iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..];
     if |xs[i..]| <= 1 {
       CorrectnessFisherYatesUniqueElementsGeneralLeq1(xs, p, i);
     } else {
@@ -100,16 +100,16 @@ module FisherYates.Correctness {
     ensures CorrectnessPredicate(xs, p, i)
   {
     Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
-    var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    var e := iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..];
     assert e == Measures.SampleSpace() by {
       forall s
         ensures s in e
       {
         calc {
           s in e;
-          Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+          Model.Shuffle(xs, i)(s).value[i..] == p[i..];
           { assert Model.Shuffle(xs, i)(s) == Monad.Return(xs)(s); }
-          Monad.Return(xs)(s).Result? && Monad.Return(xs)(s).value[i..] == p[i..];
+          Monad.Return(xs)(s).value[i..] == p[i..];
           { assert Monad.Return(xs)(s).value == xs; }
           xs[i..] == p[i..];
           if |xs[i..]| == 0 then [] == p[i..] else [xs[i]] == p[i..];
@@ -147,7 +147,7 @@ module FisherYates.Correctness {
     ensures CorrectnessPredicate(xs, p, i)
   {
     Model.PermutationsPreserveCardinality(p[i..], xs[i..]);
-    var e := iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..];
+    var e := iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..];
     assert |xs| > i + 1;
     var h := Uniform.Model.IntervalSample(i, |xs|);
     assert HIsIndependent: Independence.IsIndepFunction(h) by {
@@ -302,8 +302,8 @@ module FisherYates.Correctness {
     requires A == iset{j}
     requires h == Uniform.Model.IntervalSample(i, |xs|)
     requires ys == Model.Swap(xs, i, j)
-    requires e == iset s | Model.Shuffle(xs, i)(s).Result? && Model.Shuffle(xs, i)(s).value[i..] == p[i..]
-    requires e' == iset s | Model.Shuffle(ys, i+1)(s).Result? && Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..]
+    requires e == iset s | Model.Shuffle(xs, i)(s).value[i..] == p[i..]
+    requires e' == iset s | Model.Shuffle(ys, i+1)(s).value[i+1..] == p[i+1..]
     ensures e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
   {
     assert forall s :: s in e <==> s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
@@ -313,7 +313,6 @@ module FisherYates.Correctness {
         if s in e {
           var zs := Model.Shuffle(xs, i)(s).value;
           assert zs[i..] == p[i..];
-          assert h(s).Result?;
           var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
           Uniform.Model.IntervalSampleBound(i, |xs|, s);
           var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
@@ -332,7 +331,6 @@ module FisherYates.Correctness {
             assert k in A;
           }
           assert s in Monad.BitstreamsWithRestIn(h, e') by {
-            assert Model.Shuffle(ys, i+1)(s').Result?;
             assert Model.Shuffle(ys, i+1)(s').value[i+1..] == p[i+1..];
           }
           assert s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e');

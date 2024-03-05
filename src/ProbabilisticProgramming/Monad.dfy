@@ -18,20 +18,14 @@ module Monad {
   // The result of a probabilistic computation on a bitstream.
   // It either consists of the computed value and the (unconsumed) rest of the bitstream or indicates nontermination.
   // It differs from Hurd's definition in that the result can be nontermination, which Hurd does not model explicitly.
-  datatype Result<A> =
-    | Result(value: A, rest: Rand.Bitstream)
-    | Diverging
+  datatype Result<A> = Result(value: A, rest: Rand.Bitstream)
   {
     function Map<B>(f: A -> B): Result<B> {
-      match this
-      case Diverging => Diverging
-      case Result(value, rest) => Result(f(value), rest)
+      Result(f(value), rest)
     }
 
     function Bind<B>(f: A -> Hurd<B>): Result<B> {
-      match this
-      case Diverging => Diverging
-      case Result(value, rest) => f(value)(rest)
+      f(value)(rest)
     }
 
     ghost predicate In(s: iset<A>) {
@@ -43,9 +37,7 @@ module Monad {
     }
 
     predicate Satisfies(property: A -> bool) {
-      match this
-      case Diverging => false
-      case Result(value, _) => property(value)
+      property(value)
     }
 
     ghost predicate RestIn(s: iset<Rand.Bitstream>) {
@@ -53,34 +45,22 @@ module Monad {
     }
 
     predicate RestSatisfies(property: Rand.Bitstream -> bool) {
-      match this
-      case Diverging => false
-      case Result(_, rest) => property(rest)
+      property(rest)
     }
 
-    predicate IsFailure() {
-      Diverging?
-    }
-
-    function PropagateFailure<B>(): Result<B>
-      requires Diverging?
-    {
-      Diverging
-    }
-
-    function Extract(): (A, Rand.Bitstream)
-      requires Result?
+    function Extract(): (x: (A, Rand.Bitstream))
+      ensures this == Result(x.0, x.1)
     {
       (this.value, this.rest)
     }
   }
 
   ghost function Values<A>(results: iset<Result<A>>): iset<A> {
-    iset r <- results | r.Result? :: r.value
+    iset r <- results :: r.value
   }
 
   ghost function Rests<A>(results: iset<Result<A>>): iset<Rand.Bitstream> {
-    iset r <- results | r.Result? :: r.rest
+    iset r <- results :: r.rest
   }
 
   ghost function ResultEventSpace<A(!new)>(eventSpace: iset<iset<A>>): iset<iset<Result<A>>> {
@@ -92,11 +72,11 @@ module Monad {
   ghost const natResultEventSpace: iset<iset<Result<nat>>> := ResultEventSpace(Measures.natEventSpace)
 
   ghost function ResultsWithValueIn<A(!new)>(values: iset<A>): iset<Result<A>> {
-    iset result: Result<A> | result.Result? && result.value in values
+    iset result: Result<A> | result.value in values
   }
 
   ghost function ResultsWithRestIn<A(!new)>(rests: iset<Rand.Bitstream>): iset<Result<A>> {
-    iset result: Result<A> | result.Result? && result.rest in rests
+    iset result: Result<A> | result.rest in rests
   }
 
   ghost function BitstreamsWithValueIn<A(!new)>(h: Hurd<A>, aSet: iset<A>): iset<Rand.Bitstream> {
@@ -112,28 +92,11 @@ module Monad {
     (s: Rand.Bitstream) => f(s).Bind(g)
   }
 
-  function BindAlternative<A,B>(f: Hurd<A>, g: A -> Hurd<B>): (h: Hurd<B>)
-    ensures forall s :: h(s) == Bind(f, g)(s)
-  {
-    (s: Rand.Bitstream) =>
-      var (a, s') :- f(s);
-      g(a)(s')
-  }
-
   // Equation (2.42)
   const Coin: Hurd<bool> := s => Result(Rand.Head(s), Rand.Tail(s))
 
   function Composition<A,B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): A -> Hurd<C> {
     (a: A) => Bind(f(a), g)
-  }
-
-  function CompositionAlternative<A(!new),B,C>(f: A -> Hurd<B>, g: B -> Hurd<C>): (h: A -> Hurd<C>)
-    ensures forall a, s :: h(a)(s) == Composition(f, g)(a)(s)
-  {
-    (a: A) =>
-      (s: Rand.Bitstream) =>
-        var (b, s') :- f(a)(s);
-        g(b)(s')
   }
 
   // Equation (3.3)
