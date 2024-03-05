@@ -271,14 +271,14 @@ module FisherYates.Correctness {
       CorrectnessFisherYatesUniqueElementsGeneralGreater1CorrectnessPredicate(xs, p, i, j);
     }
     assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
-      DecomposeE(xs, ys, p, i, j, h, A);
+      DecomposeE(xs, ys, p, i, j, h, A, e, e');
     }
     assert CorrectnessPredicate(xs, p, i) by {
-      CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper(xs, ys, p, i, j, h, A);
+      CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper(xs, ys, p, i, j, h, A, e, e');
     }
   }
 
-  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
+  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
     decreases |xs| - i
     requires i <= |xs|
     requires i <= |p|
@@ -289,18 +289,15 @@ module FisherYates.Correctness {
     requires i <= j < |xs| && xs[j] == p[i]
     requires |xs| == |ys|
     requires ys == Model.Swap(xs, i, j)
-    requires DecomposeE: 
-      var e := CorrectnessConstructEvent(xs, p, i);
-      var e' := CorrectnessConstructEvent(ys, p, i+1);
-      e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+    requires e == CorrectnessConstructEvent(xs, p, i)
+    requires e' == CorrectnessConstructEvent(ys, p, i+1)
+    requires DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
     requires HIsIndependent: Independence.IsIndepFunction(h)
     requires BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j))
     requires InductionHypothesis: CorrectnessPredicate(ys, p, i+1)
     requires hIsMeasurePreserving: Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest)
     ensures CorrectnessPredicate(xs, p, i)
   {
-    var e := CorrectnessConstructEvent(xs, p, i);
-    var e' := CorrectnessConstructEvent(ys, p, i+1);
     reveal DecomposeE;
     reveal HIsIndependent;
     reveal BitStreamsInA;
@@ -330,6 +327,7 @@ module FisherYates.Correctness {
     }
   }
 
+
   lemma BitStreamsInA<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
     requires i <= |xs|
     requires i <= |p|
@@ -355,7 +353,7 @@ module FisherYates.Correctness {
     }
   }
 
-  lemma DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>)
+  lemma {:vcs_split_on_every_assert} DecomposeEImplicationOne<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>, s: Rand.Bitstream)
     requires i <= |p|
     requires |xs| == |p|
     requires |xs|-i > 1
@@ -367,75 +365,110 @@ module FisherYates.Correctness {
     requires A == iset{j}
     requires h == Uniform.Model.IntervalSample(i, |xs|)
     requires ys == Model.Swap(xs, i, j)
+    requires e == CorrectnessConstructEvent(xs, p, i)
+    requires e' == CorrectnessConstructEvent(ys, p, i+1)
+    ensures s in e ==> s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+  {
+    if s in e {
+      var zs := Model.Shuffle(xs, i)(s).value;
+      assert zs[i..] == p[i..];
+      var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
+      Uniform.Correctness.IntervalSampleBound(i, |xs|, s);
+      var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
+      assert s in Monad.BitstreamsWithValueIn(h, A) by {
+        var ys' := Model.Swap(xs, i, k);
+        var zs' := Model.Shuffle(ys', i+1)(s').value;
+        assert zs == zs';
+        calc {
+          p[i];
+          zs[i];
+          zs'[i];
+          { assert Model.ShuffleInvariancePredicatePointwise(ys', Model.Shuffle(ys', i+1)(s'), i); }
+          ys'[i];
+          xs[k];
+        }
+        assert k in A;
+      }
+      assert s in Monad.BitstreamsWithRestIn(h, e') by {
+        assert Model.Shuffle(ys, i+1)(s').value[i+1..] == p[i+1..];
+      }
+      assert s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e');
+    }
+  }
+
+  lemma DecomposeEImplicationTwo<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>, s: Rand.Bitstream)
+    requires i <= |p|
+    requires |xs| == |p|
+    requires |xs|-i > 1
+    requires i <= |xs|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires i <= j < |xs| && xs[j] == p[i]
+    requires A == iset j | i <= j < |xs| && xs[j] == p[i]
+    requires A == iset{j}
+    requires h == Uniform.Model.IntervalSample(i, |xs|)
+    requires ys == Model.Swap(xs, i, j)
+    requires e == CorrectnessConstructEvent(xs, p, i)
+    requires e' == CorrectnessConstructEvent(ys, p, i+1)
+    ensures s in e <== s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+  {
+    if s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') {
+      assert s in e by {
+        var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
+        assert k in A;
+        assert k == j;
+        var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
+        assert s' in e';
+        var ys' := Model.Swap(xs, i, k);
+        assert ys' == ys;
+        var zs' := Model.Shuffle(ys', i+1)(s').value;
+        assert Model.Shuffle(xs, i)(s).value[i..] == p[i..] by {
+          calc {
+            Model.Shuffle(xs, i)(s).value[i..];
+            { assert Model.Shuffle(xs, i)(s).value == zs'; }
+            zs'[i..];
+            Model.Shuffle(ys', i+1)(s').value[i..];
+            { assert ys' == ys; }
+            Model.Shuffle(ys, i+1)(s').value[i..];
+            { SliceOfSequences(Model.Shuffle(ys, i+1)(s').value, i); }
+            [Model.Shuffle(ys, i+1)(s').value[i]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
+            { assert Model.ShuffleInvariancePredicatePointwise(ys, Model.Shuffle(ys, i+1)(s'), i); assert Model.Shuffle(ys, i+1)(s').value[i] == ys[i]; }
+            [ys[i]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
+            { assert ys[i] == xs[k]; }
+            [xs[k]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
+            { assert xs[k] == p[i]; }
+            [p[i]] + p[i+1..];
+            { SliceOfSequences(p, i); }
+            p[i..];
+          }
+        }
+      }
+    }
+  }
+
+  lemma DecomposeE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+    requires i <= |p|
+    requires |xs| == |p|
+    requires |xs|-i > 1
+    requires i <= |xs|
+    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
+    requires multiset(p[i..]) == multiset(xs[i..])
+    requires i <= j < |xs| && xs[j] == p[i]
+    requires A == iset j | i <= j < |xs| && xs[j] == p[i]
+    requires A == iset{j}
+    requires h == Uniform.Model.IntervalSample(i, |xs|)
+    requires ys == Model.Swap(xs, i, j)
+    requires e == CorrectnessConstructEvent(xs, p, i)
+    requires e' == CorrectnessConstructEvent(ys, p, i+1)
     ensures 
-      var e := CorrectnessConstructEvent(xs, p, i);
-      var e' := CorrectnessConstructEvent(ys, p, i+1); 
       e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
   {
-    var e := CorrectnessConstructEvent(xs, p, i);
-    var e' := CorrectnessConstructEvent(ys, p, i+1);
-    assert forall s :: s in e <==> s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
+    assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
       forall s
         ensures s in e <==> s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
       {
-        if s in e {
-          var zs := Model.Shuffle(xs, i)(s).value;
-          assert zs[i..] == p[i..];
-          var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
-          Uniform.Correctness.IntervalSampleBound(i, |xs|, s);
-          var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
-          assert s in Monad.BitstreamsWithValueIn(h, A) by {
-            var ys' := Model.Swap(xs, i, k);
-            var zs' := Model.Shuffle(ys', i+1)(s').value;
-            assert zs == zs';
-            calc {
-              p[i];
-              zs[i];
-              zs'[i];
-              { assert Model.ShuffleInvariancePredicatePointwise(ys', Model.Shuffle(ys', i+1)(s'), i); }
-              ys'[i];
-              xs[k];
-            }
-            assert k in A;
-          }
-          assert s in Monad.BitstreamsWithRestIn(h, e') by {
-            assert Model.Shuffle(ys, i+1)(s').value[i+1..] == p[i+1..];
-          }
-          assert s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e');
-        }
-
-        if s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') {
-          assert s in e by {
-            var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
-            assert k in A;
-            assert k == j;
-            var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
-            assert s' in e';
-            var ys' := Model.Swap(xs, i, k);
-            assert ys' == ys;
-            var zs' := Model.Shuffle(ys', i+1)(s').value;
-            assert Model.Shuffle(xs, i)(s).value[i..] == p[i..] by {
-              calc {
-                Model.Shuffle(xs, i)(s).value[i..];
-                { assert Model.Shuffle(xs, i)(s).value == zs'; }
-                zs'[i..];
-                Model.Shuffle(ys', i+1)(s').value[i..];
-                { assert ys' == ys; }
-                Model.Shuffle(ys, i+1)(s').value[i..];
-                { SliceOfSequences(Model.Shuffle(ys, i+1)(s').value, i); }
-                [Model.Shuffle(ys, i+1)(s').value[i]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
-                { assert Model.ShuffleInvariancePredicatePointwise(ys, Model.Shuffle(ys, i+1)(s'), i); assert Model.Shuffle(ys, i+1)(s').value[i] == ys[i]; }
-                [ys[i]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
-                { assert ys[i] == xs[k]; }
-                [xs[k]] + Model.Shuffle(ys, i+1)(s').value[i+1..];
-                { assert xs[k] == p[i]; }
-                [p[i]] + p[i+1..];
-                { SliceOfSequences(p, i); }
-                p[i..];
-              }
-            }
-          }
-        }
+        DecomposeEImplicationOne(xs, ys, p, i, j, h, A, e, e', s);
+        DecomposeEImplicationTwo(xs, ys, p, i, j, h, A, e, e', s);
       }
     }
   }
