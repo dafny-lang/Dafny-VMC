@@ -266,7 +266,7 @@ module FisherYates.Correctness {
     requires ys == Model.Swap(xs, i, j)
     requires e == CorrectnessConstructEvent(xs, p, i)
     requires e' == CorrectnessConstructEvent(ys, p, i+1)
-    requires DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') 
+    requires DecomposeE: e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
     requires HIsIndependent: Independence.IsIndepFunction(h)
     requires BitStreamsInA: Monad.BitstreamsWithValueIn(h, A) == (iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j))
     requires InductionHypothesis: CorrectnessPredicate(ys, p, i+1)
