@@ -43,4 +43,8 @@ module Uniform.Model {
     SampleBound(b-a, s);
   }
 
+  lemma {:axiom} IntervalSampleIsMeasurePreserving(a: int, b: int)
+    requires a < b
+    ensures Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => IntervalSample(a, b)(s).rest)
+
 }
