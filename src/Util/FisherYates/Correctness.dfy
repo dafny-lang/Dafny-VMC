@@ -353,7 +353,7 @@ module FisherYates.Correctness {
     }
   }
 
-  lemma {:vcs_split_on_every_assert} DecomposeEImplicationOne<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>, s: Rand.Bitstream)
+  lemma DecomposeEImplicationOne<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>, s: Rand.Bitstream)
     requires i <= |p|
     requires |xs| == |p|
     requires |xs|-i > 1
@@ -390,13 +390,19 @@ module FisherYates.Correctness {
       assert k in A;
     }
     assert s in Monad.BitstreamsWithRestIn(h, e') by {
-      calc {
-        Model.Shuffle(ys, i+1)(s').value[i+1..];
-        Model.ShuffleCurried(ys, s', i+1).value[i+1..];
-        Model.ShuffleCurried(xs, s, i).value[i+1..];
-        Model.Shuffle(xs, i)(s).value[i+1..];
-        { assert Model.Shuffle(xs, i)(s).value[i..] == p[i..]; }
-        p[i+1..];
+      assert Model.Shuffle(ys, i+1)(s').value[i+1..] == p[i+1..] by {
+        forall j | 0 <= j < |xs| - (i+1) ensures Model.Shuffle(ys, i+1)(s').value[i+1..][j] == p[i+1..][j] {
+          calc {
+            Model.Shuffle(ys, i+1)(s').value[i+1..][j];
+            Model.ShuffleCurried(ys, s', i+1).value[i+1..][j];
+            Model.ShuffleCurried(xs, s, i).value[i+1..][j];
+            Model.Shuffle(xs, i)(s).value[i+1..][j];
+            Model.Shuffle(xs, i)(s).value[i..][j+1];
+            { assert Model.Shuffle(xs, i)(s).value[i..] == p[i..]; }
+            p[i..][j+1];
+            p[i+1..][j];
+          }
+        }
       }
     }
     assert s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e');
