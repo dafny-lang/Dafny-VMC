@@ -370,42 +370,45 @@ module FisherYates.Correctness {
     requires s in e
     ensures s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
   {
-    var zs := Model.Shuffle(xs, i)(s).value;
-    assert zs[i..] == p[i..];
-    var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
-    Uniform.Correctness.IntervalSampleBound(i, |xs|, s);
-    var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
-    assert s in Monad.BitstreamsWithValueIn(h, A) by {
-      var ys' := Model.Swap(xs, i, k);
-      var zs' := Model.Shuffle(ys', i+1)(s').value;
-      assert zs == zs';
-      calc {
-        p[i];
-        zs[i];
-        zs'[i];
-        { assert Model.ShuffleInvariancePredicatePointwise(ys', Model.Shuffle(ys', i+1)(s'), i); }
-        ys'[i];
-        xs[k];
+    assert s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
+      var zs := Model.Shuffle(xs, i)(s).value;
+      assert zs[i..] == p[i..];
+      var k := Uniform.Model.IntervalSample(i, |xs|)(s).value;
+      Uniform.Correctness.IntervalSampleBound(i, |xs|, s);
+      var s' := Uniform.Model.IntervalSample(i, |xs|)(s).rest;
+
+      assert s in Monad.BitstreamsWithValueIn(h, A) by {
+        var ys' := Model.Swap(xs, i, k);
+        var zs' := Model.Shuffle(ys', i+1)(s').value;
+        assert zs == zs';
+        calc {
+          p[i];
+          zs[i];
+          zs'[i];
+          { assert Model.ShuffleInvariancePredicatePointwise(ys', Model.Shuffle(ys', i+1)(s'), i); }
+          ys'[i];
+          xs[k];
+        }
+        assert k in A;
       }
-      assert k in A;
-    }
-    assert s in Monad.BitstreamsWithRestIn(h, e') by {
-      assert Model.Shuffle(ys, i+1)(s').value[i+1..] == p[i+1..] by {
-        forall j | 0 <= j < |xs| - (i+1) ensures Model.Shuffle(ys, i+1)(s').value[i+1..][j] == p[i+1..][j] {
-          calc {
-            Model.Shuffle(ys, i+1)(s').value[i+1..][j];
-            Model.ShuffleCurried(ys, s', i+1).value[i+1..][j];
-            Model.ShuffleCurried(xs, s, i).value[i+1..][j];
-            Model.Shuffle(xs, i)(s).value[i+1..][j];
-            Model.Shuffle(xs, i)(s).value[i..][j+1];
-            { assert Model.Shuffle(xs, i)(s).value[i..] == p[i..]; }
-            p[i..][j+1];
-            p[i+1..][j];
+
+      assert s in Monad.BitstreamsWithRestIn(h, e') by {
+        assert Model.Shuffle(ys, i+1)(s').value[i+1..] == p[i+1..] by {
+          forall j | 0 <= j < |xs| - (i+1) ensures Model.Shuffle(ys, i+1)(s').value[i+1..][j] == p[i+1..][j] {
+            calc {
+              Model.Shuffle(ys, i+1)(s').value[i+1..][j];
+              Model.ShuffleCurried(ys, s', i+1).value[i+1..][j];
+              Model.ShuffleCurried(xs, s, i).value[i+1..][j];
+              Model.Shuffle(xs, i)(s).value[i+1..][j];
+              Model.Shuffle(xs, i)(s).value[i..][j+1];
+              { assert Model.Shuffle(xs, i)(s).value[i..] == p[i..]; }
+              p[i..][j+1];
+              p[i+1..][j];
+            }
           }
         }
       }
     }
-    assert s in Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e');
   }
 
   lemma DecomposeEImplicationTwo<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>, s: Rand.Bitstream)
