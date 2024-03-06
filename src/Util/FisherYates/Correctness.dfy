@@ -215,43 +215,43 @@ module FisherYates.Correctness {
     var e' := CorrectnessConstructEvent(ys, p, i+1);
     assert CorrectnessPredicate(ys, p, i+1) by {
       assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
-          InductionHypothesisPrecondition1(xs, ys, p, i, j);
+        InductionHypothesisPrecondition1(xs, ys, p, i, j);
+      }
+      assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
+        InductionHypothesisPrecondition2(xs, ys, p, i, j);
+      }
+      assert i+1 <= |ys| by {
+        calc {
+          i + 1;
+        <
+          |xs|;
+        ==
+          |ys|;
         }
-        assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
-          InductionHypothesisPrecondition2(xs, ys, p, i, j);
+      }
+      assert i < |p| by {
+        calc {
+          i;
+        <
+          i+1;
+        <
+          |xs|;
+        ==
+          |p|;
         }
-        assert i+1 <= |ys| by {
-          calc {
-            i + 1;
-          <
-            |xs|;
-          ==
-            |ys|;
-          }
+      }
+      assert |ys| == |p| by {
+        calc {
+          |ys|;
+          |xs|;
+          |p|;
         }
-        assert i < |p| by {
-          calc {
-            i;
-          <
-            i+1;
-          <
-            |xs|;
-          ==
-            |p|;
-          }
-        }
-        assert |ys| == |p| by {
-          calc {
-            |ys|;
-            |xs|;
-            |p|;
-          }
-        }
-        if |ys[i+1..]| > 1 {
-          CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
-        } else {
-          CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
-        }
+      }
+      if |ys[i+1..]| > 1 {
+        CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
+      } else {
+        CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
+      }
     }
     assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
       DecomposeE(xs, ys, p, i, j, h, A, e, e');
@@ -627,7 +627,7 @@ module FisherYates.Correctness {
     }
 
     assert SimplifyFractionsMultiplicationLifted: (1.0 / ((|xs|-i) as real)) * frac2 == (1.0 * 1.0) / (((|xs|-i) as real) * denom) by {
-      assert |xs|-i > 1; 
+      assert |xs|-i > 1;
       RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, denom);
     }
 
