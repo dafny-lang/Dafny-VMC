@@ -178,4 +178,10 @@ module RealArith {
   lemma AsRealOfMultiplication(a: nat, b: nat)
     ensures (a as real) * (b as real) == (a * b) as real
   {}
+
+  lemma MultiplicationInvariance(a: real, b1: real, b2: real)
+    requires b1 == b2
+    ensures a * b1 == a * b2
+    ensures b1 * a == b2 * a
+  {}
 }

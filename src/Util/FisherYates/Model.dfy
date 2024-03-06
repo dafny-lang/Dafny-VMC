@@ -13,9 +13,10 @@ module FisherYates.Model {
   ************/
 
   ghost predicate ShuffleInvariancePredicatePointwise<T>(xs: seq<T>, r: Monad.Result<seq<T>>, j: int)
+    requires |r.value| == |xs|
     requires 0 <= j < |xs|
   {
-    |r.value| == |xs| && r.value[j] == xs[j]
+    r.value[j] == xs[j]
   }
 
   ghost function Shuffle<T>(xs: seq<T>, i: nat := 0): (h: Monad.Hurd<seq<T>>)
@@ -34,7 +35,7 @@ module FisherYates.Model {
   {
     if |xs| - i > 1 then
       var (j, s') := Uniform.Model.IntervalSample(i, |xs|)(s).Extract();
-      assert i <= j < |xs| by { Uniform.Model.IntervalSampleBound(i, |xs|, s); }
+      assert i <= j < |xs| by { Uniform.Correctness.IntervalSampleBound(i, |xs|, s); }
       var ys := Swap(xs, i, j);
       var r := ShuffleCurried(ys, s', i + 1);
       assert forall j | 0 <= j < i :: ShuffleInvariancePredicatePointwise(xs, r, j) by {
