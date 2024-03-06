@@ -27,7 +27,10 @@ module FisherYates.Implementation {
           assert prevASeq == a[..]; // ghost
           Swap(a, i, j);
         }
+      } else {
+        assert prevASeq == a[..]; // ghost
       }
+
     }
 
     method Swap<T>(a: array<T>, i: nat, j: nat)

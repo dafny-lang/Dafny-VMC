@@ -15,12 +15,12 @@ module FisherYates.Model {
   ghost predicate ShuffleInvariancePredicatePointwise<T>(xs: seq<T>, r: Monad.Result<seq<T>>, j: int)
     requires 0 <= j < |xs|
   {
-    r.Result? ==> |r.value| == |xs| && r.value[j] == xs[j]
+    |r.value| == |xs| && r.value[j] == xs[j]
   }
 
   ghost function Shuffle<T>(xs: seq<T>, i: nat := 0): (h: Monad.Hurd<seq<T>>)
     requires i <= |xs|
-    ensures forall s :: h(s).Result? ==> multiset(h(s).value) == multiset(xs) && |h(s).value| == |xs|
+    ensures forall s :: multiset(h(s).value) == multiset(xs) && |h(s).value| == |xs|
     ensures forall s, j | 0 <= j < i :: ShuffleInvariancePredicatePointwise(xs, h(s), j)
   {
     (s: Rand.Bitstream) => ShuffleCurried(xs, s, i)
@@ -29,11 +29,11 @@ module FisherYates.Model {
   ghost function ShuffleCurried<T>(xs: seq<T>, s: Rand.Bitstream, i: nat := 0): (r: Monad.Result<seq<T>>)
     requires i <= |xs|
     decreases |xs| - i
-    ensures r.Result? ==> multiset(r.value) == multiset(xs) && |r.value| == |xs|
+    ensures multiset(r.value) == multiset(xs) && |r.value| == |xs|
     ensures forall j | 0 <= j < i :: ShuffleInvariancePredicatePointwise(xs, r, j)
   {
     if |xs| - i > 1 then
-      var (j, s') :- Uniform.Model.IntervalSample(i, |xs|)(s);
+      var (j, s') := Uniform.Model.IntervalSample(i, |xs|)(s).Extract();
       assert i <= j < |xs| by { Uniform.Model.IntervalSampleBound(i, |xs|, s); }
       var ys := Swap(xs, i, j);
       var r := ShuffleCurried(ys, s', i + 1);

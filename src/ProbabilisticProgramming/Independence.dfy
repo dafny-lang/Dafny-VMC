@@ -40,6 +40,7 @@ module Independence {
   )
     requires hIndep: IsIndepFunction(h)
     requires bMeasurable: bSeeds in Rand.eventSpace
+    requires hIsMeasurePreserving: Measures.IsMeasurePreserving(Rand.eventSpace, Rand.prob, Rand.eventSpace, Rand.prob, s => h(s).rest)
     ensures Rand.prob(Monad.BitstreamsWithValueIn(h, aSet) * Monad.BitstreamsWithRestIn(h, bSeeds)) == Rand.prob(Monad.BitstreamsWithValueIn(h, aSet)) * Rand.prob(bSeeds)
   {
     var aSeeds := Monad.BitstreamsWithValueIn(h, aSet);
@@ -52,7 +53,16 @@ module Independence {
       assert Measures.AreIndepEvents(Rand.eventSpace, Rand.prob, aSeeds, restBSeeds);
     }
     assert Rand.prob(restBSeeds) == Rand.prob(bSeeds) by {
-      assume {:axiom} false; // TODO
+      calc {
+        Rand.prob(restBSeeds);
+        Rand.prob(Monad.BitstreamsWithRestIn(h, bSeeds));
+        { assert Monad.BitstreamsWithRestIn(h, bSeeds) == iset s | h(s).rest in bSeeds; }
+        Rand.prob(iset s | h(s).rest in bSeeds);
+        { assert (iset s | h(s).rest in bSeeds) == Measures.PreImage(s => h(s).rest, bSeeds); }
+        Rand.prob(Measures.PreImage(s => h(s).rest, bSeeds));
+        { reveal bMeasurable; reveal hIsMeasurePreserving; }
+        Rand.prob(bSeeds);
+      }
     }
   }
 
