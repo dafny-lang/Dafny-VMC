@@ -256,6 +256,7 @@ module FisherYates.Correctness {
     assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
       DecomposeE(xs, ys, p, i, j, h, A, e, e');
     }
+
     assert CorrectnessPredicate(xs, p, i) by {
       CorrectnessFisherYatesUniqueElementsGeneralGreater1Helper(xs, ys, p, i, j, h, A, e, e');
     }
@@ -455,8 +456,7 @@ module FisherYates.Correctness {
     requires ys == Model.Swap(xs, i, j)
     requires e == CorrectnessConstructEvent(xs, p, i)
     requires e' == CorrectnessConstructEvent(ys, p, i+1)
-    ensures
-      e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
+    ensures e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e')
   {
     assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
       forall s
