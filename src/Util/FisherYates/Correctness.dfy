@@ -185,61 +185,7 @@ module FisherYates.Correctness {
     }
   }
 
-  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1CorrectnessPredicate<T(!new)>(xs: seq<T>, p: seq<T>, i: nat, j: nat)
-    decreases |xs| - i
-    requires i <= |xs|
-    requires i <= |p|
-    requires |xs| == |p|
-    requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
-    requires multiset(p[i..]) == multiset(xs[i..])
-    requires |xs[i..]| > 1
-    requires i <= j < |xs| && xs[j] == p[i]
-    ensures
-      var ys := Model.Swap(xs, i, j);
-      CorrectnessPredicate(ys, p, i+1)
-  {
-    var ys := Model.Swap(xs, i, j);
-    assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
-      InductionHypothesisPrecondition1(xs, ys, p, i, j);
-    }
-    assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
-      InductionHypothesisPrecondition2(xs, ys, p, i, j);
-    }
-    assert i+1 <= |ys| by {
-      calc {
-        i + 1;
-      <
-        |xs|;
-      ==
-        |ys|;
-      }
-    }
-    assert i < |p| by {
-      calc {
-        i;
-      <
-        i+1;
-      <
-        |xs|;
-      ==
-        |p|;
-      }
-    }
-    assert |ys| == |p| by {
-      calc {
-        |ys|;
-        |xs|;
-        |p|;
-      }
-    }
-    if |ys[i+1..]| > 1 {
-      CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
-    } else {
-      CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
-    }
-  }
-
-  lemma {:vcs_split_on_every_assert} CorrectnessFisherYatesUniqueElementsGeneralGreater1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
+  lemma CorrectnessFisherYatesUniqueElementsGeneralGreater1<T(!new)>(xs: seq<T>, p: seq<T>, i: nat)
     decreases |xs| - i
     requires i <= |xs|
     requires i <= |p|
@@ -268,7 +214,44 @@ module FisherYates.Correctness {
     var ys := Model.Swap(xs, i, j);
     var e' := CorrectnessConstructEvent(ys, p, i+1);
     assert CorrectnessPredicate(ys, p, i+1) by {
-      CorrectnessFisherYatesUniqueElementsGeneralGreater1CorrectnessPredicate(xs, p, i, j);
+      assert multiset(ys[i+1..]) == multiset(p[i+1..]) by {
+          InductionHypothesisPrecondition1(xs, ys, p, i, j);
+        }
+        assert forall a, b | i+1 <= a < b < |ys| :: ys[a] != ys[b] by {
+          InductionHypothesisPrecondition2(xs, ys, p, i, j);
+        }
+        assert i+1 <= |ys| by {
+          calc {
+            i + 1;
+          <
+            |xs|;
+          ==
+            |ys|;
+          }
+        }
+        assert i < |p| by {
+          calc {
+            i;
+          <
+            i+1;
+          <
+            |xs|;
+          ==
+            |p|;
+          }
+        }
+        assert |ys| == |p| by {
+          calc {
+            |ys|;
+            |xs|;
+            |p|;
+          }
+        }
+        if |ys[i+1..]| > 1 {
+          CorrectnessFisherYatesUniqueElementsGeneralGreater1(ys, p, i+1);
+        } else {
+          CorrectnessFisherYatesUniqueElementsGeneralLeq1(ys, p, i+1);
+        }
     }
     assert e == Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e') by {
       DecomposeE(xs, ys, p, i, j, h, A, e, e');
@@ -612,25 +595,76 @@ module FisherYates.Correctness {
     ensures
       Rand.prob(e) == 1.0 / (NatArith.FactorialTraditional(|xs|-i) as real)
   {
+    var e'' := iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j);
+    assert BitStreamsInALifted: Rand.prob(Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(e') == Rand.prob(e'') * Rand.prob(e') by {
+      assert Rand.prob(Monad.BitstreamsWithValueIn(h, A)) == Rand.prob(e'') by {
+        reveal BitStreamsInA;
+      }
+    }
+
+    assert FullIntervalLifted: Rand.prob(e'') * Rand.prob(e') == (1.0 / ((|xs|-i) as real)) * Rand.prob(e') by {
+      assert Rand.prob(e'') == 1.0 / ((|xs|-i) as real) by {
+        Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, j);
+      }
+      RealArith.MultiplicationInvariance(Rand.prob(e'), Rand.prob(e''), 1.0 / ((|xs|-i) as real));
+    }
+
+    var denom := NatArith.FactorialTraditional(|xs|-(i+1)) as real;
+    var denom2 := NatArith.FactorialTraditional((|xs|-i)-1) as real;
+    var frac := 1.0 / denom;
+    var frac2 := 1.0 / denom2;
+
+    assert InductionHypothesisLifted: (1.0 / ((|xs|-i) as real)) * Rand.prob(e') == (1.0 / ((|xs|-i) as real)) * frac by {
+      assert Rand.prob(e') == frac by {
+        reveal InductionHypothesis;
+      }
+      RealArith.MultiplicationInvariance(1.0 / ((|xs|-i) as real), Rand.prob(e'), frac);
+    }
+
+    assert FracLifted: (1.0 / ((|xs|-i) as real)) * frac == (1.0 / ((|xs|-i) as real)) * frac2 by {
+      assert frac == frac2;
+      RealArith.MultiplicationInvariance(1.0 / ((|xs|-i) as real), frac, frac2);
+    }
+
+    assert SimplifyFractionsMultiplicationLifted: (1.0 / ((|xs|-i) as real)) * frac2 == (1.0 * 1.0) / (((|xs|-i) as real) * denom) by {
+      assert |xs|-i > 1; 
+      RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, denom);
+    }
+
+    assert AsRealOfMultiplicationLifted: 1.0 / (((|xs|-i) as real) * denom) == 1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real) by {
+      assert ((|xs|-i) as real) * denom == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real by {
+        RealArith.AsRealOfMultiplication(|xs|-i, NatArith.FactorialTraditional((|xs|-i)-1));
+      }
+    }
+
+    assert NonZero: (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real) != 0.0 by {
+      assert |xs|-i != 0;
+      assert NatArith.FactorialTraditional((|xs|-i)-1) != 0;
+    }
+
+    assert NonZeroDenom: denom != 0.0 by {
+      assert NatArith.FactorialTraditional((|xs|-i)-1) != 0;
+    }
+
     calc {
       Rand.prob(e);
       { reveal DecomposeE; }
       Rand.prob(Monad.BitstreamsWithValueIn(h, A) * Monad.BitstreamsWithRestIn(h, e'));
       { reveal HIsIndependent; reveal InductionHypothesis; reveal hIsMeasurePreserving; Independence.ResultsIndependent(h, A, e'); }
       Rand.prob(Monad.BitstreamsWithValueIn(h, A)) * Rand.prob(e');
-      { assert Rand.prob(Monad.BitstreamsWithValueIn(h, A)) == Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) by { reveal BitStreamsInA; } }
-      Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) * Rand.prob(e');
-      { assert Rand.prob(iset s | Uniform.Model.IntervalSample(i, |xs|)(s).Equals(j)) ==  (1.0 / ((|xs|-i) as real)) by { Uniform.Correctness.UniformFullIntervalCorrectness(i, |xs|, j); } }
+      { reveal BitStreamsInALifted; }
+      Rand.prob(e'') * Rand.prob(e');
+      { reveal FullIntervalLifted; }
       (1.0 / ((|xs|-i) as real)) * Rand.prob(e');
-      { assert Rand.prob(e') == (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real)) by { reveal InductionHypothesis; } }
-      (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional(|xs|-(i+1)) as real));
-      { assert (NatArith.FactorialTraditional(|xs|-(i+1)) as real) == (NatArith.FactorialTraditional((|xs|-i)-1) as real) by { assert |xs|-(i+1) == (|xs|-i)-1; } }
-      (1.0 / ((|xs|-i) as real)) * (1.0 / (NatArith.FactorialTraditional((|xs|-i)-1) as real));
-      { assert |xs|-i > 1; RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, NatArith.FactorialTraditional((|xs|-i)-1) as real); }
-      (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real));
+      { reveal InductionHypothesisLifted; }
+      (1.0 / ((|xs|-i) as real)) * frac;
+      { reveal FracLifted; }
+      (1.0 / ((|xs|-i) as real)) * frac2;
+      { reveal SimplifyFractionsMultiplicationLifted; reveal NonZeroDenom; }
+      (1.0 * 1.0) / (((|xs|-i) as real) * denom);
       { assert 1.0 * 1.0 == 1.0; }
-      1.0 / (((|xs|-i) as real) * (NatArith.FactorialTraditional((|xs|-i)-1) as real));
-      { RealArith.AsRealOfMultiplication(|xs|-i, NatArith.FactorialTraditional((|xs|-i)-1)); }
+      1.0 / (((|xs|-i) as real) * denom);
+      { reveal AsRealOfMultiplicationLifted; reveal NonZero; }
       1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real);
       { assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
       1.0 / (NatArith.FactorialTraditional(|xs|-i) as real);

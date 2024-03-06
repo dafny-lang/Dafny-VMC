@@ -6,6 +6,7 @@
 module FisherYates.Equivalence {
   import Model
   import Rand
+  import Monad
 
   ghost predicate LoopInvariant<T>(prevI: nat, i: nat, a: array<T>, prevASeq: seq<T>, oldASeq: seq<T>, oldS: Rand.Bitstream, prevS: Rand.Bitstream, s: Rand.Bitstream)
     reads a
@@ -16,4 +17,20 @@ module FisherYates.Equivalence {
     && Model.Shuffle(prevASeq, prevI)(prevS) == Model.Shuffle(a[..], i)(s)
   }
 
+  lemma ShuffleElseClause<T>(a: array<T>, oldASeq: seq<T>, oldS: Rand.Bitstream, s: Rand.Bitstream)
+    requires aLength: a.Length <= 1
+    requires aInvariant: oldASeq == a[..]
+    requires sInvariant: oldS == s
+    ensures Model.Shuffle(oldASeq)(oldS) == Monad.Result(a[..], s)
+  {
+    calc {
+      Model.Shuffle(oldASeq)(oldS);
+      { reveal aInvariant; reveal sInvariant; }
+      Model.Shuffle(a[..])(s);
+      Model.ShuffleCurried(a[..], s);
+      { reveal aLength; assert |a[..]| == a.Length; }
+      Monad.Return(a[..])(s);
+      Monad.Result(a[..], s);
+    }
+  }
 }

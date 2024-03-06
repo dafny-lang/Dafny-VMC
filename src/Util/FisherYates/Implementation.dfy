@@ -12,7 +12,7 @@ module FisherYates.Implementation {
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method {:vcs_split_on_every_assert} Shuffle<T>(a: array<T>)
+    method Shuffle<T>(a: array<T>)
       decreases *
       modifies `s, a
       ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
@@ -20,7 +20,7 @@ module FisherYates.Implementation {
       ghost var prevI, prevASeq, prevS := 0, a[..], s; // ghost
       if a.Length > 1 {
         for i := 0 to a.Length - 1
-          invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s)
+          invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s) // ghost
         {
           prevI, prevASeq, prevS := i, a[..], s; // ghost
           var j := UniformIntervalSample(i, a.Length);
@@ -28,7 +28,7 @@ module FisherYates.Implementation {
           Swap(a, i, j);
         }
       } else {
-        assert prevASeq == a[..]; // ghost
+        Equivalence.ShuffleElseClause(a, old(a[..]), old(s), s); // ghost
       }
 
     }
