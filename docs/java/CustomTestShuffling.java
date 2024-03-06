@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import DafnyVMC.Random;
 
-class TestShuffling {
+class CustomTestShuffling {
     public static void main(String[] args) {
         BigInteger[] arr1 = {BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(2)};
         int[] arr2 = {0, 1, 2};
