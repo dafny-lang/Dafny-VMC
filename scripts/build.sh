@@ -14,4 +14,9 @@ then
   exit 1
 fi
 
-$DAFNY build --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG -o build/$TARGET_LANG/DafnyVMC dfyconfig.toml --no-verify
+if [ "$TARGET_LANG" = "java" ]
+then
+  $DAFNY build --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Full/CustomRandom.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG -o build/$TARGET_LANG/DafnyVMC dfyconfig.toml --no-verify
+else
+  $DAFNY build --target:$TARGET_LANG src/interop/$TARGET_LANG/Full/Random.$TARGET_LANG src/interop/$TARGET_LANG/Part/Random.$TARGET_LANG -o build/$TARGET_LANG/DafnyVMC dfyconfig.toml --no-verify
+fi
