@@ -1,2 +1,2 @@
-src/Distributions/Uniform/Model.dfy(19,26): Sample: Declaration has explicit `{:axiom}` attribute. 
+src/Distributions/Uniform/Model.dfy(18,26): Sample: Declaration has explicit `{:axiom}` attribute. 
 src/ProbabilisticProgramming/RandomSource.dfy(50,17): ProbIsProbabilityMeasure: Declaration has explicit `{:axiom}` attribute. 
