@@ -18,15 +18,14 @@ echo Generating Dafny documentation...
 $DAFNY doc dfyconfig.toml --output docs/dafny/dafny-doc/
 
 echo Generating Java documentation...
-dafny translate java dfyconfig.toml -o src/DafnyVMC --no-verify --include-runtime
+dafny translate java src/interop/java/Full/CustomRandom.java src/interop/java/Full/Random.java dfyconfig.toml -o src/DafnyVMC --no-verify --include-runtime
 mkdir src/DafnyVMC-java/DafnyVMC
 cp src/interop/java/Full/CustomRandom.java src/DafnyVMC-java/DafnyVMC
 cp src/interop/java/Full/Random.java src/DafnyVMC-java/DafnyVMC
-javadoc -d docs/java/java-doc/ src/DafnyVMC-java/DafnyVMC/Random.java src/DafnyVMC-java/DafnyVMC/CustomRandom.java 
+find src/DafnyVMC-java/ -type f -name "*.java" | xargs javadoc -d docs/java/java-doc/
 
 echo Generating Python documentation...
 export TARGET_LANG=py
 bash scripts/build.sh
 PYTHONPATH=.:build/py/DafnyVMC-py pydoc3 -w build/py/DafnyVMC-py/DafnyVMC.py
-mkdir docs/py/py-doc
 mv *.html docs/py/py-doc
