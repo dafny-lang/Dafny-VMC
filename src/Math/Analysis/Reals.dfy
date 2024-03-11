@@ -3,11 +3,6 @@
  *  SPDX-License-Identifier: MIT
  *******************************************************************************/
 
-// Fundamental properties of the real numbers.
-// * States the completeness of the reals in terms of a variation of Dedekind cuts.
-//     Dafny should include such an axiom, but doesn't.
-//     See: https://en.wikipedia.org/wiki/Completeness_of_the_real_numbers
-// * Proves existence and uniqueness of infima and suprema
 module Reals {
   import RealArith
 

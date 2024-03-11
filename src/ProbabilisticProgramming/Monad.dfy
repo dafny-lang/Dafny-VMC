@@ -16,8 +16,7 @@ module Monad {
   type Hurd<A> = Rand.Bitstream -> Result<A>
 
   // The result of a probabilistic computation on a bitstream.
-  // It either consists of the computed value and the (unconsumed) rest of the bitstream or indicates nontermination.
-  // It differs from Hurd's definition in that the result can be nontermination, which Hurd does not model explicitly.
+  // It consists of the computed value and the (unconsumed) rest of the bitstream.
   datatype Result<A> = Result(value: A, rest: Rand.Bitstream)
   {
     function Map<B>(f: A -> B): Result<B> {
