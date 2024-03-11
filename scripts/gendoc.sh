@@ -28,4 +28,5 @@ echo Generating Python documentation...
 export TARGET_LANG=py
 bash scripts/build.sh
 PYTHONPATH=.:build/py/DafnyVMC-py pydoc3 -w build/py/DafnyVMC-py/DafnyVMC.py
-mv *.html docs/py/py-doc
+mkdir docs/py/py-doc
+mv DafnyVMC.html docs/py/py-doc
