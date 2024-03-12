@@ -6,15 +6,14 @@
 module Uniform.Interface {
   import Monad
   import Model
-  import Pos
+  import opened Pos
   import Bitstream
 
   trait {:termination false} Trait extends Bitstream.Interface.Trait {
 
-    method UniformSample(n: Pos.pos) returns (u: nat)
+    method UniformSample(n: pos) returns (u: nat)
       modifies `s
       decreases *
-      requires n > 0
       ensures u < n
       ensures Model.Sample(n)(old(s)) == Monad.Result(u, s)
 
@@ -32,4 +31,28 @@ module Uniform.Interface {
     }
 
   }
+
+  trait {:termination false} Trait32 extends Bitstream.Interface.Trait {
+
+    method UniformSample32(n: pos32) returns (u: nat32)
+      modifies `s
+      decreases *
+      ensures u < n
+      ensures Model.Sample(n as nat)(old(s)) == Monad.Result(u as nat, s)
+
+    method UniformIntervalSample32(a: int32, b: int32) returns (u: int32)
+      modifies `s
+      decreases *
+      requires 0 < b as int - a as int < 0x8000_0000
+      ensures a <= u < b
+      ensures Model.IntervalSample(a as int, b as int)(old(s)) == Monad.Result(u as int, s)
+    {
+      var v := UniformSample32((b as int - a as int) as pos32);
+      assert Model.Sample(b as int - a as int)(old(s)) == Monad.Result(v as nat, s);
+      assert Model.IntervalSample(a as int, b as int)(old(s)) == Monad.Result(a as int + v as int, s);
+      u := a + (v as int32);
+    }
+
+  }
+
 }
