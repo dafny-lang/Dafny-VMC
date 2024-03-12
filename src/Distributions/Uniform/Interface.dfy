@@ -47,10 +47,10 @@ module Uniform.Interface {
       ensures a <= u < b
       ensures Model.IntervalSample(a as int, b as int)(old(s)) == Monad.Result(u as int, s)
     {
-      var v := UniformSample32((b as int - a as int) as pos32);
+      var v := UniformSample32(b-a);
       assert Model.Sample(b as int - a as int)(old(s)) == Monad.Result(v as nat, s);
       assert Model.IntervalSample(a as int, b as int)(old(s)) == Monad.Result(a as int + v as int, s);
-      u := a + (v as int32);
+      u := a + v;
     }
 
   }
