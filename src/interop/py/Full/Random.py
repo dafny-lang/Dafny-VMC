@@ -16,6 +16,8 @@ class Random(DafnyVMCPart.Random):
     DafnyVMCPart.Random.Shuffle(self, a)
     return list(a)
   
-class CustomRandom(Random):
-  def UniformSample(self, n):
-    return secrets.randbelow(n)
+  def Shuffle32(self, xs):
+    a = ArrayFromList(xs)
+    DafnyVMCPart.Random.Shuffle32(self, a)
+    return list(a)
+  

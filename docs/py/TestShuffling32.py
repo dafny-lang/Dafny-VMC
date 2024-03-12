@@ -10,26 +10,26 @@ def main():
     # STANDARD RNG
     print("\nSTANDARD RNG TESTS WITH CUSTOM UNIFORM\n")
         
-    r = DafnyVMC.CustomRandom()
+    r = DafnyVMC.Random()
 
     print("Example of Fisher-Yates: int")
-    arr1 = r.Shuffle(arr1)
+    arr1 = r.Shuffle32(arr1)
     print(arr1)
 
     print("Example of Fisher-Yates: float")
-    arr2 = r.Shuffle(arr2)
+    arr2 = r.Shuffle32(arr2)
     print(arr2)
 
     print("Example of Fisher-Yates: str")
-    arr3 = r.Shuffle(arr3)
+    arr3 = r.Shuffle32(arr3)
     print(arr3)
 
     print("Example of Fisher-Yates: char/str")
-    arr4 = r.Shuffle(arr4)
+    arr4 = r.Shuffle32(arr4)
     print(arr4)
 
     print("Example of Fisher-Yates: boolean")
-    arr5 = r.Shuffle(arr5)
+    arr5 = r.Shuffle32(arr5)
     print(arr5)
 
 if __name__ == "__main__":

@@ -24,4 +24,12 @@ public final class Random {
 
     return new BigInteger(n.bitLength()-1, RNG.get());
   }
+
+  public static int UniformSample32(int n) {
+    if (n <= 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+    
+    return RNG.get().nextInt(n);
+  }
 }
