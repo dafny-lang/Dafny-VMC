@@ -118,12 +118,22 @@ module Examples {
     // https://www.wolframalpha.com/input?i=ReplaceAll%5BE%5E%28-x%5E2+%2F+%282+*%CF%83%5E2%29%29+%2F+Sum%5BE%5E%28-y%5E2%2F%282+%CF%83%5E2%29%29%2C+%7By%2C+-Infinity%2C+Infinity%7D%5D%2C+%7Bx+-%3E+1%2C+%CF%83+-%3E+1.4%7D%5D
     print "Estimated probabilities for DiscreteGaussianSample(1.4): ", count0 as real / n as real, " (should be around 0.284959) and ", count1 as real / n as real, ", ", countneg1 as real / n as real, " (should both be around 0.220797)\n";
   
-    // Fisher-Yates Example
-    print "Ten permutations of 012: ";
+    // Fisher-Yates Shuffle Example
+    print "(Shuffle) Ten permutations of 012: ";
     var arr: array<nat> := new nat[3](i => i); // [0, 1, 2]
     for i := 0 to 10 {
       var arrCopy := arr;
       r.Shuffle(arrCopy);
+      print Helper.SeqToString(arrCopy[..], Helper.NatToString), ", ";
+    }
+    print "\n";
+
+    // Fisher-Yates Shuffle32 Example
+    print "(Shuffle 32) Ten permutations of 012: ";
+    var arr: array<nat> := new nat[3](i => i); // [0, 1, 2]
+    for i := 0 to 10 {
+      var arrCopy := arr;
+      r.Shuffle32(arrCopy);
       print Helper.SeqToString(arrCopy[..], Helper.NatToString), ", ";
     }
     print "\n";
