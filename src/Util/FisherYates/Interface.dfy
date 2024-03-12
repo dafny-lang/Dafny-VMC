@@ -23,7 +23,7 @@ module FisherYates.Interface {
       decreases *
       modifies `s, a
       requires a.Length < 0x8000_0000
-      ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
+      //ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
 
   }
 }

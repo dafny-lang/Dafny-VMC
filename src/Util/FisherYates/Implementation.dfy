@@ -55,15 +55,16 @@ module FisherYates.Implementation {
       requires a.Length < 0x8000_0000
       ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
     {
-      ghost var prevI, prevASeq, prevS := 0, a[..], s; // ghost
-      if a.Length > 1 {
-        for i := 0 to a.Length - 1
-          invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s) // ghost
+      ghost var prevI, prevASeq, prevS := 0 as int32, a[..], s; // ghost
+
+      if (a.Length as nat32) > (1 as nat32) {
+        for i: nat32 := (0 as nat32) to (a.Length as nat32) - (1 as nat32)
+          invariant Equivalence.LoopInvariant32(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s) // ghost
         {
           prevI, prevASeq, prevS := i, a[..], s; // ghost
-          var j := UniformIntervalSample32(i as int32, a.Length as int32);
+          var j := UniformIntervalSample32(i, a.Length as nat32);
           assert prevASeq == a[..]; // ghost
-          Swap32(a, i as nat32, j as nat32);
+          Swap32(a, i, j);
         }
       } else {
         Equivalence.ShuffleElseClause(a, old(a[..]), old(s), s); // ghost
