@@ -314,6 +314,7 @@ module Tests {
     modifies r
     modifies a
     requires n > 0
+    requires a.Length < 0x8000_0000
   {
     var a := new (T, nat)[a.Length](i reads a requires 0 <= i < a.Length => (a[i], i));
     var numberOfPermutations: nat := NatArith.FactorialTraditional(a.Length);
