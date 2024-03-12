@@ -130,11 +130,11 @@ module Examples {
 
     // Fisher-Yates Shuffle32 Example
     print "(Shuffle 32) Ten permutations of 012: ";
-    var arr: array<nat> := new nat[3](i => i); // [0, 1, 2]
+    var arr32: array<nat> := new nat[3](i => i); // [0, 1, 2]
     for i := 0 to 10 {
-      var arrCopy := arr;
-      r.Shuffle32(arrCopy);
-      print Helper.SeqToString(arrCopy[..], Helper.NatToString), ", ";
+      var arrCopy32 := arr32;
+      r.Shuffle32(arrCopy32);
+      print Helper.SeqToString(arrCopy32[..], Helper.NatToString), ", ";
     }
     print "\n";
   }
