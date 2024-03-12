@@ -308,4 +308,36 @@ module Tests {
       TestBernoulliIsWithin3SigmaOfTrueMean(n, item.1 as real, 1.0 / numberOfPermutations as real, "p(" + Helper.SeqToString(item.0, printer) + ")");
     }
   }
+
+  method TestFisherYates32<T(==, !new)>(n: nat, a: array<T>, r: DafnyVMC.Random, printer: ((T, nat)) -> string) 
+    decreases *
+    modifies r
+    modifies a
+    requires n > 0
+  {
+    var a := new (T, nat)[a.Length](i reads a requires 0 <= i < a.Length => (a[i], i));
+    var numberOfPermutations: nat := NatArith.FactorialTraditional(a.Length);
+    var numberOfObservedPermutations: map<seq<(T, nat)>, nat> := map[];
+    
+    for i := 0 to n {
+      var aCopy := a;
+      r.Shuffle32(aCopy);
+      var aCopyAsSeq := aCopy[..];
+      if aCopyAsSeq in numberOfObservedPermutations {
+        numberOfObservedPermutations := numberOfObservedPermutations[aCopyAsSeq := numberOfObservedPermutations[aCopyAsSeq] + 1];
+      } else {
+        numberOfObservedPermutations := numberOfObservedPermutations[aCopyAsSeq := 1];
+      }
+    }
+
+    var items := numberOfObservedPermutations.Items;
+
+    while items != {}
+      decreases |items| 
+     {
+      var item :| item in items;
+      items := items - {item};
+      TestBernoulliIsWithin3SigmaOfTrueMean(n, item.1 as real, 1.0 / numberOfPermutations as real, "p(" + Helper.SeqToString(item.0, printer) + ")");
+    }
+  }
 }
