@@ -142,7 +142,7 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.SHORT, this, arr);
   }
 
-  public <__T> void Swap(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, java.math.BigInteger i, java.math.BigInteger j) {
+  public <__T> void Swap(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, int i, int j) {
     FisherYates.Implementation._Companion_Trait.Swap(_td___T, this, a, i, j);
   }
     
