@@ -82,7 +82,6 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSampleLoop(this, num, den, t);
   }
 
-
   public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den) {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den);
   }
@@ -115,72 +114,36 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     FisherYates.Implementation._Companion_Trait.Shuffle(_td___T, this, a);
   }
 
-  public <__T> void Shuffle32(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(_td___T, this, a);
-  }
-
   public void Shuffle(BigInteger[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.BIG_INTEGER, this, arr);
-  }
-
-  public void Shuffle32(BigInteger[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.BIG_INTEGER, this, arr);
   }
 
   public void Shuffle(int[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.INT, this, arr);
   }
 
-  public void Shuffle32(int[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.INT, this, arr);
-  }
-
   public void Shuffle(String[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.CHAR_ARRAY, this, arr);
-  }
-
-  public void Shuffle32(String[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.CHAR_ARRAY, this, arr);
   }
 
   public void Shuffle(char[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.CHAR, this, arr);
   }
 
-  public void Shuffle32(char[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.CHAR, this, arr);
-  }
-
   public void Shuffle(boolean[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.BOOLEAN, this, arr);
-  }
-
-  public void Shuffle32(boolean[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.BOOLEAN, this, arr);
   }
 
   public void Shuffle(long[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.LONG, this, arr);
   }
 
-  public void Shuffle32(long[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.LONG, this, arr);
-  }
-
   public void Shuffle(short[] arr) {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.SHORT, this, arr);
   }
 
-  public void Shuffle32(short[] arr) {
-    FisherYates.Implementation._Companion_Trait32.Shuffle32(TypeDescriptor.SHORT, this, arr);
-  }
-
   public <__T> void Swap(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, java.math.BigInteger i, java.math.BigInteger j) {
     FisherYates.Implementation._Companion_Trait.Swap(_td___T, this, a, i, j);
-  }
-
-  public <__T> void Swap32(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, int i, int j) {
-    FisherYates.Implementation._Companion_Trait32.Swap32(_td___T, this, a, i, j);
   }
     
 }

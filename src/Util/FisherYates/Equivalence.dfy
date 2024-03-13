@@ -9,16 +9,7 @@ module FisherYates.Equivalence {
   import Monad
   import opened Pos
 
-  ghost predicate LoopInvariant<T>(prevI: nat, i: nat, a: array<T>, prevASeq: seq<T>, oldASeq: seq<T>, oldS: Rand.Bitstream, prevS: Rand.Bitstream, s: Rand.Bitstream)
-    reads a
-  {
-    && prevI <= |prevASeq|
-    && i <= a.Length - 1
-    && Model.Shuffle(oldASeq)(oldS) == Model.Shuffle(prevASeq, prevI)(prevS)
-    && Model.Shuffle(prevASeq, prevI)(prevS) == Model.Shuffle(a[..], i)(s)
-  }
-
-  ghost predicate LoopInvariant32<T>(prevI: nat32, i: nat32, a: array<T>, prevASeq: seq<T>, oldASeq: seq<T>, oldS: Rand.Bitstream, prevS: Rand.Bitstream, s: Rand.Bitstream)
+  ghost predicate LoopInvariant<T>(prevI: nat32, i: nat32, a: array<T>, prevASeq: seq<T>, oldASeq: seq<T>, oldS: Rand.Bitstream, prevS: Rand.Bitstream, s: Rand.Bitstream)
     reads a
   {
     && prevI as nat <= |prevASeq|

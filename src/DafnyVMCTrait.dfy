@@ -5,9 +5,11 @@ module DafnyVMCTrait {
 
   import FisherYates
 
+  import Uniform
+
   import opened Pos
 
-  trait {:termination false} RandomTrait extends UniformPowerOfTwo.Interface.Trait, FisherYates.Implementation.Trait, FisherYates.Implementation.Trait32 {
+  trait {:termination false} RandomTrait extends UniformPowerOfTwo.Interface.Trait, FisherYates.Implementation.Trait, Uniform.Interface.Trait {
 
     method {:verify false} UniformSample (n: pos)
       returns (o: nat)
