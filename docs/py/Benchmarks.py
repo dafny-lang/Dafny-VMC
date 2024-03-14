@@ -7,8 +7,8 @@ import DafnyVMC
 from IBM import sample_dgauss
 from datetime import datetime
 
-sigma_range = 1.0
-step = 0.001
+sigma_range = 100
+step = 1
 sigmas = numpy.arange(0.000001, sigma_range, step).tolist()
 
 vmc_mean = []
