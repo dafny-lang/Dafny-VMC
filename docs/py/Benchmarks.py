@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from decimal import Decimal
 import DafnyVMC
 from IBM import sample_dgauss
+from datetime import datetime
 
 sigma_range = 1.0
 step = 0.001
@@ -22,16 +23,18 @@ r = DafnyVMC.Random()
 for sigma in sigmas:
     vmc = []
     ibm = []
+    sigma_num, sigma_denom = Decimal(sigma).as_integer_ratio()
+    sigma_squared = sigma ** 2
+
     for i in range(1100):
-        num, denom = Decimal(sigma).as_integer_ratio()
         start_time = timeit.default_timer()
-        r.DiscreteGaussianSample(num, denom)
+        r.DiscreteGaussianSample(sigma_num, sigma_denom)
         elapsed = timeit.default_timer() - start_time
         vmc.append(elapsed)
 
     for i in range(1100):
         start_time = timeit.default_timer()
-        sample_dgauss(sigma ** 2, rng=secrets.SystemRandom())
+        sample_dgauss(sigma_squared, rng=secrets.SystemRandom())
         elapsed = timeit.default_timer() - start_time
         ibm.append(elapsed)
 
@@ -56,4 +59,6 @@ ax1.fill_between(sigmas, numpy.array(ibm_mean)-0.5*numpy.array(ibm_std), numpy.a
 ax1.set_xlabel("Sigma")
 ax1.set_ylabel("Sampling Time (ms)")
 plt.legend(loc = 'best')
-plt.savefig('Benchmarks.pdf')
+now = datetime.now()
+filename = 'Benchmarks' + now.strftime("%H_%M_%S") + '.pdf'
+plt.savefig(filename)
