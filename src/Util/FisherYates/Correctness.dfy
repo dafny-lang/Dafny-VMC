@@ -576,7 +576,23 @@ module FisherYates.Correctness {
     reveal DecomposeE;
   }
 
-  lemma {:vcs_split_on_every_assert} ProbabilityOfE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+  lemma ProbabilityOfESimplifyFractions<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+    requires |xs| - i > 1
+    ensures (1.0 / ((|xs|-i) as real)) * (1.0 /  NatArith.FactorialTraditional((|xs|-i)-1) as real) == (1.0 * 1.0) / (((|xs|-i) as real) * (NatArith.FactorialTraditional(|xs|-(i+1)) as real))
+  {
+    var denom := NatArith.FactorialTraditional(|xs|-(i+1)) as real;
+    RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, denom);
+  }
+
+  lemma ProbabilityOfEAsRealOfMult<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
+    requires |xs| - i > 1
+    ensures (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real) != 0.0
+    ensures 1.0 / (((|xs|-i) as real) * NatArith.FactorialTraditional(|xs|-(i+1)) as real) == 1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real)
+  {
+    RealArith.AsRealOfMultiplication(|xs|-i, NatArith.FactorialTraditional((|xs|-i)-1));
+  }
+
+  lemma ProbabilityOfE<T(!new)>(xs: seq<T>, ys: seq<T>, p: seq<T>, i: nat, j: nat, h: Monad.Hurd<int>, A: iset<int>, e: iset<Rand.Bitstream>, e': iset<Rand.Bitstream>)
     requires i <= |xs|
     requires i <= |p|
     requires forall a, b | i <= a < b < |xs| :: xs[a] != xs[b]
@@ -626,26 +642,6 @@ module FisherYates.Correctness {
       RealArith.MultiplicationInvariance(1.0 / ((|xs|-i) as real), frac, frac2);
     }
 
-    assert SimplifyFractionsMultiplicationLifted: (1.0 / ((|xs|-i) as real)) * frac2 == (1.0 * 1.0) / (((|xs|-i) as real) * denom) by {
-      assert |xs|-i > 1;
-      RealArith.SimplifyFractionsMultiplication(1.0, (|xs|-i) as real, 1.0, denom);
-    }
-
-    assert AsRealOfMultiplicationLifted: 1.0 / (((|xs|-i) as real) * denom) == 1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real) by {
-      assert ((|xs|-i) as real) * denom == ((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real by {
-        RealArith.AsRealOfMultiplication(|xs|-i, NatArith.FactorialTraditional((|xs|-i)-1));
-      }
-    }
-
-    assert NonZero: (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real) != 0.0 by {
-      assert |xs|-i != 0;
-      assert NatArith.FactorialTraditional((|xs|-i)-1) != 0;
-    }
-
-    assert NonZeroDenom: denom != 0.0 by {
-      assert NatArith.FactorialTraditional((|xs|-i)-1) != 0;
-    }
-
     calc {
       Rand.prob(e);
       { reveal DecomposeE; }
@@ -660,11 +656,11 @@ module FisherYates.Correctness {
       (1.0 / ((|xs|-i) as real)) * frac;
       { reveal FracLifted; }
       (1.0 / ((|xs|-i) as real)) * frac2;
-      { reveal SimplifyFractionsMultiplicationLifted; reveal NonZeroDenom; }
+      { ProbabilityOfESimplifyFractions(xs, ys, p, i, j, h, A, e, e'); }
       (1.0 * 1.0) / (((|xs|-i) as real) * denom);
       { assert 1.0 * 1.0 == 1.0; }
       1.0 / (((|xs|-i) as real) * denom);
-      { reveal AsRealOfMultiplicationLifted; reveal NonZero; }
+      { ProbabilityOfEAsRealOfMult(xs, ys, p, i, j, h, A, e, e'); }
       1.0 / (((|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1)) as real);
       { assert (|xs|-i) * NatArith.FactorialTraditional((|xs|-i)-1) == NatArith.FactorialTraditional(|xs|-i) by { reveal NatArith.FactorialTraditional(); } }
       1.0 / (NatArith.FactorialTraditional(|xs|-i) as real);
