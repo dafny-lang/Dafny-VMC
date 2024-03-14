@@ -73,7 +73,7 @@ module Examples {
       }
     }
 
-    print "Estimated parameter for BernoulliSample(5, 5): ", (t as real) / (n as real), " (should be around 1.0\n";
+    print "Estimated parameter for BernoulliSample(5, 5): ", (t as real) / (n as real), " (should be around 1.0)\n";
 
     t := 0;
     for i := 0 to n {
