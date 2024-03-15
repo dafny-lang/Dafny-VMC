@@ -86,5 +86,5 @@ ax1.set_xlabel("Sigma")
 ax1.set_ylabel("Sampling Time (ms)")
 plt.legend(loc = 'best')
 now = datetime.now()
-filename = 'Benchmarks' + now.strftime("%H_%M_%S") + '.pdf'
+filename = 'GaussianBenchmarks' + now.strftime("%H%M%S") + '.pdf'
 plt.savefig(filename)
