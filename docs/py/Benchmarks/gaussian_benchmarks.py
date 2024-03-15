@@ -64,7 +64,6 @@ for epsilon_times_100 in tqdm.tqdm(range(1, 500, 2)):
     ibm2_mean.append(ibm2.mean()*1000.0)
     ibm2_std.append(ibm2.std()*1000.0)
 
-print(sigmas)
 
 ax1.plot(sigmas, vmc_mean, color='green', linewidth=1.0, label='VMC')
 ax1.fill_between(sigmas, numpy.array(vmc_mean)-0.5*numpy.array(vmc_std), numpy.array(vmc_mean)+0.5*numpy.array(vmc_std),
