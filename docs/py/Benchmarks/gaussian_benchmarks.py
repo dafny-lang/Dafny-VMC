@@ -48,6 +48,7 @@ for epsilon_times_100 in tqdm.tqdm(range(1, 500, 2)):
 
     for i in range(1100):
         start_time = timeit.default_timer()
+        # The sampler is not directly accessible, so we call `.randomize(0)` instead, as it adds a noise drawn according to a discrete Gaussian to `0`.
         g.randomise(0)
         elapsed = timeit.default_timer() - start_time
         ibm2.append(elapsed)
