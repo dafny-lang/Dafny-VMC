@@ -27,6 +27,8 @@ for epsilon_times_100 in tqdm.tqdm(range(1, 500, 2)):
     ibm = []
     ibm2= []
 
+    # The GaussianDiscrete class does not expose the sampler directly, and needs to be instantiated with `(epsilon, delta)`.
+    # We access its `_scale` member to get the values `sigma`'s needed by `DafnyVMC` and `discretegauss`.
     g = GaussianDiscrete(epsilon=0.01 * epsilon_times_100, delta=0.00001)
     sigma = g._scale
     sigmas += [sigma]
