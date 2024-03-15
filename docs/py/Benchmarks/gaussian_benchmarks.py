@@ -11,10 +11,10 @@ import tqdm
 
 vmc_mean = []
 vmc_std = []
-ibm_mean = []
-ibm_std = []
-ibm2_mean = []
-ibm2_std = []
+ibm_dgdp_mean = []
+ibm_dgdp_std = []
+ibm_dpl_mean = []
+ibm_dpl_std = []
 
 fig,ax1 = plt.subplots()
 
@@ -24,8 +24,8 @@ r = DafnyVMC.Random()
 sigmas = []
 for epsilon_times_100 in tqdm.tqdm(range(1, 500, 2)):
     vmc = []
-    ibm = []
-    ibm2= []
+    ibm_dgdp = []
+    ibm_dpl = []
 
     # The GaussianDiscrete class does not expose the sampler directly, and needs to be instantiated with `(epsilon, delta)`.
     # We access its `_scale` member to get the values `sigma`'s needed by `DafnyVMC` and `discretegauss`.
@@ -46,25 +46,25 @@ for epsilon_times_100 in tqdm.tqdm(range(1, 500, 2)):
         start_time = timeit.default_timer()
         discretegauss.sample_dgauss(sigma_squared, rng)
         elapsed = timeit.default_timer() - start_time
-        ibm.append(elapsed)
+        ibm_dgdp.append(elapsed)
 
     for i in range(1100):
         start_time = timeit.default_timer()
-        # The sampler is not directly accessible, so we call `.randomize(0)` instead, as it adds a noise drawn according to a discrete Gaussian to `0`.
+        # The sampler is not directly accessible, so we call `.randomise(0)` instead, as it adds a noise drawn according to a discrete Gaussian to `0`.
         g.randomise(0)
         elapsed = timeit.default_timer() - start_time
-        ibm2.append(elapsed)
+        ibm_dpl.append(elapsed)
 
     vmc = numpy.array(vmc[-1000:])
-    ibm = numpy.array(ibm[-1000:])
-    ibm2 = numpy.array(ibm2[-1000:])
+    ibm_dgdp = numpy.array(ibm_dgdp[-1000:])
+    ibm_dpl = numpy.array(ibm_dpl[-1000:])
 
     vmc_mean.append(vmc.mean()*1000.0)
     vmc_std.append(vmc.std()*1000.0)
-    ibm_mean.append(ibm.mean()*1000.0)
-    ibm_std.append(ibm.std()*1000.0)
-    ibm2_mean.append(ibm2.mean()*1000.0)
-    ibm2_std.append(ibm2.std()*1000.0)
+    ibm_dgdp_mean.append(ibm_dgdp.mean()*1000.0)
+    ibm_dgdp_std.append(ibm_dgdp.std()*1000.0)
+    ibm_dpl_mean.append(ibm_dpl.mean()*1000.0)
+    ibm_dpl_std.append(ibm_dpl.std()*1000.0)
 
 
 ax1.plot(sigmas, vmc_mean, color='green', linewidth=1.0, label='VMC')
@@ -72,13 +72,13 @@ ax1.fill_between(sigmas, numpy.array(vmc_mean)-0.5*numpy.array(vmc_std), numpy.a
     alpha=0.2, facecolor='k',
     linewidth=2, linestyle='dashdot', antialiased=True)
 
-ax1.plot(sigmas, ibm_mean, color='red', linewidth=1.0, label='IBM-DPL')
-ax1.fill_between(sigmas, numpy.array(ibm_mean)-0.5*numpy.array(ibm_std), numpy.array(ibm_mean)+0.5*numpy.array(ibm_std),
+ax1.plot(sigmas, ibm_dgdp_mean, color='red', linewidth=1.0, label='IBM-DGDP')
+ax1.fill_between(sigmas, numpy.array(ibm_dgdp_mean)-0.5*numpy.array(ibm_dgdp_std), numpy.array(ibm_dgdp_mean)+0.5*numpy.array(ibm_dgdp_std),
     alpha=0.2,  facecolor='y',
     linewidth=2, linestyle='dashdot', antialiased=True)
 
-ax1.plot(sigmas, ibm2_mean, color='purple', linewidth=1.0, label='IBM-DGDP')
-ax1.fill_between(sigmas, numpy.array(ibm2_mean)-0.5*numpy.array(ibm2_std), numpy.array(ibm2_mean)+0.5*numpy.array(ibm2_std),
+ax1.plot(sigmas, ibm_dpl_mean, color='purple', linewidth=1.0, label='IBM-DPL')
+ax1.fill_between(sigmas, numpy.array(ibm_dpl_mean)-0.5*numpy.array(ibm_dpl_std), numpy.array(ibm_dpl_mean)+0.5*numpy.array(ibm_dpl_std),
     alpha=0.2,  facecolor='y',
     linewidth=2, linestyle='dashdot', antialiased=True)
 
