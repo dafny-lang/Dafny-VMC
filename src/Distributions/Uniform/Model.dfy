@@ -15,7 +15,6 @@ module Uniform.Model {
    Definitions
   ************/
 
-  // Definition 49
   ghost function {:axiom} Sample(n: nat): (h: Monad.Hurd<nat>)
     requires n > 0
     ensures Independence.IsIndepFunction(h)
