@@ -1,0 +1,6 @@
+[submodule "docs/py/Benchmarks/discrete-gaussian-differential-privacy"]
+	path = docs/py/Benchmarks/discrete-gaussian-differential-privacy
+	url = https://github.com/IBM/discrete-gaussian-differential-privacy/
+[submodule "docs/py/Benchmarks/differential-privacy-library"]
+	path = docs/py/Benchmarks/differential-privacy-library
+	url = https://github.com/IBM/differential-privacy-library/
