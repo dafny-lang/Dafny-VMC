@@ -6,14 +6,14 @@ import java.security.SecureRandom;
 import java.util.function.Supplier;
 
 public class Random implements DafnyVMCTrait.RandomTrait {
-  static ThreadLocal<SecureRandom> rng;
+  static ThreadLocal<SecureRandom> RNG;
   
   public Random() {
-    this.rng = ThreadLocal.withInitial(Random::createSecureRandom);
+    this.RNG = ThreadLocal.withInitial(Random::createSecureRandom);
   }
 
   public Random(Supplier<SecureRandom> supplier) {
-    this.rng = ThreadLocal.withInitial(supplier);
+    this.RNG = ThreadLocal.withInitial(supplier);
   }
 
   private static final SecureRandom createSecureRandom() {
@@ -28,11 +28,23 @@ public class Random implements DafnyVMCTrait.RandomTrait {
       throw new IllegalArgumentException("n must be positive");
     }
 
-    return new BigInteger(n.bitLength()-1, rng.get());
+    return new BigInteger(n.bitLength()-1, RNG.get());
+  }
+
+  public int UniformSample32(int n) {
+    if (n <= 0) {
+      throw new IllegalArgumentException("n must be positive");
+    }
+    
+    return RNG.get().nextInt(n);
   }
 
   public java.math.BigInteger UniformIntervalSample(java.math.BigInteger a, java.math.BigInteger b) {
     return Uniform.Interface._Companion_Trait.UniformIntervalSample(this, a, b);
+  }
+
+  public int UniformIntervalSample32(int a, int b) {
+    return Uniform.Interface._Companion_Trait32.UniformIntervalSample32(this, a, b);
   }
 
   public java.math.BigInteger UniformSample(java.math.BigInteger n) {
@@ -69,7 +81,6 @@ public class Random implements DafnyVMCTrait.RandomTrait {
   public dafny.Tuple2<java.math.BigInteger, Boolean> DiscreteGaussianSampleLoop(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger t) {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSampleLoop(this, num, den, t);
   }
-
 
   public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den) {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den);
@@ -131,7 +142,7 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     FisherYates.Implementation._Companion_Trait.Shuffle(TypeDescriptor.SHORT, this, arr);
   }
 
-  public <__T> void Swap(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, java.math.BigInteger i, java.math.BigInteger j) {
+  public <__T> void Swap(dafny.TypeDescriptor<__T> _td___T, java.lang.Object a, int i, int j) {
     FisherYates.Implementation._Companion_Trait.Swap(_td___T, this, a, i, j);
   }
     
