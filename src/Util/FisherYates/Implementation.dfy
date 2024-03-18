@@ -9,21 +9,24 @@ module FisherYates.Implementation {
   import Model
   import Uniform
   import Equivalence
+  import opened Pos
 
   trait {:termination false} Trait extends Interface.Trait {
 
-    method Shuffle<T>(a: array<T>)
+    method {:vcs_split_on_every_assert} Shuffle<T>(a: array<T>)
       decreases *
       modifies `s, a
+      requires a.Length < 0x8000_0000
       ensures Model.Shuffle(old(a[..]))(old(s)) == Monad.Result(a[..], s)
     {
-      ghost var prevI, prevASeq, prevS := 0, a[..], s; // ghost
-      if a.Length > 1 {
-        for i := 0 to a.Length - 1
+      ghost var prevI, prevASeq, prevS := 0 as int32, a[..], s; // ghost
+
+      if (a.Length as nat32) > (1 as nat32) {
+        for i: nat32 := (0 as nat32) to (a.Length as nat32) - (1 as nat32)
           invariant Equivalence.LoopInvariant(prevI, i, a, prevASeq, old(a[..]), old(s), prevS, s) // ghost
         {
           prevI, prevASeq, prevS := i, a[..], s; // ghost
-          var j := UniformIntervalSample(i, a.Length);
+          var j := UniformIntervalSample32(i, a.Length as nat32);
           assert prevASeq == a[..]; // ghost
           Swap(a, i, j);
         }
@@ -33,12 +36,12 @@ module FisherYates.Implementation {
 
     }
 
-    method Swap<T>(a: array<T>, i: nat, j: nat)
+    method Swap<T>(a: array<T>, i: nat32, j: nat32)
       modifies a
       requires i <= j
-      requires 0 <= i < a.Length
-      requires 0 <= j < a.Length
-      ensures Model.Swap(old(a[..]), i, j) == a[..]
+      requires 0 <= i as nat < a.Length
+      requires 0 <= j as nat < a.Length
+      ensures Model.Swap(old(a[..]), i as nat, j as nat) == a[..]
       ensures old(s) == s
     {
       a[i], a[j] := a[j], a[i];
