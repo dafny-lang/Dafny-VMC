@@ -31,14 +31,14 @@ module Tests {
   {
     var empiricalMean := empiricalSum / n as real;
     var diff := RealArith.Abs(empiricalMean - trueMean);
-    var threshold := 3.0 * 3.0 * trueVariance;
-    if diff * diff > threshold {
+    var threshold := 4.0 * 4.0 * trueVariance / n as real;
+    if diff * diff >= threshold {
       print "Test failed: ", description, "\n";
       print "True mean: ", trueMean, "\n";
       print "Empirical mean: ", empiricalMean, "\n";
       print "Difference between empirical and true mean: ", diff, "\n";
       print "squared difference: ", diff * diff, "\n";
-      print "sigma squared:      ", trueVariance, "\n";
+      print "sigma squared:      ", trueVariance / n as real, "\n";
     }
     expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
