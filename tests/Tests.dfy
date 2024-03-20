@@ -8,6 +8,7 @@ module Tests {
   import RealArith
   import Helper
   import DafnyVMC
+  import opened Pos
 
   method TestBernoulliIsWithin3SigmaOfTrueMean(
     n: nat,
@@ -31,14 +32,14 @@ module Tests {
   {
     var empiricalMean := empiricalSum / n as real;
     var diff := RealArith.Abs(empiricalMean - trueMean);
-    var threshold := 3.0 * 3.0 * trueVariance;
+    var threshold := 4.0 * 4.0 * trueVariance / n as real;
     if diff * diff > threshold {
       print "Test failed: ", description, "\n";
       print "True mean: ", trueMean, "\n";
       print "Empirical mean: ", empiricalMean, "\n";
       print "Difference between empirical and true mean: ", diff, "\n";
       print "squared difference: ", diff * diff, "\n";
-      print "sigma squared:      ", trueVariance, "\n";
+      print "sigma squared:      ", trueVariance / n as real, "\n";
     }
     expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
@@ -119,70 +120,42 @@ module Tests {
     TestEmpiricalIsWithin3SigmaOfTrueMean(n, sum as real, (u - 1) as real / 2.0, (u * u - 1) as real / 12.0, "mean of Uniform(" + Helper.NatToString(u) + ")");
   }
 
-  method TestUniformInterval(n: nat, r: DafnyVMC.Random)
+  method TestUniformInterval(n: nat, a: int, b: int, r: DafnyVMC.Random)
     decreases *
     requires n > 0
+    requires a < b
     modifies r
   {
-    var a := 0;
-    var b := 0;
-    var c := 0;
+    var u := b-a;
+    var arr := new nat[u](i => 0);
     for i := 0 to n {
-      var k := r.UniformIntervalSample(7,10);
-      match k {
-        case 7 => a := a + 1;
-        case 8 => b := b + 1;
-        case 9 => c := c + 1;
-      }
+      var l := r.UniformIntervalSample(a, b);
+      expect a <= l < b, "sample not in the right bound";
+      var k := l-a;
+      assert 0 <= k < u;
+      arr[k] := arr[k] + 1;
     }
-    TestBernoulliIsWithin3SigmaOfTrueMean(n, a as real, 1.0 / 3.0, "p(7)");
-    TestBernoulliIsWithin3SigmaOfTrueMean(n, b as real, 1.0 / 3.0, "p(8)");
-    TestBernoulliIsWithin3SigmaOfTrueMean(n, c as real, 1.0 / 3.0, "p(9)");
+
+    for i := 0 to u {
+      TestBernoulliIsWithin3SigmaOfTrueMean(n, arr[i] as real, 1.0 / (u as real), "p(" + Helper.NatToString(i) + ")");
+    }
+
   }
 
-  method TestBernoulli(n: nat, r: DafnyVMC.Random)
+  method TestBernoulli(n: nat, num: nat, den: pos, r: DafnyVMC.Random)
     decreases *
     requires n > 0
+    requires num <= den
     modifies r
   {
     var t := 0;
     for i := 0 to n {
-      var b := r.BernoulliSample(1, 5);
+      var b := r.BernoulliSample(num, den);
       if b {
         t := t + 1;
       }
     }
-    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, 0.2, "p(true)");
-  }
-
-  method TestBernoulli2(n: nat, r: DafnyVMC.Random)
-    decreases *
-    modifies r
-  {
-    var t := 0;
-    for i := 0 to n {
-      var b := r.BernoulliSample(0, 5);
-      if b {
-        t := t + 1;
-      }
-    }
-
-    expect t == 0;
-  }
-
-  method TestBernoulli3(n: nat, r: DafnyVMC.Random)
-    decreases *
-    modifies r
-  {
-    var t := 0;
-    for i := 0 to n {
-      var b := r.BernoulliSample(5, 5);
-      if b {
-        t := t + 1;
-      }
-    }
-
-    expect t == n;
+    TestBernoulliIsWithin3SigmaOfTrueMean(n, t as real, (num as real) / (den as real), "p(true)");
   }
 
   method TestBernoulliExpNegLe1(n: nat, r: DafnyVMC.Random)
