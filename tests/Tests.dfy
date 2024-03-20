@@ -40,7 +40,7 @@ module Tests {
       print "squared difference: ", diff * diff, "\n";
       print "sigma squared:      ", trueVariance / n as real, "\n";
     }
-    expect diff * diff <= threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
+    expect diff * diff < threshold, "Empirical mean should be within 3 sigma of true mean. This individual test may fail with probability of about 6.3e-5.";
   }
 
   method TestUniformPowerOfTwo(n: nat, u: nat, r: DafnyVMC.Random)
