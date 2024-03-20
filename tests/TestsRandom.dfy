@@ -53,33 +53,68 @@ module TestsRandom {
     Tests.TestUniformMean(100_000, NatArith.Power(10, 100), r);
   }
 
-
-  method {:test} TestUniformInterval()
+  method {:test} TestUniformInterval0()
     decreases *
   {
     var r := new DafnyVMC.Random();
-    Tests.TestUniformInterval(1_000_000, r);
+    Tests.TestUniformInterval(1_000_000, 0, 1, r);
   }
 
-  method {:test} TestBernoulli()
+  method {:test} TestUniformInterval1()
     decreases *
   {
     var r := new DafnyVMC.Random();
-    Tests.TestBernoulli(1_000_000, r);
+    Tests.TestUniformInterval(1_000_000, -5, 5, r);
+  }
+
+  method {:test} TestUniformInterval2()
+    decreases *
+  {
+    var r := new DafnyVMC.Random();
+    Tests.TestUniformInterval(1_000_000, -15, 15, r);
+  }
+
+  method {:test} TestUniformInterval3()
+    decreases *
+  {
+    var r := new DafnyVMC.Random();
+    Tests.TestUniformInterval(1_000_000, -30, -5, r);
+  }
+
+  method {:test} TestUniformInterval4()
+    decreases *
+  {
+    var r := new DafnyVMC.Random();
+    Tests.TestUniformInterval(1_000_000, -30, 30, r);
+  }
+
+  method {:test} TestBernoulli0()
+    decreases *
+  {
+    var r := new DafnyVMC.Random();
+    Tests.TestBernoulli(1_000_000, 1, 5, r);
+  }
+
+  method {:test} TestBernoulli1()
+    decreases *
+  {
+    var r := new DafnyVMC.Random();
+    Tests.TestBernoulli(1_000_000, 0, 5, r);
   }
 
   method {:test} TestBernoulli2()
     decreases *
   {
     var r := new DafnyVMC.Random();
-    Tests.TestBernoulli2(1_000_000, r);
+    Tests.TestBernoulli(1_000_000, 5, 5, r);
   }
+
 
   method {:test} TestBernoulli3()
     decreases *
   {
     var r := new DafnyVMC.Random();
-    Tests.TestBernoulli3(1_000_000, r);
+    Tests.TestBernoulli(1_000_000, 1, 100, r);
   }
 
   method {:test} TestBernoulliExpNegLe1()
