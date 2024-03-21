@@ -43,8 +43,8 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     return Uniform.Interface._Companion_Trait.UniformIntervalSample(this, a, b);
   }
 
-  public int UniformIntervalSample32(int a, int b) {
-    return Uniform.Interface._Companion_Trait32.UniformIntervalSample32(this, a, b);
+  public <__T>  int UniformIntervalSample32(dafny.TypeDescriptor<__T> _td___T, int a, int b) {
+    return Uniform.Interface._Companion_Trait32.UniformIntervalSample32(_td___T, this, a, b);
   }
 
   public java.math.BigInteger UniformSample(java.math.BigInteger n) {
