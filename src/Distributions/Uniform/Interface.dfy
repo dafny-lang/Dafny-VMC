@@ -40,12 +40,13 @@ module Uniform.Interface {
       ensures u < n
       ensures Model.Sample(n as nat)(old(s)) == Monad.Result(u as nat, s)
 
-    method UniformIntervalSample32(a: int32, b: int32) returns (u: int32)
+    method UniformIntervalSample32<T>(a: int32, b: int32, ghost arr: array<T>) returns (u: int32)
       modifies `s
       decreases *
       requires 0 < b as int - a as int < 0x8000_0000
       ensures a <= u < b
       ensures Model.IntervalSample(a as int, b as int)(old(s)) == Monad.Result(u as int, s)
+      ensures old(arr[..]) == arr[..]
     {
       var v := UniformSample32(b-a);
       assert Model.Sample(b as int - a as int)(old(s)) == Monad.Result(v as nat, s);
