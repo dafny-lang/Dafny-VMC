@@ -5,4 +5,4 @@ VERSION=https://github.com/dafny-lang/dafny/releases/download/v4.4.0/dafny-4.4.0
 wget $VERSION
 unzip `basename $VERSION` 
 
-curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf -y | sh
