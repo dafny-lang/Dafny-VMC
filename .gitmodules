@@ -4,3 +4,6 @@
 [submodule "docs/py/Benchmarks/differential-privacy-library"]
 	path = docs/py/Benchmarks/differential-privacy-library
 	url = https://github.com/IBM/differential-privacy-library/
+[submodule "SampCert"]
+	path = SampCert
+	url = git@github.com:leanprover/SampCert.git
