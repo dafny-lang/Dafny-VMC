@@ -24,26 +24,26 @@ def main():
             print("Testing DiscreteLaPlace("+str(i)+"/"+str(j)+")\n")
             print(r.DiscreteLaplaceSample(i, j), end="\n")
 
-        # Edge cases    
-        print("Testing Bernoulli(1000000, 1)\n")
-        print(r.BernoulliSample(1000000, 1), end="\n")
-        print("Testing Bernoulli(1, 1000000)\n")
-        print(r.BernoulliSample(1, 1000000), end="\n")
+    # Edge cases    
+    print("Testing Bernoulli(1000000, 1)\n")
+    print(r.BernoulliSample(1000000, 1), end="\n")
+    print("Testing Bernoulli(1, 1000000)\n")
+    print(r.BernoulliSample(1, 1000000), end="\n")
 
-        print("Testing BernoulliExpNeg(1000000, 1)\n")
-        print(r.BernoulliExpNegSample(1000000, 1), end="\n")
-        print("Testing BernoulliExpNeg(1, 1000000)\n")
-        print(r.BernoulliExpNegSample(1, 1000000), end="\n")
+    print("Testing BernoulliExpNeg(1000000, 1)\n")
+    print(r.BernoulliExpNegSample(1000000, 1), end="\n")
+    print("Testing BernoulliExpNeg(1, 1000000)\n")
+    print(r.BernoulliExpNegSample(1, 1000000), end="\n")
 
-        print("Testing DiscreteGaussianSample(1000000, 1)\n")
-        print(r.DiscreteGaussianSample(1000000, 1), end="\n")
-        print("Testing DiscreteGaussianSample(1, 1000000)\n")
-        print(r.DiscreteGaussianSample(1, 1000000), end="\n")
+    print("Testing DiscreteGaussianSample(1000000, 1)\n")
+    print(r.DiscreteGaussianSample(1000000, 1), end="\n")
+    print("Testing DiscreteGaussianSample(1, 1000000)\n")
+    print(r.DiscreteGaussianSample(1, 1000000), end="\n")
 
-        print("Testing DiscreteLaplace(1000000, 1)\n")
-        print(r.DiscreteLaplaceSample(1000000, 1), end="\n")
-        print("Testing DiscreteLaplace(1, 1000000)\n")
-        print(r.DiscreteLaplaceSample(1, 1000000), end="\n")
+    print("Testing DiscreteLaplace(1000000, 1)\n")
+    print(r.DiscreteLaplaceSample(1000000, 1), end="\n")
+    print("Testing DiscreteLaplace(1, 1000000)\n")
+    print(r.DiscreteLaplaceSample(1, 1000000), end="\n")
 
 if __name__ == "__main__":
     main()
