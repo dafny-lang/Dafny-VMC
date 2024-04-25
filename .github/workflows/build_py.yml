@@ -9,7 +9,7 @@ jobs:
   build-python:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 
+      - uses: actions/checkout@v4
       - run: bash scripts/prep.sh
       - run: DAFNY=dafny/dafny TARGET_LANG=py bash scripts/build.sh
       - run: build/py/run_samplers.sh
