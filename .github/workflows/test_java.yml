@@ -10,5 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
       - run: bash scripts/prep.sh
       - run: DAFNY=dafny/dafny TARGET_LANG=java bash scripts/test.sh
