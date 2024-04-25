@@ -5,11 +5,11 @@ module DafnyVMCTrait {
 
   import FisherYates
 
-  import Uniform
-
   import opened Pos
 
-  trait {:termination false} RandomTrait extends UniformPowerOfTwo.Interface.Trait, FisherYates.Implementation.Trait, Uniform.Interface.Trait {
+  import Uniform
+
+  trait {:termination false} RandomTrait extends  UniformPowerOfTwo.Interface.Trait, FisherYates.Implementation.Trait, Uniform.Interface.Trait {
 
     method {:verify false} UniformSample (n: pos)
       returns (o: nat)
@@ -28,7 +28,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliSample (num: nat, den: pos)
       returns (o: bool)
-      requires num <= den
+      requires num <= den 
       modifies this
       decreases *
     {
@@ -38,7 +38,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnitLoop (num: nat, den: pos, state: (bool,pos))
       returns (o: (bool,pos))
-      requires num <= den
+      requires num <= den 
       modifies this
       decreases *
     {
@@ -48,7 +48,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnitAux (num: nat, den: pos)
       returns (o: nat)
-      requires num <= den
+      requires num <= den 
       modifies this
       decreases *
     {
@@ -64,7 +64,7 @@ module DafnyVMCTrait {
 
     method {:verify false} BernoulliExpNegSampleUnit (num: nat, den: pos)
       returns (o: bool)
-      requires num <= den
+      requires num <= den 
       modifies this
       decreases *
     {
@@ -106,8 +106,7 @@ module DafnyVMCTrait {
         var gamf := num / den;
         var B := BernoulliExpNegSampleGenLoop(gamf);
         if B == true {
-          var num := num - gamf * den;
-          var X := BernoulliExpNegSampleUnit(num, den);
+          var X := BernoulliExpNegSampleUnit(num % den, den);
           o := X;
         } else {
           o := false;
@@ -140,26 +139,25 @@ module DafnyVMCTrait {
       o := r1.0;
     }
 
-    method {:verify false} DiscreteLaplaceSampleLoopIn2Aux (num: nat, den: pos, K: (bool,pos))
-      returns (o: (bool,pos))
-      requires num <= den
+    method {:verify false} DiscreteLaplaceSampleLoopIn2Aux (num: nat, den: pos, K: (bool,nat))
+      returns (o: (bool,nat))
       modifies this
       decreases *
     {
-      var A := BernoulliExpNegSampleUnit(num, den);
+      var A := BernoulliExpNegSample(num, den);
       o := (A,K.1 + 1);
     }
 
     method {:verify false} DiscreteLaplaceSampleLoopIn2 (num: nat, den: pos)
-      returns (o: pos)
+      returns (o: nat)
       modifies this
       decreases *
     {
-      var K := (true,1);
+      var K := (true,0);
       while K.0
         decreases *
       {
-        K := DiscreteLaplaceSampleLoopIn2Aux(1, 1, K);
+        K := DiscreteLaplaceSampleLoopIn2Aux(num, den, K);
       }
       var r2 := K;
       o := r2.1;
@@ -170,13 +168,10 @@ module DafnyVMCTrait {
       modifies this
       decreases *
     {
-      var U := DiscreteLaplaceSampleLoopIn1(num);
-      var v := DiscreteLaplaceSampleLoopIn2(1, 1);
-      var V := v - 2;
-      var X := U + num * V;
-      var Y := X / den;
+      var v := DiscreteLaplaceSampleLoopIn2(den, num);
+      var V := v - 1;
       var B := BernoulliSample(1, 2);
-      o := (B,Y);
+      o := (B,V);
     }
 
     method {:verify false} DiscreteLaplaceSample (num: pos, den: pos)
@@ -202,7 +197,7 @@ module DafnyVMCTrait {
     {
       var Y := DiscreteLaplaceSample(t, 1);
       var y := (if Y < 0 then -Y else Y);
-      var n := (y * t * den - num) * (y * t * den - num);
+      var n := ((if y * t * den - num < 0 then -y * t * den - num else y * t * den - num)) * ((if y * t * den - num < 0 then -y * t * den - num else y * t * den - num));
       var d := 2 * num * (t) * (t) * den;
       var C := BernoulliExpNegSample(n, d);
       o := (Y,C);
@@ -228,6 +223,6 @@ module DafnyVMCTrait {
     }
 
 
-  }
+}
 
 }

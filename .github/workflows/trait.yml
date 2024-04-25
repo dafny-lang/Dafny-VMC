@@ -1,0 +1,19 @@
+name: 'Compare DafnyVMCTrait.dfy'
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+jobs:
+  compare-trait:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - run: bash scripts/prep.sh
+      - run: cp src/DafnyVMCTrait.dfy src/DafnyVMCTrait_.dfy
+      - run: DAFNY=dafny/dafny bash scripts/sampcert.sh
+      - run: cat src/DafnyVMCTrait.dfy
+      - run: diff src/DafnyVMCTrait.dfy src/DafnyVMCTrait_.dfy
