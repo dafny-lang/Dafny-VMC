@@ -16,7 +16,7 @@ module DafnyVMCTrait {
       modifies this
       decreases *
     {
-      var x := UniformPowerOfTwoSample(2 * n);
+      var x := UniformPowerOfTwoSample(3 * n);
       while ! (x < n)
         decreases *
       {
