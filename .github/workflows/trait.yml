@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: 'true'
       - run: bash scripts/prep.sh
-      - run: cp src/DafnyVMCTrait.dfy.log src/DafnyVMCTrait.dfy_.log
+      - run: cp src/DafnyVMCTrait.dfy src/DafnyVMCTrait_.dfy
       - run: DAFNY=dafny/dafny bash scripts/sampcert.sh
-      - run: cat src/DafnyVMCTrait.dfy.log
-      - run: diff src/DafnyVMCTrait.dfy.log src/DafnyVMCTrait.dfy_.log
+      - run: cat src/DafnyVMCTrait.dfy
+      - run: diff src/DafnyVMCTrait.dfy src/DafnyVMCTrait_.dfy
