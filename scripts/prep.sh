@@ -10,3 +10,6 @@ curl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_
 ./elan-init -y --default-toolchain none
 echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
+pushd SampCert
+lake build VMC
+popd
