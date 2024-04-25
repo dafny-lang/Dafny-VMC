@@ -1,4 +1,4 @@
-name: 'Verify DafnyVMCTrait.dfy'
+name: 'Compare DafnyVMCTrait.dfy'
 on:
   workflow_dispatch:
   pull_request:
