@@ -174,6 +174,20 @@ module DafnyVMCTrait {
       o := (B,V);
     }
 
+    method {:verify false} DiscreteLaplaceSampleLoop' (num: pos, den: pos)
+      returns (o: (bool,nat))
+      modifies this
+      decreases *
+    {
+      var U := DiscreteLaplaceSampleLoopIn1(num);
+      var v := DiscreteLaplaceSampleLoopIn2(1, 1);
+      var V := v - 1;
+      var X := U + num * V;
+      var Y := X / den;
+      var B := BernoulliSample(1, 2);
+      o := (B,Y);
+    }
+
     method {:verify false} DiscreteLaplaceSample (num: pos, den: pos)
       returns (o: int)
       modifies this
@@ -190,20 +204,50 @@ module DafnyVMCTrait {
       o := Z;
     }
 
-    method {:verify false} DiscreteGaussianSampleLoop (num: pos, den: pos, t: pos)
+    method {:verify false} DiscreteLaplaceSampleOptimized (num: pos, den: pos)
+      returns (o: int)
+      modifies this
+      decreases *
+    {
+      var x := DiscreteLaplaceSampleLoop'(num, den);
+      while ! (! (x.0 == true && x.1 == 0))
+        decreases *
+      {
+        x := DiscreteLaplaceSampleLoop'(num, den);
+      }
+      var r := x;
+      var Z := if r.0 == true then - (r.1) else r.1;
+      o := Z;
+    }
+
+    method {:verify false} DiscreteLaplaceSampleMixed (num: pos, den: pos, mix: nat)
+      returns (o: int)
+      modifies this
+      decreases *
+    {
+      if num <= den * mix {
+        var v := DiscreteLaplaceSample(num, den);
+        o := v;
+      } else {
+        var v := DiscreteLaplaceSampleOptimized(num, den);
+        o := v;
+      }
+    }
+
+    method {:verify false} DiscreteGaussianSampleLoop (num: pos, den: pos, t: pos, mix: nat)
       returns (o: (int,bool))
       modifies this
       decreases *
     {
-      var Y := DiscreteLaplaceSample(t, 1);
-      var y := (if Y < 0 then -Y else Y);
-      var n := ((if y * t * den - num < 0 then -y * t * den - num else y * t * den - num)) * ((if y * t * den - num < 0 then -y * t * den - num else y * t * den - num));
+      var Y := DiscreteLaplaceSampleMixed(t, 1, mix);
+      var y := (if Y < 0 then -(Y) else (Y));
+      var n := ((if y * t * den - num < 0 then -(y * t * den - num) else (y * t * den - num))) * ((if y * t * den - num < 0 then -(y * t * den - num) else (y * t * den - num)));
       var d := 2 * num * (t) * (t) * den;
       var C := BernoulliExpNegSample(n, d);
       o := (Y,C);
     }
 
-    method {:verify false} DiscreteGaussianSample (num: pos, den: pos)
+    method {:verify false} DiscreteGaussianSample (num: pos, den: pos, mix: nat)
       returns (o: int)
       modifies this
       decreases *
@@ -212,11 +256,11 @@ module DafnyVMCTrait {
       var t := ti + 1;
       var num := (num) * (num);
       var den := (den) * (den);
-      var x := DiscreteGaussianSampleLoop(num, den, t);
+      var x := DiscreteGaussianSampleLoop(num, den, t, mix);
       while ! (x.1)
         decreases *
       {
-        x := DiscreteGaussianSampleLoop(num, den, t);
+        x := DiscreteGaussianSampleLoop(num, den, t, mix);
       }
       var r := x;
       o := r.0;
