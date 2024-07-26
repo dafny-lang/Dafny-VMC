@@ -57,9 +57,9 @@ class TestSamplers {
             System.out.println(r.DiscreteGaussianSample(l, k, 7));
 
             System.out.println("Testing DiscreteLaplace(1000000, 1)");
-            System.out.println(r.DiscreteLaplaceSample(k, l, 7));
+            System.out.println(r.DiscreteLaplaceSample(k, l));
             System.out.println("Testing DiscreteLaplace(1, 1000000)");
-            System.out.println(r.DiscreteLaplaceSample(l, k, 7));
+            System.out.println(r.DiscreteLaplaceSample(l, k));
 
             /* CUSTOM RNG */
             System.out.println("\nCUSTOM RNG TESTS\n");
