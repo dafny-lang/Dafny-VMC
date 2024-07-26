@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=https://github.com/dafny-lang/dafny/releases/download/v4.4.0/dafny-4.4.0-x64-ubuntu-20.04.zip
+VERSION=https://github.com/dafny-lang/dafny/releases/download/v4.7.0/dafny-4.7.0-x64-ubuntu-20.04.zip
 
 wget $VERSION
 unzip `basename $VERSION` 
