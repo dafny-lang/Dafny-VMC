@@ -19,7 +19,7 @@ def main():
             print(r.BernoulliExpNegSample(i, j), end="\n")
 
             print("Testing DiscreteGaussian("+str(i)+"/"+str(j)+")\n")
-            print(r.DiscreteGaussianSample(i, j), end="\n")
+            print(r.DiscreteGaussianSample(i, j, 7), end="\n")
 
             print("Testing DiscreteLaPlace("+str(i)+"/"+str(j)+")\n")
             print(r.DiscreteLaplaceSample(i, j), end="\n")

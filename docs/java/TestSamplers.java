@@ -29,7 +29,7 @@ class TestSamplers {
                     System.out.println(r.BernoulliExpNegSample(i, j));
 
                     System.out.println("Testing DiscreteGaussian(" + a + "/" + b + ")");
-                    System.out.println(r.DiscreteGaussianSample(i, j));
+                    System.out.println(r.DiscreteGaussianSample(i, j, 7));
       
                     System.out.println("Testing DiscreteLaPlace(" + a + "/" + b + ")");
                     System.out.println(r.DiscreteLaplaceSample(i, j));
