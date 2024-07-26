@@ -229,7 +229,7 @@ module Tests {
     for i := 0 to n
       invariant -2 in counts && -1 in counts && 0 in counts && 1 in counts && 2 in counts
     {
-      var u := r.DiscreteGaussianSample(7, 5);
+      var u := r.DiscreteGaussianSample(7, 5, 7);
       sum := sum + u;
       if u !in counts {
         counts := counts[ u := 1 ];
