@@ -52,14 +52,14 @@ class TestSamplers {
             System.out.println(r.BernoulliExpNegSample(l, k));
 
             System.out.println("Testing DiscreteGaussianSample(1000000, 1)");
-            System.out.println(r.DiscreteGaussianSample(k, l));
+            System.out.println(r.DiscreteGaussianSample(k, l, 7));
             System.out.println("Testing DiscreteGaussianSample(1, 1000000)");
-            System.out.println(r.DiscreteGaussianSample(l, k));
+            System.out.println(r.DiscreteGaussianSample(l, k, 7));
 
             System.out.println("Testing DiscreteLaplace(1000000, 1)");
-            System.out.println(r.DiscreteLaplaceSample(k, l));
+            System.out.println(r.DiscreteLaplaceSample(k, l, 7));
             System.out.println("Testing DiscreteLaplace(1, 1000000)");
-            System.out.println(r.DiscreteLaplaceSample(l, k));
+            System.out.println(r.DiscreteLaplaceSample(l, k, 7));
 
             /* CUSTOM RNG */
             System.out.println("\nCUSTOM RNG TESTS\n");
@@ -81,7 +81,7 @@ class TestSamplers {
                     System.out.println(t.BernoulliExpNegSample(i, j));
 
                     System.out.println("Testing DiscreteGaussian(" + a + "/" + b + ")");
-                    System.out.println(t.DiscreteGaussianSample(i, j));
+                    System.out.println(t.DiscreteGaussianSample(i, j, 7));
       
                     System.out.println("Testing DiscreteLaPlace(" + a + "/" + b + ")");
                     System.out.println(t.DiscreteLaplaceSample(i, j));
@@ -102,9 +102,9 @@ class TestSamplers {
             System.out.println(t.BernoulliExpNegSample(l, k));
 
             System.out.println("Testing DiscreteGaussianSample(1000000, 1)");
-            System.out.println(t.DiscreteGaussianSample(k, l));
+            System.out.println(t.DiscreteGaussianSample(k, l, 7));
             System.out.println("Testing DiscreteGaussianSample(1, 1000000)");
-            System.out.println(t.DiscreteGaussianSample(l, k));
+            System.out.println(t.DiscreteGaussianSample(l, k, 7));
 
             System.out.println("Testing DiscreteLaplace(1000000, 1)");
             System.out.println(t.DiscreteLaplaceSample(k, l));

@@ -36,9 +36,9 @@ def main():
     print(r.BernoulliExpNegSample(1, 1000000), end="\n")
 
     print("Testing DiscreteGaussianSample(1000000, 1)\n")
-    print(r.DiscreteGaussianSample(1000000, 1), end="\n")
+    print(r.DiscreteGaussianSample(1000000, 1, 7), end="\n")
     print("Testing DiscreteGaussianSample(1, 1000000)\n")
-    print(r.DiscreteGaussianSample(1, 1000000), end="\n")
+    print(r.DiscreteGaussianSample(1, 1000000, 7), end="\n")
 
     print("Testing DiscreteLaplace(1000000, 1)\n")
     print(r.DiscreteLaplaceSample(1000000, 1), end="\n")
