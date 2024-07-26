@@ -86,6 +86,10 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den, mix);
   }
 
+  public dafny.Tuple2<Boolean, java.math.BigInteger> DiscreteLaplaceSampleLoop_k(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoop_k(this, num, den);
+  }
+  
   public java.math.BigInteger DiscreteLaplaceSampleMixed(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger mix) {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleMixed(this, num, den, mix);
   }
