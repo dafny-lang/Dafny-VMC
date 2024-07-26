@@ -28,7 +28,7 @@ for i in range(8):
     title_ibm_dpl = 'IBM-DPL, Sigma = ' + str(sigma)
 
     for _ in range(100000):
-        vmc_data.append(r.DiscreteGaussianSample(sigma_num, sigma_denom))
+        vmc_data.append(r.DiscreteGaussianSample(sigma_num, sigma_denom, 7))
         ibm_dgdp_data.append(discretegauss.sample_dgauss(sigma_squared, rng))
         ibm_dpl_data.append(g.randomise(0))
 
