@@ -82,6 +82,10 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSampleLoop(this, num, den, t, mix);
   }
 
+  public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger mix) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den, mix);
+  }
+
   public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den) {
     return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den, BigInteger.valueOf(7));
   }
