@@ -38,7 +38,7 @@ for epsilon_times_100 in tqdm.tqdm(range(1, 500, 2)):
 
     for i in range(1100):
         start_time = timeit.default_timer()
-        r.DiscreteGaussianSample(sigma_num, sigma_denom, 7)
+        r.DiscreteGaussianSample(sigma_num, sigma_denom)
         elapsed = timeit.default_timer() - start_time
         vmc.append(elapsed)
 

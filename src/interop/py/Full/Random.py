@@ -16,3 +16,6 @@ class Random(DafnyVMCPart.Random):
     DafnyVMCPart.Random.Shuffle(self, a)
     return list(a)
   
+  def DiscreteGaussianSample(self, num, denom):
+     return DafnyVMCPart.Random.DiscreteGaussianSample(self, num, denom, 7)
+  
