@@ -78,12 +78,28 @@ public class Random implements DafnyVMCTrait.RandomTrait {
     return DafnyVMCTrait._Companion_RandomTrait.BernoulliExpNegSample(this, num, den);
   }
 
-  public dafny.Tuple2<java.math.BigInteger, Boolean> DiscreteGaussianSampleLoop(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger t) {
-    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSampleLoop(this, num, den, t);
+  public dafny.Tuple2<java.math.BigInteger, Boolean> DiscreteGaussianSampleLoop(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger t, java.math.BigInteger mix) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSampleLoop(this, num, den, t, mix);
+  }
+
+  public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger mix) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den, mix);
   }
 
   public java.math.BigInteger DiscreteGaussianSample(java.math.BigInteger num, java.math.BigInteger den) {
-    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den);
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteGaussianSample(this, num, den, BigInteger.valueOf(7));
+  }
+
+  public dafny.Tuple2<Boolean, java.math.BigInteger> DiscreteLaplaceSampleLoop_k(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleLoop_k(this, num, den);
+  }
+  
+  public java.math.BigInteger DiscreteLaplaceSampleMixed(java.math.BigInteger num, java.math.BigInteger den, java.math.BigInteger mix) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleMixed(this, num, den, mix);
+  }
+
+  public java.math.BigInteger DiscreteLaplaceSampleOptimized(java.math.BigInteger num, java.math.BigInteger den) {
+    return DafnyVMCTrait._Companion_RandomTrait.DiscreteLaplaceSampleOptimized(this, num, den);
   }
 
   public dafny.Tuple2<java.math.BigInteger, Boolean> DiscreteLaplaceSampleLoopIn1Aux(java.math.BigInteger t) {

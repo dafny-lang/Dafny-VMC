@@ -105,7 +105,7 @@ module Examples {
     count1 := 0;
     countneg1 := 0;
     for i := 0 to n {
-      var u := r.DiscreteGaussianSample(7, 5);
+      var u := r.DiscreteGaussianSample(7, 5, 7);
       match u {
         case -1 => countneg1 := countneg1 + 1;
         case 0 => count0 := count0 + 1;
