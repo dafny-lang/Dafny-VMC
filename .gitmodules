@@ -7,3 +7,4 @@
 [submodule "SampCert"]
 	path = SampCert
 	url = https://github.com/leanprover/SampCert
+	branch = v1.1.0
