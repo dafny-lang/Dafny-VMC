@@ -8,10 +8,10 @@ Many other people have contributed to it (in no particular order): Aws Albhargho
 
 To cite Dafny-VMC you can currently use the following reference:
 ```  
-@software{Zetzsche_Dafny-VMC_a_Library,
+@software{Zetzsche_Dafny-VMC_a_Library_2023,
 author = {Zetzsche, Stefan and Tristan, Jean-Baptiste},
 title = {{Dafny-VMC: a Library for Verified Monte Carlo Algorithms}},
-url = {https://github.com/dafny-lang/Dafny-VMC}
+url = {https://github.com/dafny-lang/Dafny-VMC},
 year = {2023}
 }
 ```
