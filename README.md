@@ -6,6 +6,16 @@ The main developers of Dafny-VMC are [Stefan Zetzsche](https://zetzsche.st) and 
 
 Many other people have contributed to it (in no particular order): Aws Albharghouti, Anjali Joshi, Tancrede Lepoint, Mikael Mayer, Muhammad Naveed, Tristan Ravitch, Fabian Zaiser.
 
+To cite Dafny-VMC you can currently use the following reference:
+```  
+@software{Zetzsche_Dafny-VMC_a_Library,
+author = {Zetzsche, Stefan and Tristan, Jean-Baptiste},
+title = {{Dafny-VMC: a Library for Verified Monte Carlo Algorithms}},
+url = {https://github.com/dafny-lang/Dafny-VMC}
+year = {2023}
+}
+```
+
 ## Java
 
 ### Java API
