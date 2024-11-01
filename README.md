@@ -1,6 +1,10 @@
-# VMC: a Library for Verified Monte Carlo Algorithms
+# Dafny-VMC: a Library for Verified Monte Carlo Algorithms
 
 The `DafnyVMC` module introduces utils for probabilistic reasoning in Dafny. At the moment, the API is intentionally limited in scope, and only supports compilation to Java and Python. For the future, we plan to extend both the functionality and the range of supported languages.
+
+The main developers of Dafny-VMC are [Stefan Zetzsche](https://zetzsche.st) and [Jean-Baptiste Tristan](https://jtristan.github.io/).
+
+Many other people have contributed to it (in no particular order): Aws Albharghouti, Anjali Joshi, Tancrede Lepoint, Mikael Mayer, Muhammad Naveed, Tristan Ravitch, Fabian Zaiser.
 
 ## Java
 

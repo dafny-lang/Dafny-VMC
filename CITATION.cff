@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Zetzsche"
+  given-names: "Stefan"
+- family-names: "Tristan"
+  given-names: "Jean-Baptiste"
+title: "Dafny-VMC: a Library for Verified Monte Carlo Algorithms"
+url: "https://github.com/dafny-lang/Dafny-VMC"
+year: 2023
